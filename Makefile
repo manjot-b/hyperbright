@@ -12,11 +12,14 @@ LIBS=$(shell pkg-config --static --libs glfw3 gl)
 #LIBS=-lGL -lGLU -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor
 LDFLAGS=$(LIBS)
 
+.PHONY: all
 all: $(BINDIR)/$(EXECUTABLE)
 
+.PHONY: clean
 clean:
 	rm -vrf $(BINDIR)/ $(OBJDIR)
 
+.PHONY: run
 run: $(BINDIR)/$(EXECUTABLE)
 	./$(BINDIR)/$(EXECUTABLE)
 
