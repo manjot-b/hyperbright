@@ -7,7 +7,7 @@ BINDIR=bin
 OBJS = $(patsubst $(SRCDIR)%.cpp,$(OBJDIR)%.o,$(wildcard $(SRCDIR)/*.cpp))
 
 CXX=g++
-CXXFLAGS=-Wall -I $(INCDIR) -c
+CXXFLAGS=-Wall -I $(INCDIR) -c -std=c++17
 LIBS=$(shell pkg-config --static --libs glfw3 gl) 
 #LIBS=-lGL -lGLU -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor
 LDFLAGS=$(LIBS)
@@ -17,7 +17,7 @@ all: $(BINDIR)/$(EXECUTABLE)
 
 .PHONY: clean
 clean:
-	rm -vrf $(BINDIR)/ $(OBJDIR)
+	rm -vrf $(BINDIR) $(OBJDIR)
 
 .PHONY: run
 run: $(BINDIR)/$(EXECUTABLE)
