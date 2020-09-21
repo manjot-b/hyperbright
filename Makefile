@@ -4,6 +4,7 @@ INCDIR=inc
 SRCDIR=src
 OBJDIR=obj
 BINDIR=bin
+RSCDIR=rsc
 OBJS = $(patsubst $(SRCDIR)%.cpp,$(OBJDIR)%.o,$(wildcard $(SRCDIR)/*.cpp))
 
 CXX=g++
@@ -21,7 +22,10 @@ clean:
 
 .PHONY: run
 run: $(BINDIR)/$(EXECUTABLE)
-	./$(BINDIR)/$(EXECUTABLE)
+	ln -sf $(PWD)/rsc/* $(PWD)/bin 
+	# change the working directory to the bin folder so that
+	# the path to symbolic links are relavtive to the executable.
+	(cd $(BINDIR) && exec ./$(EXECUTABLE))
 
 $(BINDIR)/$(EXECUTABLE): $(OBJS)
 	mkdir -p $(BINDIR)
