@@ -16,8 +16,9 @@ void processInput(GLFWwindow* window)
 int main()
 {
 	// Setup glfw context
-	constexpr unsigned int height = 800;
-	constexpr unsigned int width = 600;
+	constexpr unsigned int height = 600;
+	constexpr unsigned int width = 800;
+	constexpr float aspectRatio = float(width) / height;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -41,7 +42,23 @@ int main()
 
 	glViewport(0, 0, width, height);
 	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
-		glViewport(0, 0, width, height);
+		float viewPortHeight = (1/aspectRatio) * width;
+		float viewPortWidth = width;
+		float xPos = 0;
+		float yPos = 0;
+
+		if(viewPortHeight > height)
+		{
+			viewPortHeight = height;
+			viewPortWidth = aspectRatio * height;
+			xPos = (width - viewPortWidth) / 2.0f;	
+		}
+		else
+		{
+			yPos = (height - viewPortHeight) / 2.0f;
+		}
+
+		glViewport(xPos, yPos, viewPortWidth, viewPortHeight);
 	});
 
 	// Triangle data
