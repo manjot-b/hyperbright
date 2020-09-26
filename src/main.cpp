@@ -1,7 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+
 #include "Shader.h"
+#include "VertexArray.h"
 
 void processInput(GLFWwindow* window)
 {
@@ -50,21 +52,11 @@ int main()
 	};	
 
 	//Create the VAO
-	unsigned int vertexArray;
-	glGenVertexArrays(1, &vertexArray);
-	glBindVertexArray(vertexArray);
-		
-	// Create the VBO
-	unsigned int vertexBuffer;
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// Unbind VAO first, then VBO
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	const int vertexComponents = 3;
+	VertexArray vertexArray = VertexArray(&vertexComponents,
+			1,
+			vertices,
+			sizeof(vertices)/sizeof(float));
 
 	Shader shader("shaders/vertex.glsl", "shaders/fragment.glsl");
 	shader.link();
@@ -76,8 +68,8 @@ int main()
 
 		processInput(window);
 
-		glUseProgram(shader.getId());
-		glBindVertexArray(vertexArray);
+		shader.use();
+		vertexArray.bind();
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
