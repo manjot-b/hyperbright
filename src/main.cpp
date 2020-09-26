@@ -63,15 +63,16 @@ int main()
 
 	// Triangle data
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
+		// x,y,z positions	// RGB colors
+		-0.5f, -0.5f, 0.0f,	0.5, 0.5, 1,
+		0.5f, -0.5f, 0.0f,	0.5, 0.5, 0,
+		0.0f, 0.5f, 0.0f,	0.5, 0.0, 0.5
 	};	
 
 	//Create the VAO
-	const int vertexComponents = 3;
-	VertexArray vertexArray = VertexArray(&vertexComponents,
-			1,
+	const int vertexComponents[] = {3, 3};
+	VertexArray vertexArray = VertexArray(vertexComponents,
+			2,
 			vertices,
 			sizeof(vertices)/sizeof(float));
 
