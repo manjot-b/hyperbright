@@ -1,10 +1,11 @@
 #include <glad/glad.h>
-#include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 #include "Model.h"
 
 Model::Model(const std::string &objPath, bool hasTexture, bool hasNormal, Shader shader) :
-	shader(shader)
+	shader(shader), modelMatrix(1.0f)
 {
 	ObjModel obj = ObjModel();
 	obj.load(objPath);
@@ -73,7 +74,20 @@ void Model::extractVertexData(std::vector<float> &buffer, ObjModel &obj, bool ha
 void Model::draw() const
 {
 	shader.use();
+	shader.setUniformMatrix4fv("model", modelMatrix);
 	vertexArray->bind();
 	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 //	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+/**
+ * Rotates the model along each x,y, and z axis at the specified angles.
+ * Input parameters are to be in radians.
+ */
+void Model::rotate(const glm::vec3 &rotate)
+{
+//	modelMatrix = glm::rotate(modelMatrix, rotate.x, glm::vec3(1.0f, 0, 0));
+//	modelMatrix = glm::rotate(modelMatrix, rotate.y, glm::vec3(0, 1.0f, 0));
+//	modelMatrix = glm::rotate(modelMatrix, rotate.z, glm::vec3(0, 0, 1.0f));
+	modelMatrix = modelMatrix * glm::eulerAngleXYZ(rotate.x, rotate.y, rotate.z);
 }
