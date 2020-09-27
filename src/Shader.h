@@ -16,7 +16,7 @@ class Shader
 		unsigned int getId() const;
 		bool compileShader(std::string shaderPath, unsigned int type);
 		bool link();
-		void use();
+		void use() const;
 
 	private:
 		unsigned int id;

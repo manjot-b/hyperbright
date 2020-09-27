@@ -15,13 +15,7 @@ Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath)
 	compileShader(fragmentShaderPath, GL_FRAGMENT_SHADER);
 }
 
-Shader::~Shader()
-{
-	for(auto shader : shaders)
-	{
-		glDeleteShader(shader);
-	}
-}
+Shader::~Shader() {}
 
 bool Shader::compileShader(std::string shaderPath, unsigned int type)
 {
@@ -75,6 +69,13 @@ bool Shader::link()
 		std::cerr << "PROGRAM LINKAGE FAILED\n" << infoLog << std::endl;
 		
 	}
+
+	// No longer need individual shaders.
+	for(auto shader : shaders)
+	{
+		glDeleteShader(shader);
+	}
+	
 	return success;
 }
 
@@ -90,7 +91,7 @@ std::string Shader::readShaderFile(std::string shaderPath)
 	return buffer;
 }
 
-void Shader::use()
+void Shader::use() const
 {
 	glUseProgram(id);
 }

@@ -8,7 +8,7 @@ RSCDIR=rsc
 OBJS = $(patsubst $(SRCDIR)%.cpp,$(OBJDIR)%.o,$(wildcard $(SRCDIR)/*.cpp))
 
 CXX=g++
-CXXFLAGS=-Wall -I $(INCDIR) -c -std=c++17
+CXXFLAGS=-Wall -I $(INCDIR) -c -std=c++17 -g
 LIBS=$(shell pkg-config --static --libs glfw3 gl) 
 #LIBS=-lGL -lGLU -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor
 LDFLAGS=$(LIBS)
@@ -29,6 +29,7 @@ run: $(BINDIR)/$(EXECUTABLE)
 
 $(BINDIR)/$(EXECUTABLE): $(OBJS)
 	mkdir -p $(BINDIR)
+	ln -sf $(PWD)/rsc/* $(PWD)/bin 
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp 

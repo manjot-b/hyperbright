@@ -1,98 +1,24 @@
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <vector>
+#include <string>
 #include <iostream>
 
-#include "Shader.h"
-#include "VertexArray.h"
+#include "Renderer.h"
 
-void processInput(GLFWwindow* window)
+int main(int argc, char *argv[])
 {
-	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (argc < 2)
 	{
-		glfwSetWindowShouldClose(window, true);
-	}
-}
-
-int main()
-{
-	// Setup glfw context
-	constexpr unsigned int height = 600;
-	constexpr unsigned int width = 800;
-	constexpr float aspectRatio = float(width) / height;
-
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window = glfwCreateWindow(width, height, "OpenGL Example", nullptr, nullptr);
-	if (!window)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		std::cerr << "Usage: " << argv[0] << " <objpath1> <objpath2>..." << std::endl;
 		return -1;
 	}
 
-	glViewport(0, 0, width, height);
-	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
-		float viewPortHeight = (1/aspectRatio) * width;
-		float viewPortWidth = width;
-		float xPos = 0;
-		float yPos = 0;
-
-		if(viewPortHeight > height)
-		{
-			viewPortHeight = height;
-			viewPortWidth = aspectRatio * height;
-			xPos = (width - viewPortWidth) / 2.0f;	
-		}
-		else
-		{
-			yPos = (height - viewPortHeight) / 2.0f;
-		}
-
-		glViewport(xPos, yPos, viewPortWidth, viewPortHeight);
-	});
-
-	// Triangle data
-	float vertices[] = {
-		// x,y,z positions	// RGB colors
-		-0.5f, -0.5f, 0.0f,	0.5, 0.5, 1,
-		0.5f, -0.5f, 0.0f,	0.5, 0.5, 0,
-		0.0f, 0.5f, 0.0f,	0.5, 0.0, 0.5
-	};	
-
-	//Create the VAO
-	const int vertexComponents[] = {3, 3};
-	VertexArray vertexArray = VertexArray(vertexComponents,
-			2,
-			vertices,
-			sizeof(vertices)/sizeof(float));
-
-	Shader shader("shaders/vertex.glsl", "shaders/fragment.glsl");
-	shader.link();
-
-	while(!glfwWindowShouldClose(window))
+	std::vector<std::string> objPaths;
+	for (int i = 1; i < argc; i++)
 	{
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		processInput(window);
-
-		shader.use();
-		vertexArray.bind();
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		objPaths.push_back(argv[i]);
 	}
 
-	glfwTerminate();	
+	Renderer renderer(objPaths);
+	renderer.run();
 }
