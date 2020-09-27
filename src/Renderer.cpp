@@ -6,7 +6,7 @@
 #include "Renderer.h"
 
 Renderer::Renderer(std::vector<std::string> objPaths) :
-	rotate(0)
+	rotate(0), scale(1)
 {
 	initWindow();
 	Shader shader("shaders/vertex.glsl", "shaders/fragment.glsl");
@@ -92,9 +92,12 @@ void Renderer::run()
 		for(auto& model : models)
 		{
 			model.rotate(rotate);
+			model.scale(scale);
+			model.update();
 			model.draw();
 		}
-		rotate = glm::vec3(0);
+		rotate = glm::vec3(0.0f);
+		scale = 1;
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -104,6 +107,7 @@ void Renderer::run()
 void Renderer::processWindowInput()
 {
 	float rotationSpeed = glm::radians(3.0f);
+	float scaleSpeed = 1.01;
 
 	// Close window
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -114,12 +118,12 @@ void Renderer::processWindowInput()
 	// Rotations
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		rotate.x += rotationSpeed;
+		rotate.x -= rotationSpeed;
 	}
 
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		rotate.x -= rotationSpeed;
+		rotate.x += rotationSpeed;
 	}
 
 	if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
@@ -134,12 +138,21 @@ void Renderer::processWindowInput()
 
 	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		rotate.z += rotationSpeed;
+		rotate.z -= rotationSpeed;
 	}
 
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		rotate.z -= rotationSpeed;
+		rotate.z += rotationSpeed;
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+	{
+		scale *= scaleSpeed;
+	}
+	if(glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+	{
+		scale /= scaleSpeed;
 	}
 }
 

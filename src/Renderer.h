@@ -24,6 +24,7 @@ class Renderer
 		const float aspectRatio = float(width) / height;
 
 		glm::vec3 rotate;
+		float scale;
 		glm::mat4 view;
 		glm::mat4 perspective;
 
