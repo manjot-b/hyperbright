@@ -99,8 +99,6 @@ void Renderer::run()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
-	glfwTerminate();	
 }
 
 void Renderer::processWindowInput()

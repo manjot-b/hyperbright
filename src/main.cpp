@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -19,6 +20,11 @@ int main(int argc, char *argv[])
 		objPaths.push_back(argv[i]);
 	}
 
-	Renderer renderer(objPaths);
-	renderer.run();
+	{
+		Renderer renderer(objPaths);
+		renderer.run();
+	}
+	// Need to terminate GLFW context after all OpenGL objects are deleted.
+	// Otherwise, a seg fault will occur.
+	glfwTerminate();
 }
