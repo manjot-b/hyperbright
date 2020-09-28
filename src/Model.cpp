@@ -1,89 +1,76 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
-
-#include <glm/gtx/string_cast.hpp>
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
 #include <iostream>
 
 #include "Model.h"
 
-Model::Model(const std::string &objPath, bool hasTexture, bool hasNormal, Shader shader) :
+Model::Model(const std::string &objPath, Shader shader) :
 	shader(shader), modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0)
 {
-	ObjModel obj = ObjModel();
-	obj.load(objPath);
-	vertexCount = obj.triangleCount() * 3;
-
-	std::vector<float> vertexBuffer;
-	extractVertexData(vertexBuffer, obj, hasTexture, hasNormal);	
-
-	std::vector<int> vertexComponents;
-	vertexComponents.push_back(3);	// position components
-	if (hasTexture)
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(objPath,
+			aiProcess_Triangulate | aiProcess_GenSmoothNormals);	
+	if (!scene)
 	{
-		vertexComponents.push_back(2);
-	}
-	if (hasNormal)
-	{
-		vertexComponents.push_back(3);
+		std::cerr <<  "Error loading " << objPath << ".\n" << importer.GetErrorString() << std::endl;
 	}
 
-	vertexArray = new VertexArray(vertexComponents.data(),
-			vertexComponents.size(),
-			vertexBuffer.data(),
-			vertexBuffer.size());
+	extractDataFromNode(scene, scene->mRootNode);	
 
-
-	calcBoundingBox(obj);
+//	calcBoundingBox(obj);
 	// Scale model so that the longest side of its BoundingBox
 	// has a length of 1.
-	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
-	update();
+//	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
+//	update();
 }
 
 Model::~Model() 
 {
-	delete vertexArray;
-}
-
-void Model::extractVertexData(std::vector<float> &buffer, ObjModel &obj, bool hasTexture, bool hasNormal)
-{
-	for (unsigned int tri = 0; tri < obj.triangleCount(); tri++)
+	for(auto m : meshes)
 	{
-		const Triangle &triangle = obj[tri];
-
-		for(unsigned int vert = 0; vert < 3; vert++)
-		{
-			buffer.push_back(triangle.vertex[vert].pos.x);
-			buffer.push_back(triangle.vertex[vert].pos.y);
-			buffer.push_back(triangle.vertex[vert].pos.z);
-			
-			if (hasTexture)
-			{
-				buffer.push_back(triangle.vertex[vert].tex.s);
-				buffer.push_back(triangle.vertex[vert].tex.t);
-			}
-
-			if (hasNormal)
-			{
-				buffer.push_back(triangle.vertex[vert].norm.x);
-				buffer.push_back(triangle.vertex[vert].norm.y);
-				buffer.push_back(triangle.vertex[vert].norm.z);
-			}
-		}
+		delete m;
 	}
 }
+
+/**
+ * Recursively process each node by first processing all meshes of the current node,
+ * then repeating the process for all children nodes.
+ */
+void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
+{
+	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	{
+		// aiNode contains indicies to index the objects in aiScene.
+		const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		meshes.push_back(new Mesh(mesh));
+	}
+
+	for (unsigned int i = 0; i < node->mNumChildren; i++)
+	{
+		// process all children nodes.
+		extractDataFromNode(scene, node->mChildren[i]);
+	}
+
+}
+
 
 /**
  * Draws the model. Remember to update() the model first.
  */
 void Model::draw() const
 {
-//	std::cout << glm::to_string(modelMatrix) << std::endl;
 	shader.use();
 	shader.setUniformMatrix4fv("model", modelMatrix);
-	vertexArray->bind();
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+	for(auto &mesh : meshes)
+	{
+		mesh->draw();
+	}
+	glUseProgram(0);
 }
 
 /**
@@ -115,7 +102,7 @@ void Model::scale(const float scale)
 {
 	m_scale = scale;
 }
-
+/*
 void Model::calcBoundingBox(ObjModel &obj)
 {
 	float minX = obj[0].vertex[0].pos.x;
@@ -149,3 +136,4 @@ void Model::calcBoundingBox(ObjModel &obj)
 	boundingBox.height = abs(maxY - minY);
 	boundingBox.depth = abs(maxZ - minZ);
 }
+*/

@@ -13,7 +13,7 @@ Renderer::Renderer(std::vector<std::string> objPaths) :
 	shader.link();
 	for(const auto& path : objPaths)
 	{
-		models.emplace_back(path, false, true, shader);
+		models.emplace_back(path, shader);
 	}	
 	
 	perspective = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);

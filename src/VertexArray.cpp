@@ -1,40 +1,26 @@
 #include <glad/glad.h>
 #include "VertexArray.h"
 
-// Anonymouse namespace
-namespace
-{
-	int sumArray(int start, int end, const int array[]) 
-	{
-		int sum = 0;
-		for (int i = start; i < end; i++)
-		{
-			sum += array[i];
-		}
-		return sum;
-	}
-}
-
-VertexArray::VertexArray(const int vertexComponentsCount[], size_t vertexComponentsSize, const float buffer[], size_t bufferSize)
+VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
 {
     glGenBuffers(1, &vertexBufferId); // gen buffer and store id in VBO
+	glGenBuffers(1, &elementBufferId);
 	glGenVertexArrays(1, &id);
     
     glBindVertexArray(id);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	glBufferData(GL_ARRAY_BUFFER,  bufferSize * sizeof(float), buffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER,  vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-    const int totalComponents = sumArray(0, vertexComponentsSize, vertexComponentsCount);
-    const int stride = totalComponents * sizeof(float);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,  indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-    for(unsigned int i = 0; i < vertexComponentsSize; i++)
-    {
-        int components = vertexComponentsCount[i];
-        int offset = sumArray(0, i, vertexComponentsCount);
-
-        glVertexAttribPointer(i, components, GL_FLOAT, GL_FALSE, stride, (void*)(offset * sizeof(float)));
-	    glEnableVertexAttribArray(i);    
-    }
+	// set the vertex attribute pointers
+	// vertex Positions
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	// vertex normals
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
 
 	// unbind VAO, VBO, and EBO
@@ -47,6 +33,7 @@ VertexArray::~VertexArray()
 {
     glDeleteVertexArrays(1, &id);
 	glDeleteBuffers(1, &vertexBufferId);
+	glDeleteBuffers(1, &elementBufferId);
 }       
 
 unsigned int VertexArray::getId() const

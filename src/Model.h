@@ -4,13 +4,12 @@
 #include <glm/glm.hpp>
 
 #include "Shader.h"
-#include "VertexArray.h"
-#include "ObjModel.h"
+#include "Mesh.h"
 
 class Model
 {
 	public:
-		Model(const std::string &objPath, bool hasTexture, bool hasNormal, Shader shader);
+		Model(const std::string &objPath, Shader shader);
 		~Model();
 		void draw() const;
 		void update();
@@ -19,8 +18,8 @@ class Model
 
 	private:
 		Shader shader;
-		VertexArray *vertexArray;
-		unsigned int vertexCount;
+		std::vector<Mesh*> meshes;
+
 		glm::mat4 modelMatrix;
 		glm::vec3 m_rotate;			// how much to rotate along each axis
 		float m_scale;				// scale to apply to model
@@ -31,7 +30,6 @@ class Model
 			float x, y, z, width, height, depth;
 		} boundingBox;
 
-		void extractVertexData(std::vector<float> &buffer, ObjModel &obj, bool hasTexture, bool hasNormal);
-		void calcBoundingBox(ObjModel &obj);
-
+		void extractDataFromNode(const aiScene* scene, const aiNode* node);
+//		void calcBoundingBox(ObjModel &obj);
 };
