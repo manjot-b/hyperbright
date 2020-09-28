@@ -54,22 +54,23 @@ void Renderer::initWindow()
 	}
 
 	glViewport(0, 0, width, height);
-	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
-		float aspectRatio = width / height;
+	glfwSetFramebufferSizeCallback(window,
+			[](GLFWwindow* window, int newWidth, int newHeight) {
+		float aspectRatio = Renderer::width / Renderer::height;
 		float viewPortHeight = (1/aspectRatio) * width;
-		float viewPortWidth = width;
+		float viewPortWidth = newWidth;
 		float xPos = 0;
 		float yPos = 0;
 
-		if(viewPortHeight > height)
+		if(viewPortHeight > newHeight)
 		{
-			viewPortHeight = height;
-			viewPortWidth = aspectRatio * height;
-			xPos = (width - viewPortWidth) / 2.0f;	
+			viewPortHeight = newHeight;
+			viewPortWidth = aspectRatio * newHeight;
+			xPos = (newWidth - viewPortWidth) / 2.0f;	
 		}
 		else
 		{
-			yPos = (height - viewPortHeight) / 2.0f;
+			yPos = (newHeight - viewPortHeight) / 2.0f;
 		}
 
 		glViewport(xPos, yPos, viewPortWidth, viewPortHeight);
