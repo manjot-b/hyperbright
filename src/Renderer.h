@@ -19,8 +19,8 @@ class Renderer
 		GLFWwindow* window;
 		std::vector<Model> models;
 		
-		static const unsigned int height = 600;
-		static const unsigned int width = 800;
+		const unsigned int height = 800;
+		const unsigned int width = 800;
 		const float aspectRatio = float(width) / height;
 
 		glm::vec3 rotate;
