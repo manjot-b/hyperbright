@@ -2,6 +2,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "Shader.h"
 #include "Mesh.h"
@@ -18,7 +19,7 @@ class Model
 
 	private:
 		const Shader& shader;
-		std::vector<Mesh*> meshes;
+		std::vector<std::unique_ptr<Mesh>> meshes;
 
 		glm::mat4 modelMatrix;
 		glm::vec3 m_rotate;			// how much to rotate along each axis

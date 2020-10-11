@@ -28,13 +28,7 @@ Model::Model(const std::string &objPath, const Shader& shader) :
 //	update();
 }
 
-Model::~Model() 
-{
-	for(auto m : meshes)
-	{
-		delete m;
-	}
-}
+Model::~Model() {}
 
 /**
  * Recursively process each node by first processing all meshes of the current node,
@@ -46,7 +40,7 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
 	{
 		// aiNode contains indicies to index the objects in aiScene.
 		const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(new Mesh(mesh));
+		meshes.push_back(std::make_unique<Mesh>(mesh));
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++)

@@ -5,13 +5,10 @@
 Mesh::Mesh(const aiMesh* mesh)
 {
 	extractDataFromMesh(mesh);
-	vertexArray = new VertexArray(vertices, indices);
+	vertexArray = std::make_unique<VertexArray>(vertices, indices);
 }
 
-Mesh::~Mesh()
-{
-	delete vertexArray;
-}
+Mesh::~Mesh() {}
 
 /**
  * Fills the buffer with the vertex data from the mesh.

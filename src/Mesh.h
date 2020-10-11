@@ -1,5 +1,6 @@
 #include <vector>
 #include <assimp/scene.h>
+#include <memory>
 
 #include "Vertex.h"
 #include "VertexArray.h"
@@ -15,5 +16,5 @@ class Mesh
 	private:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
-		VertexArray* vertexArray;
+		std::unique_ptr<VertexArray> vertexArray;
 };
