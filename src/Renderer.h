@@ -6,18 +6,23 @@
 #include <string>
 #include <glm/glm.hpp>
 
+#include <memory>
+
 #include "Model.h"
+#include "Shader.h"
 
 class Renderer
 {
 	public:
-		Renderer(std::vector<std::string> objPaths);
+		Renderer(const char* modelDirectory);
 		~Renderer();
 		void run();
 
 	private:
 		GLFWwindow* window;
-		std::vector<Model> models;
+		std::unique_ptr<Shader> shader;
+		std::vector<std::unique_ptr<Model>> models;
+		unsigned int modelIndex;
 		
 		const unsigned int height = 800;
 		const unsigned int width = 800;
@@ -29,5 +34,7 @@ class Renderer
 		glm::mat4 perspective;
 
 		void initWindow();
+		void loadModels(const char* modelDirectory);
 		void processWindowInput();
+		static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

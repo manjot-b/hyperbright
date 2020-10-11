@@ -9,7 +9,7 @@
 class Model
 {
 	public:
-		Model(const std::string &objPath, Shader shader);
+		Model(const std::string &objPath, const Shader& shader);
 		~Model();
 		void draw() const;
 		void update();
@@ -17,7 +17,7 @@ class Model
 		void scale(float scale);
 
 	private:
-		Shader shader;
+		const Shader& shader;
 		std::vector<Mesh*> meshes;
 
 		glm::mat4 modelMatrix;

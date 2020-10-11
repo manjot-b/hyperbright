@@ -10,18 +10,12 @@ int main(int argc, char *argv[])
 {
 	if (argc < 2)
 	{
-		std::cerr << "Usage: " << argv[0] << " <objpath1> <objpath2>..." << std::endl;
+		std::cerr << "Usage: " << argv[0] << " <obj_dir>"  << std::endl;
 		return -1;
 	}
 
-	std::vector<std::string> objPaths;
-	for (int i = 1; i < argc; i++)
 	{
-		objPaths.push_back(argv[i]);
-	}
-
-	{
-		Renderer renderer(objPaths);
+		Renderer renderer(argv[1]);
 		renderer.run();
 	}
 	// Need to terminate GLFW context after all OpenGL objects are deleted.

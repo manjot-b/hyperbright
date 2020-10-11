@@ -8,7 +8,7 @@
 
 #include "Model.h"
 
-Model::Model(const std::string &objPath, Shader shader) :
+Model::Model(const std::string &objPath, const Shader& shader) :
 	shader(shader), modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0)
 {
 	Assimp::Importer importer;
