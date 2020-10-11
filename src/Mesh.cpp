@@ -6,6 +6,7 @@ Mesh::Mesh(const aiMesh* mesh)
 {
 	extractDataFromMesh(mesh);
 	vertexArray = std::make_unique<VertexArray>(vertices, indices);
+	calcBoundingBox();
 }
 
 Mesh::~Mesh() {}
@@ -53,4 +54,37 @@ void Mesh::draw() const
 	vertexArray->bind();
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+}
+
+void Mesh::calcBoundingBox()
+{
+	float minX = vertices[0].position.x;
+	float maxX = minX;
+	float minY = vertices[0].position.y;
+	float maxY = minY;
+	float minZ = vertices[0].position.z;
+	float maxZ = minZ;
+
+	for (const auto& vertex : vertices)
+	{
+		minX = glm::min(minX, vertex.position.x);
+		maxX = glm::max(maxX, vertex.position.x);
+		
+		minY = glm::min(minY, vertex.position.y);
+		maxY = glm::max(maxY, vertex.position.y);
+		
+		minZ = glm::min(minZ, vertex.position.z);
+		maxZ = glm::max(maxZ, vertex.position.z);
+	}
+	boundingBox.x = minX;
+	boundingBox.y = minY;
+	boundingBox.z = minZ;
+	boundingBox.width = glm::abs(maxX - minX);
+	boundingBox.height = glm::abs(maxY - minY);
+	boundingBox.depth = glm::abs(maxZ - minZ);
+}
+
+const BoundingBox& Mesh::getBoundingBox() const
+{
+	return boundingBox;
 }

@@ -21,7 +21,7 @@ Model::Model(const std::string &objPath, const Shader& shader) :
 
 	extractDataFromNode(scene, scene->mRootNode);	
 
-//	calcBoundingBox(obj);
+	scaleToViewport();
 	// Scale model so that the longest side of its BoundingBox
 	// has a length of 1.
 //	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
@@ -96,38 +96,47 @@ void Model::scale(const float scale)
 {
 	m_scale = scale;
 }
-/*
-void Model::calcBoundingBox(ObjModel &obj)
+
+/**
+ * Iterate over every mesh to calculate the bounding box of the whole model.
+ * Assumes the standard OpenGL viewport of -1 to 1.
+ */
+void Model::scaleToViewport()
 {
-	float minX = obj[0].vertex[0].pos.x;
-	float maxX = minX;
-	float minY = obj[0].vertex[0].pos.y;
-	float maxY = minY;
-	float minZ = obj[0].vertex[0].pos.z;
-	float maxZ = minZ;
+	float minX = meshes[0]->getBoundingBox().x;
+	float maxX = meshes[0]->getBoundingBox().x + meshes[0]->getBoundingBox().width;
+	float minY = meshes[0]->getBoundingBox().y;
+	float maxY = meshes[0]->getBoundingBox().y + meshes[0]->getBoundingBox().height;
+	float minZ = meshes[0]->getBoundingBox().z;
+	float maxZ = meshes[0]->getBoundingBox().z + meshes[0]->getBoundingBox().depth;
 
-	for (unsigned int tri = 0; tri < obj.triangleCount(); tri++)
+	for (const auto& mesh : meshes)
 	{
-		const Triangle &triangle = obj[tri];
-
-		for(unsigned int vert = 0; vert < 3; vert++)
-		{
-			minX = glm::min(minX, triangle.vertex[vert].pos.x);
-			maxX = glm::max(maxX, triangle.vertex[vert].pos.x);
-			
-			minY = glm::min(minY, triangle.vertex[vert].pos.y);
-			maxY = glm::max(maxY, triangle.vertex[vert].pos.y);
-			
-			minZ = glm::min(minZ, triangle.vertex[vert].pos.z);
-			maxZ = glm::max(maxZ, triangle.vertex[vert].pos.z);
-			
-		}
+		minX = glm::min(minX, mesh->getBoundingBox().x);
+		maxX = glm::max(maxX, mesh->getBoundingBox().x + mesh->getBoundingBox().width);
+		
+		minY = glm::min(minY, mesh->getBoundingBox().y);
+		maxY = glm::max(maxY, mesh->getBoundingBox().y + mesh->getBoundingBox().height);
+		
+		minZ = glm::min(minZ, mesh->getBoundingBox().z);
+		maxZ = glm::max(maxZ, mesh->getBoundingBox().z + mesh->getBoundingBox().depth);
 	}
+
 	boundingBox.x = minX;
 	boundingBox.y = minY;
-	boundingBox.z = maxZ;
-	boundingBox.width = abs(maxX - minX);
-	boundingBox.height = abs(maxY - minY);
-	boundingBox.depth = abs(maxZ - minZ);
+	boundingBox.z = minZ;
+	boundingBox.width = glm::abs(maxX - minX);
+	boundingBox.height = glm::abs(maxY - minY);
+	boundingBox.depth = glm::abs(maxZ - minZ);
+
+	// Scale by the longest edge.
+	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
+
+	// Put center of bounding at (0, 0, 0).
+	float xTrans = -(boundingBox.x + boundingBox.width*0.5f) * m_scale;
+	float yTrans = -(boundingBox.y + boundingBox.height*0.5f) * m_scale;
+	float zTrans = -(boundingBox.z + boundingBox.depth*0.5f) * m_scale;
+	m_translation = glm::vec3(xTrans, yTrans, zTrans);
+	update();
 }
-*/
+
