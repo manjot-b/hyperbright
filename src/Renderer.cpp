@@ -9,7 +9,9 @@
 #include "Renderer.h"
 
 Renderer::Renderer(const char* modelDirectory) :
-	modelIndex(0), rotate(0), scale(1)
+	modelIndex(0), rotate(0), scale(1),
+	firstMouse(true), lastX(width / 2.0f), lastY(height / 2.0f),
+	shiftPressed(false), deltaTime(0.0f), lastFrame(0.0f)
 {
 	initWindow();
 	shader = std::make_unique<Shader>("shaders/vertex.glsl", "shaders/fragment.glsl");
@@ -17,14 +19,9 @@ Renderer::Renderer(const char* modelDirectory) :
 	loadModels(modelDirectory);	
 	
 	perspective = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
-	view = glm::lookAt(
-				glm::vec3(0, 2, 3),	// camera position
-				glm::vec3(0, 0, 0),	// camera direction
-				glm::vec3(0, 1, 0)	// up direction
-			);
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
-	shader->setUniformMatrix4fv("view", view);
+	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 	glUseProgram(0);	// unbind shader
 }
 
@@ -84,6 +81,9 @@ void Renderer::initWindow()
 	});
  
 	glfwSetKeyCallback(window, keyCallback);
+    glfwSetCursorPosCallback(window, mouseCallback);
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glEnable(GL_DEPTH_TEST);
 
 }
@@ -111,11 +111,19 @@ void Renderer::run()
 
 	while(!glfwWindowShouldClose(window))
 	{
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		processWindowInput();
+
+		shader->use();
+		shader->setUniformMatrix4fv("view", camera.getViewMatrix());
+		glUseProgram(0);
 
 		models[modelIndex]->rotate(rotate);
 		models[modelIndex]->scale(scale);
@@ -136,38 +144,76 @@ void Renderer::run()
  */
 void Renderer::processWindowInput()
 {
-	float rotationSpeed = glm::radians(3.0f);
-	float scaleSpeed = 1.01;
+	float rotationSpeed = glm::radians(135.0f) * deltaTime;
+	float scaleSpeed = 1.0f + 1.0f * deltaTime;
+	shiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 
 	// Rotations
-	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	if (!shiftPressed)
 	{
-		rotate.x -= rotationSpeed;
+		if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		{
+			rotate.x -= rotationSpeed;
+		}
+
+		if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		{
+			rotate.x += rotationSpeed;
+		}
+
+		if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		{
+			rotate.y += rotationSpeed;
+		}
+
+		if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		{
+			rotate.y -= rotationSpeed;
+		}
+
+		if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		{
+			rotate.z -= rotationSpeed;
+		}
+
+		if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		{
+			rotate.z += rotationSpeed;
+		}
 	}
 
-	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	// Camera Movement
+	if (shiftPressed)
 	{
-		rotate.x += rotationSpeed;
-	}
+		if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		{
+			camera.processKeyboard(Camera::Movement::FORWARD, deltaTime);
+		}
 
-	if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-	{
-		rotate.y += rotationSpeed;
-	}
+		if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		{
+			camera.processKeyboard(Camera::Movement::BACKWARD, deltaTime);
+		}
 
-	if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-	{
-		rotate.y -= rotationSpeed;
-	}
+		if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		{
+			camera.processKeyboard(Camera::Movement::RIGHT, deltaTime);
+		}
 
-	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		rotate.z -= rotationSpeed;
-	}
+		if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		{
+			camera.processKeyboard(Camera::Movement::LEFT, deltaTime);
+		}
 
-	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		rotate.z += rotationSpeed;
+		if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		{
+			camera.processKeyboard(Camera::Movement::UP, deltaTime);
+		}
+
+		if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		{
+			camera.processKeyboard(Camera::Movement::DOWN, deltaTime);
+		}
 	}
 
 	// Scaling
@@ -179,6 +225,7 @@ void Renderer::processWindowInput()
 	{
 		scale /= scaleSpeed;
 	}
+
 }
 
 /*
@@ -204,4 +251,24 @@ void Renderer::keyCallback(GLFWwindow* window, int key, int scancode, int action
 				break;
 		}
 	}
+}
+
+void Renderer::mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+
+    if (renderer->firstMouse)
+    {
+        renderer->lastX = xpos;
+        renderer->lastY = ypos;
+        renderer->firstMouse = false;
+    }
+
+    float xoffset = xpos - renderer->lastX;
+    float yoffset = renderer->lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    renderer->lastX = xpos;
+    renderer->lastY = ypos;
+
+    renderer->camera.processMouseMovement(xoffset, yoffset);
 }
