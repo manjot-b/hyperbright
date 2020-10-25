@@ -8,8 +8,8 @@
 
 #include "Model.h"
 
-Model::Model(const std::string &objPath, const Shader& shader) :
-	shader(shader), modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0)
+Model::Model(const std::string &objPath) :
+	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -54,17 +54,16 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
 
 /**
  * Draws the model. Remember to update() the model first.
+ * Assumes the shader is already in use.
  */
-void Model::draw() const
+void Model::draw(const Shader& shader) const
 {
-	shader.use();
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
 	for(auto &mesh : meshes)
 	{
 		mesh->draw();
 	}
-	glUseProgram(0);
 }
 
 /**

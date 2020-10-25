@@ -10,15 +10,14 @@
 class Model
 {
 	public:
-		Model(const std::string &objPath, const Shader& shader);
+		Model(const std::string &objPath);
 		~Model();
-		void draw() const;
+		void draw(const Shader& shader) const;
 		void update();
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
 
 	private:
-		const Shader& shader;
 		std::vector<std::unique_ptr<Mesh>> meshes;
 
 		BoundingBox boundingBox;
