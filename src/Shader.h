@@ -28,4 +28,5 @@ class Shader
 		unsigned int id;
 		std::vector<unsigned int> shaders;
 		std::string readShaderFile(std::string shaderPath);
+		void logUniformError(GLint uniformLocation, const char *uniform) const;
 };

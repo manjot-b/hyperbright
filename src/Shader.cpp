@@ -105,28 +105,50 @@ void Shader::setUniform1i(const char *uniform, int value) const
 {
 	GLint uniformLocation = glGetUniformLocation(id, uniform);
 	glUniform1i(uniformLocation, value);
+	logUniformError(uniformLocation, uniform);
 }
 
 void Shader::setUniform1f(const char *uniform, float value) const
 {
 	GLint uniformLocation = glGetUniformLocation(id, uniform);
 	glUniform1f(uniformLocation, value);
+	logUniformError(uniformLocation, uniform);
 }
 
 void Shader::setUniformMatrix4fv(const char *uniform, const glm::mat4 &matrix) const
 {
 	GLint uniformLocation = glGetUniformLocation(id, uniform);
 	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
+	logUniformError(uniformLocation, uniform);
 }
 
 void Shader::setUniform3fv(const char *uniform, const glm::vec3 &vec) const
 {
 	GLint uniformLocation = glGetUniformLocation(id, uniform);
 	glUniform3fv(uniformLocation, 1, glm::value_ptr(vec));
+	logUniformError(uniformLocation, uniform);
 }
 
 void Shader::setUniform4fv(const char *uniform, const glm::vec4 &vec) const
 {
 	GLint uniformLocation = glGetUniformLocation(id, uniform);
 	glUniform4fv(uniformLocation, 1, glm::value_ptr(vec));
+	logUniformError(uniformLocation, uniform);
+}
+
+void Shader::logUniformError(GLint uniformLocation, const char *uniform) const
+{
+	if (uniformLocation == -1)
+	{
+		std::cout << "ERROR: Could not find uniform " << uniform << std::endl;
+	}
+	GLenum status = glGetError();
+	while (status != GL_NO_ERROR)
+	{
+		if (status == GL_INVALID_OPERATION)
+		{
+			std::cout << "ERROR GL_INVALID_OPERATION: Setting " << uniform << std::endl;
+		}
+		status = glGetError();
+	}
 }
