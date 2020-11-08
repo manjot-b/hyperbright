@@ -20,19 +20,24 @@ void Mesh::extractDataFromMesh(const aiMesh* mesh)
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
 		Vertex vertex;
-		glm::vec3 vector;
 
-		vector.x = mesh->mVertices[i].x;
-		vector.y = mesh->mVertices[i].y;
-		vector.z = mesh->mVertices[i].z;
-		vertex.position = vector;
+		vertex.position.x = mesh->mVertices[i].x;
+		vertex.position.y = mesh->mVertices[i].y;
+		vertex.position.z = mesh->mVertices[i].z;
 
 		if (mesh->HasNormals())
 		{
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.normal = vector;
+			vertex.normal.x = mesh->mNormals[i].x;
+			vertex.normal.y = mesh->mNormals[i].y;
+			vertex.normal.z = mesh->mNormals[i].z;
+		}
+
+		// A vertex can have up to 8 texture coords but we assume the our models
+		// have only 1.
+		if (mesh->HasTextureCoords(0))
+		{
+			vertex.texture.x = mesh->mTextureCoords[0][i].x;
+			vertex.texture.y = mesh->mTextureCoords[0][i].y;
 		}
 		vertices.push_back(vertex);
 	}

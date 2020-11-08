@@ -22,6 +22,10 @@ Renderer::Renderer(const char* modelDirectory) :
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
+
+	texture = std::make_unique<Texture>("images/tree.jpeg");
+	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
+
 	glUseProgram(0);	// unbind shader
 }
 
@@ -117,12 +121,13 @@ void Renderer::run()
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		processWindowInput();
 
 		shader->use();
 		shader->setUniformMatrix4fv("view", camera.getViewMatrix());
+
+		texture->bind(GL_TEXTURE0);	// we set the uniform in fragment shader to location 0.
 
 		models[modelIndex]->rotate(rotate);
 		models[modelIndex]->scale(scale);

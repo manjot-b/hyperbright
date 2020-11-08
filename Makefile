@@ -9,7 +9,7 @@ LIBDIR=lib
 OBJS = $(patsubst $(SRCDIR)%.cpp,$(OBJDIR)%.o,$(wildcard $(SRCDIR)/*.cpp))
 
 CXX=g++
-CXXFLAGS=-Wall -I $(INCDIR) -c -std=c++17 -g
+CXXFLAGS=-Wall -isystem $(INCDIR) -c -std=c++17 -g
 LIBS=$(shell pkg-config --static --libs glfw3 gl) -lassimp
 #LIBS=-lGL -lGLU -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor
 LDFLAGS=-L$(LIBDIR) $(LIBS) -Wl,-rpath,$(PWD)/$(LIBDIR)
