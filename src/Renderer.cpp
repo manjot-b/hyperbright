@@ -18,7 +18,7 @@ Renderer::Renderer(const char* modelDirectory) :
 	shader->link();
 	loadModels(modelDirectory);	
 	
-	perspective = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 100.0f);
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
@@ -64,24 +64,8 @@ void Renderer::initWindow()
 
 		Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 
-		float aspectRatio = renderer->aspectRatio;
-		float viewPortHeight = (1/aspectRatio) * newWidth;
-		float viewPortWidth = newWidth;
-		float xPos = 0;
-		float yPos = 0;
-
-		if(viewPortHeight > newHeight)
-		{
-			viewPortHeight = newHeight;
-			viewPortWidth = aspectRatio * newHeight;
-			xPos = (newWidth - viewPortWidth) / 2.0f;	
-		}
-		else
-		{
-			yPos = (newHeight - viewPortHeight) / 2.0f;
-		}
-
-		glViewport(xPos, yPos, viewPortWidth, viewPortHeight);
+		glViewport(0, 0, newWidth, newHeight);
+		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 100.0f);
 	});
  
 	glfwSetKeyCallback(window, keyCallback);
@@ -126,6 +110,7 @@ void Renderer::run()
 
 		shader->use();
 		shader->setUniformMatrix4fv("view", camera.getViewMatrix());
+		shader->setUniformMatrix4fv("perspective", perspective);
 
 		texture->bind(GL_TEXTURE0);	// we set the uniform in fragment shader to location 0.
 
