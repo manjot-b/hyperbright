@@ -1,3 +1,5 @@
+# Make sure to add the submodules first, otherwise CMake will throw an error.
+
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
