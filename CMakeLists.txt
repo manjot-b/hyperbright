@@ -3,8 +3,7 @@ project(myapp)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(EXEC "myapp")
-add_executable(${EXEC})
+add_executable(${CMAKE_PROJECT_NAME})
 
 
 include_directories(inc)
@@ -14,7 +13,7 @@ find_package(OpenGL REQUIRED)
 
 # Include OpenGL headers and link library.
 include_directories(${OPENGL_INCLUDE_DIRS})
-target_link_libraries(${EXEC} ${OPENGL_gl_LIBRARIES})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARIES} ${CMAKE_DL_LIBS})
 
 add_subdirectory(src)
 add_subdirectory(dep)

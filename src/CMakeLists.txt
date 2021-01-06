@@ -1,2 +1,2 @@
 file(GLOB SOURCES "*.cpp")
-target_sources(${EXEC} PUBLIC ${SOURCES})
+target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${SOURCES})
