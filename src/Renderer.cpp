@@ -87,7 +87,7 @@ void Renderer::loadModels(const char* modelDirectory)
 		if (entry.is_regular_file() && entry.path().extension() == extension)
 		{
 			std::cout << "Loading " << entry.path() << "..." << std::flush;
-			models.push_back(std::make_unique<Model>(entry.path()));
+			models.push_back(std::make_unique<Model>(entry.path().string()));
 			std::cout << "Done! Index: " << count << "\n";
 			count++;
 		}
