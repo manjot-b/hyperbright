@@ -8,22 +8,22 @@
 
 #include "Renderer.h"
 
-Renderer::Renderer(const char* modelDirectory) :
+Renderer::Renderer() :
 	modelIndex(0), rotate(0), scale(1),
 	firstMouse(true), lastX(width / 2.0f), lastY(height / 2.0f),
 	shiftPressed(false), deltaTime(0.0f), lastFrame(0.0f)
 {
 	initWindow();
-	shader = std::make_unique<Shader>("shaders/vertex.glsl", "shaders/fragment.glsl");
+	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
-	loadModels(modelDirectory);	
+	loadModels();	
 	
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 100.0f);
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 
-	texture = std::make_unique<Texture>("images/tree.jpeg");
+	texture = std::make_unique<Texture>("rsc/images/tree.jpeg");
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
 
 	glUseProgram(0);	// unbind shader
@@ -76,13 +76,13 @@ void Renderer::initWindow()
 
 }
 
-void Renderer::loadModels(const char* modelDirectory)
+void Renderer::loadModels()
 {
 	namespace fs = std::filesystem;
 	const std::string extension = ".obj";
 
 	unsigned int count = 1;
-	for (const auto& entry : fs::directory_iterator(modelDirectory))
+	for (const auto& entry : fs::directory_iterator("rsc/models"))
 	{
 		if (entry.is_regular_file() && entry.path().extension() == extension)
 		{

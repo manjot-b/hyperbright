@@ -16,7 +16,7 @@
 class Renderer
 {
 	public:
-		Renderer(const char* modelDirectory);
+		Renderer();
 		~Renderer();
 		void run();
 
@@ -44,7 +44,7 @@ class Renderer
 		float lastFrame;
 
 		void initWindow();
-		void loadModels(const char* modelDirectory);
+		void loadModels();
 		void processWindowInput();
 		static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void mouseCallback(GLFWwindow* window, double xpos, double ypos);

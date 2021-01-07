@@ -40,30 +40,12 @@ add_subdirectory(dep)
 # We don't want to copy if we're building in the source dir.
 # Note that symbolic linking is not availible on windows.
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
-	set (MODELS "${CMAKE_SOURCE_DIR}/rsc/models")
-	set (MODELS_DEST "${CMAKE_BINARY_DIR}/models")
+	set (RSC_DIR "${CMAKE_SOURCE_DIR}/rsc")
+	set (RSC_DEST "${CMAKE_BINARY_DIR}/rsc")
     add_custom_command (
         TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory ${MODELS} ${MODELS_DEST}
-		DEPENDS ${MODELS_DEST}
-		COMMENT "Copying ${MODELS} => ${MODELS_DEST}"
-    )
-
-	set (IMAGES "${CMAKE_SOURCE_DIR}/rsc/images")
-	set (IMAGES_DEST "${CMAKE_BINARY_DIR}/images")
-    add_custom_command (
-        TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory ${IMAGES} ${IMAGES_DEST}
-		DEPENDS ${IMAGES_DEST}
-		COMMENT "Copying ${IMAGES} => ${IMAGES_DEST}\n"
-    )
-
-	set (SHADERS "${CMAKE_SOURCE_DIR}/rsc/shaders")
-	set (SHADERS_DEST "${CMAKE_BINARY_DIR}/shaders")
-    add_custom_command (
-        TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADERS} ${SHADERS_DEST}
-		DEPENDS ${SHADERS_DEST}
-		COMMENT "Copying ${SHADERS} => ${SHADERS_DEST}"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${RSC_DIR} ${RSC_DEST}
+		DEPENDS ${RSC_DEST}
+		COMMENT "Copying ${RSC_DIR} => ${RSC_DEST}"
     )
 endif()
