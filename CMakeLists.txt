@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.18)
 project(myapp)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -14,6 +14,32 @@ find_package(OpenGL REQUIRED)
 # Include OpenGL headers and link library.
 include_directories(${OPENGL_INCLUDE_DIRS})
 target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARIES} ${CMAKE_DL_LIBS})
+
+# Store all .cpp and .h file in SOURCES
+file(GLOB_RECURSE SOURCES
+	"${CMAKE_SOURCE_DIR}/src/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/*.h"
+)
+target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${SOURCES})
+
+file(GLOB_RECURSE RESOURCES
+	"${CMAKE_SOURCE_DIR}/rsc/*.glsl"
+	"${CMAKE_SOURCE_DIR}/rsc/*.jpeg"
+	"${CMAKE_SOURCE_DIR}/rsc/*.png"
+)
+
+# Don't include Wavefront obj files as resource files because visual studio thinks they
+# are obj files meant for the linker. Setting their VS metadata ExclududedFromProperty does
+# not work on .obj files. This bug has been reported.
+# https://discourse.cmake.org/t/possible-bug-setting-vs-settings-excludedfrombuild-true-for-wavefornt-obj-files/2494
+# file(GLOB_RECURSE RESOURCES_OBJ
+# 	"${CMAKE_SOURCE_DIR}/rsc/*.obj"
+# )
+# set_property(SOURCE ${RESOURCES_OBJ} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
+
+target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${RESOURCES})
+# Create a filter/folder in Visual Studio for the resource files.
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/rsc" PREFIX "Resource Files" FILES ${RESOURCES} ${RESOURCES_OBJ})
 
 if( MSVC )
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${CMAKE_PROJECT_NAME})
@@ -33,7 +59,6 @@ if( MSVC )
 	)
 endif()
 
-add_subdirectory(src)
 add_subdirectory(dep)
 
 # Copy resource folders to build directory.
