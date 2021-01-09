@@ -32,12 +32,12 @@ file(GLOB_RECURSE RESOURCES
 # are obj files meant for the linker. Setting their VS metadata ExclududedFromProperty does
 # not work on .obj files. This bug has been reported.
 # https://discourse.cmake.org/t/possible-bug-setting-vs-settings-excludedfrombuild-true-for-wavefornt-obj-files/2494
-# file(GLOB_RECURSE RESOURCES_OBJ
-# 	"${CMAKE_SOURCE_DIR}/rsc/*.obj"
-# )
-# set_property(SOURCE ${RESOURCES_OBJ} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
+file(GLOB_RECURSE RESOURCES_OBJ
+	"${CMAKE_SOURCE_DIR}/rsc/*.obj"
+)
+set_property(SOURCE ${RESOURCES_OBJ} PROPERTY HEADER_FILE_ONLY True)
 
-target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${RESOURCES})
+target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${RESOURCES} ${RESOURCES_OBJ})
 # Create a filter/folder in Visual Studio for the resource files.
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/rsc" PREFIX "Resource Files" FILES ${RESOURCES} ${RESOURCES_OBJ})
 
