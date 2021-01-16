@@ -63,4 +63,4 @@ add_subdirectory(${PHYSX_ROOT_DIR}/compiler/public)
 
 # Add physx libraries to target
 target_link_libraries(${CMAKE_PROJECT_NAME} ${PHYSX_LIBRARIES})
-target_include_directories(${CMAKE_PROJECT_NAME} ${PHYSX_INCLUDE_DIRS})
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${PHYSX_INCLUDE_DIRS})
