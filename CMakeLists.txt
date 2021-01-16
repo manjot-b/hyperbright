@@ -57,6 +57,15 @@ if( MSVC )
 		DEPENDS ${ASSIMP_DLL}
 		COMMENT "Copying ${ASSIMP_DLL} => ${EXEC_DIR}"
 	)
+
+	# Copy PhysX dlls to the executable directory. Hardcode directory for VS 2019.
+	set(PHYSX_DLL "${CMAKE_BINARY_DIR}/dep/physx/bin/win.x86_64.vc142.mt/$<CONFIG>")
+	add_custom_command (
+		TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${PHYSX_DLL} ${EXEC_DIR}
+		DEPENDS ${PHYSX_DLL}
+		COMMENT "Copying ${PHYSX_DLL} => ${EXEC_DIR}"
+	)
 endif()
 
 add_subdirectory(dep)
