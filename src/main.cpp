@@ -4,13 +4,16 @@
 #include <string>
 #include <iostream>
 
-#include "Renderer.h"
+//#include "Renderer.h"
+#include "Engine.h"
 
 int main(int argc, char *argv[])
 {
 	{
-		Renderer renderer;
-		renderer.run();
+		Engine engine;
+		engine.run();
+		//Renderer renderer;
+		//renderer.run();
 	}
 	// Need to terminate GLFW context after all OpenGL objects are deleted.
 	// Otherwise, a seg fault will occur.

@@ -4,8 +4,9 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-#include "Shader.h"
-#include "Mesh.h"
+struct tile {
+
+};
 
 class Arena
 {
