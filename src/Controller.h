@@ -7,12 +7,12 @@
 #include "Shader.h"
 #include "Mesh.h"
 
-class Engine
+class Controller
 {
 public:
-	Engine();
-	~Engine();
-	
+	Controller();
+	~Controller();
+
 private:
-	
+
 };

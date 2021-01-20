@@ -7,12 +7,12 @@
 #include "Shader.h"
 #include "Mesh.h"
 
-class Engine
+class Arena
 {
 public:
-	Engine();
-	~Engine();
-	
+	Arena();
+	~Arena();
+
 private:
-	
+
 };

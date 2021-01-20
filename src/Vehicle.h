@@ -7,12 +7,12 @@
 #include "Shader.h"
 #include "Mesh.h"
 
-class Engine
+class Vehicle
 {
 public:
-	Engine();
-	~Engine();
-	
+	Vehicle();
+	~Vehicle();
+
 private:
-	
+
 };

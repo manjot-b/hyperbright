@@ -7,12 +7,12 @@
 #include "Shader.h"
 #include "Mesh.h"
 
-class Engine
+class Simulate
 {
 public:
-	Engine();
-	~Engine();
-	
+	Simulate();
+	~Simulate();
+
 private:
-	
+
 };

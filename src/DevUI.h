@@ -7,12 +7,12 @@
 #include "Shader.h"
 #include "Mesh.h"
 
-class Engine
+class DevUI
 {
 public:
-	Engine();
-	~Engine();
-	
+	DevUI();
+	~DevUI();
+
 private:
-	
+
 };
