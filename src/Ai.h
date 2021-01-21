@@ -10,7 +10,7 @@ class Ai
 public:
 	Ai();
 	~Ai();
-
+	void reset();
 private:
 
 };

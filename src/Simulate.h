@@ -10,7 +10,7 @@ class Simulate
 public:
 	Simulate();
 	~Simulate();
-
+	void simulateStep();
 private:
 
 };

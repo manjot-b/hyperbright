@@ -10,7 +10,7 @@ class Vehicle
 public:
 	Vehicle();
 	~Vehicle();
-
+	void reset();
 private:
 
 };
