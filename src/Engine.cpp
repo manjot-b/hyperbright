@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Simulate.h"
 #include "Arena.h"
+#include "Pickup.h"
 #include "Ai.h"
 #include "Vehicle.h"
 #include "DevUI.h"
@@ -14,7 +15,7 @@
 //////////////////////////////////////////////////////////
 
 Engine::Engine() {
-	
+
 }
 
 //////////////////////////////////////////////////////////
@@ -76,10 +77,9 @@ int Engine::menuInput() {
 void Engine::runGame() {
 
 	//***** Initialize game objects HERE *****
-
 	//reset AI to start of game settings
 	aiPlayers[1].reset();//ASSUMES 3 AI PLAYERS
-	aiPlayers[2].reset();//AI 0 is not used
+	aiPlayers[2].reset();//AI 0 is not used to match vehicle index (for now)
 	aiPlayers[3].reset();
 
 	//reset vehicles to start of game settings. (may need coordinates for starting positions as parameter)
@@ -88,16 +88,36 @@ void Engine::runGame() {
 	vehicles[2].reset();
 	vehicles[3].reset();
 
+	//set up arena
+	Arena arena;
+
+
+	//set up Pickups
+
+
 	//***** Initialize anything else needed for a game loop*****
 	Simulate simulator;
 	Controller controller;
+
 	//INTIALIZE RENDERER
 
 	while (1) {
 
-		controller.gameInput(vehicles);
-		simulator.simulateStep();
-		//renderer.renderGame();
+		//AI GAME INPUT
+		aiPlayers[1].aiInput(vehicles[1]);
+		aiPlayers[2].aiInput(vehicles[2]);
+		aiPlayers[3].aiInput(vehicles[3]);
+
+		//USER GAME INPUT
+		controller.gameInput(vehicles[0]);
+
+		//SIMULATE FRAME 
+		simulator.simulateStep(vehicles, arena, pickups);
+		
+		//UI STUFF, SCORE KEEPING
+
+		//RENDER FRAME
+		//renderer.renderGameStep(vehicles, arena, pickups);
 
 		if (false) {//QUIT CONDITION NEEDED
 			break;
@@ -105,4 +125,5 @@ void Engine::runGame() {
 
 	}
 
+	//Game loop clean up, before returning to menu
 }

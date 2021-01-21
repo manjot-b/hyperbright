@@ -5,13 +5,14 @@
 #include <memory>
 
 #include "Vehicle.h"
+#include "Ai.h"
 
 class Controller
 {
 public:
 	Controller();
 	~Controller();
-	void gameInput(Vehicle vehicles[]);
+	void gameInput(Vehicle vehicle);
 private:
 
 };
