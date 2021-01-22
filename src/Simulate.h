@@ -13,7 +13,9 @@ class Simulate
 public:
 	Simulate();
 	~Simulate();
-	void simulateStep(Vehicle vehicles[], Arena arena, Pickup pickups[]);
+	//void simulateStep(Vehicle vehicles[], Arena arena, Pickup pickups[]);
+	void stepPhysics();
+	void cleanupPhysics();
 private:
-
+	void initPhysics();
 };

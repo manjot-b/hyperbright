@@ -18,7 +18,13 @@ class Renderer
 	public:
 		Renderer();
 		~Renderer();
-		void run();
+
+		bool windowClosed = false;
+
+		GLFWwindow* getWindow();
+		void run(float _deltaTime);
+
+		void changeScene(int scene) { sceneSelect = scene; }
 
 	private:
 		GLFWwindow* window;
@@ -29,6 +35,14 @@ class Renderer
 		
 		const unsigned int height = 800;
 		const unsigned int width = 800;
+
+		enum Scene
+		{
+			Test = 0,
+			PhysX = 1,
+		};
+
+		int sceneSelect;
 
 		glm::vec3 rotate;
 		float scale;
