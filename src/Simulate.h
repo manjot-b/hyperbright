@@ -15,7 +15,7 @@ public:
 	~Simulate();
 	//void simulateStep(Vehicle vehicles[], Arena arena, Pickup pickups[]);
 	void stepPhysics();
-
+	void cleanupPhysics();
 private:
 	void initPhysics();
 };
