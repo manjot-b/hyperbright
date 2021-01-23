@@ -64,21 +64,6 @@ void Simulate::stepPhysics()
 	gScene->fetchResults(true);
 }
 
-void Simulate::cleanupPhysics()
-{
-	gScene->release();
-	gDispatcher->release();
-	gPhysics->release();
-	if (gPvd)
-	{
-		PxPvdTransport* transport = gPvd->getTransport();
-		gPvd->release();	gPvd = NULL;
-		transport->release();
-	}
-	gFoundation->release();
-
-	printf("SnippetHelloWorld done.\n");
-}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*void Simulate::simulateStep(Vehicle vehicles[], Arena arena, Pickup pickups[]) {
