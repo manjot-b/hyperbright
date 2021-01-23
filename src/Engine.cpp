@@ -14,7 +14,9 @@
 
 //////////////////////////////////////////////////////////
 
-Engine::Engine() {
+Engine::Engine() :
+	deltaTime(0.0f), lastFrame(0.0f)
+{
 
 }
 
@@ -29,7 +31,21 @@ Engine::~Engine() {
 void Engine::run() {
 
 	Renderer renderer;
-	renderer.run();
+	GLFWwindow* window = renderer.getWindow();
+	Simulate simulator;
+
+	//Controller controller;
+	//renderer.run();
+
+	while (!renderer.windowClosed) {
+		// update global time
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		//simulator.stepPhysics();
+		renderer.run(deltaTime);
+	}
 
 	//runMenu();
 	return;
@@ -112,7 +128,7 @@ void Engine::runGame() {
 		controller.gameInput(vehicles[0]);
 
 		//SIMULATE FRAME 
-		simulator.simulateStep(vehicles, arena, pickups);
+		//simulator.simulateStep(vehicles, arena, pickups);
 		
 		//UI STUFF, SCORE KEEPING
 

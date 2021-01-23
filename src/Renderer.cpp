@@ -5,13 +5,21 @@
 
 #include <iostream>
 #include <filesystem>
+#include <PxPhysicsAPI.h>
 
 #include "Renderer.h"
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+using namespace physx;
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 Renderer::Renderer() :
 	modelIndex(0), rotate(0), scale(1),
 	firstMouse(true), lastX(width / 2.0f), lastY(height / 2.0f),
-	shiftPressed(false), deltaTime(0.0f), lastFrame(0.0f)
+	shiftPressed(false), deltaTime(0.0f), lastFrame(0.0f), sceneSelect(0) 
 {
 	initWindow();
 	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -76,6 +84,8 @@ void Renderer::initWindow()
 
 }
 
+GLFWwindow* Renderer::getWindow() { return window; }
+
 void Renderer::loadModels()
 {
 	namespace fs = std::filesystem;
@@ -94,39 +104,32 @@ void Renderer::loadModels()
 	}
 }
 
-void Renderer::run()
+void Renderer::run(float _deltaTime)
 {
+	deltaTime = _deltaTime;
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	while(!glfwWindowShouldClose(window))
-	{
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+	processWindowInput();
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	shader->use();
+	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
+	shader->setUniformMatrix4fv("perspective", perspective);
 
-		processWindowInput();
+	texture->bind(GL_TEXTURE0);	// we set the uniform in fragment shader to location 0.
 
-		shader->use();
-		shader->setUniformMatrix4fv("view", camera.getViewMatrix());
-		shader->setUniformMatrix4fv("perspective", perspective);
+	models[modelIndex]->rotate(rotate);
+	models[modelIndex]->scale(scale);
+	models[modelIndex]->update();
+	models[modelIndex]->draw(*shader);
 
-		texture->bind(GL_TEXTURE0);	// we set the uniform in fragment shader to location 0.
+	glUseProgram(0);
 
-		models[modelIndex]->rotate(rotate);
-		models[modelIndex]->scale(scale);
-		models[modelIndex]->update();
-		models[modelIndex]->draw(*shader);
+	rotate = glm::vec3(0.0f);
+	scale = 1;
 
-		glUseProgram(0);
-
-		rotate = glm::vec3(0.0f);
-		scale = 1;
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
+	glfwSwapBuffers(window);
+	glfwPollEvents();
 }
 
 /*
@@ -217,6 +220,22 @@ void Renderer::processWindowInput()
 		scale /= scaleSpeed;
 	}
 
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		windowClosed = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		if (sceneSelect == 0)
+		{
+			changeScene(1);
+		}
+		else if (sceneSelect == 1) 
+		{
+			changeScene(0);
+		}
+	}
 }
 
 /*
@@ -231,9 +250,9 @@ void Renderer::keyCallback(GLFWwindow* window, int key, int scancode, int action
 	{
 		switch(key)
 		{
-			case GLFW_KEY_ESCAPE:
-				glfwSetWindowShouldClose(window, true);
-				break;
+			//case GLFW_KEY_ESCAPE:
+			//	glfwSetWindowShouldClose(window, true);
+			//	break;
 
 			// Select model
 			case GLFW_KEY_1:
