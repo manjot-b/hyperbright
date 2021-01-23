@@ -104,7 +104,7 @@ void Renderer::loadModels()
 	}
 }
 
-void Renderer::run(float _deltaTime)
+void Renderer::run(float _deltaTime, DevUI& devUI)
 {
 	deltaTime = _deltaTime;
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -127,6 +127,8 @@ void Renderer::run(float _deltaTime)
 
 	rotate = glm::vec3(0.0f);
 	scale = 1;
+
+	devUI.show();
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();
@@ -220,11 +222,6 @@ void Renderer::processWindowInput()
 		scale /= scaleSpeed;
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		windowClosed = true;
-	}
-
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
 		if (sceneSelect == 0)
@@ -250,9 +247,9 @@ void Renderer::keyCallback(GLFWwindow* window, int key, int scancode, int action
 	{
 		switch(key)
 		{
-			//case GLFW_KEY_ESCAPE:
-			//	glfwSetWindowShouldClose(window, true);
-			//	break;
+			case GLFW_KEY_ESCAPE:
+				glfwSetWindowShouldClose(window, true);
+				break;
 
 			// Select model
 			case GLFW_KEY_1:
@@ -281,4 +278,9 @@ void Renderer::mouseCallback(GLFWwindow* window, double xpos, double ypos)
     renderer->lastY = ypos;
 
     renderer->camera.processMouseMovement(xoffset, yoffset);
+}
+
+bool Renderer::isWindowClosed() const
+{
+	return glfwWindowShouldClose(window);
 }

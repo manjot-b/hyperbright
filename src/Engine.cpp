@@ -33,18 +33,19 @@ void Engine::run() {
 	Renderer renderer;
 	GLFWwindow* window = renderer.getWindow();
 	Simulate simulator;
+	DevUI devUI(renderer.getWindow());
 
 	//Controller controller;
 	//renderer.run();
 
-	while (!renderer.windowClosed) {
+	while (!renderer.isWindowClosed()) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
 		//simulator.stepPhysics();
-		renderer.run(deltaTime);
+		renderer.run(deltaTime, devUI);
 	}
 
 	//runMenu();
