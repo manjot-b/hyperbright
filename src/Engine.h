@@ -29,7 +29,6 @@ private:
 		PhysX = 1,
 	};
 
-	float deltaTime;
 	float lastFrame;
 
 	void runMenu();

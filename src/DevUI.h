@@ -10,7 +10,7 @@ class DevUI
 public:
 	DevUI(GLFWwindow* window);
 	~DevUI();
-	void show();
+	void show(float deltaSec);
 private:
 	bool showDemo;
 };

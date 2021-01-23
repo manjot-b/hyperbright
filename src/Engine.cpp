@@ -14,8 +14,7 @@
 
 //////////////////////////////////////////////////////////
 
-Engine::Engine() :
-	deltaTime(0.0f), lastFrame(0.0f)
+Engine::Engine() : lastFrame(0.0f)
 {
 
 }
@@ -41,11 +40,11 @@ void Engine::run() {
 	while (!renderer.isWindowClosed()) {
 		// update global time
 		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
+		float deltaSec = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
 		//simulator.stepPhysics();
-		renderer.run(deltaTime, devUI);
+		renderer.run(deltaSec, devUI);
 	}
 
 	//runMenu();

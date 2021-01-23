@@ -4,7 +4,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-DevUI::DevUI(GLFWwindow* window) : showDemo(true)
+DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -26,14 +26,21 @@ DevUI::~DevUI() {}
 /**
  * This method should be called every frame by the Renderer. 
 */
-void DevUI::show()
+void DevUI::show(float deltaSec)
 {
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow(&showDemo);
+    if (showDemo)
+    {
+        ImGui::ShowDemoWindow(&showDemo);
+    }
+
+    ImGui::Begin("Dev Settings");
+    ImGui::Text("Application average %.3f ms/frame %.3f FPS", deltaSec*1000, 1/deltaSec);
+    ImGui::End();
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

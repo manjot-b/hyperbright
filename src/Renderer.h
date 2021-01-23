@@ -21,7 +21,7 @@ class Renderer
 		~Renderer();
 
 		GLFWwindow* getWindow();
-		void run(float _deltaTime, DevUI& devUI);
+		void run(float deltaSec, DevUI& devUI);
 
 		void changeScene(int scene) { sceneSelect = scene; }
 		bool isWindowClosed() const;
@@ -55,8 +55,10 @@ class Renderer
 		float lastY;
 		bool shiftPressed;
 
-		float deltaTime;
+		float deltaSec;
 		float lastFrame;
+
+		bool showCursor;
 
 		void initWindow();
 		void loadModels();
