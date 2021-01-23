@@ -64,3 +64,43 @@ add_subdirectory(${PHYSX_ROOT_DIR}/compiler/public)
 # Add physx libraries to target
 target_link_libraries(${CMAKE_PROJECT_NAME} ${PHYSX_LIBRARIES})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${PHYSX_INCLUDE_DIRS})
+
+# Build Dear ImGUI as a library. It does not have its own CMakeLists.txt file
+# so we will have to do this manually.
+set(IMGUI_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/imgui")
+set(IMGUI_BACKEND_DIR "${IMGUI_ROOT_DIR}/backends")
+# add_library(imgui SHARED
+# 	"${IMGUI_ROOT_DIR}/imconfig.h"
+# 	"${IMGUI_ROOT_DIR}/imgui.cpp"
+# 	"${IMGUI_ROOT_DIR}/imgui.h"
+# 	"${IMGUI_ROOT_DIR}/imgui_demo.cpp"
+# 	"${IMGUI_ROOT_DIR}/imgui_draw.cpp"
+# 	"${IMGUI_ROOT_DIR}/imgui_internal.h"
+# 	"${IMGUI_ROOT_DIR}/imgui_tables.cpp"
+# 	"${IMGUI_ROOT_DIR}/imgui_widgets.cpp"
+# 	"${IMGUI_BACKEND_DIR}/imgui_impl_glfw.cpp"
+# 	"${IMGUI_BACKEND_DIR}/imgui_impl_glfw.h"
+# 	"${IMGUI_BACKEND_DIR}/imgui_impl_opengl3.cpp"
+# 	"${IMGUI_BACKEND_DIR}/imgui_impl_opengl3.h"
+# 	"${CMAKE_SOURCE_DIR}/src/glad.cpp")
+# target_include_directories(imgui PRIVATE "${IMGUI_ROOT_DIR}" "${IMGUI_BACKEND_DIR}" "${CMAKE_SOURCE_DIR/inc}")
+# target_link_libraries(imgui glfw)
+
+# target_link_libraries(${CMAKE_PROJECT_NAME} imgui)
+# target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${IMGUI_ROOT_DIR}" "${IMGUI_BACKEND_DIR}")
+set(IMGUI_SOURCES PRIVATE
+	"${IMGUI_ROOT_DIR}/imconfig.h"
+	"${IMGUI_ROOT_DIR}/imgui.cpp"
+	"${IMGUI_ROOT_DIR}/imgui.h"
+	"${IMGUI_ROOT_DIR}/imgui_demo.cpp"
+	"${IMGUI_ROOT_DIR}/imgui_draw.cpp"
+	"${IMGUI_ROOT_DIR}/imgui_internal.h"
+	"${IMGUI_ROOT_DIR}/imgui_tables.cpp"
+	"${IMGUI_ROOT_DIR}/imgui_widgets.cpp"
+	"${IMGUI_BACKEND_DIR}/imgui_impl_glfw.cpp"
+	"${IMGUI_BACKEND_DIR}/imgui_impl_glfw.h"
+	"${IMGUI_BACKEND_DIR}/imgui_impl_opengl3.cpp"
+	"${IMGUI_BACKEND_DIR}/imgui_impl_opengl3.h"
+	"${CMAKE_SOURCE_DIR}/src/glad.cpp")
+target_sources(${CMAKE_PROJECT_NAME} ${IMGUI_SOURCES})
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${IMGUI_ROOT_DIR}" "${IMGUI_BACKEND_DIR}")
