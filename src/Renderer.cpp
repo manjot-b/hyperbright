@@ -19,7 +19,8 @@ using namespace physx;
 Renderer::Renderer() :
 	modelIndex(0), rotate(0), scale(1),
 	firstMouse(true), lastX(width / 2.0f), lastY(height / 2.0f),
-	shiftPressed(false), deltaTime(0.0f), lastFrame(0.0f), sceneSelect(0) 
+	shiftPressed(false), deltaSec(0.0f), lastFrame(0.0f), sceneSelect(0),
+	showCursor(false)
 {
 	initWindow();
 	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -104,9 +105,9 @@ void Renderer::loadModels()
 	}
 }
 
-void Renderer::run(float _deltaTime)
+void Renderer::run(float _deltaSec, DevUI& devUI)
 {
-	deltaTime = _deltaTime;
+	deltaSec = _deltaSec;
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -128,6 +129,8 @@ void Renderer::run(float _deltaTime)
 	rotate = glm::vec3(0.0f);
 	scale = 1;
 
+	devUI.show(deltaSec);
+
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
@@ -138,8 +141,8 @@ void Renderer::run(float _deltaTime)
  */
 void Renderer::processWindowInput()
 {
-	float rotationSpeed = glm::radians(135.0f) * deltaTime;
-	float scaleSpeed = 1.0f + 1.0f * deltaTime;
+	float rotationSpeed = glm::radians(135.0f) * deltaSec;
+	float scaleSpeed = 1.0f + 1.0f * deltaSec;
 	shiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 
 	// Rotations
@@ -181,32 +184,32 @@ void Renderer::processWindowInput()
 	{
 		if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
-			camera.processKeyboard(Camera::Movement::FORWARD, deltaTime);
+			camera.processKeyboard(Camera::Movement::FORWARD, deltaSec);
 		}
 
 		if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
-			camera.processKeyboard(Camera::Movement::BACKWARD, deltaTime);
+			camera.processKeyboard(Camera::Movement::BACKWARD, deltaSec);
 		}
 
 		if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			camera.processKeyboard(Camera::Movement::RIGHT, deltaTime);
+			camera.processKeyboard(Camera::Movement::RIGHT, deltaSec);
 		}
 
 		if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			camera.processKeyboard(Camera::Movement::LEFT, deltaTime);
+			camera.processKeyboard(Camera::Movement::LEFT, deltaSec);
 		}
 
 		if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		{
-			camera.processKeyboard(Camera::Movement::UP, deltaTime);
+			camera.processKeyboard(Camera::Movement::UP, deltaSec);
 		}
 
 		if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 		{
-			camera.processKeyboard(Camera::Movement::DOWN, deltaTime);
+			camera.processKeyboard(Camera::Movement::DOWN, deltaSec);
 		}
 	}
 
@@ -218,11 +221,6 @@ void Renderer::processWindowInput()
 	if(glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 	{
 		scale /= scaleSpeed;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		windowClosed = true;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -250,14 +248,23 @@ void Renderer::keyCallback(GLFWwindow* window, int key, int scancode, int action
 	{
 		switch(key)
 		{
-			//case GLFW_KEY_ESCAPE:
-			//	glfwSetWindowShouldClose(window, true);
-			//	break;
+			case GLFW_KEY_ESCAPE:
+				glfwSetWindowShouldClose(window, true);
+				break;
 
 			// Select model
 			case GLFW_KEY_1:
 			case GLFW_KEY_2:
 				renderer->modelIndex = key - GLFW_KEY_1;
+				break;
+
+			case GLFW_KEY_SPACE:
+				if (mods & GLFW_MOD_CONTROL)
+				{
+					renderer->showCursor = !renderer->showCursor;
+					int cursorMode = renderer->showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
+					glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
+				}
 				break;
 		}
 	}
@@ -267,18 +274,26 @@ void Renderer::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 
-    if (renderer->firstMouse)
-    {
-        renderer->lastX = xpos;
-        renderer->lastY = ypos;
-        renderer->firstMouse = false;
-    }
+	if (!renderer->showCursor)
+	{
+		if (renderer->firstMouse)
+		{
+			renderer->lastX = xpos;
+			renderer->lastY = ypos;
+			renderer->firstMouse = false;
+		}
 
-    float xoffset = xpos - renderer->lastX;
-    float yoffset = renderer->lastY - ypos; // reversed since y-coordinates go from bottom to top
+		float xoffset = xpos - renderer->lastX;
+		float yoffset = renderer->lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-    renderer->lastX = xpos;
-    renderer->lastY = ypos;
+		renderer->lastX = xpos;
+		renderer->lastY = ypos;
 
-    renderer->camera.processMouseMovement(xoffset, yoffset);
+		renderer->camera.processMouseMovement(xoffset, yoffset);
+	}
+}
+
+bool Renderer::isWindowClosed() const
+{
+	return glfwWindowShouldClose(window);
 }
