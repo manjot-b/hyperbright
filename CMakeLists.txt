@@ -41,6 +41,31 @@ target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${RESOURCES} ${RESOURCES_OBJ})
 # Create a filter/folder in Visual Studio for the resource files.
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/rsc" PREFIX "Resource Files" FILES ${RESOURCES} ${RESOURCES_OBJ})
 
+# Dear ImGui does not have its own CMakeLists.txt files so the simplest soution is to just
+# add the required files to the main executable.
+set(IMGUI_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dep/imgui")
+set(IMGUI_BACKEND_DIR "${IMGUI_ROOT_DIR}/backends")
+
+set(IMGUI_SOURCES
+	"${IMGUI_ROOT_DIR}/imconfig.h"
+	"${IMGUI_ROOT_DIR}/imgui.cpp"
+	"${IMGUI_ROOT_DIR}/imgui.h"
+	"${IMGUI_ROOT_DIR}/imgui_demo.cpp"
+	"${IMGUI_ROOT_DIR}/imgui_draw.cpp"
+	"${IMGUI_ROOT_DIR}/imgui_internal.h"
+	"${IMGUI_ROOT_DIR}/imgui_tables.cpp"
+	"${IMGUI_ROOT_DIR}/imgui_widgets.cpp"
+	"${IMGUI_BACKEND_DIR}/imgui_impl_glfw.cpp"
+	"${IMGUI_BACKEND_DIR}/imgui_impl_glfw.h"
+	"${IMGUI_BACKEND_DIR}/imgui_impl_opengl3.cpp"
+	"${IMGUI_BACKEND_DIR}/imgui_impl_opengl3.h")
+target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${IMGUI_SOURCES})
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${IMGUI_ROOT_DIR}" "${IMGUI_BACKEND_DIR}")
+
+# The source_group command does not work if placed in dep/CMakeLists.txt but does if it is placed here.
+source_group("ImGui" FILES ${IMGUI_SOURCES})
+
+
 if( MSVC )
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${CMAKE_PROJECT_NAME})
 	

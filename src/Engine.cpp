@@ -14,8 +14,7 @@
 
 //////////////////////////////////////////////////////////
 
-Engine::Engine() :
-	deltaTime(0.0f), lastFrame(0.0f)
+Engine::Engine() : lastFrame(0.0f)
 {
 
 }
@@ -33,18 +32,19 @@ void Engine::run() {
 	Renderer renderer;
 	GLFWwindow* window = renderer.getWindow();
 	Simulate simulator;
+	DevUI devUI(renderer.getWindow());
 
 	//Controller controller;
 	//renderer.run();
 
-	while (!renderer.windowClosed) {
+	while (!renderer.isWindowClosed()) {
 		// update global time
 		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
+		float deltaSec = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
 		//simulator.stepPhysics();
-		renderer.run(deltaTime);
+		renderer.run(deltaSec, devUI);
 	}
 
 	//runMenu();
@@ -55,7 +55,7 @@ void Engine::run() {
 
 /*
 This Function contains the loop for the main menu.
-Responsible for starting and ending the game. 
+Responsible for starting and ending the game.
 */
 void Engine::runMenu() {
 
@@ -127,9 +127,9 @@ void Engine::runGame() {
 		//USER GAME INPUT
 		controller.gameInput(vehicles[0]);
 
-		//SIMULATE FRAME 
+		//SIMULATE FRAME
 		//simulator.simulateStep(vehicles, arena, pickups);
-		
+
 		//UI STUFF, SCORE KEEPING
 
 		//RENDER FRAME

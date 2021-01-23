@@ -7,3 +7,6 @@
 [submodule "dep/physx"]
 	path = dep/physx
 	url = https://github.com/manjot-b/PhysX.git
+[submodule "dep/imgui"]
+	path = dep/imgui
+	url = https://github.com/ocornut/imgui.git

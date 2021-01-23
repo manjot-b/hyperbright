@@ -12,6 +12,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "DevUI.h"
 
 class Renderer
 {
@@ -19,20 +20,20 @@ class Renderer
 		Renderer();
 		~Renderer();
 
-		bool windowClosed = false;
-
 		GLFWwindow* getWindow();
-		void run(float _deltaTime);
+		void run(float deltaSec, DevUI& devUI);
 
 		void changeScene(int scene) { sceneSelect = scene; }
+		bool isWindowClosed() const;
 
 	private:
 		GLFWwindow* window;
+
 		std::unique_ptr<Shader> shader;
 		std::unique_ptr<Texture> texture;
 		std::vector<std::unique_ptr<Model>> models;
 		unsigned int modelIndex;
-		
+
 		const unsigned int height = 800;
 		const unsigned int width = 800;
 
@@ -54,8 +55,10 @@ class Renderer
 		float lastY;
 		bool shiftPressed;
 
-		float deltaTime;
+		float deltaSec;
 		float lastFrame;
+
+		bool showCursor;
 
 		void initWindow();
 		void loadModels();
