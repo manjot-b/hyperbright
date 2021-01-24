@@ -14,16 +14,30 @@
 #define ENDGAME 2
 
 
-Engine::Engine() : lastFrame(0.0f)
+Engine::Engine() :
+	deltaSec(0.0f), rotate(0), scale(1),
+	showCursor(false), lastFrame(0.0f)
 {
+	camera = std::make_shared<Camera>();
+	renderer = std::make_unique<Renderer>(camera);
 	loadModels();
+
+	// The following calls require the Renderer to setup GLFW/glad first.
+	glfwSetKeyCallback(renderer->getWindow(), keyCallback);
+	glfwSetCursorPosCallback(renderer->getWindow(), mouseCallback);
+	// tell GLFW to capture our mouse
+	glfwSetInputMode(renderer->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// Let GLFW store pointer to this instance of Engine.
+	glfwSetWindowUserPointer(renderer->getWindow(), static_cast<void*>(this));
 }
 
 
 Engine::~Engine() {}
 
 /*
- * Loads all models in rsc/models and stores them in a vector.
+ * Loads all models in rsc/models and stores them in a vector. Requires glad
+ * to have loaded opengl function calls.
 */
 void Engine::loadModels()
 {
@@ -46,21 +60,35 @@ void Engine::loadModels()
 
 void Engine::run()
 {
-	GLFWwindow* window = renderer.getWindow();
 	Simulate simulator;
-	DevUI devUI(renderer.getWindow());
+	DevUI devUI(renderer->getWindow());
 
 	//Controller controller;
 	//renderer.run();
 
-	while (!renderer.isWindowClosed()) {
+	while (!renderer->isWindowClosed()) {
 		// update global time
 		float currentFrame = glfwGetTime();
-		float deltaSec = currentFrame - lastFrame;
+		deltaSec = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		processWindowInput();
+
 		//simulator.stepPhysics();
-		renderer.run(deltaSec, devUI, models);
+		// The following code should be in the Simulator.
+		for (auto& model : models)
+		{
+			model->rotate(rotate);
+			model->scale(scale);
+			model->update();
+		}
+
+		renderer->run(deltaSec, devUI, models);
+
+		rotate = glm::vec3(0.0f);
+		scale = 1;
+
+		glfwPollEvents();
 	}
 
 	//runMenu();
@@ -157,4 +185,144 @@ void Engine::runGame() {
 	}
 
 	//Game loop clean up, before returning to menu
+}
+
+/*
+ * This method typically runs faster than handling a key callback.
+ * So controls like movements should be placed in here.
+ */
+void Engine::processWindowInput()
+{
+	float rotationSpeed = glm::radians(135.0f) * deltaSec;
+	float scaleSpeed = 1.0f + 1.0f * deltaSec;
+	shiftPressed = glfwGetKey(renderer->getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+
+	// Rotations
+	if (!shiftPressed)
+	{
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+		{
+			rotate.x -= rotationSpeed;
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_S) == GLFW_PRESS)
+		{
+			rotate.x += rotationSpeed;
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_E) == GLFW_PRESS)
+		{
+			rotate.y += rotationSpeed;
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_Q) == GLFW_PRESS)
+		{
+			rotate.y -= rotationSpeed;
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_D) == GLFW_PRESS)
+		{
+			rotate.z -= rotationSpeed;
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_A) == GLFW_PRESS)
+		{
+			rotate.z += rotationSpeed;
+		}
+	}
+
+	// Camera Movement
+	if (shiftPressed)
+	{
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+		{
+			camera->processKeyboard(Camera::Movement::FORWARD, deltaSec);
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_S) == GLFW_PRESS)
+		{
+			camera->processKeyboard(Camera::Movement::BACKWARD, deltaSec);
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_D) == GLFW_PRESS)
+		{
+			camera->processKeyboard(Camera::Movement::RIGHT, deltaSec);
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_A) == GLFW_PRESS)
+		{
+			camera->processKeyboard(Camera::Movement::LEFT, deltaSec);
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_E) == GLFW_PRESS)
+		{
+			camera->processKeyboard(Camera::Movement::UP, deltaSec);
+		}
+
+		if (glfwGetKey(renderer->getWindow(), GLFW_KEY_Q) == GLFW_PRESS)
+		{
+			camera->processKeyboard(Camera::Movement::DOWN, deltaSec);
+		}
+	}
+
+	// Scaling
+	if (glfwGetKey(renderer->getWindow(), GLFW_KEY_Z) == GLFW_PRESS)
+	{
+		scale *= scaleSpeed;
+	}
+	if (glfwGetKey(renderer->getWindow(), GLFW_KEY_X) == GLFW_PRESS)
+	{
+		scale /= scaleSpeed;
+	}
+}
+
+/*
+ * Handle keyboard inputs that don't require frequent repeated actions,
+ * ex closing window, selecting model etc.
+ */
+void Engine::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_ESCAPE:
+			glfwSetWindowShouldClose(window, true);
+			break;
+
+		case GLFW_KEY_SPACE:
+			if (mods & GLFW_MOD_CONTROL)
+			{
+				engine->showCursor = !engine->showCursor;
+				int cursorMode = engine->showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
+				glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
+			}
+			break;
+		}
+	}
+}
+
+void Engine::mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+
+	if (!engine->showCursor)
+	{
+		if (engine->firstMouse)
+		{
+			engine->lastX = xpos;
+			engine->lastY = ypos;
+			engine->firstMouse = false;
+		}
+
+		float xoffset = xpos - engine->lastX;
+		float yoffset = engine->lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+		engine->lastX = xpos;
+		engine->lastY = ypos;
+
+		engine->camera->processMouseMovement(xoffset, yoffset);
+	}
 }

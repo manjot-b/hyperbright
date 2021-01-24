@@ -22,23 +22,33 @@ public:
 	~Engine();
 	void run();
 private:
-	Renderer renderer;
+	std::unique_ptr<Renderer> renderer;
+	float deltaSec;
+
 	Ai aiPlayers[4];
 	Vehicle vehicles[4];
 	Pickup pickups[10];
 
 	std::vector<std::unique_ptr<Model>> models;
+	std::shared_ptr<Camera> camera;
 
-	enum Scene
-	{
-		Test = 0,
-		PhysX = 1,
-	};
+	glm::vec3 rotate;
+	float scale;
+
+	bool shiftPressed;
+	bool showCursor;
+	bool firstMouse;
+	float lastX;
+	float lastY;
 
 	float lastFrame;
 
 	void runMenu();
 	int menuInput();
 	void runGame();
+
 	void loadModels();
+	void processWindowInput();
+	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 };
