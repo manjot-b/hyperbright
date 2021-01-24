@@ -4,7 +4,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
-#include <filesystem>
 #include <PxPhysicsAPI.h>
 
 #include "Renderer.h"
@@ -25,7 +24,7 @@ Renderer::Renderer() :
 	initWindow();
 	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
-	loadModels();	
+	
 	
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 100.0f);
 	shader->use();
@@ -87,25 +86,7 @@ void Renderer::initWindow()
 
 GLFWwindow* Renderer::getWindow() { return window; }
 
-void Renderer::loadModels()
-{
-	namespace fs = std::filesystem;
-	const std::string extension = ".obj";
-
-	unsigned int count = 1;
-	for (const auto& entry : fs::directory_iterator("rsc/models"))
-	{
-		if (entry.is_regular_file() && entry.path().extension() == extension)
-		{
-			std::cout << "Loading " << entry.path() << "..." << std::flush;
-			models.push_back(std::make_unique<Model>(entry.path().string()));
-			std::cout << "Done! Index: " << count << "\n";
-			count++;
-		}
-	}
-}
-
-void Renderer::run(float _deltaSec, DevUI& devUI)
+void Renderer::run(float _deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models)
 {
 	deltaSec = _deltaSec;
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -119,10 +100,13 @@ void Renderer::run(float _deltaSec, DevUI& devUI)
 
 	texture->bind(GL_TEXTURE0);	// we set the uniform in fragment shader to location 0.
 
-	models[modelIndex]->rotate(rotate);
-	models[modelIndex]->scale(scale);
-	models[modelIndex]->update();
-	models[modelIndex]->draw(*shader);
+	for (auto& model : models)
+	{
+		model->rotate(rotate);
+		model->scale(scale);
+		model->update();
+		model->draw(*shader);
+	}
 
 	glUseProgram(0);
 
@@ -250,12 +234,6 @@ void Renderer::keyCallback(GLFWwindow* window, int key, int scancode, int action
 		{
 			case GLFW_KEY_ESCAPE:
 				glfwSetWindowShouldClose(window, true);
-				break;
-
-			// Select model
-			case GLFW_KEY_1:
-			case GLFW_KEY_2:
-				renderer->modelIndex = key - GLFW_KEY_1;
 				break;
 
 			case GLFW_KEY_SPACE:

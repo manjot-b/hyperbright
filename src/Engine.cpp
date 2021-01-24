@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include "Renderer.h"
 #include "Simulate.h"
 #include "Arena.h"
 #include "Pickup.h"
@@ -8,28 +7,45 @@
 #include "DevUI.h"
 #include "Controller.h"
 
+#include <filesystem>
+
 #define STARTGAME 1
 #define NOINPUT 0
 #define ENDGAME 2
 
-//////////////////////////////////////////////////////////
 
 Engine::Engine() : lastFrame(0.0f)
 {
-
+	loadModels();
 }
 
-//////////////////////////////////////////////////////////
 
-Engine::~Engine() {
+Engine::~Engine() {}
 
+/*
+ * Loads all models in rsc/models and stores them in a vector.
+*/
+void Engine::loadModels()
+{
+	namespace fs = std::filesystem;
+	const std::string extension = ".obj";
+
+	unsigned int count = 1;
+	for (const auto& entry : fs::directory_iterator("rsc/models"))
+	{
+		if (entry.is_regular_file() && entry.path().extension() == extension)
+		{
+			std::cout << "Loading " << entry.path() << "..." << std::flush;
+			models.push_back(std::make_unique<Model>(entry.path().string()));
+			std::cout << "Done! Index: " << count << "\n";
+			count++;
+		}
+	}
 }
 
-//////////////////////////////////////////////////////////
 
-void Engine::run() {
-
-	Renderer renderer;
+void Engine::run()
+{
 	GLFWwindow* window = renderer.getWindow();
 	Simulate simulator;
 	DevUI devUI(renderer.getWindow());
@@ -44,14 +60,13 @@ void Engine::run() {
 		lastFrame = currentFrame;
 
 		//simulator.stepPhysics();
-		renderer.run(deltaSec, devUI);
+		renderer.run(deltaSec, devUI, models);
 	}
 
 	//runMenu();
 	return;
 }
 
-//////////////////////////////////////////////////////////
 
 /*
 This Function contains the loop for the main menu.

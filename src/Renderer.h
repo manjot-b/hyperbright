@@ -2,10 +2,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <vector>
 #include <string>
-#include <glm/glm.hpp>
-
 #include <memory>
 
 #include "Model.h"
@@ -21,7 +20,7 @@ class Renderer
 		~Renderer();
 
 		GLFWwindow* getWindow();
-		void run(float deltaSec, DevUI& devUI);
+		void run(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models);
 
 		void changeScene(int scene) { sceneSelect = scene; }
 		bool isWindowClosed() const;
@@ -31,7 +30,7 @@ class Renderer
 
 		std::unique_ptr<Shader> shader;
 		std::unique_ptr<Texture> texture;
-		std::vector<std::unique_ptr<Model>> models;
+		
 		unsigned int modelIndex;
 		
 		const unsigned int height = 800;
@@ -61,7 +60,6 @@ class Renderer
 		bool showCursor;
 
 		void initWindow();
-		void loadModels();
 		void processWindowInput();
 		static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
