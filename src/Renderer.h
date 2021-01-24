@@ -22,7 +22,10 @@ class Renderer
 		GLFWwindow* getWindow();
 		void run(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models);
 
+		void setWindowShouldClose(bool close);
 		bool isWindowClosed() const;
+		void toggleCursor();
+		bool isCursorShowing() const;
 
 	private:
 		GLFWwindow* window;
@@ -35,6 +38,8 @@ class Renderer
 
 		const std::shared_ptr<Camera> camera;
 		glm::mat4 perspective;
+
+		bool showCursor;
 
 		void initWindow();
 };

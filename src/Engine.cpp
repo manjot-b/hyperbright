@@ -16,7 +16,7 @@
 
 Engine::Engine() :
 	deltaSec(0.0f), rotate(0), scale(1),
-	showCursor(false), lastFrame(0.0f)
+	lastFrame(0.0f)
 {
 	camera = std::make_shared<Camera>();
 	renderer = std::make_unique<Renderer>(camera);
@@ -289,15 +289,13 @@ void Engine::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 		switch (key)
 		{
 		case GLFW_KEY_ESCAPE:
-			glfwSetWindowShouldClose(window, true);
+			engine->renderer->setWindowShouldClose(true);
 			break;
 
 		case GLFW_KEY_SPACE:
 			if (mods & GLFW_MOD_CONTROL)
 			{
-				engine->showCursor = !engine->showCursor;
-				int cursorMode = engine->showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
-				glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
+				engine->renderer->toggleCursor();
 			}
 			break;
 		}
@@ -308,7 +306,7 @@ void Engine::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
 
-	if (!engine->showCursor)
+	if (!engine->renderer->isCursorShowing())
 	{
 		if (engine->firstMouse)
 		{

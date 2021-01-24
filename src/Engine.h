@@ -36,7 +36,6 @@ private:
 	float scale;
 
 	bool shiftPressed;
-	bool showCursor;
 	bool firstMouse;
 	float lastX;
 	float lastY;

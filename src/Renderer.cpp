@@ -15,7 +15,7 @@ using namespace physx;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera)
+Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera), showCursor(false)
 {
 	initWindow();
 	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -98,9 +98,24 @@ void Renderer::run(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Mod
 	glfwSwapBuffers(window);
 }
 
-
+void Renderer::setWindowShouldClose(bool close)
+{
+	glfwSetWindowShouldClose(window, close);
+}
 
 bool Renderer::isWindowClosed() const
 {
 	return glfwWindowShouldClose(window);
+}
+
+void Renderer::toggleCursor()
+{
+	showCursor = !showCursor;
+	int cursorMode = showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
+	glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
+}
+
+bool Renderer::isCursorShowing() const
+{
+	return showCursor;
 }
