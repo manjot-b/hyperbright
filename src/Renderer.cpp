@@ -9,12 +9,13 @@
 #include "Renderer.h"
 
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-using namespace physx;
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
+/*
+* Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
+* not be available until GLAD is initialized.
+* 
+* Parameters:
+	camera: The camera for the scene. The renderer will not the alter the camera in any way.
+*/
 Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera), showCursor(false)
 {
 	initWindow();
@@ -75,7 +76,15 @@ void Renderer::initWindow()
 
 GLFWwindow* Renderer::getWindow() { return window; }
 
-void Renderer::run(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models)
+/*
+* Renderer a frame.
+* 
+* Parameters:
+*	deltaSec: How much time has elapsed in seconds since the last frame was rendered.
+*	devUI: An imgui window.
+*	models: All the models to renderer this frame.
+*/
+void Renderer::render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

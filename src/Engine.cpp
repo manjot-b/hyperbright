@@ -83,7 +83,7 @@ void Engine::run()
 			model->update();
 		}
 
-		renderer->run(deltaSec, devUI, models);
+		renderer->render(deltaSec, devUI, models);
 
 		rotate = glm::vec3(0.0f);
 		scale = 1;

@@ -20,7 +20,7 @@ class Renderer
 		~Renderer();
 
 		GLFWwindow* getWindow();
-		void run(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models);
+		void render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models);
 
 		void setWindowShouldClose(bool close);
 		bool isWindowClosed() const;
