@@ -24,24 +24,13 @@ Controller::~Controller() {
 }
 
 void Controller::gameInput(Vehicle vehicle) {
-	//User input 
+	//User input
 }
 
 void Controller::processInput(float deltaSec)
 {
 	float rotationSpeed = glm::radians(135.0f) * deltaSec;
 	float scaleSpeed = 1.0f + 1.0f * deltaSec;
-
-	// Camera Movement
-	/*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		camera->processKeyboard(Camera::Movement::FORWARD, deltaSec);
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		camera->processKeyboard(Camera::Movement::BACKWARD, deltaSec);
-	}*/
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
@@ -94,9 +83,9 @@ void Controller::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (!controller->isCursorShowing) 
+	if (!controller->isCursorShowing)
 	{
-		if (controller->firstMouse) 
+		if (controller->firstMouse)
 		{
 			controller->lastX = xpos;
 			controller->lastY = ypos;
