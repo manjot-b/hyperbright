@@ -11,8 +11,9 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 	worldUp(up),
 	yaw(yaw),
 	pitch(pitch),
-	movementSpeed(2.5f),
-	mouseSensitivity(0.1f)
+	movementSpeed(3.25f),
+	mouseSensitivity(0.2f),
+	scrollSensitivity(0.25f)
 {
 	updateCameraVectors();	
 }
@@ -21,10 +22,6 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 void Camera::processKeyboard(Movement direction, float deltaTime)
 {
 	float velocity = movementSpeed * deltaTime;
-	if (direction == FORWARD)
-		position += front * velocity;
-	if (direction == BACKWARD)
-		position -= front * velocity;
 	if (direction == LEFT)
 		position -= right * velocity;
 	if (direction == RIGHT)
@@ -52,6 +49,17 @@ void Camera::processMouseMovement(float xoffset, float yoffset)
 		pitch = -89.0f;
 
 	// update Front, Right and Up Vectors using the updated Euler angles
+	updateCameraVectors();
+}
+
+void Camera::processMouseScroll(Movement direction, float yoffset)
+{
+	float velocity = scrollSensitivity * yoffset;
+	if (direction == FORWARD)
+		position += front * velocity;
+	if (direction == BACKWARD)
+		position -= front * velocity;
+
 	updateCameraVectors();
 }
 

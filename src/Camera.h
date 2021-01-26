@@ -30,6 +30,7 @@ public:
 	const glm::vec3& getDirection();
     void processKeyboard(Movement direction, float deltaTime);
     void processMouseMovement(float xoffset, float yoffset);
+    void processMouseScroll(Movement direction, float yoffset);
 
 private:
 	glm::mat4 view;
@@ -46,6 +47,7 @@ private:
     // camera options
     float movementSpeed;
     float mouseSensitivity;
+    float scrollSensitivity;
 
     void updateCameraVectors();
 };
