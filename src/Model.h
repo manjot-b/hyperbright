@@ -16,6 +16,7 @@ class Model
 		void update();
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
+		bool shouldRender = false;
 
 	private:
 		std::vector<std::unique_ptr<Mesh>> meshes;

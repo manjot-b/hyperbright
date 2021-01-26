@@ -12,17 +12,17 @@
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
 * not be available until GLAD is initialized.
-* 
+*
 * Parameters:
 	camera: The camera for the scene. The renderer will not the alter the camera in any way.
 */
-Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera), showCursor(false)
+Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera)
 {
 	initWindow();
 	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
-	
-	
+
+
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 100.0f);
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
@@ -69,7 +69,7 @@ void Renderer::initWindow()
 		glViewport(0, 0, newWidth, newHeight);
 		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 100.0f);
 	});
- 
+
 	glEnable(GL_DEPTH_TEST);
 
 }
@@ -78,7 +78,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 
 /*
 * Renderer a frame.
-* 
+*
 * Parameters:
 *	deltaSec: How much time has elapsed in seconds since the last frame was rendered.
 *	devUI: An imgui window.
@@ -97,7 +97,10 @@ void Renderer::render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<
 
 	for (auto& model : models)
 	{
-		model->draw(*shader);
+		if (model->shouldRender)
+		{
+			model->draw(*shader);
+		}
 	}
 
 	glUseProgram(0);
@@ -107,24 +110,3 @@ void Renderer::render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<
 	glfwSwapBuffers(window);
 }
 
-void Renderer::setWindowShouldClose(bool close)
-{
-	glfwSetWindowShouldClose(window, close);
-}
-
-bool Renderer::isWindowClosed() const
-{
-	return glfwWindowShouldClose(window);
-}
-
-void Renderer::toggleCursor()
-{
-	showCursor = !showCursor;
-	int cursorMode = showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
-	glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
-}
-
-bool Renderer::isCursorShowing() const
-{
-	return showCursor;
-}
