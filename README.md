@@ -6,6 +6,7 @@
 # Controls
  - W, A, S, D to pan the camera UP, LEFT, DOWN, and RIGHT respectively.  
  - Camera's point of interest (POI) follows the mouse automatically. 
+ - Mouse Scroll to zoom in and out
  - N cycles through the currently loaded models.
  - CTRL + SPACE toggles the cursor so you may manage the UI
  - Escape to exit application
