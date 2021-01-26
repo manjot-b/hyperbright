@@ -35,11 +35,6 @@ private:
 	glm::vec3 rotate;
 	float scale;
 
-	bool shiftPressed;
-	bool firstMouse; //*
-	float lastX;	//*
-	float lastY;	//*
-
 	float lastFrame;
 
 	void runMenu();
@@ -47,7 +42,7 @@ private:
 	void runGame();
 
 	void loadModels();
-	
+
 	int modelIndex; // temp
 
 	/*void processWindowInput();

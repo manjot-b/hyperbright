@@ -22,16 +22,6 @@ Engine::Engine() :
 	renderer = std::make_unique<Renderer>(camera);
 	loadModels();
 	models[modelIndex]->shouldRender = true;
-
-	/*
-	// The following calls require the Renderer to setup GLFW/glad first.
-	glfwSetKeyCallback(renderer->getWindow(), keyCallback);	//
-	glfwSetCursorPosCallback(renderer->getWindow(), mouseCallback); //
-	// tell GLFW to capture our mouse
-	glfwSetInputMode(renderer->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);	//
-
-	// Let GLFW store pointer to this instance of Engine.
-	glfwSetWindowUserPointer(renderer->getWindow(), static_cast<void*>(this));*/
 }
 
 
