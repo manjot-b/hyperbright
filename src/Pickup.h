@@ -1,5 +1,5 @@
 #pragma once
-
+#include "PickupManager.h"
 #include <string>
 #include <glm/glm.hpp>
 #include <memory>
@@ -19,12 +19,12 @@ class Pickup
 public:
 	Pickup();
 	~Pickup();
-	Pickup(int pickupType);
+	Pickup(int pickupType, PickupManager * pickupMan);
 	void activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
-	void initialCollision(Vehicle vehicle, int pickupIndex);
+	void initialCollision(Vehicle vehicle);
 	bool active;
-	bool beingCarried;
+	//bool beingCarried;
 	bool timeRemaining();
 	//Position
 private:
@@ -34,4 +34,6 @@ private:
 	int zapOldColor;//CHANGE TYPE LATER
 	bool slowTrapActive;
 	float speedOldMax;
+	Vehicle* carriedBy;
+	PickupManager * pickupManager;
 };

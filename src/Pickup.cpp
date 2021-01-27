@@ -12,10 +12,11 @@ Pickup::~Pickup() {
 
 }
 
-Pickup::Pickup(int pickupType) {
+Pickup::Pickup(int pickupType, PickupManager * pickupMan) {
+	pickupManager = pickupMan;
 	type = pickupType;
 	active = false;
-	beingCarried = false;
+	//beingCarried = false;
 	slowTrapActive = false;
 	pickupTime = 5.f;
 	//position
@@ -56,7 +57,7 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 	else if (type == SLOWTRAP) {
 		//SET CURRENT POSITION TO BEHIND vehicles[indexOfActivator]
 		//move to onArena
-		beingCarried = false;
+		//beingCarried = false;
 		slowTrapActive = true;
 	}
 	else if (type == SUCKER) {
@@ -112,7 +113,7 @@ void Pickup::deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFir
 /*
 This function is called when given vehicle collides with this powerup.
 */
-void Pickup::initialCollision(Vehicle vehicle, int pickupIndex) {
+void Pickup::initialCollision(Vehicle vehicle) {
 	if (type == BATTERY) {
 		vehicle.energy += 50;//BATTERY ACTIVATE
 		//TEAR DOWN
@@ -122,8 +123,9 @@ void Pickup::initialCollision(Vehicle vehicle, int pickupIndex) {
 		//TO DO, IF YOU HIT THE ACTIVE SLOWTRAP
 		//move from onArena to active
 	} else {
-		vehicle.pickupIndex = pickupIndex;
-		beingCarried = true;
+		//vehicle.pickupEquiped = this;
+		carriedBy = &vehicle;
+		//beingCarried = true;
 		//remove from onArena
 	}
 	return;
