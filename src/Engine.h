@@ -17,6 +17,7 @@
 #include "DevUI.h"
 #include "Controller.h"
 #include "Renderer.h"
+#include "PickupManager.h"
 
 class Engine
 {
