@@ -9,10 +9,13 @@
 #include <memory>
 #include <vector>
 
+#include "Simulate.h"
+#include "Arena.h"
+#include "Pickup.h"
 #include "Ai.h"
 #include "Vehicle.h"
-#include "Pickup.h"
-#include "Model.h"
+#include "DevUI.h"
+#include "Controller.h"
 #include "Renderer.h"
 
 class Engine

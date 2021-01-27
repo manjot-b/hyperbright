@@ -1,10 +1,10 @@
 #pragma once
-
+class Pickup;//forward declaration
 #include <string>
 #include <glm/glm.hpp>
 #include <memory>
 
-#include "Pickup.h"
+//#include "Pickup.h"
 
 class Vehicle
 {
@@ -14,7 +14,7 @@ public:
 	void reset();
 	int energy;
 
-	//Pickup pickupEquiped;//set as null for default
+	Pickup * pickupEquiped;//set as null for default
 	int color; //CHANGE TYPE LATER
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION

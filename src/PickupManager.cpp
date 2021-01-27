@@ -1,6 +1,6 @@
 #include "PickupManager.h"
-#include "Pickup.h"
-#include "Vehicle.h"
+//#include "Pickup.h"
+//#include "Vehicle.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 

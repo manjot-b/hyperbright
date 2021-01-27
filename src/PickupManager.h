@@ -1,6 +1,6 @@
 #pragma once
-#include "Pickup.h"
-#include "Vehicle.h"
+//#include "Pickup.h"
+//#include "Vehicle.h"
 
 class PickupManager {
 public:

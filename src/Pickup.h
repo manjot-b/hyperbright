@@ -1,8 +1,9 @@
 #pragma once
-#include "PickupManager.h"
 #include <string>
 #include <glm/glm.hpp>
 #include <memory>
+
+#include "PickupManager.h"
 #include "Vehicle.h"
 
 #define BATTERY 0

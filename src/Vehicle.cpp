@@ -1,5 +1,4 @@
 #include "Vehicle.h"
-#include "Pickup.h"
 
 Vehicle::Vehicle() {
 
