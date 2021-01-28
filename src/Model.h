@@ -14,6 +14,8 @@ class Model
 		~Model();
 		void draw(const Shader& shader) const;
 		void update();
+		void updateModelMatrix(glm::mat4& modelPose);
+		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
 		bool shouldRender = false;

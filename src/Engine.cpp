@@ -56,25 +56,43 @@ void Engine::run()
 	DevUI devUI(renderer->getWindow());
 	Controller controller(renderer->getWindow(), camera);
 
+
+	models[1]->shouldRender = true;
+	models[1]->scale(100);
+	models[1]->translate(glm::vec3(0.0f, -50.f, 0.0f));
+	models[1]->update();
+
 	while (!controller.isWindowClosed()) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
-		lastFrame = currentFrame;
 
-		controller.processInput(deltaSec);
+		if (deltaSec >= 1.0f / 60.0f)
+		{
+			lastFrame = currentFrame;
+			controller.processInput(deltaSec);
 
-		//////////////////////////////
-		// Temporary model selection
-		models[modelIndex]->shouldRender = false;
-		modelIndex = controller.modelIndex;
-		models[modelIndex]->shouldRender = true;
-		models[modelIndex]->update();
-		//////////////////////////////
+			// run a frame of simulation
+			simulator.stepPhysics();
+			// get new position for dynamic models
+			simulator.setModelPose(models[modelIndex]);
 
-		renderer->render(deltaSec, devUI, models);
+			// create a giant cube for the floor
+			
+			/*
+			//////////////////////////////
+			// Temporary model selection
+			models[modelIndex]->shouldRender = false;
+			modelIndex = controller.modelIndex;
+			models[modelIndex]->shouldRender = true;
+			models[modelIndex]->update();
+			//////////////////////////////
+			*/
 
-		glfwPollEvents();
+			renderer->render(deltaSec, devUI, models);
+
+			glfwPollEvents();
+		}
 	}
 
 	//runMenu();

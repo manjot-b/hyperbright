@@ -20,6 +20,10 @@ PxMaterial* gMaterial = NULL;
 
 PxPvd* gPvd = NULL;
 
+// Actors needed
+PxRigidStatic* gGroundPlane = NULL; // ground
+PxRigidDynamic* boxCar = NULL;
+
 Simulate::Simulate() {
 	initPhysics();
 }
@@ -55,6 +59,16 @@ void Simulate::initPhysics()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 
+	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+
+	gGroundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0.5), *gMaterial);
+	gScene->addActor(*gGroundPlane);
+
+	PxShape* boxCarShape = gPhysics->createShape(PxBoxGeometry(PxReal(0.5), PxReal(0.5), PxReal(1.5)), *gMaterial);
+	boxCar = gPhysics->createRigidDynamic(PxTransform(PxVec3(PxReal(0), PxReal(4), PxReal(0))));
+	boxCar->attachShape(*boxCarShape);
+	gScene->addActor(*boxCar);
+
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
@@ -62,6 +76,36 @@ void Simulate::stepPhysics()
 {
 	gScene->simulate(1.0f / 60.0f);
 	gScene->fetchResults(true);
+}
+
+void Simulate::setModelPose(std::unique_ptr<Model>& model)
+{
+	PxU32 numActors = gScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
+	if (numActors)
+	{
+		std::vector<PxRigidActor*> actors(numActors);
+		gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
+		
+		PxShape* shapes[128]; // max number of shapes per actor is 128
+		for (int i = 0; i < numActors; i++)
+		{
+			const PxU32 numShapes = actors[i]->getNbShapes();
+			actors[i]->getShapes(shapes, numShapes);
+			for (int j = 0; j < numShapes; j++)
+			{
+				// for now if the shape is a box (a.k.a. the boxcar) then grab its globalpose
+				if (shapes[j]->getGeometryType() == PxGeometryType::eBOX) 
+				{
+					PxMat44 boxPose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
+					glm::mat4 boxUpdate(glm::vec4(boxPose.column0.x, boxPose.column0.y, boxPose.column0.z, 0.0f),
+										glm::vec4(boxPose.column1.x, boxPose.column1.y, boxPose.column1.z, 0.0f),
+										glm::vec4(boxPose.column2.x, boxPose.column2.y, boxPose.column2.z, 0.0f),
+										glm::vec4(boxPose.column3.x, boxPose.column3.y, boxPose.column3.z, 1.0f));
+					model->updateModelMatrix(boxUpdate);
+				}
+			}
+		}
+	}
 }
 
 void Simulate::cleanupPhysics()
@@ -77,6 +121,7 @@ void Simulate::cleanupPhysics()
 	}
 	gFoundation->release();
 
+	std::cout << "Cleaned up PhysX" << std::endl;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

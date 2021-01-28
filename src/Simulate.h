@@ -7,6 +7,7 @@
 #include "Vehicle.h"
 #include "Arena.h"
 #include "Pickup.h"
+#include "Model.h"
 
 class Simulate
 {
@@ -15,6 +16,7 @@ public:
 	~Simulate();
 	//void simulateStep(Vehicle vehicles[], Arena arena, Pickup pickups[]);
 	void stepPhysics();
+	void setModelPose(std::unique_ptr<Model>& model);
 	void cleanupPhysics();
 private:
 	void initPhysics();

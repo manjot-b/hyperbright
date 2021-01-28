@@ -82,6 +82,16 @@ void Model::update()
 	m_scale = 1;
 }
 
+void Model::updateModelMatrix(glm::mat4& modelPose)
+{
+	modelMatrix = modelPose;
+}
+
+void Model::translate(const glm::vec3& _translate)
+{
+	m_translation = _translate;
+}
+
 /**
  * Rotates the model along each x,y, and z axis at the specified angles.
  * Input parameters are to be in radians. Remember to use the right-hand rule.
