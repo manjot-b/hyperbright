@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <PxPhysicsAPI.h>
+#include <filesystem>
 
 #include "Renderer.h"
 
@@ -28,7 +29,6 @@ Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera)
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniformMatrix4fv("view", camera->getViewMatrix());
 
-	texture = std::make_unique<Texture>("rsc/images/tree.jpeg");
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
 
 	glUseProgram(0);	// unbind shader
@@ -84,7 +84,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	devUI: An imgui window.
 *	models: All the models to renderer this frame.
 */
-void Renderer::render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models)
+void Renderer::render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models, std::vector<std::unique_ptr<Texture>>& textures)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,20 +93,28 @@ void Renderer::render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<
 	shader->setUniformMatrix4fv("view", camera->getViewMatrix());
 	shader->setUniformMatrix4fv("perspective", perspective);
 
-	texture->bind(GL_TEXTURE0);	// we set the uniform in fragment shader to location 0.
+	// set textures for each model by hand
+	// boxcar <- awesomeface texture[0]
+	textures[0]->bind(GL_TEXTURE0);
+	models[0]->draw(*shader);
 
-	for (auto& model : models)
-	{
-		if (model->shouldRender)
-		{
-			model->draw(*shader);
-		}
-	}
+	// ground cube <- tree texture[2]
+	textures[2]->bind(GL_TEXTURE0);
+	models[1]->draw(*shader);
+
+	// background cube <- background texture[1]
+	textures[1]->bind(GL_TEXTURE0);
+	models[2]->draw(*shader);
 
 	glUseProgram(0);
 
 	devUI.show(deltaSec);
 
 	glfwSwapBuffers(window);
+}
+
+void Renderer::updateModelList(std::vector<std::string> _modelList)
+{
+	modelList = _modelList;
 }
 

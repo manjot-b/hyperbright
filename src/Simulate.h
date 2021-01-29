@@ -14,9 +14,8 @@ class Simulate
 public:
 	Simulate();
 	~Simulate();
-	//void simulateStep(Vehicle vehicles[], Arena arena, Pickup pickups[]);
 	void stepPhysics();
-	void setModelPose(std::unique_ptr<Model>& model);
+	void setModelPose(std::unique_ptr<Model> &model);
 	void cleanupPhysics();
 private:
 	void initPhysics();

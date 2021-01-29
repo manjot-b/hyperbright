@@ -106,6 +106,26 @@ void Model::scale(const float scale)
 	m_scale = scale;
 }
 
+void Model::setId(std::string _id)
+{
+	id = _id;
+}
+
+void Model::setPosition(glm::vec3 _position)
+{
+	wPosition = _position;
+}
+
+glm::vec3 Model::getPosition()
+{
+	return wPosition;
+}
+
+std::string Model::getId()
+{
+	return id;
+}
+
 /**
  * Iterate over every mesh to calculate the bounding box of the whole model.
  * Assumes the standard OpenGL viewport of -1 to 1.

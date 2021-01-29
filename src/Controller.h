@@ -28,12 +28,13 @@ public:
 
 	void gameInput(Vehicle vehicle);
 	void processInput(float deltaSec);
+	bool isCameraManual() { return manualCamera; }
 
 private:
 	GLFWwindow* window;
 	std::shared_ptr<Camera> camera;
 
-
+	bool manualCamera;
 	bool firstMouse;
 	float lastX;
 	float lastY;

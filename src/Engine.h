@@ -30,6 +30,8 @@ private:
 	Pickup pickups[10];
 
 	std::vector<std::unique_ptr<Model>> models;
+	std::vector<std::unique_ptr<Texture>> textures;
+	std::vector<std::string> modelNames;
 	std::shared_ptr<Camera> camera;
 
 	glm::vec3 rotate;
@@ -41,11 +43,7 @@ private:
 	int menuInput();
 	void runGame();
 
-	void loadModels();
-
-	int modelIndex; // temp
-
-	/*void processWindowInput();
-	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);*/
+	void loadModels(std::string ref);
+	void loadTextures();
+	void initEntities();
 };

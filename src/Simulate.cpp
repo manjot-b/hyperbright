@@ -20,6 +20,8 @@ PxMaterial* gMaterial = NULL;
 
 PxPvd* gPvd = NULL;
 
+PxCooking* gCooking = NULL;
+
 // Actors needed
 PxRigidStatic* gGroundPlane = NULL; // ground
 PxRigidDynamic* boxCar = NULL;
@@ -61,11 +63,12 @@ void Simulate::initPhysics()
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
-	gGroundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0.5), *gMaterial);
+	gGroundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
 	gScene->addActor(*gGroundPlane);
 
-	PxShape* boxCarShape = gPhysics->createShape(PxBoxGeometry(PxReal(0.5), PxReal(0.5), PxReal(1.5)), *gMaterial);
-	boxCar = gPhysics->createRigidDynamic(PxTransform(PxVec3(PxReal(0), PxReal(4), PxReal(0))));
+	PxShape* boxCarShape = gPhysics->createShape(PxBoxGeometry(PxReal(1), PxReal(0.5), PxReal(1.5)), *gMaterial);
+	boxCar = gPhysics->createRigidDynamic(PxTransform(PxVec3(PxReal(0), PxReal(6), PxReal(0))));
+	boxCar->setAngularVelocity(PxVec3(0, -1, -2));
 	boxCar->attachShape(*boxCarShape);
 	gScene->addActor(*boxCar);
 
@@ -102,6 +105,9 @@ void Simulate::setModelPose(std::unique_ptr<Model>& model)
 										glm::vec4(boxPose.column2.x, boxPose.column2.y, boxPose.column2.z, 0.0f),
 										glm::vec4(boxPose.column3.x, boxPose.column3.y, boxPose.column3.z, 1.0f));
 					model->updateModelMatrix(boxUpdate);
+					model->setPosition(	glm::vec3(	boxPose.getPosition().x,
+													boxPose.getPosition().y,
+													boxPose.getPosition().z));
 				}
 			}
 		}
@@ -123,8 +129,3 @@ void Simulate::cleanupPhysics()
 
 	std::cout << "Cleaned up PhysX" << std::endl;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-/*void Simulate::simulateStep(Vehicle vehicles[], Arena arena, Pickup pickups[]) {
-	//This function takes one step in the game simulation. It will update all entities states. Includes movement and collision detection.
-}*/

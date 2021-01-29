@@ -20,13 +20,15 @@ class Renderer
 		~Renderer();
 
 		GLFWwindow* getWindow();
-		void render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models);
+		void render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models, std::vector<std::unique_ptr<Texture>>& textures);
+		void updateModelList(std::vector<std::string> modelList);
 
 	private:
 		GLFWwindow* window;
 
+		std::vector<std::string> modelList;
+
 		std::unique_ptr<Shader> shader;
-		std::unique_ptr<Texture> texture;
 
 		const unsigned int height = 800;
 		const unsigned int width = 800;
