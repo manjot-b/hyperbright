@@ -1,10 +1,11 @@
 #pragma once
+class Vehicle;//Forward declaration
 #include <string>
 #include <glm/glm.hpp>
 #include <memory>
 
 #include "PickupManager.h"
-#include "Vehicle.h"
+//#include "Vehicle.h"
 
 #define BATTERY 0
 #define SPEED 1
@@ -20,7 +21,7 @@ class Pickup
 public:
 	Pickup();
 	~Pickup();
-	Pickup(int pickupType, PickupManager * pickupMan);
+	Pickup(int pickupType, PickupManager pickupMan);
 	void activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void initialCollision(Vehicle vehicle);
@@ -35,6 +36,6 @@ private:
 	int zapOldColor;//CHANGE TYPE LATER
 	bool slowTrapActive;
 	float speedOldMax;
-	Vehicle* carriedBy;
-	PickupManager * pickupManager;
+	//Vehicle* carriedBy;
+	PickupManager pickupManager;
 };

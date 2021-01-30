@@ -1,4 +1,5 @@
 #include "Pickup.h"
+#include "Vehicle.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 
@@ -11,7 +12,7 @@ Pickup::~Pickup() {
 
 }
 
-Pickup::Pickup(int pickupType, PickupManager * pickupMan) {
+Pickup::Pickup(int pickupType, PickupManager pickupMan) {
 	pickupManager = pickupMan;
 	type = pickupType;
 	active = false;
@@ -122,8 +123,8 @@ void Pickup::initialCollision(Vehicle vehicle) {
 		//TO DO, IF YOU HIT THE ACTIVE SLOWTRAP
 		//move from onArena to active
 	} else {
-		//vehicle.pickupEquiped = this;
-		carriedBy = &vehicle;
+		vehicle.pickupEquiped = *this;
+		//carriedBy = &vehicle;
 		//beingCarried = true;
 		//remove from onArena
 	}
