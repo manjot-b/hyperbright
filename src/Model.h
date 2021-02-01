@@ -10,7 +10,12 @@
 class Model
 {
 	public:
-		Model(const std::string &objPath);
+		enum MoveType {
+			STATIC,
+			DYNAMIC
+		};
+
+		Model(const std::string &objPath, MoveType type);
 		~Model();
 		void draw(const Shader& shader) const;
 		void update();
@@ -20,7 +25,10 @@ class Model
 		void scale(float scale);
 		void setId(std::string id);
 		void setPosition(glm::vec3 position);
-		
+		bool isDynamic() { return dynamicObject; }
+
+		std::vector<std::unique_ptr<Mesh>>& getMeshes() { return meshes; }
+
 		glm::vec3 getPosition();
 		std::string getId();
 
@@ -36,6 +44,8 @@ class Model
 		float m_scale;				// scale to apply to model
 		glm::vec3 m_translation;	// translation vector
 		glm::vec3 wPosition;
+
+		int const dynamicObject;
 
 		void extractDataFromNode(const aiScene* scene, const aiNode* node);
 		void scaleToViewport();

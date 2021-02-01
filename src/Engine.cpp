@@ -35,7 +35,7 @@ Engine::~Engine() {}
  * Loads all models in rsc/models and stores them in a vector. Requires glad
  * to have loaded opengl function calls.
 */
-void Engine::loadModels(std::string ref)
+void Engine::loadModels(std::string ref, bool inPhysx, Model::MoveType type)
 {
 	namespace fs = std::filesystem;
 	const std::string extension = ".obj";
@@ -48,8 +48,16 @@ void Engine::loadModels(std::string ref)
 			if (entry.is_regular_file() && entry.path().extension() == extension)
 			{
 				std::cout << "Loading " << entry.path() << "..." << std::flush;
-				models.push_back(std::make_unique<Model>(entry.path().string()));
-				models[models.size() - 1]->setId(name);  // set the model id to it's file name
+				if (inPhysx)
+				{
+					physicsModels.push_back(std::make_unique<Model>(entry.path().string(), type));
+					physicsModels[physicsModels.size() - 1]->setId(name);  // set the model id to it's file name
+				}
+				else
+				{
+					staticModels.push_back(std::make_unique<Model>(entry.path().string(), type));
+					staticModels[staticModels.size() - 1]->setId(name);  // set the model id to it's file name
+				}
 				std::cout << "Loaded Entity " << ref << "\n";
 			}
 		}
@@ -68,12 +76,12 @@ void Engine::loadTextures()
 
 void Engine::initEntities()
 {
-	// load boxcar index 0
-	loadModels("boxcar");
-	// tmp floor box index 1
-	loadModels("cube");
-	// background box index 2
-	loadModels("cube");
+	// load boxcar > physicsModels[0]
+	loadModels("boxcar", true, Model::MoveType::DYNAMIC);
+	// tmp floor box > staticModels[0]
+	loadModels("cube", false, Model::Model::STATIC);
+	// background box > staticModels[1]
+	loadModels("cube", false, Model::Model::STATIC);
 }
 
 
@@ -83,21 +91,21 @@ void Engine::initEntities()
 // the game (menu/arena/pause etc) and appropriate func.
 void Engine::run()
 {
-	Simulate simulator;
+	Simulate simulator(physicsModels);
 	DevUI devUI(renderer->getWindow());
 	Controller controller(renderer->getWindow(), camera);
 
 	// moving the boxcar off origin
-	models[0]->translate(glm::vec3(0.0f, 0.0f, -2.0f));
+	physicsModels[0]->translate(glm::vec3(0.0f, 0.0f, -2.0f));
 
 	// temp large box to act as visual floor
-	models[1]->scale(50);
-	models[1]->translate(glm::vec3(0.0f, -25.5f, 0.0f));
-	models[1]->update();
+	staticModels[0]->scale(50);
+	staticModels[0]->translate(glm::vec3(0.0f, -25.5f, 0.0f));
+	staticModels[0]->update();
 
 	// tmp huge background box
-	models[2]->scale(100);
-	models[2]->update();
+	staticModels[1]->scale(100);
+	staticModels[1]->update();
 
 	while (!controller.isWindowClosed()) {
 		// update global time
@@ -115,15 +123,17 @@ void Engine::run()
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics();
-		// get new position for dynamic models
-		simulator.setModelPose(models[0]);
+		simulator.stepPhysics(physicsModels);
+
+		// set camera to player vehicles position
 		if (!controller.isCameraManual())
 		{
-			camera->updateCameraVectors(models[0]->getPosition());
+			// grab position from player vehicle
+			camera->updateCameraVectors(physicsModels[0]->getPosition());
 		}
+
 		// render the updated position of all models and ImGui
-		renderer->render(deltaSec, devUI, models, textures);
+		renderer->render(deltaSec, devUI, staticModels, physicsModels, textures);
 
 		glfwPollEvents();
 	}
@@ -192,7 +202,7 @@ void Engine::runGame() {
 
 
 	//***** Initialize anything else needed for a game loop*****
-	Simulate simulator;
+	//Simulate simulator;
 	//Controller controller;
 
 	//INTIALIZE RENDERER

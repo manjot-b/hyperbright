@@ -84,7 +84,10 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	devUI: An imgui window.
 *	models: All the models to renderer this frame.
 */
-void Renderer::render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models, std::vector<std::unique_ptr<Texture>>& textures)
+void Renderer::render(	float deltaSec, DevUI& devUI, 
+						std::vector<std::unique_ptr<Model>>& staticModels,
+						std::vector<std::unique_ptr<Model>>& physicsModels,
+						std::vector<std::unique_ptr<Texture>>& textures)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -96,15 +99,15 @@ void Renderer::render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<
 	// set textures for each model by hand
 	// boxcar <- awesomeface texture[0]
 	textures[0]->bind(GL_TEXTURE0);
-	models[0]->draw(*shader);
+	physicsModels[0]->draw(*shader);
 
 	// ground cube <- tree texture[2]
 	textures[2]->bind(GL_TEXTURE0);
-	models[1]->draw(*shader);
+	staticModels[0]->draw(*shader);
 
 	// background cube <- background texture[1]
 	textures[1]->bind(GL_TEXTURE0);
-	models[2]->draw(*shader);
+	staticModels[1]->draw(*shader);
 
 	glUseProgram(0);
 

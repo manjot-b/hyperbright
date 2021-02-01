@@ -1,7 +1,6 @@
 #include "Simulate.h"
 
 #include <ctype.h>
-#include <PxPhysicsAPI.h>
 #include <vehicle/PxVehicleUtil.h>
 #include <iostream>
 
@@ -26,7 +25,9 @@ PxCooking* gCooking = NULL;
 PxRigidStatic* gGroundPlane = NULL; // ground
 PxRigidDynamic* boxCar = NULL;
 
-Simulate::Simulate() {
+Simulate::Simulate(std::vector<std::unique_ptr<Model>> &_physicsModels) :
+	physicsModels(_physicsModels)
+{
 	initPhysics();
 }
 
@@ -63,22 +64,31 @@ void Simulate::initPhysics()
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
+	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, PxCookingParams(PxTolerancesScale()));
+	cookMeshes();
+
 	gGroundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
 	gScene->addActor(*gGroundPlane);
 
+	// goal is to take this out and replace with cooked shapes
 	PxShape* boxCarShape = gPhysics->createShape(PxBoxGeometry(PxReal(1), PxReal(0.5), PxReal(1.5)), *gMaterial);
 	boxCar = gPhysics->createRigidDynamic(PxTransform(PxVec3(PxReal(0), PxReal(6), PxReal(0))));
 	boxCar->setAngularVelocity(PxVec3(0, -1, -2));
 	boxCar->attachShape(*boxCarShape);
 	gScene->addActor(*boxCar);
-
+	
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
-void Simulate::stepPhysics()
+void Simulate::stepPhysics(std::vector<std::unique_ptr<Model>>& physicsModels)
 {
 	gScene->simulate(1.0f / 60.0f);
 	gScene->fetchResults(true);
+
+	for (auto& model : physicsModels)
+	{
+		setModelPose(model);
+	}
 }
 
 void Simulate::setModelPose(std::unique_ptr<Model>& model)
@@ -114,11 +124,65 @@ void Simulate::setModelPose(std::unique_ptr<Model>& model)
 	}
 }
 
+void Simulate::cookMeshes()
+{
+	for (auto& model : physicsModels)
+	{
+		if (!model->isDynamic())
+		{
+			std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
+			for (auto& mesh : meshes)
+			{
+				std::vector<PxVec3> pxVertices;
+				std::vector<Vertex> meshVerts = mesh->getVertices();
+				std::vector<unsigned int> indices = mesh->getIndices();
+
+				// convert Vertex positions into PxVec3
+				for (int i = 0; i < meshVerts.size(); i++)
+				{
+					pxVertices.push_back(PxVec3(meshVerts[i].position.x, meshVerts[i].position.y, meshVerts[i].position.z));
+				}
+
+				PxTriangleMeshDesc meshDesc;
+				meshDesc.points.count = pxVertices.size();
+				meshDesc.points.stride = sizeof(PxVec3);
+				meshDesc.points.data = pxVertices.data();
+
+				meshDesc.triangles.count = indices.size() / 3;
+				meshDesc.triangles.stride = 3 * sizeof(PxU32);
+				meshDesc.triangles.data = indices.data();
+
+				PxDefaultMemoryOutputStream writeBuffer;
+				gCooking->cookTriangleMesh(meshDesc, writeBuffer);
+
+				PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+				PxTriangleMesh* triMesh = gPhysics->createTriangleMesh(readBuffer);
+
+				PxTransform trans(PxVec3(0.f, 10.f, -2.f));
+				PxRigidStatic* rigidStat = gPhysics->createRigidStatic(trans);
+				PxShape* shape = PxRigidActorExt::createExclusiveShape(*rigidStat, PxTriangleMeshGeometry(triMesh), *gMaterial);
+				shape->setLocalPose(trans);
+
+				rigidStat = PxCreateStatic(*gPhysics, trans, *shape);
+				rigidStat->attachShape(*shape);
+				gScene->addActor(*rigidStat);
+
+				// can't figure out how to create dynamic shapes with cooked mesh
+				// Might revisit this issue if time allows.
+				/*PxRigidDynamic* rigidDyn = PxCreateDynamic(*gPhysics, trans, PxTriangleMeshGeometry(triMesh), *gMaterial, 1.f);
+				rigidDyn->setAngularVelocity(PxVec3(0.f, 0.f, 1.f));
+				gScene->addActor(*rigidDyn);*/
+			}
+		}
+	}
+}
+
 void Simulate::cleanupPhysics()
 {
 	gScene->release();
 	gDispatcher->release();
 	gPhysics->release();
+	gCooking->release();
 	if (gPvd)
 	{
 		PxPvdTransport* transport = gPvd->getTransport();

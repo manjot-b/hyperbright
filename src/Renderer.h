@@ -20,7 +20,7 @@ class Renderer
 		~Renderer();
 
 		GLFWwindow* getWindow();
-		void render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& models, std::vector<std::unique_ptr<Texture>>& textures);
+		void render(float deltaSec, DevUI& devUI, std::vector<std::unique_ptr<Model>>& staticModels, std::vector<std::unique_ptr<Model>>& physicsModels, std::vector<std::unique_ptr<Texture>>& textures);
 		void updateModelList(std::vector<std::string> modelList);
 
 	private:

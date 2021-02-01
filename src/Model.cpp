@@ -8,8 +8,8 @@
 
 #include "Model.h"
 
-Model::Model(const std::string &objPath) :
-	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0)
+Model::Model(const std::string &objPath, MoveType type) :
+	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,

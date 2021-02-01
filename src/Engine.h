@@ -29,7 +29,8 @@ private:
 	Vehicle vehicles[4];
 	Pickup pickups[10];
 
-	std::vector<std::unique_ptr<Model>> models;
+	std::vector<std::unique_ptr<Model>> staticModels;
+	std::vector<std::unique_ptr<Model>> physicsModels;
 	std::vector<std::unique_ptr<Texture>> textures;
 	std::vector<std::string> modelNames;
 	std::shared_ptr<Camera> camera;
@@ -43,7 +44,7 @@ private:
 	int menuInput();
 	void runGame();
 
-	void loadModels(std::string ref);
+	void loadModels(std::string ref, bool inPhysx, Model::MoveType type);
 	void loadTextures();
 	void initEntities();
 };
