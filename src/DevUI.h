@@ -11,6 +11,7 @@ public:
 	DevUI(GLFWwindow* window);
 	~DevUI();
 	void show(float deltaSec);
+	int getSliderFPS();
 private:
 	bool showDemo;
 };

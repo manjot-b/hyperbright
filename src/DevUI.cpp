@@ -4,6 +4,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+static int sliderFPS = 60;
+
 DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 {
     IMGUI_CHECKVERSION();
@@ -23,6 +25,7 @@ DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 
 DevUI::~DevUI() {}
 
+
 /**
  * This method should be called every frame by the Renderer. 
 */
@@ -40,8 +43,15 @@ void DevUI::show(float deltaSec)
 
     ImGui::Begin("Dev Settings");
     ImGui::Text("Application average %.3f ms/frame %.3f FPS", deltaSec*1000, 1/deltaSec);
+    ImGui::SliderInt("FPS Cap", &sliderFPS, 30, 144);
+
     ImGui::End();
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+//return the current FPS Cap
+int DevUI::getSliderFPS() {
+    return sliderFPS;
 }
