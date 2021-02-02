@@ -9,7 +9,7 @@
 
 Engine::Engine() :
 	deltaSec(0.0f), rotate(0), scale(1),
-	lastFrame(0.0f), modelIndex(0)
+	lastFrame(0.0f)
 {
 	camera = std::make_shared<Camera>();
 	renderer = std::make_unique<Renderer>(camera);
