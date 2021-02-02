@@ -9,11 +9,15 @@
 #include <memory>
 #include <vector>
 
+#include "Simulate.h"
+#include "Arena.h"
+#include "Pickup.h"
 #include "Ai.h"
 #include "Vehicle.h"
-#include "Pickup.h"
-#include "Model.h"
+#include "DevUI.h"
+#include "Controller.h"
 #include "Renderer.h"
+#include "PickupManager.h"
 
 class Engine
 {
@@ -24,7 +28,6 @@ public:
 private:
 	std::unique_ptr<Renderer> renderer;
 	float deltaSec;
-
 	Ai aiPlayers[4];
 	Vehicle vehicles[4];
 	Pickup pickups[10];

@@ -1,12 +1,4 @@
 #include "Engine.h"
-#include "Simulate.h"
-#include "Arena.h"
-#include "Pickup.h"
-#include "Ai.h"
-#include "Vehicle.h"
-#include "DevUI.h"
-#include "Controller.h"
-
 #include <filesystem>
 
 #define STARTGAME 1
