@@ -28,6 +28,7 @@ public:
 
 	void gameInput(Vehicle vehicle);
 	void processInput(float deltaSec);
+
 	bool isCameraManual() { return manualCamera; }
 
 private:

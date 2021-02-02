@@ -23,6 +23,7 @@ class Model
 		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
+
 		void setId(std::string id);
 		void setPosition(glm::vec3 position);
 		bool isDynamic() { return dynamicObject; }

@@ -1,12 +1,4 @@
 #include "Engine.h"
-#include "Simulate.h"
-#include "Arena.h"
-#include "Pickup.h"
-#include "Ai.h"
-#include "Vehicle.h"
-#include "DevUI.h"
-#include "Controller.h"
-
 #include <filesystem>
 #include <string>
 
@@ -17,7 +9,7 @@
 
 Engine::Engine() :
 	deltaSec(0.0f), rotate(0), scale(1),
-	lastFrame(0.0f)
+	lastFrame(0.0f), modelIndex(0)
 {
 	camera = std::make_shared<Camera>();
 	renderer = std::make_unique<Renderer>(camera);
@@ -94,7 +86,7 @@ void Engine::run()
 	Simulate simulator(physicsModels);
 	DevUI devUI(renderer->getWindow());
 	Controller controller(renderer->getWindow(), camera);
-
+  
 	// moving the boxcar off origin
 	physicsModels[0]->translate(glm::vec3(0.0f, 0.0f, -2.0f));
 
@@ -111,7 +103,9 @@ void Engine::run()
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
-		float fpsLimit = (1.f / 60);
+
+		float fpsLimit = (1.f / devUI.getSliderFPS());
+
 		//wait until a certain amount of time has past
 		while (deltaSec < fpsLimit) {
 			currentFrame = glfwGetTime();

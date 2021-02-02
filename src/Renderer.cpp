@@ -120,4 +120,3 @@ void Renderer::updateModelList(std::vector<std::string> _modelList)
 {
 	modelList = _modelList;
 }
-
