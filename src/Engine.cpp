@@ -1,4 +1,10 @@
 #include "Engine.h"
+#include "Simulate.h"
+#include "Pickup.h"
+#include "Ai.h"
+#include "Vehicle.h"
+#include "DevUI.h"
+#include "Controller.h"
 
 #include <filesystem>
 #include <iostream>
@@ -9,15 +15,12 @@
 
 
 Engine::Engine() :
+	camera(), renderer(camera),
 	deltaSec(0.0f), rotate(0), scale(1),
 	lastFrame(0.0f)
 {
-	camera = std::make_shared<Camera>();
-	renderer = std::make_unique<Renderer>(camera);
-
 	// load textures into a shared pointer.
 	loadTextures();
-
 	initEntities();
 }
 
@@ -69,8 +72,8 @@ void Engine::initEntities()
 void Engine::run()
 {
 	Simulate simulator(physicsModels);
-	DevUI devUI(renderer->getWindow());
-	Controller controller(renderer->getWindow(), camera);
+	DevUI devUI(renderer.getWindow());
+	Controller controller(renderer.getWindow(), camera);
   
 	// moving the boxcar off origin
 	vehicle->translate(glm::vec3(0.0f, 0.0f, -2.0f));
@@ -108,11 +111,11 @@ void Engine::run()
 		if (!controller.isCameraManual())
 		{
 			// grab position from player vehicle
-			camera->updateCameraVectors(physicsModels[0]->getPosition());
+			camera.updateCameraVectors(vehicle->getPosition());
 		}
 
 		// render the updated position of all models and ImGui
-		renderer->render(deltaSec, devUI, staticModels, physicsModels);
+		renderer.render(deltaSec, devUI, staticModels, physicsModels);
 
 		glfwPollEvents();
 	}

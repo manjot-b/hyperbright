@@ -13,7 +13,7 @@
 * Parameters:
 	camera: The camera for the scene. The renderer will not the alter the camera in any way.
 */
-Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera)
+Renderer::Renderer(const Camera& camera) : camera(camera)
 {
 	initWindow();
 	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -23,7 +23,7 @@ Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera)
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 100.0f);
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
-	shader->setUniformMatrix4fv("view", camera->getViewMatrix());
+	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
 
@@ -88,7 +88,7 @@ void Renderer::render(	float deltaSec, DevUI& devUI,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	shader->use();
-	shader->setUniformMatrix4fv("view", camera->getViewMatrix());
+	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 	shader->setUniformMatrix4fv("perspective", perspective);
 
 

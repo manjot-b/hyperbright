@@ -4,15 +4,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include <memory>
-
 #include "Vehicle.h"
 #include "Camera.h"
 
 class Controller
 {
 public:
-	Controller(GLFWwindow* window, std::shared_ptr<Camera> camera);
+	Controller(GLFWwindow* window, Camera& camera);
 	~Controller();
 
 	// Temporary model selection 
@@ -34,7 +32,7 @@ public:
 
 private:
 	GLFWwindow* window;
-	std::shared_ptr<Camera> camera;
+	Camera& camera;
 
 	bool manualCamera;
 	bool firstMouse;

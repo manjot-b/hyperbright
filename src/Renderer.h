@@ -16,7 +16,7 @@
 class Renderer
 {
 	public:
-		Renderer(const std::shared_ptr<Camera> camera);
+		Renderer(const Camera& camera);
 		~Renderer();
 
 		GLFWwindow* getWindow();
@@ -37,7 +37,7 @@ class Renderer
 		const unsigned int height = 800;
 		const unsigned int width = 800;
 
-		const std::shared_ptr<Camera> camera;
+		const Camera& camera;
 		glm::mat4 perspective;
 
 		void initWindow();

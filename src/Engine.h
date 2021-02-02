@@ -4,14 +4,15 @@
 #include <glm/glm.hpp>
 
 #include <vector>
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "Simulate.h"
 #include "Arena.h"
 #include "Pickup.h"
 #include "Ai.h"
+#include "Arena.h"
 #include "Vehicle.h"
 #include "DevUI.h"
 #include "Controller.h"
@@ -26,7 +27,9 @@ public:
 	~Engine();
 	void run();
 private:
-	std::unique_ptr<Renderer> renderer;
+	Camera camera;
+	Renderer renderer;
+
 	float deltaSec;
 	Ai aiPlayers[4];
 	Vehicle vehicles[4];
@@ -34,7 +37,6 @@ private:
 
 	std::vector<std::shared_ptr<Model>> staticModels;
 	std::vector<std::shared_ptr<Model>> physicsModels;
-	std::shared_ptr<Camera> camera;
 
 	// These should eventually be their specific classes rather than Model.
 	// e.g. the plane should be Arena, car should be Vehicle.
