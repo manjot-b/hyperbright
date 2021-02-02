@@ -17,6 +17,7 @@ class Mesh
 {
 	public:
 		Mesh(const aiMesh* mesh);
+		Mesh(const Mesh& mesh);
 		~Mesh();
 		void draw() const;
 		void extractDataFromMesh(const aiMesh* mesh);

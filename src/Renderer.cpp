@@ -80,9 +80,11 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	devUI: An imgui window.
 *	models: All the models to renderer this frame.
 */
+
 void Renderer::render(	float deltaSec, DevUI& devUI, 
 						std::vector<std::shared_ptr<Model>>& staticModels,
-						std::vector<std::shared_ptr<Model>>& physicsModels)
+						std::vector<std::shared_ptr<Model>>& physicsModels,
+						Arena & arena)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -102,14 +104,11 @@ void Renderer::render(	float deltaSec, DevUI& devUI,
 		model->draw(*shader);
 	}
 
+	arena.draw(*shader);
+
 	glUseProgram(0);
 
 	devUI.show(deltaSec);
 
 	glfwSwapBuffers(window);
-}
-
-void Renderer::updateModelList(std::vector<std::string> _modelList)
-{
-	modelList = _modelList;
 }

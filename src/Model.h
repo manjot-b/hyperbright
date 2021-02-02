@@ -18,7 +18,9 @@ class Model
 		};
 
 		Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture> texture);
+		Model(const Model& model);
 		~Model();
+
 		void draw(const Shader& shader) const;
 		void update();
 		void updateModelMatrix(glm::mat4& modelPose);
@@ -27,9 +29,9 @@ class Model
 		void scale(float scale);
 
 		void setPosition(glm::vec3 position);
-		bool isDynamic() { return dynamicObject; }
+		bool isDynamic() const;
 
-		std::vector<std::unique_ptr<Mesh>>& getMeshes() { return meshes; }
+		const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 
 		glm::vec3 getPosition();
 

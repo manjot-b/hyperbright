@@ -23,10 +23,23 @@ Model::Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture>
 	extractDataFromNode(scene, scene->mRootNode);	
 
 	scaleToViewport();
-	// Scale model so that the longest side of its BoundingBox
-	// has a length of 1.
-//	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
-//	update();
+}
+
+/*
+ * Deep copy the model.
+ */
+Model::Model(const Model& model) : dynamicObject(model.isDynamic())
+{
+	boundingBox = model.boundingBox;
+	modelMatrix = model.modelMatrix;
+	m_rotate = model.m_rotate;
+	m_scale = model.m_scale;
+	m_translation = model.m_translation;
+
+	for (const auto& mesh : model.meshes)
+	{
+		meshes.push_back(std::make_unique<Mesh>(*mesh));
+	}
 }
 
 Model::~Model() {}
@@ -166,3 +179,6 @@ void Model::scaleToViewport()
 	update();
 }
 
+bool Model::isDynamic() const { return dynamicObject; }
+
+const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }

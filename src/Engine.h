@@ -43,6 +43,8 @@ private:
 	std::shared_ptr<Model> grid;
 	std::shared_ptr<Model> vehicle;
 	std::shared_ptr<Model> skyBox;
+	std::shared_ptr<Model> tile;
+	std::shared_ptr<Model> tileBorder;
 
 	// Rename/remove as required.
 	std::shared_ptr<Texture> face;

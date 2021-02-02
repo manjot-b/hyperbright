@@ -43,7 +43,8 @@ std::shared_ptr<Model> Engine::loadModel(std::string ref, bool inPhysx, Model::M
 	{
 		staticModels.push_back(model);
 	}
-	std::cout << "Loaded Entity " << ref << "\n";
+
+	std::cout << "Loaded Entity.\n";
 	return model;
 }
 
@@ -59,9 +60,12 @@ void Engine::initEntities()
 	// load boxcar > physicsModels[0]
 	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
 	// tmp floor box > staticModels[0]
-	grid = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC, tree);
+	grid = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, tree);
 	// background box > staticModels[1]
-	skyBox = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC, background);
+	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
+
+	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr);
+	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr);
 }
 
 
@@ -86,6 +90,8 @@ void Engine::run()
 	// tmp huge background box
 	skyBox->scale(100);
 	skyBox->update();
+
+	Arena arena(tile, tileBorder, 1, 1);
 
 	while (!controller.isWindowClosed()) {
 		// update global time
@@ -115,7 +121,7 @@ void Engine::run()
 		}
 
 		// render the updated position of all models and ImGui
-		renderer.render(deltaSec, devUI, staticModels, physicsModels);
+		renderer.render(deltaSec, devUI, staticModels, physicsModels, arena);
 
 		glfwPollEvents();
 	}
@@ -175,10 +181,6 @@ void Engine::runGame() {
 	vehicles[1].reset();
 	vehicles[2].reset();
 	vehicles[3].reset();
-
-	//set up arena
-	Arena arena;
-
 
 	//set up Pickups
 
