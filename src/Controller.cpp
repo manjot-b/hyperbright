@@ -5,7 +5,7 @@
 #include <iostream>
 
 Controller::Controller(GLFWwindow* _window, std::shared_ptr<Camera> _camera) :
-	window(_window), camera(_camera), modelIndex(0), isCursorShowing(false)
+	window(_window), camera(_camera), modelIndex(0), isCursorShowing(false), manualCamera(false)
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
 	glfwSetKeyCallback(window, keyCallback);
@@ -75,6 +75,10 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 			controller->nextModel();
 			std::cout << "Next Model. Index: " << controller->modelIndex << std::endl;
 			break;
+		case GLFW_KEY_C:
+			controller->manualCamera = !controller->manualCamera;
+			std::cout << "Switch to manual camer." << std::endl;
+			break;
 		}
 	}
 }
@@ -83,7 +87,7 @@ void Controller::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (!controller->isCursorShowing)
+	if (!controller->isCursorShowing && controller->manualCamera)
 	{
 		if (controller->firstMouse)
 		{

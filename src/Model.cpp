@@ -8,8 +8,8 @@
 
 #include "Model.h"
 
-Model::Model(const std::string &objPath) :
-	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0)
+Model::Model(const std::string &objPath, MoveType type) :
+	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -82,6 +82,16 @@ void Model::update()
 	m_scale = 1;
 }
 
+void Model::updateModelMatrix(glm::mat4& modelPose)
+{
+	modelMatrix = modelPose;
+}
+
+void Model::translate(const glm::vec3& _translate)
+{
+	m_translation = _translate;
+}
+
 /**
  * Rotates the model along each x,y, and z axis at the specified angles.
  * Input parameters are to be in radians. Remember to use the right-hand rule.
@@ -94,6 +104,26 @@ void Model::rotate(const glm::vec3 &rotate)
 void Model::scale(const float scale)
 {
 	m_scale = scale;
+}
+
+void Model::setId(std::string _id)
+{
+	id = _id;
+}
+
+void Model::setPosition(glm::vec3 _position)
+{
+	wPosition = _position;
+}
+
+glm::vec3 Model::getPosition()
+{
+	return wPosition;
+}
+
+std::string Model::getId()
+{
+	return id;
 }
 
 /**

@@ -11,9 +11,9 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 	worldUp(up),
 	yaw(yaw),
 	pitch(pitch),
-	movementSpeed(3.25f),
+	movementSpeed(6.f),
 	mouseSensitivity(0.2f),
-	scrollSensitivity(0.25f)
+	scrollSensitivity(0.5f)
 {
 	updateCameraVectors();	
 }
@@ -92,4 +92,14 @@ void Camera::updateCameraVectors()
 
 	direction = position + front;
 	view = glm::lookAt(position, direction,  up);
+}
+
+void Camera::updateCameraVectors(glm::vec3 poi)
+{
+	front = glm::normalize(poi - position);
+	right = glm::normalize(glm::cross(front, worldUp));
+	up = glm::normalize(glm::cross(right, front));
+
+	direction = position + front;
+	view = glm::lookAt(position, direction, up);
 }
