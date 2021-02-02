@@ -52,6 +52,12 @@ void Engine::run()
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
+		float fpsLimit = (1.f / devUI.getSliderFPS());
+		//wait until a certain amount of time has past
+		while (deltaSec < fpsLimit) {
+			currentFrame = glfwGetTime();
+			deltaSec = currentFrame - lastFrame;
+		}
 		lastFrame = currentFrame;
 
 		controller.processInput(deltaSec);
