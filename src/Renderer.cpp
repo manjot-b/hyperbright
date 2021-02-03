@@ -86,8 +86,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 */
 void Renderer::render(	float deltaSec, DevUI& devUI, 
 						std::vector<std::shared_ptr<Model>>& staticModels,
-						std::vector<std::shared_ptr<Model>>& physicsModels,
-						std::vector<std::unique_ptr<Texture>>& textures)
+						std::vector<std::shared_ptr<Model>>& physicsModels)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -96,18 +95,16 @@ void Renderer::render(	float deltaSec, DevUI& devUI,
 	shader->setUniformMatrix4fv("view", camera->getViewMatrix());
 	shader->setUniformMatrix4fv("perspective", perspective);
 
-	// set textures for each model by hand
-	// boxcar <- awesomeface texture[0]
-	textures[0]->bind(GL_TEXTURE0);
-	physicsModels[0]->draw(*shader);
 
-	// ground cube <- tree texture[2]
-	textures[2]->bind(GL_TEXTURE0);
-	staticModels[0]->draw(*shader);
+	for (const auto& model : physicsModels)
+	{
+		model->draw(*shader);
+	}
 
-	// background cube <- background texture[1]
-	textures[1]->bind(GL_TEXTURE0);
-	staticModels[1]->draw(*shader);
+	for (const auto& model : staticModels)
+	{
+		model->draw(*shader);
+	}
 
 	glUseProgram(0);
 

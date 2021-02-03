@@ -15,7 +15,7 @@ Engine::Engine() :
 	camera = std::make_shared<Camera>();
 	renderer = std::make_unique<Renderer>(camera);
 
-	// load textures into a list
+	// load textures into a shared pointer.
 	loadTextures();
 
 	initEntities();
@@ -28,9 +28,9 @@ Engine::~Engine() {}
  * Loads all models in rsc/models and stores them in a vector. Requires glad
  * to have loaded opengl function calls.
 */
-std::shared_ptr<Model> Engine::loadModel(std::string ref, bool inPhysx, Model::MoveType type)
+std::shared_ptr<Model> Engine::loadModel(std::string ref, bool inPhysx, Model::MoveType type, const std::shared_ptr<Texture>& texture)
 {
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type);
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture);
 	std::cout << "Loading " << ref << "..." << std::flush;
 	if (inPhysx)
 	{
@@ -46,22 +46,19 @@ std::shared_ptr<Model> Engine::loadModel(std::string ref, bool inPhysx, Model::M
 
 void Engine::loadTextures()
 {
-	// load all textures in images into a list to be selected per entity
-	namespace fs = std::filesystem;
-	for (const auto& entry : fs::directory_iterator("rsc/images"))
-	{
-		textures.push_back(std::make_unique<Texture>(entry.path().string().c_str()));
-	}
+	face = std::make_shared<Texture>("rsc/images/awesomeface.png");
+	tree = std::make_shared<Texture>("rsc/images/tree.jpeg");
+	background = std::make_shared<Texture>("rsc/images/background.jpg");
 }
 
 void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
-	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC);
+	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
 	// tmp floor box > staticModels[0]
-	grid = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC);
+	grid = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC, tree);
 	// background box > staticModels[1]
-	skyBox = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC);
+	skyBox = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC, background);
 }
 
 
@@ -115,7 +112,7 @@ void Engine::run()
 		}
 
 		// render the updated position of all models and ImGui
-		renderer->render(deltaSec, devUI, staticModels, physicsModels, textures);
+		renderer->render(deltaSec, devUI, staticModels, physicsModels);
 
 		glfwPollEvents();
 	}

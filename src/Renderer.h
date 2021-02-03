@@ -23,8 +23,7 @@ class Renderer
 
 		void render(float deltaSec, DevUI& devUI,
 			std::vector<std::shared_ptr<Model>>& staticModels,
-			std::vector<std::shared_ptr<Model>>& physicsModels,
-			std::vector<std::unique_ptr<Texture>>& textures);
+			std::vector<std::shared_ptr<Model>>& physicsModels);
 		void updateModelList(std::vector<std::string> modelList);
 
 
