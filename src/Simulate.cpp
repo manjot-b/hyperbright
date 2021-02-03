@@ -25,7 +25,7 @@ PxCooking* gCooking = NULL;
 PxRigidStatic* gGroundPlane = NULL; // ground
 PxRigidDynamic* boxCar = NULL;
 
-Simulate::Simulate(std::vector<std::unique_ptr<Model>> &_physicsModels) :
+Simulate::Simulate(std::vector<std::shared_ptr<Model>>& _physicsModels) :
 	physicsModels(_physicsModels)
 {
 	initPhysics();
@@ -80,7 +80,7 @@ void Simulate::initPhysics()
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
-void Simulate::stepPhysics(std::vector<std::unique_ptr<Model>>& physicsModels)
+void Simulate::stepPhysics()
 {
 	gScene->simulate(1.0f / 60.0f);
 	gScene->fetchResults(true);
@@ -91,7 +91,7 @@ void Simulate::stepPhysics(std::vector<std::unique_ptr<Model>>& physicsModels)
 	}
 }
 
-void Simulate::setModelPose(std::unique_ptr<Model>& model)
+void Simulate::setModelPose(std::shared_ptr<Model>& model)
 {
 	PxU32 numActors = gScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
 	if (numActors)

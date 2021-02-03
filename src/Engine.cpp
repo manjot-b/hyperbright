@@ -1,4 +1,5 @@
 #include "Engine.h"
+
 #include <filesystem>
 #include <string>
 
@@ -27,33 +28,20 @@ Engine::~Engine() {}
  * Loads all models in rsc/models and stores them in a vector. Requires glad
  * to have loaded opengl function calls.
 */
-void Engine::loadModels(std::string ref, bool inPhysx, Model::MoveType type)
+std::shared_ptr<Model> Engine::loadModel(std::string ref, bool inPhysx, Model::MoveType type)
 {
-	namespace fs = std::filesystem;
-	const std::string extension = ".obj";
-
-	for (const auto& entry : fs::directory_iterator("rsc/models"))
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type);
+	std::cout << "Loading " << ref << "..." << std::flush;
+	if (inPhysx)
 	{
-		std::string name = entry.path().stem().string();
-		if (name == ref)
-		{
-			if (entry.is_regular_file() && entry.path().extension() == extension)
-			{
-				std::cout << "Loading " << entry.path() << "..." << std::flush;
-				if (inPhysx)
-				{
-					physicsModels.push_back(std::make_unique<Model>(entry.path().string(), type));
-					physicsModels[physicsModels.size() - 1]->setId(name);  // set the model id to it's file name
-				}
-				else
-				{
-					staticModels.push_back(std::make_unique<Model>(entry.path().string(), type));
-					staticModels[staticModels.size() - 1]->setId(name);  // set the model id to it's file name
-				}
-				std::cout << "Loaded Entity " << ref << "\n";
-			}
-		}
+		physicsModels.push_back(model);
 	}
+	else
+	{
+		staticModels.push_back(model);
+	}
+	std::cout << "Loaded Entity " << ref << "\n";
+	return model;
 }
 
 void Engine::loadTextures()
@@ -69,11 +57,11 @@ void Engine::loadTextures()
 void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
-	loadModels("boxcar", true, Model::MoveType::DYNAMIC);
+	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC);
 	// tmp floor box > staticModels[0]
-	loadModels("cube", false, Model::Model::STATIC);
+	grid = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC);
 	// background box > staticModels[1]
-	loadModels("cube", false, Model::Model::STATIC);
+	skyBox = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC);
 }
 
 
@@ -88,16 +76,16 @@ void Engine::run()
 	Controller controller(renderer->getWindow(), camera);
   
 	// moving the boxcar off origin
-	physicsModels[0]->translate(glm::vec3(0.0f, 0.0f, -2.0f));
+	vehicle->translate(glm::vec3(0.0f, 0.0f, -2.0f));
 
 	// temp large box to act as visual floor
-	staticModels[0]->scale(50);
-	staticModels[0]->translate(glm::vec3(0.0f, -25.5f, 0.0f));
-	staticModels[0]->update();
+	grid->scale(50);
+	grid->translate(glm::vec3(0.0f, -25.5f, 0.0f));
+	grid->update();
 
 	// tmp huge background box
-	staticModels[1]->scale(100);
-	staticModels[1]->update();
+	skyBox->scale(100);
+	skyBox->update();
 
 	while (!controller.isWindowClosed()) {
 		// update global time
@@ -117,7 +105,7 @@ void Engine::run()
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics(physicsModels);
+		simulator.stepPhysics();
 
 		// set camera to player vehicles position
 		if (!controller.isCameraManual())

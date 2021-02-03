@@ -32,11 +32,16 @@ private:
 	Vehicle vehicles[4];
 	Pickup pickups[10];
 
-	std::vector<std::unique_ptr<Model>> staticModels;
-	std::vector<std::unique_ptr<Model>> physicsModels;
+	std::vector<std::shared_ptr<Model>> staticModels;
+	std::vector<std::shared_ptr<Model>> physicsModels;
 	std::vector<std::unique_ptr<Texture>> textures;
-	std::vector<std::string> modelNames;
 	std::shared_ptr<Camera> camera;
+
+	// These should eventually be their specific classes rather than Model.
+	// e.g. the plane should be Arena, car should be Vehicle.
+	std::shared_ptr<Model> grid;
+	std::shared_ptr<Model> vehicle;
+	std::shared_ptr<Model> skyBox;
 
 	glm::vec3 rotate;
 	float scale;
@@ -47,7 +52,7 @@ private:
 	int menuInput();
 	void runGame();
   
-	void loadModels(std::string ref, bool inPhysx, Model::MoveType type);
+	std::shared_ptr<Model> loadModel(std::string ref, bool inPhysx, Model::MoveType type);
 	void loadTextures();
 	void initEntities();
 };

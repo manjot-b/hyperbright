@@ -85,8 +85,8 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	models: All the models to renderer this frame.
 */
 void Renderer::render(	float deltaSec, DevUI& devUI, 
-						std::vector<std::unique_ptr<Model>>& staticModels,
-						std::vector<std::unique_ptr<Model>>& physicsModels,
+						std::vector<std::shared_ptr<Model>>& staticModels,
+						std::vector<std::shared_ptr<Model>>& physicsModels,
 						std::vector<std::unique_ptr<Texture>>& textures)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
