@@ -18,6 +18,7 @@
 #include "Controller.h"
 #include "Renderer.h"
 #include "PickupManager.h"
+#include "Texture.h"
 
 class Engine
 {
@@ -32,11 +33,20 @@ private:
 	Vehicle vehicles[4];
 	Pickup pickups[10];
 
-	std::vector<std::unique_ptr<Model>> staticModels;
-	std::vector<std::unique_ptr<Model>> physicsModels;
-	std::vector<std::unique_ptr<Texture>> textures;
-	std::vector<std::string> modelNames;
+	std::vector<std::shared_ptr<Model>> staticModels;
+	std::vector<std::shared_ptr<Model>> physicsModels;
 	std::shared_ptr<Camera> camera;
+
+	// These should eventually be their specific classes rather than Model.
+	// e.g. the plane should be Arena, car should be Vehicle.
+	std::shared_ptr<Model> grid;
+	std::shared_ptr<Model> vehicle;
+	std::shared_ptr<Model> skyBox;
+
+	// Rename/remove as required.
+	std::shared_ptr<Texture> face;
+	std::shared_ptr<Texture> tree;
+	std::shared_ptr<Texture> background;
 
 	glm::vec3 rotate;
 	float scale;
@@ -47,7 +57,7 @@ private:
 	int menuInput();
 	void runGame();
   
-	void loadModels(std::string ref, bool inPhysx, Model::MoveType type);
+	std::shared_ptr<Model> loadModel(std::string ref, bool inPhysx, Model::MoveType type, const std::shared_ptr<Texture>& texture);
 	void loadTextures();
 	void initEntities();
 };
