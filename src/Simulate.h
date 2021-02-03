@@ -13,15 +13,15 @@
 class Simulate
 {
 public:
-	Simulate(std::vector<std::unique_ptr<Model>> &physicsModels);
+	Simulate(std::vector<std::shared_ptr<Model>>& physicsModels);
 	~Simulate();
-	void stepPhysics(std::vector<std::unique_ptr<Model>>& physicsModels);
-	void setModelPose(std::unique_ptr<Model> &model);
+	void stepPhysics();
+	void setModelPose(std::shared_ptr<Model> &model);
 	void cookMeshes();
 
 	void cleanupPhysics();
 private:
 	void initPhysics();
 
-	std::vector<std::unique_ptr<Model>> &physicsModels;
+	std::vector<std::shared_ptr<Model>> &physicsModels;
 };

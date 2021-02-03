@@ -4,8 +4,9 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-#include "Shader.h"
 #include "Mesh.h"
+#include "Shader.h"
+#include "Texture.h"
 
 class Model
 {
@@ -15,7 +16,7 @@ class Model
 			DYNAMIC
 		};
 
-		Model(const std::string &objPath, MoveType type);
+		Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture> texture);
 		~Model();
 		void draw(const Shader& shader) const;
 		void update();
@@ -24,19 +25,16 @@ class Model
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
 
-		void setId(std::string id);
 		void setPosition(glm::vec3 position);
 		bool isDynamic() { return dynamicObject; }
 
 		std::vector<std::unique_ptr<Mesh>>& getMeshes() { return meshes; }
 
 		glm::vec3 getPosition();
-		std::string getId();
 
 		bool shouldRender = false;
 
 	private:
-		std::string id;
 		std::vector<std::unique_ptr<Mesh>> meshes;
 
 		BoundingBox boundingBox;
@@ -47,6 +45,7 @@ class Model
 		glm::vec3 wPosition;
 
 		int const dynamicObject;
+		std::shared_ptr<Texture> m_texture;
 
 		void extractDataFromNode(const aiScene* scene, const aiNode* node);
 		void scaleToViewport();

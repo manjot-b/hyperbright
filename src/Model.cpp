@@ -8,8 +8,8 @@
 
 #include "Model.h"
 
-Model::Model(const std::string &objPath, MoveType type) :
-	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type)
+Model::Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture> texture) :
+	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type), m_texture(texture)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -60,6 +60,11 @@ void Model::draw(const Shader& shader) const
 {
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
+	if (m_texture)
+	{
+		m_texture->bind(GL_TEXTURE0);
+	}
+
 	for(auto &mesh : meshes)
 	{
 		mesh->draw();
@@ -106,11 +111,6 @@ void Model::scale(const float scale)
 	m_scale = scale;
 }
 
-void Model::setId(std::string _id)
-{
-	id = _id;
-}
-
 void Model::setPosition(glm::vec3 _position)
 {
 	wPosition = _position;
@@ -121,10 +121,6 @@ glm::vec3 Model::getPosition()
 	return wPosition;
 }
 
-std::string Model::getId()
-{
-	return id;
-}
 
 /**
  * Iterate over every mesh to calculate the bounding box of the whole model.
