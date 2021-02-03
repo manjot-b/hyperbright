@@ -31,9 +31,13 @@ Engine::~Engine() {}
  * Loads all models in rsc/models and stores them in a vector. Requires glad
  * to have loaded opengl function calls.
 */
-std::shared_ptr<Model> Engine::loadModel(std::string ref, bool inPhysx, Model::MoveType type, const std::shared_ptr<Texture>& texture)
+std::shared_ptr<Model> Engine::loadModel(std::string ref,
+	bool inPhysx,
+	Model::MoveType type,
+	const std::shared_ptr<Texture>& texture,
+	const glm::vec4& color)
 {
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture);
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture, color, false);
 	std::cout << "Loading " << ref << "..." << std::flush;
 	if (inPhysx)
 	{
@@ -64,8 +68,8 @@ void Engine::initEntities()
 	// background box > staticModels[1]
 	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
 
-	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr);
-	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr);
+	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(1,0,0,0));
+	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0,0,1,0));
 }
 
 

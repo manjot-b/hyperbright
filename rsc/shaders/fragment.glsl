@@ -1,14 +1,21 @@
 #version 330 core
 
-in vec4 vertexColor;
 in vec2 texCoord;
 
 uniform sampler2D tex;
+uniform bool hasTexture;
+uniform vec4 vertexColor;
 
 out vec4 fragColor;
 
 void main()
 {
-	//fragColor = vertexColor;
-	fragColor = texture(tex, texCoord);
+	if (hasTexture)
+	{
+		fragColor = texture(tex, texCoord);
+	}
+	else
+	{
+		fragColor = vertexColor;
+	}
 }

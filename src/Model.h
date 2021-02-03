@@ -17,7 +17,11 @@ class Model
 			DYNAMIC
 		};
 
-		Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture> texture);
+		Model(const std::string &objPath,
+			MoveType type,
+			std::shared_ptr<Texture> texture,
+			const glm::vec4& color,
+			bool fitToViewPort = true);
 		Model(const Model& model);
 		~Model();
 
@@ -46,6 +50,7 @@ class Model
 		float m_scale;				// scale to apply to model
 		glm::vec3 m_translation;	// translation vector
 		glm::vec3 wPosition;
+		glm::vec4 m_color;
 
 		int const dynamicObject;
 		std::shared_ptr<Texture> m_texture;

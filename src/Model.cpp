@@ -9,8 +9,13 @@
 
 #include <iostream>
 
-Model::Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture> texture) :
-	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type), m_texture(texture)
+Model::Model(const std::string &objPath,
+	MoveType type,
+	std::shared_ptr<Texture> texture,
+	const glm::vec4& color,
+	bool fitToViewPort) :
+	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type), m_texture(texture),
+	m_color(color)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -22,7 +27,10 @@ Model::Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture>
 
 	extractDataFromNode(scene, scene->mRootNode);	
 
-	scaleToViewport();
+	if (fitToViewPort)
+	{
+		scaleToViewport();
+	}
 }
 
 /*
@@ -72,6 +80,10 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
  */
 void Model::draw(const Shader& shader) const
 {
+	
+	bool hasTexture = m_texture != nullptr;
+	shader.setUniform1i("hasTexture", hasTexture);
+	shader.setUniform4fv("vertexColor", m_color);
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
 	if (m_texture)
