@@ -96,29 +96,21 @@ void Pickup::deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFir
 	std::cout << "DEACTIVATED\n";
 	if (type == SPEED) {
 		//SET OLD VEHICLE MAX SPEED
-		//move from active to inactive
-		//TEAR DOWN
 	}
 	else if (type == ZAP) {
 		vehicles[indexOfFirstPlace].color = zapOldColor;
-		//move from active to inactive
-		//TEAR DOWN
 	}
 	else if (type == HIGHVOLTAGE) {
 		//CHANGE COLOR LAYING AREA OF vehicles[indexOfActivator] TO ORIGINAL
-		//move from active to inactive
-		//TEAR DOWN
 	}
 	else if (type == SUCKER) {
 		vehicles[indexOfActivator].suckerActive = false;
-		//move from active to inactive
-		//TEAR DOWN
 	}
 	else if (type == SYPHON) {
 		vehicles[indexOfActivator].syphonActive = false;
-		//move from active to inactive
-		//TEAR DOWN
 	}
+	pickupManager->removeFromActive(std::shared_ptr<Pickup>(this));
+	pickupManager->moveToInactive(std::shared_ptr<Pickup>(this));
 	return;
 }
 
@@ -126,20 +118,22 @@ void Pickup::deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFir
 /*
 This function is called when given vehicle collides with this powerup.
 */
-void Pickup::initialCollision(Vehicle vehicle) {
+void Pickup::initialCollision(std::shared_ptr<Vehicle> vehicle) {
 	if (type == BATTERY) {
-		vehicle.energy += 50;//BATTERY ACTIVATE
-		//TEAR DOWN
+		vehicle->energy += 50;//BATTERY ACTIVATE
 		//move from onArena to inactive
+		pickupManager->removeFromArena(std::shared_ptr<Pickup>(this));
+		pickupManager->moveToInactive(std::shared_ptr<Pickup>(this));
 	}
 	else if (type == SLOWTRAP && slowTrapActive) {
 		//TO DO, IF YOU HIT THE ACTIVE SLOWTRAP
 		//move from onArena to active
+		pickupManager->removeFromArena(std::shared_ptr<Pickup>(this));
+		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 	} else {
-		vehicle.pickupEquiped = std::shared_ptr<Pickup>(this);
-		//carriedBy = &vehicle;
-		//beingCarried = true;
+		vehicle->pickupEquiped = std::shared_ptr<Pickup>(this);
 		//remove from onArena
+		pickupManager->removeFromArena(std::shared_ptr<Pickup>(this));
 	}
 	return;
 }

@@ -25,7 +25,7 @@ public:
 	Pickup(int pickupType, std::shared_ptr<PickupManager> pickupManager );
 	void activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
-	void initialCollision(Vehicle vehicle);
+	void initialCollision(std::shared_ptr<Vehicle> vehicle);
 	bool active;
 	//bool beingCarried;
 	bool timeRemaining();
