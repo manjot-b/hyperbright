@@ -69,9 +69,7 @@ void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
 	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
-	// tmp floor box > staticModels[0]
-	grid = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, tree);
-	// background box > staticModels[1]
+	// background box > staticModels[0]
 	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
 
 	bool copyModel = true;
@@ -92,11 +90,6 @@ void Engine::run()
   
 	// moving the boxcar off origin
 	vehicle->translate(glm::vec3(0.0f, 0.0f, -2.0f));
-
-	// temp large box to act as visual floor
-	grid->scale(50);
-	grid->translate(glm::vec3(0.0f, -25.5f, 0.0f));
-	grid->update();
 
 	// tmp huge background box
 	skyBox->scale(100);

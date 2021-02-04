@@ -34,16 +34,18 @@ Arena::Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> til
 	tileGrid(rows)
 {
 	const BoundingBox& tileBox = tileBorder->getBoundingBox();
+	glm::vec3 trans(0.f);
+	trans.y = -tileBox.height / 2.f;	// Top of grid should be at y=0
 
 	for (unsigned int row = 0; row < tileGrid.size(); row++)
 	{
 		tileGrid[row] = std::vector<Tile>(cols, Tile(tile, tileBorder));
 
-		float zTrans = -(rows / 2.f) * tileBox.depth + (row * tileBox.depth);
+		trans.z = -(rows / 2.f) * tileBox.depth + (row * tileBox.depth);
 		for (unsigned int col = 0; col < tileGrid[row].size(); col++)
 		{
-			float xTrans = -(cols / 2.f) * tileBox.width + (col * tileBox.width);
-			tileGrid[row][col].translate(glm::vec3(xTrans, 0, zTrans));
+			trans.x = -(cols / 2.f) * tileBox.width + (col * tileBox.width);
+			tileGrid[row][col].translate(trans);
 		}
 	}
 }

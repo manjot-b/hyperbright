@@ -40,7 +40,6 @@ private:
 
 	// These should eventually be their specific classes rather than Model.
 	// e.g. the plane should be Arena, car should be Vehicle.
-	std::shared_ptr<Model> grid;
 	std::shared_ptr<Model> vehicle;
 	std::shared_ptr<Model> skyBox;
 	std::shared_ptr<Model> tile;
