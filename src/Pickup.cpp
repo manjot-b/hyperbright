@@ -34,12 +34,16 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 	if (type == SPEED) {
 		//SET NEW VEHICLE MAX SPEED
 		//move to active
+		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == ZAP) {
 		zapOldColor = vehicles[indexOfFirstPlace].color;
 		vehicles[indexOfFirstPlace].color = vehicles[indexOfActivator].color;
 		//move to active
+		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == EMP) {
@@ -49,26 +53,34 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 		vehicles[3].energy = 0;
 		//TEAR DOWN
 		//move to inactive
+		pickupManager->moveToInactive(std::shared_ptr<Pickup>(this));
 	}
 	else if (type == HIGHVOLTAGE) {
 		//CHANGE COLOR LAYING AREA OF vehicles[indexOfActivator]
 		//move to active
+		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == SLOWTRAP) {
 		//SET CURRENT POSITION TO BEHIND vehicles[indexOfActivator]
 		//move to onArena
+		pickupManager->moveToArena(std::shared_ptr<Pickup>(this));
 		//beingCarried = false;
 		slowTrapActive = true;
 	}
 	else if (type == SUCKER) {
 		vehicles[indexOfActivator].suckerActive = true;
 		//move to active
+		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == SYPHON) {
 		vehicles[indexOfActivator].syphonActive = true;
 		//move to active
+		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+
 		pickUpStartTime = glfwGetTime();
 	}
 
