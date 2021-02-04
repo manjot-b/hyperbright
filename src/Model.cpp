@@ -26,6 +26,7 @@ Model::Model(const std::string &objPath,
 	}
 
 	extractDataFromNode(scene, scene->mRootNode);	
+	computeBoundingBox();
 
 	if (fitToViewPort)
 	{
@@ -43,6 +44,7 @@ Model::Model(const Model& model) : dynamicObject(model.isDynamic())
 	m_rotate = model.m_rotate;
 	m_scale = model.m_scale;
 	m_translation = model.m_translation;
+	m_color = model.m_color;
 
 	for (const auto& mesh : model.meshes)
 	{
@@ -142,17 +144,12 @@ void Model::setPosition(glm::vec3 _position)
 	wPosition = _position;
 }
 
-glm::vec3 Model::getPosition()
+const glm::vec3& Model::getPosition() const
 {
 	return wPosition;
 }
 
-
-/**
- * Iterate over every mesh to calculate the bounding box of the whole model.
- * Assumes the standard OpenGL viewport of -1 to 1.
- */
-void Model::scaleToViewport()
+void Model::computeBoundingBox()
 {
 	float minX = meshes[0]->getBoundingBox().x;
 	float maxX = meshes[0]->getBoundingBox().x + meshes[0]->getBoundingBox().width;
@@ -165,10 +162,10 @@ void Model::scaleToViewport()
 	{
 		minX = glm::min(minX, mesh->getBoundingBox().x);
 		maxX = glm::max(maxX, mesh->getBoundingBox().x + mesh->getBoundingBox().width);
-		
+
 		minY = glm::min(minY, mesh->getBoundingBox().y);
 		maxY = glm::max(maxY, mesh->getBoundingBox().y + mesh->getBoundingBox().height);
-		
+
 		minZ = glm::min(minZ, mesh->getBoundingBox().z);
 		maxZ = glm::max(maxZ, mesh->getBoundingBox().z + mesh->getBoundingBox().depth);
 	}
@@ -179,7 +176,16 @@ void Model::scaleToViewport()
 	boundingBox.width = glm::abs(maxX - minX);
 	boundingBox.height = glm::abs(maxY - minY);
 	boundingBox.depth = glm::abs(maxZ - minZ);
+}
 
+/**
+ * Iterate over every mesh to calculate the bounding box of the whole model.
+ * Assumes the standard OpenGL viewport of -1 to 1.
+ * 
+ * Note: The BoundingBox must be calculated first.
+ */
+void Model::scaleToViewport()
+{
 	// Scale by the longest edge.
 	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
 
@@ -194,3 +200,5 @@ void Model::scaleToViewport()
 bool Model::isDynamic() const { return dynamicObject; }
 
 const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }
+
+const BoundingBox& Model::getBoundingBox() const { return boundingBox; }

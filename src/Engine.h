@@ -64,7 +64,8 @@ private:
 		bool inPhysx,
 		Model::MoveType type,
 		const std::shared_ptr<Texture>& texture,
-		const glm::vec4& color = glm::vec4(0.3, 0.3, 0.3, 0));
+		const glm::vec4& color = glm::vec4(0.3, 0.3, 0.3, 0),
+		bool copyModel = false);
 	void loadTextures();
 	void initEntities();
 };

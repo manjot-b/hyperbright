@@ -37,7 +37,8 @@ class Model
 
 		const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 
-		glm::vec3 getPosition();
+		const glm::vec3& getPosition() const;
+		const BoundingBox& getBoundingBox() const;
 
 		bool shouldRender = false;
 
@@ -56,5 +57,7 @@ class Model
 		std::shared_ptr<Texture> m_texture;
 
 		void extractDataFromNode(const aiScene* scene, const aiNode* node);
+		void computeBoundingBox();
 		void scaleToViewport();
+		
 };

@@ -35,17 +35,23 @@ std::shared_ptr<Model> Engine::loadModel(std::string ref,
 	bool inPhysx,
 	Model::MoveType type,
 	const std::shared_ptr<Texture>& texture,
-	const glm::vec4& color)
+	const glm::vec4& color,
+	bool copyModel)
 {
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture, color, false);
 	std::cout << "Loading " << ref << "..." << std::flush;
-	if (inPhysx)
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture, color, false);
+
+	// Don't store the model in the list if it just meant to be copied from.
+	if (!copyModel)
 	{
-		physicsModels.push_back(model);
-	}
-	else
-	{
-		staticModels.push_back(model);
+		if (inPhysx)
+		{
+			physicsModels.push_back(model);
+		}
+		else
+		{
+			staticModels.push_back(model);
+		}
 	}
 
 	std::cout << "Loaded Entity.\n";
@@ -68,8 +74,9 @@ void Engine::initEntities()
 	// background box > staticModels[1]
 	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
 
-	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(1,0,0,0));
-	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0,0,1,0));
+	bool copyModel = true;
+	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3, 0.3, 0.3 ,0), copyModel);
+	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2 ,0.2 ,0.2 ,0), copyModel);
 }
 
 
@@ -95,7 +102,7 @@ void Engine::run()
 	skyBox->scale(100);
 	skyBox->update();
 
-	Arena arena(tile, tileBorder, 1, 1);
+	Arena arena(tile, tileBorder, 25, 25);
 
 	while (!controller.isWindowClosed()) {
 		// update global time

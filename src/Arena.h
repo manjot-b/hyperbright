@@ -20,6 +20,7 @@ private:
 	public:
 		Tile(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> tileBorder);
 		void draw(const Shader& shader) const;
+		void translate(const glm::vec3& trans);
 
 	private:
 		Model tile;

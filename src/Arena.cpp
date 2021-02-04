@@ -12,6 +12,15 @@ void Arena::Tile::draw(const Shader& shader) const
 	tileBorder.draw(shader);
 }
 
+void Arena::Tile::translate(const glm::vec3& trans)
+{
+	tile.translate(trans);
+	tileBorder.translate(trans);
+
+	tile.update();
+	tileBorder.update();
+}
+
 /*
  Construct an arena:
 
@@ -24,10 +33,18 @@ void Arena::Tile::draw(const Shader& shader) const
 Arena::Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> tileBorder, unsigned int rows, unsigned int cols) :
 	tileGrid(rows)
 {
+	const BoundingBox& tileBox = tileBorder->getBoundingBox();
 
-	for (auto& row : tileGrid)
+	for (unsigned int row = 0; row < tileGrid.size(); row++)
 	{
-		row = std::vector<Tile>(cols, Tile(tile, tileBorder));
+		tileGrid[row] = std::vector<Tile>(cols, Tile(tile, tileBorder));
+
+		float zTrans = -(rows / 2.f) * tileBox.depth + (row * tileBox.depth);
+		for (unsigned int col = 0; col < tileGrid[row].size(); col++)
+		{
+			float xTrans = -(cols / 2.f) * tileBox.width + (col * tileBox.width);
+			tileGrid[row][col].translate(glm::vec3(xTrans, 0, zTrans));
+		}
 	}
 }
 
