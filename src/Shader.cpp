@@ -1,12 +1,14 @@
-#include <glad/glad.h>
+#include "Shader.h"
+
+#include <glm/gtc/type_ptr.hpp>
+
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <vector>
-#include <glm/gtc/type_ptr.hpp>
 
-#include "Shader.h"
+
 Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath)
 {
 	id = glCreateProgram();

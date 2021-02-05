@@ -1,12 +1,13 @@
+#include "Model.h"
+
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
-#include <iostream>
 
-#include "Model.h"
+#include <iostream>
 
 Model::Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture> texture) :
 	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type), m_texture(texture)

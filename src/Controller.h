@@ -1,12 +1,13 @@
 #pragma once
+
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <string>
 #include <glm/glm.hpp>
+
 #include <memory>
 #include <queue>
 
 #include "Vehicle.h"
-#include "Ai.h"
 #include "Camera.h"
 
 class Controller

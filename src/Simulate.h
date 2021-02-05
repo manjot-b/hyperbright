@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
 #include <glm/glm.hpp>
-#include <memory>
 #include <PxPhysicsAPI.h>
 #include <queue>
+
+#include <memory>
 
 #include "Vehicle.h"
 #include "Arena.h"

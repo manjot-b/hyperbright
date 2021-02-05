@@ -1,11 +1,12 @@
 #pragma once
-class Vehicle;//Forward declaration
-#include <string>
+
 #include <glm/glm.hpp>
+
 #include <memory>
 
 #include "PickupManager.h"
-//#include "Vehicle.h"
+
+class Vehicle;
 
 #define BATTERY 0
 #define SPEED 1

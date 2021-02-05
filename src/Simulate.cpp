@@ -2,8 +2,9 @@
 #include "Controller.h"
 #include "Vehicle.h"
 
-#include <ctype.h>
 #include <vehicle/PxVehicleUtil.h>
+
+#include <ctype.h>
 #include <iostream>
 
 #include "SnippetVehicleSceneQuery.h"

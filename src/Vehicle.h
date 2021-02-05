@@ -1,11 +1,4 @@
 #pragma once
-#define _USE_MATH_DEFINES
-
-#include <math.h>
-#include <string>
-//#include <glm/glm.hpp>
-//#include <memory>
-#include <queue>
 
 #include "Pickup.h"
 #include "Model.h"

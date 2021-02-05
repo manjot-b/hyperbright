@@ -1,5 +1,8 @@
-#include <vector>
+#pragma once
+
 #include <assimp/scene.h>
+
+#include <vector>
 #include <memory>
 
 #include "Vertex.h"

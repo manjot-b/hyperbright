@@ -1,14 +1,10 @@
-#include <glad/glad.h>
-#include <iostream>
+#include "Renderer.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
-#include <PxPhysicsAPI.h>
 #include <filesystem>
-
-#include "Renderer.h"
-
 
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will

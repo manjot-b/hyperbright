@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
 #include <glm/glm.hpp>
-#include <memory>
 
 #include "Vehicle.h"
 
