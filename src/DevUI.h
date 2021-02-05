@@ -1,9 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <string>
-#include <memory>
+#include <glm/glm.hpp>
 
 class DevUI
 {

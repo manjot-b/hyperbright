@@ -1,7 +1,11 @@
 #include "Pickup.h"
-#include "Vehicle.h"
+
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
+
+#include "Vehicle.h"
 
 Pickup::Pickup() {
 	type = 0;//DEFAULT

@@ -1,6 +1,6 @@
-#include <glad/glad.h>
-
 #include "Mesh.h"
+
+#include <glad/glad.h>
 
 Mesh::Mesh(const aiMesh* mesh)
 {
