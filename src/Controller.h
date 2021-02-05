@@ -3,8 +3,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
-#include <memory>
 #include <queue>
 
 #include "Vehicle.h"
@@ -13,6 +11,7 @@
 class Controller
 {
 public:
+
 	enum Drive {
 		ACCEL,
 		BRAKE,
@@ -26,7 +25,7 @@ public:
 		NO_TURN
 	};
 
-	Controller(GLFWwindow* window, std::shared_ptr<Camera> camera);
+	Controller(GLFWwindow* window, Camera& camera);
 	~Controller();
 
 	// Temporary model selection 
@@ -48,7 +47,7 @@ public:
 
 private:
 	GLFWwindow* window;
-	std::shared_ptr<Camera> camera;
+	Camera& camera;
 
 	bool manualCamera;
 	bool firstMouse;

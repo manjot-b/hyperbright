@@ -7,6 +7,7 @@
 #include <string>
 #include <memory>
 
+#include "Arena.h"
 #include "Model.h"
 #include "Shader.h"
 #include "Camera.h"
@@ -16,28 +17,25 @@
 class Renderer
 {
 	public:
-		Renderer(const std::shared_ptr<Camera> camera);
+		Renderer(const Camera& camera);
 		~Renderer();
 
 		GLFWwindow* getWindow();
 
 		void render(float deltaSec, DevUI& devUI,
 			std::vector<std::shared_ptr<Model>>& staticModels,
-			std::vector<std::shared_ptr<Model>>& physicsModels);
-		void updateModelList(std::vector<std::string> modelList);
-
+			std::vector<std::shared_ptr<Model>>& physicsModels,
+			Arena& arena);
 
 	private:
 		GLFWwindow* window;
-
-		std::vector<std::string> modelList;
 
 		std::unique_ptr<Shader> shader;
 
 		const unsigned int height = 800;
 		const unsigned int width = 800;
 
-		const std::shared_ptr<Camera> camera;
+		const Camera& camera;
 		glm::mat4 perspective;
 
 		void initWindow();

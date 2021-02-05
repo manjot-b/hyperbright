@@ -504,7 +504,7 @@ void Simulate::cookMeshes()
 	{
 		if (!model->isDynamic())
 		{
-			std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
+			const std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
 			for (auto& mesh : meshes)
 			{
 				std::vector<PxVec3> pxVertices;
