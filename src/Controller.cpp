@@ -22,9 +22,18 @@ Controller::~Controller() {
 
 }
 
-void Controller::gameInput(Vehicle vehicle) {
+std::queue<int> Controller::gameInput() {
 	//User input
+	std::cout << "Queue count: " << currentDrivingControls.size() << std::endl;
+	std::queue<int> copy;
+	currentDrivingControls.swap(copy);
+	return copy;
 }
+
+bool upPressed;
+bool downPressed;
+bool leftPressed;
+bool rightPressed;
 
 void Controller::processInput(float deltaSec)
 {
@@ -49,6 +58,87 @@ void Controller::processInput(float deltaSec)
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		camera.processKeyboard(Camera::Movement::DOWN, deltaSec);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		//std::cout << "Up key PRESSED" << std::endl;
+		if (!upPressed)
+		{
+			currentDrivingControls.push(ACCEL);
+			upPressed = true;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE)
+	{
+		if (upPressed)
+		{
+			std::cout << "Up key RELEASED" << std::endl;
+			upPressed = false;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		if (!downPressed)
+		{
+			std::cout << "Down key PRESSED" << std::endl;
+			currentDrivingControls.push(BRAKE);
+			downPressed = true;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)
+	{
+		if (downPressed)
+		{
+			std::cout << "Down key RELEASED" << std::endl;
+			downPressed = false;
+		}
+	}
+
+	if (!upPressed && !downPressed)
+	{
+		currentDrivingControls.push(NO_ACC);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		if (!leftPressed)
+		{
+			std::cout << "Left key PRESSED" << std::endl;
+			leftPressed = true;
+		}
+		currentDrivingControls.push(TURN_LEFT);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
+	{
+		if (leftPressed)
+		{
+			std::cout << "Left key RELEASED" << std::endl;
+			leftPressed = false;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		if (!rightPressed)
+		{
+			std::cout << "Right key PRESSED" << std::endl;
+			rightPressed = true;
+		}
+		currentDrivingControls.push(TURN_RIGHT);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
+	{
+		if (rightPressed)
+		{
+			std::cout << "Right key RELEASED" << std::endl;
+			rightPressed = false;
+		}
 	}
 }
 

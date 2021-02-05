@@ -17,6 +17,7 @@ class Model
 			DYNAMIC
 		};
 
+
 		Model(const std::string &objPath,
 			MoveType type,
 			std::shared_ptr<Texture> texture,

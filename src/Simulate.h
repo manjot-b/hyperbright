@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <PxPhysicsAPI.h>
+#include <queue>
 
 #include <memory>
 
@@ -13,15 +14,16 @@
 class Simulate
 {
 public:
-	Simulate(std::vector<std::shared_ptr<Model>>& physicsModels);
+	Simulate(std::vector<std::shared_ptr<Model>>& physicsModels, std::vector<std::shared_ptr<Vehicle>>& vehicles);
 	~Simulate();
 	void stepPhysics();
-	void setModelPose(std::shared_ptr<Model> &model);
+	void setModelPose(std::shared_ptr<Model>& model);
 	void cookMeshes();
 
 	void cleanupPhysics();
 private:
 	void initPhysics();
 
-	std::vector<std::shared_ptr<Model>> &physicsModels;
+	std::vector<std::shared_ptr<Vehicle>>& vehicles;
+	std::vector<std::shared_ptr<Model>>& physicsModels;
 };

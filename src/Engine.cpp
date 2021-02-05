@@ -69,12 +69,14 @@ void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
 	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
+
 	// background box > staticModels[0]
 	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
 
 	bool copyModel = true;
 	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3, 0.3, 0.3 ,0), copyModel);
 	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2 ,0.2 ,0.2 ,0), copyModel);
+
 }
 
 
@@ -87,7 +89,7 @@ void Engine::run()
 	Simulate simulator(physicsModels);
 	DevUI devUI(renderer.getWindow());
 	Controller controller(renderer.getWindow(), camera);
-  
+
 	// moving the boxcar off origin
 	vehicle->translate(glm::vec3(0.0f, 0.0f, -2.0f));
 
@@ -113,9 +115,11 @@ void Engine::run()
 
 		// controller 
 		controller.processInput(deltaSec);
+		vehicles[0]->drive(controller.gameInput());
 
 		// run a frame of simulation
 		simulator.stepPhysics();
+		
 
 		// set camera to player vehicles position
 		if (!controller.isCameraManual())
@@ -173,7 +177,7 @@ int Engine::menuInput() {
 //////////////////////////////////////////////////////////
 
 void Engine::runGame() {
-
+	/*
 	//***** Initialize game objects HERE *****
 	//reset AI to start of game settings
 	aiPlayers[1].reset();//ASSUMES 3 AI PLAYERS
@@ -216,8 +220,8 @@ void Engine::runGame() {
 		if (false) {//QUIT CONDITION NEEDED
 			break;
 		}
-
 	}
+	*/
 
 	//Game loop clean up, before returning to menu
 }

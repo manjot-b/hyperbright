@@ -31,10 +31,11 @@ private:
 	Renderer renderer;
 
 	float deltaSec;
-	Ai aiPlayers[4];
-	Vehicle vehicles[4];
-	Pickup pickups[10];
+	//Ai aiPlayers[4];
+	//Vehicle vehicles[4];
+	//Pickup pickups[10];
 
+	std::vector<std::shared_ptr<Vehicle>> vehicles;
 	std::vector<std::shared_ptr<Model>> staticModels;
 	std::vector<std::shared_ptr<Model>> physicsModels;
 
