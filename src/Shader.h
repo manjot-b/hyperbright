@@ -1,15 +1,15 @@
 #pragma once
 
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+
+#include <string>
+#include <vector>
+
 /*
  * Compiles multiples shaders and links them into
  * a shader program
  */
-
-#include <string>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glad/glad.h>
-
 class Shader
 {
 	public:

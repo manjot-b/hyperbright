@@ -1,7 +1,8 @@
 #include "Simulate.h"
 
-#include <ctype.h>
 #include <vehicle/PxVehicleUtil.h>
+
+#include <ctype.h>
 #include <iostream>
 
 using namespace physx;

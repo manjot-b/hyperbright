@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include <glm/glm.hpp>
+
+#include <string>
 #include <memory>
 
 #include "Mesh.h"

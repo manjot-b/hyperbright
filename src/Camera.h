@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <vector>
 
 // The following code was adapted from https://learnopengl.com/Getting-started/Camera.
 // An abstract camera class that processes input and calculates the corresponding
