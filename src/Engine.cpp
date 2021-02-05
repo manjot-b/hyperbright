@@ -55,6 +55,8 @@ void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
 	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
+	Vehicle player(vehicle, glm::vec3(0.f, 0.f, -1.f));
+	vehicles.push_back(std::make_shared<Vehicle>(player));
 	// tmp floor box > staticModels[0]
 	grid = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC, tree);
 	// background box > staticModels[1]
@@ -68,7 +70,7 @@ void Engine::initEntities()
 // the game (menu/arena/pause etc) and appropriate func.
 void Engine::run()
 {
-	Simulate simulator(physicsModels);
+	Simulate simulator(physicsModels, vehicles);
 	DevUI devUI(renderer->getWindow());
 	Controller controller(renderer->getWindow(), camera);
   
@@ -100,9 +102,11 @@ void Engine::run()
 
 		// controller 
 		controller.processInput(deltaSec);
+		vehicles[0]->drive(controller.gameInput());
 
 		// run a frame of simulation
 		simulator.stepPhysics();
+		
 
 		// set camera to player vehicles position
 		if (!controller.isCameraManual())
@@ -160,7 +164,7 @@ int Engine::menuInput() {
 //////////////////////////////////////////////////////////
 
 void Engine::runGame() {
-
+	/*
 	//***** Initialize game objects HERE *****
 	//reset AI to start of game settings
 	aiPlayers[1].reset();//ASSUMES 3 AI PLAYERS
@@ -207,8 +211,8 @@ void Engine::runGame() {
 		if (false) {//QUIT CONDITION NEEDED
 			break;
 		}
-
 	}
+	*/
 
 	//Game loop clean up, before returning to menu
 }

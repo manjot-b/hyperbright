@@ -1,4 +1,6 @@
 #include "Simulate.h"
+#include "Controller.h"
+#include "Vehicle.h"
 
 #include <ctype.h>
 #include <vehicle/PxVehicleUtil.h>
@@ -25,8 +27,8 @@ PxCooking* gCooking = NULL;
 PxRigidStatic* gGroundPlane = NULL; // ground
 PxRigidDynamic* boxCar = NULL;
 
-Simulate::Simulate(std::vector<std::shared_ptr<Model>>& _physicsModels) :
-	physicsModels(_physicsModels)
+Simulate::Simulate(std::vector<std::shared_ptr<Model>>& _physicsModels, std::vector<std::shared_ptr<Vehicle>>& _vehicles) :
+	physicsModels(_physicsModels), vehicles(_vehicles)
 {
 	initPhysics();
 }
@@ -70,18 +72,96 @@ void Simulate::initPhysics()
 	gGroundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
 	gScene->addActor(*gGroundPlane);
 
-	// goal is to take this out and replace with cooked shapes
-	PxShape* boxCarShape = gPhysics->createShape(PxBoxGeometry(PxReal(1), PxReal(0.5), PxReal(1.5)), *gMaterial);
-	boxCar = gPhysics->createRigidDynamic(PxTransform(PxVec3(PxReal(0), PxReal(6), PxReal(0))));
-	boxCar->setAngularVelocity(PxVec3(0, -1, -2));
+	///////////// Creating Car Parts //////////
+	int numWheels = 4;
+
+	PxBoxGeometry carBody(1.f, 0.5f, 1.5f);
+	PxTransform carBodyPos = PxTransform(PxIdentity);
+	carBodyPos.p.y = 1.f;
+
+	std::vector<PxSphereGeometry*> wheels;
+	std::vector<PxTransform> wheelPositions;
+	for (int i = 0; i < numWheels; i++)
+	{
+		PxSphereGeometry wheel(0.15f);
+		PxTransform wheelPos = PxTransform(PxIdentity);
+		// front left wheel
+		if (i == 0) wheelPos.p = PxVec3(-0.5f, carBodyPos.p.y -0.5f, -1.2);
+		// front right wheel
+		if (i == 1) wheelPos.p = PxVec3( 0.5f, carBodyPos.p.y -0.5f, -1.2);
+		// rear left wheel
+		if (i == 2) wheelPos.p = PxVec3(-0.5f, carBodyPos.p.y -0.5f,  1.2);
+		// rear right wheel
+		if (i == 3) wheelPos.p = PxVec3( 0.5f, carBodyPos.p.y -0.5f,  1.2);
+		wheels.push_back(&wheel);
+		wheelPositions.push_back(wheelPos);
+	}
+
+	PxRigidDynamic* car = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+	car->setActorFlag(PxActorFlag::eVISUALIZATION, true);
+	car->setAngularDamping(1.f);
+	car->setLinearDamping(0.15f);
+
+	PxShape* carShape = PxRigidActorExt::createExclusiveShape(*car, carBody, *gMaterial);
+	carShape->setLocalPose(carBodyPos);
+
+	for (int j = 0; j < numWheels; j++)
+	{
+		const PxTransform& wheelPos = wheelPositions[j];
+		const PxGeometry* wheelGeom = wheels[j];
+		PxShape* wheelBase = PxRigidActorExt::createExclusiveShape(*car, *wheelGeom, *gMaterial);
+		wheelBase->setLocalPose(wheelPos);
+	}
+
+	const PxF32 chassisMass = 1500.0f;
+	const PxVec3 chassisDims(2.5f, 2.0f, 5.0f);
+	const PxVec3 chassisMOI
+		((chassisDims.y * chassisDims.y + chassisDims.z * chassisDims.z) * chassisMass / 12.0f,
+		(chassisDims.x * chassisDims.x + chassisDims.z * chassisDims.z) * 0.8f * chassisMass / 12.0f,
+		(chassisDims.x * chassisDims.x + chassisDims.y * chassisDims.y) * chassisMass / 12.0f);
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y * 0.5f + 0.65f, 0.25f);
+
+	car->setGlobalPose(PxTransform(2.0f, 0.f, 25.f));
+	car->setMass(chassisMass);
+	car->setMassSpaceInertiaTensor(chassisMOI);
+	car->setCMassLocalPose(PxTransform(chassisCMOffset, PxQuat(PxIdentity)));
+
+	PxRigidBodyExt::updateMassAndInertia(*car, 0.15f);
+	gScene->addActor(*car);
+
+	/*PxShape* boxCarShape = gPhysics->createShape(PxBoxGeometry(PxReal(1), PxReal(0.5), PxReal(1.5)), *gMaterial);
+	boxCar = gPhysics->createRigidDynamic(PxTransform(PxVec3(PxReal(2), PxReal(0.5), PxReal(7))));
+	//boxCar->setAngularVelocity(PxVec3(0, -1, -2));
 	boxCar->attachShape(*boxCarShape);
-	gScene->addActor(*boxCar);
+	gScene->addActor(*boxCar);*/
 	
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
 void Simulate::stepPhysics()
 {
+	for (auto& vehicle : vehicles)
+	{
+		glm::vec3 glmVelocity = vehicle->getForward() * (vehicle->getSpeed() * 10.f);
+
+		//vehicle->resetAngle();
+		PxVec3 pxVelocity(glmVelocity.x, 0.f, glmVelocity.z);
+
+		PxU32 numActors = gScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
+		if (numActors)
+		{
+			std::vector<PxRigidActor*> actors(numActors);
+			gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
+
+			for (int i = 0; i < numActors; i++)
+			{
+				PxRigidBody* vehActor = static_cast<PxRigidBody*>(actors[i]);
+				PxRigidBodyExt::addLocalForceAtLocalPos(*vehActor, pxVelocity/2, PxVec3(0.8f, -0.5f, -1.2f));
+				PxRigidBodyExt::addLocalForceAtLocalPos(*vehActor, pxVelocity/2, PxVec3(-0.8f, -0.5f, -1.2f));
+			}
+		}
+	}
+
 	gScene->simulate(1.0f / 60.0f);
 	gScene->fetchResults(true);
 
