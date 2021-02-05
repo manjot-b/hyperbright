@@ -115,7 +115,6 @@ void Engine::run()
 
 		// controller 
 		controller.processInput(deltaSec);
-		vehicles[0]->drive(controller.gameInput());
 
 		// run a frame of simulation
 		simulator.stepPhysics();

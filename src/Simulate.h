@@ -14,7 +14,7 @@
 class Simulate
 {
 public:
-	Simulate(std::vector<std::shared_ptr<Model>>& physicsModels, std::vector<std::shared_ptr<Vehicle>>& vehicles);
+	Simulate(std::vector<std::shared_ptr<Model>>& physicsModels);
 	~Simulate();
 	void stepPhysics();
 	void setModelPose(std::shared_ptr<Model>& model);
@@ -24,6 +24,5 @@ public:
 private:
 	void initPhysics();
 
-	std::vector<std::shared_ptr<Vehicle>>& vehicles;
 	std::vector<std::shared_ptr<Model>>& physicsModels;
 };

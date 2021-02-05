@@ -63,7 +63,7 @@ void Renderer::initWindow()
 		Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 
 		glViewport(0, 0, newWidth, newHeight);
-		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 100.0f);
+		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 10000.0f);
 	});
 
 	glEnable(GL_DEPTH_TEST);

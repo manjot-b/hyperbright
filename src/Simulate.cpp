@@ -44,8 +44,8 @@ PxVehicleDrive4W* gVehicle4W = NULL;
 
 bool					gIsVehicleInAir = true;
 
-Simulate::Simulate(std::vector<std::shared_ptr<Model>>& _physicsModels, std::vector<std::shared_ptr<Vehicle>>& _vehicles) :
-	physicsModels(_physicsModels), vehicles(_vehicles)
+Simulate::Simulate(std::vector<std::shared_ptr<Model>>& _physicsModels) :
+	physicsModels(_physicsModels)
 {
 	initPhysics();
 }
@@ -344,7 +344,7 @@ void Simulate::initPhysics()
 	//Create a vehicle that will drive on the plane.
 	VehicleDesc vehicleDesc = initVehicleDesc();
 	gVehicle4W = createVehicle4W(vehicleDesc, gPhysics, gCooking);
-	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y * 0.5f + vehicleDesc.wheelRadius + 1.0f) + 2, 0), PxQuat(PxIdentity));
+	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y * 0.5f + vehicleDesc.wheelRadius + 1.0f) + 2, -20.f), PxQuat(PxIdentity));
 	gVehicle4W->getRigidDynamicActor()->setGlobalPose(startTransform);
 	gScene->addActor(*gVehicle4W->getRigidDynamicActor());
 
