@@ -2,8 +2,9 @@
 
 #include <iostream>
 
-Controller::Controller(GLFWwindow* _window, std::shared_ptr<Camera> _camera) :
+Controller::Controller(GLFWwindow* _window, Camera& _camera) :
 	window(_window), camera(_camera), modelIndex(0), isCursorShowing(false), manualCamera(false)
+
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
 	glfwSetKeyCallback(window, keyCallback);
@@ -32,22 +33,22 @@ void Controller::processInput(float deltaSec)
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		camera->processKeyboard(Camera::Movement::RIGHT, deltaSec);
+		camera.processKeyboard(Camera::Movement::RIGHT, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		camera->processKeyboard(Camera::Movement::LEFT, deltaSec);
+		camera.processKeyboard(Camera::Movement::LEFT, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		camera->processKeyboard(Camera::Movement::UP, deltaSec);
+		camera.processKeyboard(Camera::Movement::UP, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		camera->processKeyboard(Camera::Movement::DOWN, deltaSec);
+		camera.processKeyboard(Camera::Movement::DOWN, deltaSec);
 	}
 }
 
@@ -100,7 +101,7 @@ void Controller::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 		controller->lastX = xpos;
 		controller->lastY = ypos;
 
-		controller->camera->processMouseMovement(xoffset, yoffset);
+		controller->camera.processMouseMovement(xoffset, yoffset);
 	}
 }
 
@@ -109,9 +110,9 @@ void Controller::scrollCallback(GLFWwindow* window, double xoffset, double yoffs
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
 	if (yoffset > 0)
-		controller->camera->processMouseScroll(Camera::Movement::FORWARD, yoffset);
+		controller->camera.processMouseScroll(Camera::Movement::FORWARD, yoffset);
 	if (yoffset < 0)
-		controller->camera->processMouseScroll(Camera::Movement::BACKWARD, -yoffset);
+		controller->camera.processMouseScroll(Camera::Movement::BACKWARD, -yoffset);
 }
 
 void Controller::nextModel()

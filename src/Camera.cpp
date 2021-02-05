@@ -63,17 +63,17 @@ void Camera::processMouseScroll(Movement direction, float yoffset)
 	updateCameraVectors();
 }
 
-const glm::mat4& Camera::getViewMatrix()
+const glm::mat4& Camera::getViewMatrix() const
 {
 	return view;
 }
 
-const glm::vec3& Camera::getPosition()
+const glm::vec3& Camera::getPosition() const
 {
 	return position;
 }
 
-const glm::vec3& Camera::getDirection()
+const glm::vec3& Camera::getDirection() const
 {
 	return direction;
 }
