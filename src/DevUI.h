@@ -4,13 +4,16 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+
 class DevUI
 {
 public:
 	DevUI(GLFWwindow* window);
 	~DevUI();
-	void show(float deltaSec);
+	void update(float deltaSec);
+	void render();
 	int getSliderFPS();
 private:
 	bool showDemo;
+	float _deltaSec;
 };

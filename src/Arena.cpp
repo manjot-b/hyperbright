@@ -6,10 +6,10 @@ Arena::Tile::Tile(const std::shared_ptr<Model> tile, const std::shared_ptr<Model
 
 }
 
-void Arena::Tile::draw(const Shader& shader) const
+void Arena::Tile::render(const Shader& shader) const
 {
-	tile.draw(shader);
-	tileBorder.draw(shader);
+	tile.render(shader);
+	tileBorder.render(shader);
 }
 
 void Arena::Tile::translate(const glm::vec3& trans)
@@ -52,13 +52,13 @@ Arena::Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> til
 
 Arena::~Arena() {}
 
-void Arena::draw(const Shader& shader) const
+void Arena::render(const Shader& shader) const
 {
-	for (auto& row : tileGrid)
+	for (const auto& row : tileGrid)
 	{
-		for (auto& tile : row)
+		for (const auto& tile : row)
 		{
-			tile.draw(shader);
+			tile.render(shader);
 		}
 	}
 }

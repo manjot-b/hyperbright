@@ -38,6 +38,7 @@ private:
 	std::vector<std::shared_ptr<Vehicle>> vehicles;
 	std::vector<std::shared_ptr<Model>> staticModels;
 	std::vector<std::shared_ptr<Model>> physicsModels;
+	std::vector<std::shared_ptr<Renderer::IRenderable>> renderables;
 
 	// These should eventually be their specific classes rather than Model.
 	// e.g. the plane should be Arena, car should be Vehicle.

@@ -80,7 +80,7 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
  * Draws the model. Remember to update() the model first.
  * Assumes the shader is already in use.
  */
-void Model::draw(const Shader& shader) const
+void Model::render(const Shader& shader) const
 {
 	
 	bool hasTexture = m_texture != nullptr;
