@@ -76,9 +76,8 @@ GLFWwindow* Renderer::getWindow() { return window; }
 * Renderer a frame.
 *
 * Parameters:
-*	deltaSec: How much time has elapsed in seconds since the last frame was rendered.
+*	renderables: A vector of IRenderables that will be drawn.
 *	devUI: An imgui window.
-*	models: All the models to renderer this frame.
 */
 
 void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI)
