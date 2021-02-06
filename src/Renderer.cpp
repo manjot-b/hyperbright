@@ -81,7 +81,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	models: All the models to renderer this frame.
 */
 
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -97,6 +97,8 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	}
 
 	glUseProgram(0);
+
+	devUI.render();
 
 	glfwSwapBuffers(window);
 }

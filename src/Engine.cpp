@@ -132,7 +132,7 @@ void Engine::run()
 		}
 
 		// render the updated position of all models and ImGui
-		renderer.render(renderables);
+		renderer.render(renderables, devUI);
 
 		glfwPollEvents();
 	}

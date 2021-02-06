@@ -34,7 +34,7 @@ void DevUI::update(float deltaSec)
 /**
  * This method should be called every frame by the Renderer. 
 */
-void DevUI::render(const Shader& shader)
+void DevUI::render()
 {
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();

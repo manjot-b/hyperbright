@@ -7,8 +7,8 @@
 #include <string>
 #include <memory>
 
-#include "Shader.h"
 #include "Camera.h"
+#include "DevUI.h"
 #include "Texture.h"
 
 class Renderer
@@ -25,7 +25,7 @@ class Renderer
 
 		GLFWwindow* getWindow();
 
-		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables);
+		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI);
 
 	private:
 		GLFWwindow* window;
