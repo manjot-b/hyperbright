@@ -26,10 +26,15 @@ DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 DevUI::~DevUI() {}
 
 
+void DevUI::update(float deltaSec)
+{
+    _deltaSec = deltaSec;
+}
+
 /**
  * This method should be called every frame by the Renderer. 
 */
-void DevUI::show(float deltaSec)
+void DevUI::render(const Shader& shader)
 {
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
@@ -42,7 +47,7 @@ void DevUI::show(float deltaSec)
     }
 
     ImGui::Begin("Dev Settings");
-    ImGui::Text("Application average %.3f ms/frame %.3f FPS", deltaSec*1000, 1/deltaSec);
+    ImGui::Text("Application average %.3f ms/frame %.3f FPS", _deltaSec*1000, 1/_deltaSec);
     ImGui::SliderInt("FPS Cap", &sliderFPS, 30, 144);
 
     ImGui::End();

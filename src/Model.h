@@ -7,9 +7,10 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Renderer.h"
 #include "Texture.h"
 
-class Model
+class Model : public Renderer::IRenderable
 {
 	public:
 		enum MoveType {
@@ -26,7 +27,7 @@ class Model
 		Model(const Model& model);
 		~Model();
 
-		void draw(const Shader& shader) const;
+		void render(const Shader& shader) const;
 		void update();
 		void updateModelMatrix(glm::mat4& modelPose);
 		void translate(const glm::vec3& translate);

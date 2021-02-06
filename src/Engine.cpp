@@ -69,9 +69,11 @@ void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
 	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
+	renderables.push_back(vehicle);
 
 	// background box > staticModels[0]
 	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
+	renderables.push_back(skyBox);
 
 	bool copyModel = true;
 	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3, 0.3, 0.3 ,0), copyModel);
@@ -97,7 +99,8 @@ void Engine::run()
 	skyBox->scale(100);
 	skyBox->update();
 
-	Arena arena(tile, tileBorder, 25, 25);
+	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, 25, 25);
+	renderables.push_back(arena);
 
 	while (!controller.isWindowClosed()) {
 		// update global time
@@ -112,6 +115,7 @@ void Engine::run()
 			deltaSec = currentFrame - lastFrame;
 		}
 		lastFrame = currentFrame;
+		devUI.update(deltaSec);
 
 		// controller 
 		controller.processInput(deltaSec);
@@ -128,7 +132,7 @@ void Engine::run()
 		}
 
 		// render the updated position of all models and ImGui
-		renderer.render(deltaSec, devUI, staticModels, physicsModels, arena);
+		renderer.render(renderables);
 
 		glfwPollEvents();
 	}

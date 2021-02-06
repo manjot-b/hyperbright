@@ -81,10 +81,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	models: All the models to renderer this frame.
 */
 
-void Renderer::render(	float deltaSec, DevUI& devUI, 
-						std::vector<std::shared_ptr<Model>>& staticModels,
-						std::vector<std::shared_ptr<Model>>& physicsModels,
-						Arena & arena)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -94,21 +91,12 @@ void Renderer::render(	float deltaSec, DevUI& devUI,
 	shader->setUniformMatrix4fv("perspective", perspective);
 
 
-	for (const auto& model : physicsModels)
+	for (const auto& renderable : renderables)
 	{
-		model->draw(*shader);
+		renderable->render(*shader);
 	}
-
-	for (const auto& model : staticModels)
-	{
-		model->draw(*shader);
-	}
-
-	arena.draw(*shader);
 
 	glUseProgram(0);
-
-	devUI.show(deltaSec);
 
 	glfwSwapBuffers(window);
 }

@@ -7,25 +7,25 @@
 #include <string>
 #include <memory>
 
-#include "Arena.h"
-#include "Model.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "DevUI.h"
 
 class Renderer
 {
 	public:
+		class IRenderable
+		{
+		public:
+			virtual void render(const Shader& shader) const = 0;
+		};
+
 		Renderer(const Camera& camera);
 		~Renderer();
 
 		GLFWwindow* getWindow();
 
-		void render(float deltaSec, DevUI& devUI,
-			std::vector<std::shared_ptr<Model>>& staticModels,
-			std::vector<std::shared_ptr<Model>>& physicsModels,
-			Arena& arena);
+		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables);
 
 	private:
 		GLFWwindow* window;
