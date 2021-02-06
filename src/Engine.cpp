@@ -121,7 +121,7 @@ void Engine::run()
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics();
+		simulator.stepPhysics(controller.output);
 		
 
 		// set camera to player vehicles position

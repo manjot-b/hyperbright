@@ -42,7 +42,7 @@ public:
 
 	std::queue<int> gameInput();
 	void processInput(float deltaSec);
-
+	bool output[4];
 	bool isCameraManual() { return manualCamera; }
 
 private:

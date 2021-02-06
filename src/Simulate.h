@@ -16,7 +16,7 @@ class Simulate
 public:
 	Simulate(std::vector<std::shared_ptr<Model>>& physicsModels);
 	~Simulate();
-	void stepPhysics();
+	void stepPhysics(bool input[]);
 	void setModelPose(std::shared_ptr<Model>& model);
 	void cookMeshes();
 
