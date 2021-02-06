@@ -21,7 +21,7 @@ Controller::Controller(GLFWwindow* _window, Camera& _camera) :
 Controller::~Controller() {
 
 }
-
+/*
 std::queue<int> Controller::gameInput() {
 	//User input
 	std::cout << "Queue count: " << currentDrivingControls.size() << std::endl;
@@ -29,7 +29,7 @@ std::queue<int> Controller::gameInput() {
 	currentDrivingControls.swap(copy);
 	return copy;
 }
-
+*/
 bool upPressed;
 bool downPressed;
 bool leftPressed;

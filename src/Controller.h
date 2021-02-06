@@ -40,7 +40,7 @@ public:
 	void setWindowShouldClose(bool close);
 	bool isWindowClosed() const;
 
-	std::queue<int> gameInput();
+	//std::queue<int> gameInput();
 	void processInput(float deltaSec);
 	bool output[4];
 	bool isCameraManual() { return manualCamera; }
