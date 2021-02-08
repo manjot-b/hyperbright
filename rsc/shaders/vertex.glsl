@@ -10,9 +10,13 @@ uniform mat4 perspective;
 
 out vec4 vertexColor;
 out vec2 texCoord;
+out vec3 n;
+out vec3 vertexPos;
 
 void main()
 {
     gl_Position = perspective * view * model * vec4(inPosition, 1.0);
 	texCoord = inTexCoord;
+	n = inNormal;
+	vertexPos = inPosition;
 }
