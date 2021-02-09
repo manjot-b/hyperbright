@@ -361,72 +361,34 @@ void Simulate::initPhysics()
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
-void incrementDrivingMode(const PxF32 timestep)
+void incrementDrivingMode(bool input[])
 {
-	gVehicleModeTimer += timestep;
-	if (gVehicleModeTimer > gVehicleModeLifetime)
-	{
-		//If the mode just completed was eDRIVE_MODE_ACCEL_REVERSE then switch back to forward gears.
-		if (eDRIVE_MODE_ACCEL_REVERSE == gDriveModeOrder[gVehicleOrderProgress])
-		{
-			gVehicle4W->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
-		}
-
-		//Increment to next driving mode.
-		gVehicleModeTimer = 0.0f;
-		gVehicleOrderProgress++;
 		releaseAllControls();
-
-		//If we are at the end of the list of driving modes then start again.
-		if (eDRIVE_MODE_NONE == gDriveModeOrder[gVehicleOrderProgress])
-		{
-			gVehicleOrderProgress = 0;
-			gVehicleOrderComplete = true;
-		}
-
-		//Start driving in the selected mode.
-		DriveMode eDriveMode = gDriveModeOrder[gVehicleOrderProgress];
-		switch (eDriveMode)
-		{
-		case eDRIVE_MODE_ACCEL_FORWARDS:
+		//FORWARD OR BACKWARD
+		if (input[0]) {
+			gVehicle4W->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
 			startAccelerateForwardsMode();
-			break;
-		case eDRIVE_MODE_ACCEL_REVERSE:
-			startAccelerateReverseMode();
-			break;
-		case eDRIVE_MODE_HARD_TURN_LEFT:
-			startTurnHardLeftMode();
-			break;
-		case eDRIVE_MODE_HANDBRAKE_TURN_LEFT:
-			startHandbrakeTurnLeftMode();
-			break;
-		case eDRIVE_MODE_HARD_TURN_RIGHT:
-			startTurnHardRightMode();
-			break;
-		case eDRIVE_MODE_HANDBRAKE_TURN_RIGHT:
-			startHandbrakeTurnRightMode();
-			break;
-		case eDRIVE_MODE_BRAKE:
-			startBrakeMode();
-			break;
-		case eDRIVE_MODE_NONE:
-			break;
-		};
-
-		//If the mode about to start is eDRIVE_MODE_ACCEL_REVERSE then switch to reverse gears.
-		if (eDRIVE_MODE_ACCEL_REVERSE == gDriveModeOrder[gVehicleOrderProgress])
-		{
-			gVehicle4W->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
 		}
-	}
+		else if (input[1]) {
+			gVehicle4W->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
+			startAccelerateReverseMode();
+		}
+
+		//LEFT OR RIGHT (seems to be backwards?)
+		if (input[3]) {
+			startTurnHardLeftMode();
+		}
+		else if (input[2]) {
+			startTurnHardRightMode();
+		}
 }
 
-void Simulate::stepPhysics()
+void Simulate::stepPhysics(bool input[])
 {
 	const PxF32 timestep = 1.0f / 60.0f;
 
 	//Cycle through the driving modes to demonstrate how to accelerate/reverse/brake/turn etc.
-	incrementDrivingMode(timestep);
+	incrementDrivingMode(input);
 
 	//Update the control inputs for the vehicle.
 	if (gMimicKeyInputs)

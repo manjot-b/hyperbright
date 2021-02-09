@@ -21,7 +21,7 @@ Controller::Controller(GLFWwindow* _window, Camera& _camera) :
 Controller::~Controller() {
 
 }
-
+/*
 std::queue<int> Controller::gameInput() {
 	//User input
 	std::cout << "Queue count: " << currentDrivingControls.size() << std::endl;
@@ -29,7 +29,7 @@ std::queue<int> Controller::gameInput() {
 	currentDrivingControls.swap(copy);
 	return copy;
 }
-
+*/
 bool upPressed;
 bool downPressed;
 bool leftPressed;
@@ -65,7 +65,7 @@ void Controller::processInput(float deltaSec)
 		//std::cout << "Up key PRESSED" << std::endl;
 		if (!upPressed)
 		{
-			currentDrivingControls.push(ACCEL);
+			//currentDrivingControls.push(ACCEL);
 			upPressed = true;
 		}
 	}
@@ -84,7 +84,7 @@ void Controller::processInput(float deltaSec)
 		if (!downPressed)
 		{
 			std::cout << "Down key PRESSED" << std::endl;
-			currentDrivingControls.push(BRAKE);
+			//currentDrivingControls.push(BRAKE);
 			downPressed = true;
 		}
 	}
@@ -97,12 +97,12 @@ void Controller::processInput(float deltaSec)
 			downPressed = false;
 		}
 	}
-
+	/*
 	if (!upPressed && !downPressed)
 	{
 		currentDrivingControls.push(NO_ACC);
 	}
-
+	*/
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
 		if (!leftPressed)
@@ -110,7 +110,7 @@ void Controller::processInput(float deltaSec)
 			std::cout << "Left key PRESSED" << std::endl;
 			leftPressed = true;
 		}
-		currentDrivingControls.push(TURN_LEFT);
+		//currentDrivingControls.push(TURN_LEFT);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
@@ -129,7 +129,7 @@ void Controller::processInput(float deltaSec)
 			std::cout << "Right key PRESSED" << std::endl;
 			rightPressed = true;
 		}
-		currentDrivingControls.push(TURN_RIGHT);
+		//currentDrivingControls.push(TURN_RIGHT);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
@@ -140,6 +140,10 @@ void Controller::processInput(float deltaSec)
 			rightPressed = false;
 		}
 	}
+	output[0] = upPressed;
+	output[1] = downPressed;
+	output[2] = leftPressed;
+	output[3] = rightPressed;
 }
 
 void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
