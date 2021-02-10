@@ -8,7 +8,6 @@
 
 #include <filesystem>
 #include <iostream>
-#include <string>
 
 #define STARTGAME 1
 #define NOINPUT 0
@@ -34,13 +33,13 @@ Engine::~Engine() {}
 */
 std::shared_ptr<Model> Engine::loadModel(std::string ref,
 	bool inPhysx,
-	std::string id,
+	Model::MoveType type,
 	const std::shared_ptr<Texture>& texture,
 	const glm::vec4& color,
 	bool copyModel)
 {
 	std::cout << "Loading " << ref << "..." << std::flush;
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, id, texture, color, false);
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture, color, false);
 
 	// Don't store the model in the list if it just meant to be copied from.
 	if (!copyModel)
@@ -69,20 +68,16 @@ void Engine::loadTextures()
 void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
-	vehicle = loadModel("rsc/models/boxcar.obj", true, "player", face);
+	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
 	renderables.push_back(vehicle);
 
 	// background box > staticModels[0]
-	skyBox = loadModel("rsc/models/cube.obj", false, "skybox", background);
+	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
 	renderables.push_back(skyBox);
 
-	// sphere
-	teapot = loadModel("rsc/models/teapot.obj", true, "teapot", tree);
-	renderables.push_back(teapot);
-
 	bool copyModel = true;
-	tile = loadModel("rsc/models/tile.obj", false, "tile", nullptr, glm::vec4(0.3, 0.3, 0.3 ,0), copyModel);
-	tileBorder = loadModel("rsc/models/tile_edge.obj", false, "tileBorder", nullptr, glm::vec4(0.2 ,0.2 ,0.2 ,0), copyModel);
+	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3, 0.3, 0.3 ,0), copyModel);
+	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2 ,0.2 ,0.2 ,0), copyModel);
 
 }
 
@@ -126,7 +121,7 @@ void Engine::run()
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics(controller.output, deltaSec);
+		simulator.stepPhysics(controller.output);
 		
 
 		// set camera to player vehicles position

@@ -20,7 +20,7 @@ Renderer::Renderer(const Camera& camera) : camera(camera)
 	shader->link();
 
 
-	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 200.0f);
+	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 100.0f);
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
@@ -67,7 +67,7 @@ void Renderer::initWindow()
 		Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 
 		glViewport(0, 0, newWidth, newHeight);
-		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 200.0f);
+		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 10000.0f);
 	});
 
 	glEnable(GL_DEPTH_TEST);

@@ -10,11 +10,11 @@
 #include <iostream>
 
 Model::Model(const std::string &objPath,
-	std::string id,
+	MoveType type,
 	std::shared_ptr<Texture> texture,
 	const glm::vec4& color,
 	bool fitToViewPort) :
-	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), id(id), m_texture(texture),
+	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type), m_texture(texture),
 	m_color(color)
 {
 	Assimp::Importer importer;
@@ -37,7 +37,7 @@ Model::Model(const std::string &objPath,
 /*
  * Deep copy the model.
  */
-Model::Model(const Model& model)
+Model::Model(const Model& model) : dynamicObject(model.isDynamic())
 {
 	boundingBox = model.boundingBox;
 	modelMatrix = model.modelMatrix;
@@ -197,6 +197,7 @@ void Model::scaleToViewport()
 	update();
 }
 
+bool Model::isDynamic() const { return dynamicObject; }
 
 const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }
 

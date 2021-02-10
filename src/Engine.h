@@ -46,7 +46,6 @@ private:
 	std::shared_ptr<Model> skyBox;
 	std::shared_ptr<Model> tile;
 	std::shared_ptr<Model> tileBorder;
-	std::shared_ptr<Model> teapot;
 
 	// Rename/remove as required.
 	std::shared_ptr<Texture> face;
@@ -64,7 +63,7 @@ private:
   
 	std::shared_ptr<Model> loadModel(std::string ref,
 		bool inPhysx,
-		std::string id,
+		Model::MoveType type,
 		const std::shared_ptr<Texture>& texture,
 		const glm::vec4& color = glm::vec4(0.3, 0.3, 0.3, 0),
 		bool copyModel = false);
