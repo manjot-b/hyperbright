@@ -13,14 +13,8 @@
 class Model : public Renderer::IRenderable
 {
 	public:
-		enum MoveType {
-			STATIC,
-			DYNAMIC
-		};
-
-
 		Model(const std::string &objPath,
-			MoveType type,
+			std::string id,
 			std::shared_ptr<Texture> texture,
 			const glm::vec4& color,
 			bool fitToViewPort = true);
@@ -35,17 +29,18 @@ class Model : public Renderer::IRenderable
 		void scale(float scale);
 
 		void setPosition(glm::vec3 position);
-		bool isDynamic() const;
 
 		const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 
 		const glm::vec3& getPosition() const;
 		const BoundingBox& getBoundingBox() const;
+		const std::string getId() { return id; }
 
 		bool shouldRender = false;
 
 	private:
 		std::vector<std::unique_ptr<Mesh>> meshes;
+		std::string id;
 
 		BoundingBox boundingBox;
 		glm::mat4 modelMatrix;
@@ -55,7 +50,7 @@ class Model : public Renderer::IRenderable
 		glm::vec3 wPosition;
 		glm::vec4 m_color;
 
-		int const dynamicObject;
+		//int const dynamicObject;
 		std::shared_ptr<Texture> m_texture;
 
 		void extractDataFromNode(const aiScene* scene, const aiNode* node);

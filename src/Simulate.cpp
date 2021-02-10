@@ -145,7 +145,7 @@ VehicleDesc initVehicleDesc()
 	//Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
-	const PxF32 chassisMass = 1500.0f;
+	const PxF32 chassisMass = 500.0f;
 	const PxVec3 chassisDims(2.5f, 2.0f, 5.0f);
 	const PxVec3 chassisMOI
 	((chassisDims.y * chassisDims.y + chassisDims.z * chassisDims.z) * chassisMass / 12.0f,
@@ -223,12 +223,12 @@ void startTurnHardLeftMode()
 {
 	if (gMimicKeyInputs)
 	{
-		gVehicleInputData.setDigitalAccel(true);
+		//gVehicleInputData.setDigitalAccel(true);
 		gVehicleInputData.setDigitalSteerLeft(true);
 	}
 	else
 	{
-		gVehicleInputData.setAnalogAccel(true);
+		//gVehicleInputData.setAnalogAccel(true);
 		gVehicleInputData.setAnalogSteer(-1.0f);
 	}
 }
@@ -237,12 +237,12 @@ void startTurnHardRightMode()
 {
 	if (gMimicKeyInputs)
 	{
-		gVehicleInputData.setDigitalAccel(true);
+		//gVehicleInputData.setDigitalAccel(true);
 		gVehicleInputData.setDigitalSteerRight(true);
 	}
 	else
 	{
-		gVehicleInputData.setAnalogAccel(1.0f);
+		//gVehicleInputData.setAnalogAccel(1.0f);
 		gVehicleInputData.setAnalogSteer(1.0f);
 	}
 }
@@ -251,12 +251,12 @@ void startHandbrakeTurnLeftMode()
 {
 	if (gMimicKeyInputs)
 	{
-		gVehicleInputData.setDigitalSteerLeft(true);
+		//gVehicleInputData.setDigitalSteerLeft(true);
 		gVehicleInputData.setDigitalHandbrake(true);
 	}
 	else
 	{
-		gVehicleInputData.setAnalogSteer(-1.0f);
+		//gVehicleInputData.setAnalogSteer(-1.0f);
 		gVehicleInputData.setAnalogHandbrake(1.0f);
 	}
 }
@@ -265,12 +265,12 @@ void startHandbrakeTurnRightMode()
 {
 	if (gMimicKeyInputs)
 	{
-		gVehicleInputData.setDigitalSteerRight(true);
+		//gVehicleInputData.setDigitalSteerRight(true);
 		gVehicleInputData.setDigitalHandbrake(true);
 	}
 	else
 	{
-		gVehicleInputData.setAnalogSteer(1.0f);
+		//gVehicleInputData.setAnalogSteer(1.0f);
 		gVehicleInputData.setAnalogHandbrake(1.0f);
 	}
 }
@@ -339,13 +339,16 @@ void Simulate::initPhysics()
 	//Create a plane to drive on.
 	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
 	gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
+	gGroundPlane->setName("ground");
 	gScene->addActor(*gGroundPlane);
 
 	//Create a vehicle that will drive on the plane.
 	VehicleDesc vehicleDesc = initVehicleDesc();
 	gVehicle4W = createVehicle4W(vehicleDesc, gPhysics, gCooking);
-	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y * 0.5f + vehicleDesc.wheelRadius + 1.0f) + 2, -20.f), PxQuat(PxIdentity));
+	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y * 0.5f + vehicleDesc.wheelRadius + 1.0f) + 3, -20.f), PxQuat(PxIdentity));
 	gVehicle4W->getRigidDynamicActor()->setGlobalPose(startTransform);
+	const char* name("player");
+	gVehicle4W->getRigidDynamicActor()->userData = (void*)name;
 	gScene->addActor(*gVehicle4W->getRigidDynamicActor());
 
 	//Set the vehicle to rest in first gear.
@@ -357,6 +360,15 @@ void Simulate::initPhysics()
 	gVehicleModeTimer = 0.0f;
 	gVehicleOrderProgress = 0;
 	startBrakeMode();
+
+	PxRigidDynamic* ball = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+	PxShape* sphere = PxRigidActorExt::createExclusiveShape(*ball, PxSphereGeometry(2.0), *gMaterial);
+	sphere->setSimulationFilterData(PxFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_CHASSIS_AGAINST, 0, 0));
+	PxTransform relativePose(PxReal(0), PxReal(5), 0);
+	sphere->setLocalPose(relativePose);
+	name = "teapot";
+	ball->userData = (void*)name;
+	gScene->addActor(*ball);
 
 	std::cout << "PhysX Initialized" << std::endl;
 }
@@ -383,9 +395,9 @@ void incrementDrivingMode(bool input[])
 		}
 }
 
-void Simulate::stepPhysics(bool input[])
+void Simulate::stepPhysics(bool input[], float timestep)
 {
-	const PxF32 timestep = 1.0f / 60.0f;
+	//const PxF32 timestep = 1.0f / 60.0f;
 
 	//Cycle through the driving modes to demonstrate how to accelerate/reverse/brake/turn etc.
 	incrementDrivingMode(input);
@@ -427,33 +439,32 @@ void Simulate::stepPhysics(bool input[])
 
 void Simulate::setModelPose(std::shared_ptr<Model>& model)
 {
-	PxU32 numActors = gScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
+	PxU32 numActors = gScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
 	if (numActors)
 	{
 		std::vector<PxRigidActor*> actors(numActors);
-		gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
+		gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
 		
-		std::cout << "number of actors: " << numActors << std::endl;
-
 		PxShape* shapes[128]; // max number of shapes per actor is 128
 		for (int i = 0; i < numActors; i++)
 		{
-			const PxU32 numShapes = actors[i]->getNbShapes();
-			actors[i]->getShapes(shapes, numShapes);
-			for (int j = 0; j < numShapes; j++)
+			std::string c = model->getId();
+			std::string m = reinterpret_cast<const char*>(actors[i]->userData);
+			if (m == c)
 			{
-				
-				if (shapes[j]->getGeometryType() == PxGeometryType::eCONVEXMESH)
+				const PxU32 numShapes = actors[i]->getNbShapes();
+				actors[i]->getShapes(shapes, numShapes);
+				for (int j = 0; j < numShapes; j++)
 				{
 					PxMat44 boxPose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
 					glm::mat4 boxUpdate(glm::vec4(boxPose.column0.x, boxPose.column0.y, boxPose.column0.z, 0.0f),
-										glm::vec4(boxPose.column1.x, boxPose.column1.y, boxPose.column1.z, 0.0f),
-										glm::vec4(boxPose.column2.x, boxPose.column2.y, boxPose.column2.z, 0.0f),
-										glm::vec4(boxPose.column3.x, boxPose.column3.y, boxPose.column3.z, 1.0f));
+						glm::vec4(boxPose.column1.x, boxPose.column1.y, boxPose.column1.z, 0.0f),
+						glm::vec4(boxPose.column2.x, boxPose.column2.y, boxPose.column2.z, 0.0f),
+						glm::vec4(boxPose.column3.x, boxPose.column3.y, boxPose.column3.z, 1.0f));
 					model->updateModelMatrix(boxUpdate);
-					model->setPosition(	glm::vec3(	boxPose.getPosition().x,
-													boxPose.getPosition().y,
-													boxPose.getPosition().z));
+					model->setPosition(glm::vec3(boxPose.getPosition().x,
+						boxPose.getPosition().y,
+						boxPose.getPosition().z));
 				}
 			}
 		}
@@ -464,51 +475,48 @@ void Simulate::cookMeshes()
 {
 	for (auto& model : physicsModels)
 	{
-		if (!model->isDynamic())
+		const std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
+		for (auto& mesh : meshes)
 		{
-			const std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
-			for (auto& mesh : meshes)
+			std::vector<PxVec3> pxVertices;
+			std::vector<Vertex> meshVerts = mesh->getVertices();
+			std::vector<unsigned int> indices = mesh->getIndices();
+
+			// convert Vertex positions into PxVec3
+			for (int i = 0; i < meshVerts.size(); i++)
 			{
-				std::vector<PxVec3> pxVertices;
-				std::vector<Vertex> meshVerts = mesh->getVertices();
-				std::vector<unsigned int> indices = mesh->getIndices();
-
-				// convert Vertex positions into PxVec3
-				for (int i = 0; i < meshVerts.size(); i++)
-				{
-					pxVertices.push_back(PxVec3(meshVerts[i].position.x, meshVerts[i].position.y, meshVerts[i].position.z));
-				}
-
-				PxTriangleMeshDesc meshDesc;
-				meshDesc.points.count = pxVertices.size();
-				meshDesc.points.stride = sizeof(PxVec3);
-				meshDesc.points.data = pxVertices.data();
-
-				meshDesc.triangles.count = indices.size() / 3;
-				meshDesc.triangles.stride = 3 * sizeof(PxU32);
-				meshDesc.triangles.data = indices.data();
-
-				PxDefaultMemoryOutputStream writeBuffer;
-				gCooking->cookTriangleMesh(meshDesc, writeBuffer);
-
-				PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-				PxTriangleMesh* triMesh = gPhysics->createTriangleMesh(readBuffer);
-
-				PxTransform trans(PxVec3(0.f, 10.f, -2.f));
-				PxRigidStatic* rigidStat = gPhysics->createRigidStatic(trans);
-				PxShape* shape = PxRigidActorExt::createExclusiveShape(*rigidStat, PxTriangleMeshGeometry(triMesh), *gMaterial);
-				shape->setLocalPose(trans);
-
-				rigidStat = PxCreateStatic(*gPhysics, trans, *shape);
-				rigidStat->attachShape(*shape);
-				gScene->addActor(*rigidStat);
-
-				// can't figure out how to create dynamic shapes with cooked mesh
-				// Might revisit this issue if time allows.
-				/*PxRigidDynamic* rigidDyn = PxCreateDynamic(*gPhysics, trans, PxTriangleMeshGeometry(triMesh), *gMaterial, 1.f);
-				rigidDyn->setAngularVelocity(PxVec3(0.f, 0.f, 1.f));
-				gScene->addActor(*rigidDyn);*/
+				pxVertices.push_back(PxVec3(meshVerts[i].position.x, meshVerts[i].position.y, meshVerts[i].position.z));
 			}
+
+			PxTriangleMeshDesc meshDesc;
+			meshDesc.points.count = pxVertices.size();
+			meshDesc.points.stride = sizeof(PxVec3);
+			meshDesc.points.data = pxVertices.data();
+
+			meshDesc.triangles.count = indices.size() / 3;
+			meshDesc.triangles.stride = 3 * sizeof(PxU32);
+			meshDesc.triangles.data = indices.data();
+
+			PxDefaultMemoryOutputStream writeBuffer;
+			gCooking->cookTriangleMesh(meshDesc, writeBuffer);
+
+			PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+			PxTriangleMesh* triMesh = gPhysics->createTriangleMesh(readBuffer);
+
+			PxTransform trans(PxVec3(0.f, 10.f, -2.f));
+			PxRigidStatic* rigidStat = gPhysics->createRigidStatic(trans);
+			PxShape* shape = PxRigidActorExt::createExclusiveShape(*rigidStat, PxTriangleMeshGeometry(triMesh), *gMaterial);
+			shape->setLocalPose(trans);
+
+			rigidStat = PxCreateStatic(*gPhysics, trans, *shape);
+			rigidStat->attachShape(*shape);
+			gScene->addActor(*rigidStat);
+
+			// can't figure out how to create dynamic shapes with cooked mesh
+			// Might revisit this issue if time allows.
+			/*PxRigidDynamic* rigidDyn = PxCreateDynamic(*gPhysics, trans, PxTriangleMeshGeometry(triMesh), *gMaterial, 1.f);
+			rigidDyn->setAngularVelocity(PxVec3(0.f, 0.f, 1.f));
+			gScene->addActor(*rigidDyn);*/
 		}
 	}
 }
