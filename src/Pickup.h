@@ -2,11 +2,10 @@
 class Vehicle;//Forward declaration
 class PickupManager;
 #include <string>
-#include <glm/glm.hpp>
-#include <memory>
 
-//#include "PickupManager.h"
-//#include "Vehicle.h"
+#include <glm/glm.hpp>
+
+#include <memory>
 
 #define BATTERY 0
 #define SPEED 1

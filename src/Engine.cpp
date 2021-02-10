@@ -1,7 +1,13 @@
 #include "Engine.h"
+#include "Simulate.h"
+#include "Pickup.h"
+#include "Ai.h"
+#include "Vehicle.h"
+#include "DevUI.h"
+#include "Controller.h"
 
 #include <filesystem>
-#include <string>
+#include <iostream>
 
 #define STARTGAME 1
 #define NOINPUT 0
@@ -9,15 +15,12 @@
 
 
 Engine::Engine() :
+	camera(), renderer(camera),
 	deltaSec(0.0f), rotate(0), scale(1),
 	lastFrame(0.0f)
 {
-	camera = std::make_shared<Camera>();
-	renderer = std::make_unique<Renderer>(camera);
-
 	// load textures into a shared pointer.
 	loadTextures();
-
 	initEntities();
 }
 
@@ -28,19 +31,30 @@ Engine::~Engine() {}
  * Loads all models in rsc/models and stores them in a vector. Requires glad
  * to have loaded opengl function calls.
 */
-std::shared_ptr<Model> Engine::loadModel(std::string ref, bool inPhysx, Model::MoveType type, const std::shared_ptr<Texture>& texture)
+std::shared_ptr<Model> Engine::loadModel(std::string ref,
+	bool inPhysx,
+	Model::MoveType type,
+	const std::shared_ptr<Texture>& texture,
+	const glm::vec4& color,
+	bool copyModel)
 {
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture);
 	std::cout << "Loading " << ref << "..." << std::flush;
-	if (inPhysx)
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture, color, false);
+
+	// Don't store the model in the list if it just meant to be copied from.
+	if (!copyModel)
 	{
-		physicsModels.push_back(model);
+		if (inPhysx)
+		{
+			physicsModels.push_back(model);
+		}
+		else
+		{
+			staticModels.push_back(model);
+		}
 	}
-	else
-	{
-		staticModels.push_back(model);
-	}
-	std::cout << "Loaded Entity " << ref << "\n";
+
+	std::cout << "Loaded Entity.\n";
 	return model;
 }
 
@@ -55,10 +69,16 @@ void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
 	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
-	// tmp floor box > staticModels[0]
-	grid = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC, tree);
-	// background box > staticModels[1]
-	skyBox = loadModel("rsc/models/cube.obj", false, Model::Model::STATIC, background);
+	renderables.push_back(vehicle);
+
+	// background box > staticModels[0]
+	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
+	renderables.push_back(skyBox);
+
+	bool copyModel = true;
+	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3, 0.3, 0.3 ,0), copyModel);
+	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2 ,0.2 ,0.2 ,0), copyModel);
+
 }
 
 
@@ -69,20 +89,18 @@ void Engine::initEntities()
 void Engine::run()
 {
 	Simulate simulator(physicsModels);
-	DevUI devUI(renderer->getWindow());
-	Controller controller(renderer->getWindow(), camera);
-  
+	DevUI devUI(renderer.getWindow());
+	Controller controller(renderer.getWindow(), camera);
+
 	// moving the boxcar off origin
 	vehicle->translate(glm::vec3(0.0f, 0.0f, -2.0f));
-
-	// temp large box to act as visual floor
-	grid->scale(50);
-	grid->translate(glm::vec3(0.0f, -25.5f, 0.0f));
-	grid->update();
 
 	// tmp huge background box
 	skyBox->scale(100);
 	skyBox->update();
+
+	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, 25, 25);
+	renderables.push_back(arena);
 
 	while (!controller.isWindowClosed()) {
 		// update global time
@@ -97,22 +115,24 @@ void Engine::run()
 			deltaSec = currentFrame - lastFrame;
 		}
 		lastFrame = currentFrame;
+		devUI.update(deltaSec);
 
 		// controller 
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics();
+		simulator.stepPhysics(controller.output);
+		
 
 		// set camera to player vehicles position
 		if (!controller.isCameraManual())
 		{
 			// grab position from player vehicle
-			camera->updateCameraVectors(physicsModels[0]->getPosition());
+			camera.updateCameraVectors(vehicle->getPosition());
 		}
 
 		// render the updated position of all models and ImGui
-		renderer->render(deltaSec, devUI, staticModels, physicsModels);
+		renderer.render(renderables, devUI);
 
 		glfwPollEvents();
 	}
@@ -160,7 +180,7 @@ int Engine::menuInput() {
 //////////////////////////////////////////////////////////
 
 void Engine::runGame() {
-
+	/*
 	//***** Initialize game objects HERE *****
 	//reset AI to start of game settings
 	aiPlayers[1].reset();//ASSUMES 3 AI PLAYERS
@@ -172,10 +192,6 @@ void Engine::runGame() {
 	vehicles[1].reset();
 	vehicles[2].reset();
 	vehicles[3].reset();
-
-	//set up arena
-	Arena arena;
-
 
 	//set up Pickups
 
@@ -207,8 +223,8 @@ void Engine::runGame() {
 		if (false) {//QUIT CONDITION NEEDED
 			break;
 		}
-
 	}
+	*/
 
 	//Game loop clean up, before returning to menu
 }

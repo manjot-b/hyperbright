@@ -1,15 +1,21 @@
+#include "Model.h"
+
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
+
 #include <iostream>
 
-#include "Model.h"
-
-Model::Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture> texture) :
-	 modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type), m_texture(texture)
+Model::Model(const std::string &objPath,
+	MoveType type,
+	std::shared_ptr<Texture> texture,
+	const glm::vec4& color,
+	bool fitToViewPort) :
+	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), dynamicObject(type), m_texture(texture),
+	m_color(color)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -20,12 +26,30 @@ Model::Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture>
 	}
 
 	extractDataFromNode(scene, scene->mRootNode);	
+	computeBoundingBox();
 
-	scaleToViewport();
-	// Scale model so that the longest side of its BoundingBox
-	// has a length of 1.
-//	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
-//	update();
+	if (fitToViewPort)
+	{
+		scaleToViewport();
+	}
+}
+
+/*
+ * Deep copy the model.
+ */
+Model::Model(const Model& model) : dynamicObject(model.isDynamic())
+{
+	boundingBox = model.boundingBox;
+	modelMatrix = model.modelMatrix;
+	m_rotate = model.m_rotate;
+	m_scale = model.m_scale;
+	m_translation = model.m_translation;
+	m_color = model.m_color;
+
+	for (const auto& mesh : model.meshes)
+	{
+		meshes.push_back(std::make_unique<Mesh>(*mesh));
+	}
 }
 
 Model::~Model() {}
@@ -56,8 +80,12 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
  * Draws the model. Remember to update() the model first.
  * Assumes the shader is already in use.
  */
-void Model::draw(const Shader& shader) const
+void Model::render(const Shader& shader) const
 {
+	
+	bool hasTexture = m_texture != nullptr;
+	shader.setUniform1i("hasTexture", hasTexture);
+	shader.setUniform4fv("vertexColor", m_color);
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
 	if (m_texture)
@@ -116,17 +144,12 @@ void Model::setPosition(glm::vec3 _position)
 	wPosition = _position;
 }
 
-glm::vec3 Model::getPosition()
+const glm::vec3& Model::getPosition() const
 {
 	return wPosition;
 }
 
-
-/**
- * Iterate over every mesh to calculate the bounding box of the whole model.
- * Assumes the standard OpenGL viewport of -1 to 1.
- */
-void Model::scaleToViewport()
+void Model::computeBoundingBox()
 {
 	float minX = meshes[0]->getBoundingBox().x;
 	float maxX = meshes[0]->getBoundingBox().x + meshes[0]->getBoundingBox().width;
@@ -139,10 +162,10 @@ void Model::scaleToViewport()
 	{
 		minX = glm::min(minX, mesh->getBoundingBox().x);
 		maxX = glm::max(maxX, mesh->getBoundingBox().x + mesh->getBoundingBox().width);
-		
+
 		minY = glm::min(minY, mesh->getBoundingBox().y);
 		maxY = glm::max(maxY, mesh->getBoundingBox().y + mesh->getBoundingBox().height);
-		
+
 		minZ = glm::min(minZ, mesh->getBoundingBox().z);
 		maxZ = glm::max(maxZ, mesh->getBoundingBox().z + mesh->getBoundingBox().depth);
 	}
@@ -153,7 +176,16 @@ void Model::scaleToViewport()
 	boundingBox.width = glm::abs(maxX - minX);
 	boundingBox.height = glm::abs(maxY - minY);
 	boundingBox.depth = glm::abs(maxZ - minZ);
+}
 
+/**
+ * Iterate over every mesh to calculate the bounding box of the whole model.
+ * Assumes the standard OpenGL viewport of -1 to 1.
+ * 
+ * Note: The BoundingBox must be calculated first.
+ */
+void Model::scaleToViewport()
+{
 	// Scale by the longest edge.
 	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
 
@@ -165,3 +197,8 @@ void Model::scaleToViewport()
 	update();
 }
 
+bool Model::isDynamic() const { return dynamicObject; }
+
+const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }
+
+const BoundingBox& Model::getBoundingBox() const { return boundingBox; }

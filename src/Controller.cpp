@@ -1,11 +1,10 @@
 #include "Controller.h"
-#include "Vehicle.h"
-#include "Ai.h"
 
 #include <iostream>
 
-Controller::Controller(GLFWwindow* _window, std::shared_ptr<Camera> _camera) :
+Controller::Controller(GLFWwindow* _window, Camera& _camera) :
 	window(_window), camera(_camera), modelIndex(0), isCursorShowing(false), manualCamera(false)
+
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
 	glfwSetKeyCallback(window, keyCallback);
@@ -22,10 +21,19 @@ Controller::Controller(GLFWwindow* _window, std::shared_ptr<Camera> _camera) :
 Controller::~Controller() {
 
 }
-
-void Controller::gameInput(Vehicle vehicle) {
+/*
+std::queue<int> Controller::gameInput() {
 	//User input
+	std::cout << "Queue count: " << currentDrivingControls.size() << std::endl;
+	std::queue<int> copy;
+	currentDrivingControls.swap(copy);
+	return copy;
 }
+*/
+bool upPressed;
+bool downPressed;
+bool leftPressed;
+bool rightPressed;
 
 void Controller::processInput(float deltaSec)
 {
@@ -34,23 +42,108 @@ void Controller::processInput(float deltaSec)
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		camera->processKeyboard(Camera::Movement::RIGHT, deltaSec);
+		camera.processKeyboard(Camera::Movement::RIGHT, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		camera->processKeyboard(Camera::Movement::LEFT, deltaSec);
+		camera.processKeyboard(Camera::Movement::LEFT, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		camera->processKeyboard(Camera::Movement::UP, deltaSec);
+		camera.processKeyboard(Camera::Movement::UP, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		camera->processKeyboard(Camera::Movement::DOWN, deltaSec);
+		camera.processKeyboard(Camera::Movement::DOWN, deltaSec);
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		//std::cout << "Up key PRESSED" << std::endl;
+		if (!upPressed)
+		{
+			//currentDrivingControls.push(ACCEL);
+			upPressed = true;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE)
+	{
+		if (upPressed)
+		{
+			std::cout << "Up key RELEASED" << std::endl;
+			upPressed = false;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		if (!downPressed)
+		{
+			std::cout << "Down key PRESSED" << std::endl;
+			//currentDrivingControls.push(BRAKE);
+			downPressed = true;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)
+	{
+		if (downPressed)
+		{
+			std::cout << "Down key RELEASED" << std::endl;
+			downPressed = false;
+		}
+	}
+	/*
+	if (!upPressed && !downPressed)
+	{
+		currentDrivingControls.push(NO_ACC);
+	}
+	*/
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		if (!leftPressed)
+		{
+			std::cout << "Left key PRESSED" << std::endl;
+			leftPressed = true;
+		}
+		//currentDrivingControls.push(TURN_LEFT);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
+	{
+		if (leftPressed)
+		{
+			std::cout << "Left key RELEASED" << std::endl;
+			leftPressed = false;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		if (!rightPressed)
+		{
+			std::cout << "Right key PRESSED" << std::endl;
+			rightPressed = true;
+		}
+		//currentDrivingControls.push(TURN_RIGHT);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
+	{
+		if (rightPressed)
+		{
+			std::cout << "Right key RELEASED" << std::endl;
+			rightPressed = false;
+		}
+	}
+	output[0] = upPressed;
+	output[1] = downPressed;
+	output[2] = leftPressed;
+	output[3] = rightPressed;
 }
 
 void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -102,7 +195,7 @@ void Controller::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 		controller->lastX = xpos;
 		controller->lastY = ypos;
 
-		controller->camera->processMouseMovement(xoffset, yoffset);
+		controller->camera.processMouseMovement(xoffset, yoffset);
 	}
 }
 
@@ -111,9 +204,9 @@ void Controller::scrollCallback(GLFWwindow* window, double xoffset, double yoffs
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
 	if (yoffset > 0)
-		controller->camera->processMouseScroll(Camera::Movement::FORWARD, yoffset);
+		controller->camera.processMouseScroll(Camera::Movement::FORWARD, yoffset);
 	if (yoffset < 0)
-		controller->camera->processMouseScroll(Camera::Movement::BACKWARD, -yoffset);
+		controller->camera.processMouseScroll(Camera::Movement::BACKWARD, -yoffset);
 }
 
 void Controller::nextModel()

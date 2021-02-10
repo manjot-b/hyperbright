@@ -1,9 +1,9 @@
+#include "Camera.h"
+
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
-
-#include "Camera.h"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 	position(position),
@@ -63,17 +63,17 @@ void Camera::processMouseScroll(Movement direction, float yoffset)
 	updateCameraVectors();
 }
 
-const glm::mat4& Camera::getViewMatrix()
+const glm::mat4& Camera::getViewMatrix() const
 {
 	return view;
 }
 
-const glm::vec3& Camera::getPosition()
+const glm::vec3& Camera::getPosition() const
 {
 	return position;
 }
 
-const glm::vec3& Camera::getDirection()
+const glm::vec3& Camera::getDirection() const
 {
 	return direction;
 }
@@ -96,10 +96,12 @@ void Camera::updateCameraVectors()
 
 void Camera::updateCameraVectors(glm::vec3 poi)
 {
-	front = glm::normalize(poi - position);
+	glm::vec3 newPos = poi - position;
+	front = glm::normalize(poi - newPos);
 	right = glm::normalize(glm::cross(front, worldUp));
 	up = glm::normalize(glm::cross(right, front));
 
-	direction = position + front;
-	view = glm::lookAt(position, direction, up);
+	direction = newPos + front;
+	view = glm::lookAt(newPos, direction, up);
+
 }

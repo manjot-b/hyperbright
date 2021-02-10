@@ -1,14 +1,10 @@
-#include <glad/glad.h>
-#include <iostream>
+#include "Renderer.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
-#include <PxPhysicsAPI.h>
 #include <filesystem>
-
-#include "Renderer.h"
-
 
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
@@ -17,7 +13,7 @@
 * Parameters:
 	camera: The camera for the scene. The renderer will not the alter the camera in any way.
 */
-Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera)
+Renderer::Renderer(const Camera& camera) : camera(camera)
 {
 	initWindow();
 	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -27,7 +23,11 @@ Renderer::Renderer(const std::shared_ptr<Camera> camera) : camera(camera)
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 100.0f);
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
-	shader->setUniformMatrix4fv("view", camera->getViewMatrix());
+	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
+
+	shader->setUniform3fv("light", glm::vec3(10.f, 10.f, 0.f));
+	shader->setUniform3fv("pointOfView", camera.getPosition());
+	shader->setUniform1f("d", 1.f);
 
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
 
@@ -67,7 +67,7 @@ void Renderer::initWindow()
 		Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 
 		glViewport(0, 0, newWidth, newHeight);
-		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 100.0f);
+		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 10000.0f);
 	});
 
 	glEnable(GL_DEPTH_TEST);
@@ -80,40 +80,28 @@ GLFWwindow* Renderer::getWindow() { return window; }
 * Renderer a frame.
 *
 * Parameters:
-*	deltaSec: How much time has elapsed in seconds since the last frame was rendered.
+*	renderables: A vector of IRenderables that will be drawn.
 *	devUI: An imgui window.
-*	models: All the models to renderer this frame.
 */
-void Renderer::render(	float deltaSec, DevUI& devUI, 
-						std::vector<std::shared_ptr<Model>>& staticModels,
-						std::vector<std::shared_ptr<Model>>& physicsModels)
+
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	shader->use();
-	shader->setUniformMatrix4fv("view", camera->getViewMatrix());
+	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 	shader->setUniformMatrix4fv("perspective", perspective);
 
 
-	for (const auto& model : physicsModels)
+	for (const auto& renderable : renderables)
 	{
-		model->draw(*shader);
-	}
-
-	for (const auto& model : staticModels)
-	{
-		model->draw(*shader);
+		renderable->render(*shader);
 	}
 
 	glUseProgram(0);
 
-	devUI.show(deltaSec);
+	devUI.render();
 
 	glfwSwapBuffers(window);
-}
-
-void Renderer::updateModelList(std::vector<std::string> _modelList)
-{
-	modelList = _modelList;
 }

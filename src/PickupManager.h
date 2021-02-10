@@ -3,6 +3,7 @@
 #include "Pickup.h"
 #include "Vehicle.h"
 
+
 class PickupManager {
 public:
 	PickupManager();

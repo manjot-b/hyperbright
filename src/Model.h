@@ -1,14 +1,16 @@
 #pragma once
 
-#include <string>
 #include <glm/glm.hpp>
+
+#include <string>
 #include <memory>
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Renderer.h"
 #include "Texture.h"
 
-class Model
+class Model : public Renderer::IRenderable
 {
 	public:
 		enum MoveType {
@@ -16,9 +18,16 @@ class Model
 			DYNAMIC
 		};
 
-		Model(const std::string &objPath, MoveType type, std::shared_ptr<Texture> texture);
+
+		Model(const std::string &objPath,
+			MoveType type,
+			std::shared_ptr<Texture> texture,
+			const glm::vec4& color,
+			bool fitToViewPort = true);
+		Model(const Model& model);
 		~Model();
-		void draw(const Shader& shader) const;
+
+		void render(const Shader& shader) const;
 		void update();
 		void updateModelMatrix(glm::mat4& modelPose);
 		void translate(const glm::vec3& translate);
@@ -26,11 +35,12 @@ class Model
 		void scale(float scale);
 
 		void setPosition(glm::vec3 position);
-		bool isDynamic() { return dynamicObject; }
+		bool isDynamic() const;
 
-		std::vector<std::unique_ptr<Mesh>>& getMeshes() { return meshes; }
+		const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 
-		glm::vec3 getPosition();
+		const glm::vec3& getPosition() const;
+		const BoundingBox& getBoundingBox() const;
 
 		bool shouldRender = false;
 
@@ -43,10 +53,13 @@ class Model
 		float m_scale;				// scale to apply to model
 		glm::vec3 m_translation;	// translation vector
 		glm::vec3 wPosition;
+		glm::vec4 m_color;
 
 		int const dynamicObject;
 		std::shared_ptr<Texture> m_texture;
 
 		void extractDataFromNode(const aiScene* scene, const aiNode* node);
+		void computeBoundingBox();
 		void scaleToViewport();
+		
 };

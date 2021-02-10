@@ -1,5 +1,6 @@
-#include <glad/glad.h>
 #include "VertexArray.h"
+
+#include <glad/glad.h>
 
 VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
 {

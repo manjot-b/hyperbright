@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
 #include <glm/glm.hpp>
-#include <memory>
 #include <PxPhysicsAPI.h>
+#include <queue>
+
+#include <memory>
 
 #include "Vehicle.h"
 #include "Arena.h"
@@ -15,13 +16,13 @@ class Simulate
 public:
 	Simulate(std::vector<std::shared_ptr<Model>>& physicsModels);
 	~Simulate();
-	void stepPhysics();
-	void setModelPose(std::shared_ptr<Model> &model);
+	void stepPhysics(bool input[]);
+	void setModelPose(std::shared_ptr<Model>& model);
 	void cookMeshes();
 
 	void cleanupPhysics();
 private:
 	void initPhysics();
 
-	std::vector<std::shared_ptr<Model>> &physicsModels;
+	std::vector<std::shared_ptr<Model>>& physicsModels;
 };

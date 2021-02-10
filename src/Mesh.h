@@ -1,5 +1,8 @@
-#include <vector>
+#pragma once
+
 #include <assimp/scene.h>
+
+#include <vector>
 #include <memory>
 
 #include "Vertex.h"
@@ -14,6 +17,7 @@ class Mesh
 {
 	public:
 		Mesh(const aiMesh* mesh);
+		Mesh(const Mesh& mesh);
 		~Mesh();
 		void draw() const;
 		void extractDataFromMesh(const aiMesh* mesh);

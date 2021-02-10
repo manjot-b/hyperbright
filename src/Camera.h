@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <vector>
 
 // The following code was adapted from https://learnopengl.com/Getting-started/Camera.
 // An abstract camera class that processes input and calculates the corresponding
@@ -21,13 +20,14 @@ public:
 	};
 
     // constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, 2.0f, 10.0f),
+    Camera(glm::vec3 position = glm::vec3(0.0f, -2.0f, -10.0f),
 			glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
 			float yaw = -90.0f, float pitch = 0.0f);
 
-  const glm::mat4& getViewMatrix();
-	const glm::vec3& getPosition();
-	const glm::vec3& getDirection();
+    const glm::mat4& getViewMatrix() const;
+    const glm::vec3& getPosition() const;
+    const glm::vec3& getDirection() const;
+
     void processKeyboard(Movement direction, float deltaTime);
     void processMouseMovement(float xoffset, float yoffset);
     void processMouseScroll(Movement direction, float yoffset);
