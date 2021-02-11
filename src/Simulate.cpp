@@ -432,8 +432,6 @@ void Simulate::setModelPose(std::shared_ptr<Model>& model)
 	{
 		std::vector<PxRigidActor*> actors(numActors);
 		gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
-		
-		std::cout << "number of actors: " << numActors << std::endl;
 
 		PxShape* shapes[128]; // max number of shapes per actor is 128
 		for (int i = 0; i < numActors; i++)
@@ -446,17 +444,26 @@ void Simulate::setModelPose(std::shared_ptr<Model>& model)
 				if (shapes[j]->getGeometryType() == PxGeometryType::eCONVEXMESH)
 				{
 					PxMat44 boxPose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
-					glm::mat4 boxUpdate(glm::vec4(boxPose.column0.x, boxPose.column0.y, boxPose.column0.z, 0.0f),
-										glm::vec4(boxPose.column1.x, boxPose.column1.y, boxPose.column1.z, 0.0f),
-										glm::vec4(boxPose.column2.x, boxPose.column2.y, boxPose.column2.z, 0.0f),
-										glm::vec4(boxPose.column3.x, boxPose.column3.y, boxPose.column3.z, 1.0f));
-					model->updateModelMatrix(boxUpdate);
-					model->setPosition(	glm::vec3(	boxPose.getPosition().x,
-													boxPose.getPosition().y,
-													boxPose.getPosition().z));
+					
+					glm::mat4 modelMatrix;
+					std::memcpy(&modelMatrix, &boxPose, sizeof(PxMat44));
+					model->setModelMatrix(modelMatrix);
+					
+					glm::vec3 modelPos;
+					std::memcpy(&modelPos, &(boxPose.getPosition()), sizeof(PxVec3));
+					model->setPosition(modelPos);
 				}
 			}
 		}
+	}
+}
+
+void Simulate::checkVehicleOverTile(Arena& arena, Model& model)
+{
+	std::optional<glm::vec2> tileCoords = arena.isOnTile(model.getPosition());
+	if (tileCoords)
+	{
+		arena.setTileColor(*tileCoords, model.getColor());
 	}
 }
 

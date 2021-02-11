@@ -19,6 +19,7 @@ public:
 	void stepPhysics(bool input[]);
 	void setModelPose(std::shared_ptr<Model>& model);
 	void cookMeshes();
+	void checkVehicleOverTile(Arena& arena, Model& model);
 
 	void cleanupPhysics();
 private:

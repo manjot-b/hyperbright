@@ -115,7 +115,7 @@ void Model::update()
 	m_scale = 1;
 }
 
-void Model::updateModelMatrix(glm::mat4& modelPose)
+void Model::setModelMatrix(const glm::mat4& modelPose)
 {
 	modelMatrix = modelPose;
 }
@@ -137,16 +137,6 @@ void Model::rotate(const glm::vec3 &rotate)
 void Model::scale(const float scale)
 {
 	m_scale = scale;
-}
-
-void Model::setPosition(glm::vec3 _position)
-{
-	wPosition = _position;
-}
-
-const glm::vec3& Model::getPosition() const
-{
-	return wPosition;
 }
 
 void Model::computeBoundingBox()
@@ -202,3 +192,11 @@ bool Model::isDynamic() const { return dynamicObject; }
 const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }
 
 const BoundingBox& Model::getBoundingBox() const { return boundingBox; }
+
+const glm::vec4& Model::getColor() const { return m_color;  }
+
+void Model::setColor(const glm::vec4& color) { m_color = color; }
+
+void Model::setPosition(const glm::vec3& position) { m_position = position; }
+
+const glm::vec3& Model::getPosition() const { return m_position; }
