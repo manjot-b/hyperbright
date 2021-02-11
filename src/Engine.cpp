@@ -68,7 +68,7 @@ void Engine::loadTextures()
 void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
-	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face);
+	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face, glm::vec4(.3f, .3f, 1.f, 0.f));
 	renderables.push_back(vehicle);
 
 	// background box > staticModels[0]
@@ -76,8 +76,8 @@ void Engine::initEntities()
 	renderables.push_back(skyBox);
 
 	bool copyModel = true;
-	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3, 0.3, 0.3 ,0), copyModel);
-	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2 ,0.2 ,0.2 ,0), copyModel);
+	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
+	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
 
 }
 
@@ -122,6 +122,7 @@ void Engine::run()
 
 		// run a frame of simulation
 		simulator.stepPhysics(controller.output);
+		simulator.checkVehicleOverTile(*arena, *vehicle);
 		
 
 		// set camera to player vehicles position

@@ -34,12 +34,14 @@ class Model : public Renderer::IRenderable
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
 
-		void setPosition(const glm::vec3& position);
 		bool isDynamic() const;
 
 		const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 
+		void setPosition(const glm::vec3& position);
 		const glm::vec3& getPosition() const;
+		void setColor(const glm::vec4& color);
+		const glm::vec4& getColor() const;
 		const BoundingBox& getBoundingBox() const;
 
 		bool shouldRender = false;

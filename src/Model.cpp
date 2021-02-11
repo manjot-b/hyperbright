@@ -139,16 +139,6 @@ void Model::scale(const float scale)
 	m_scale = scale;
 }
 
-void Model::setPosition(const glm::vec3& position)
-{
-	m_position = position;
-}
-
-const glm::vec3& Model::getPosition() const
-{
-	return m_position;
-}
-
 void Model::computeBoundingBox()
 {
 	float minX = meshes[0]->getBoundingBox().x;
@@ -202,3 +192,11 @@ bool Model::isDynamic() const { return dynamicObject; }
 const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }
 
 const BoundingBox& Model::getBoundingBox() const { return boundingBox; }
+
+const glm::vec4& Model::getColor() const { return m_color;  }
+
+void Model::setColor(const glm::vec4& color) { m_color = color; }
+
+void Model::setPosition(const glm::vec3& position) { m_position = position; }
+
+const glm::vec3& Model::getPosition() const { return m_position; }
