@@ -358,6 +358,21 @@ void Simulate::initPhysics()
 	gVehicleOrderProgress = 0;
 	startBrakeMode();
 
+	///////////////////////////////////// BOX
+	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_DRIVABLE_OBSTACLE, snippetvehicle::COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
+	PxShape* boxWall = gPhysics->createShape(PxBoxGeometry(1.f,1.f,1.f), *gMaterial, false);
+	PxRigidStatic* wallActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0,0,0)));
+	boxWall->setSimulationFilterData(obstFilterData);
+
+	boxWall->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
+	boxWall->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+	wallActor->setGlobalPose(PxTransform(PxVec3(0,2,5)));
+	wallActor->attachShape(*boxWall);
+
+	
+	gScene->addActor(*wallActor);
+
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
@@ -538,3 +553,7 @@ void Simulate::cleanupPhysics()
 
 	std::cout << "Cleaned up PhysX" << std::endl;
 }
+
+class Collision : physx::PxSimulationEventCallback{
+
+};
