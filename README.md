@@ -4,7 +4,8 @@
 3. Build the project with the generated build system files. For example, on Linux ~~a Makefile will be created which can be invoked with `make -jN`~~ this does not compile due to PhysX. On Windows, a Visual Studio Solution file will be created, which can be opened and built with Visual Studio.
 
 # Controls
- - W, A, S, D to pan the camera UP, LEFT, DOWN, and RIGHT respectively.  
+ - W, A, S, D to pan the camera UP, LEFT, DOWN, and RIGHT respectively.
+ - Arrow keys to control the vehicle.
  - Camera's point of interest (POI) follows the mouse automatically. 
  - Mouse Scroll to zoom in and out
  - CTRL + SPACE toggles the cursor so you may manage the UI
