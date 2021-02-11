@@ -41,10 +41,10 @@ Arena::Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> til
 	{
 		tileGrid[row] = std::vector<Tile>(cols, Tile(tile, tileBorder));
 
-		trans.z = -(rows / 2.f) * tileBox.depth + (row * tileBox.depth);
+		trans.z = -(rows * .5f) * tileBox.depth + (row * tileBox.depth) + tileBox.depth * 0.5;
 		for (unsigned int col = 0; col < tileGrid[row].size(); col++)
 		{
-			trans.x = -(cols / 2.f) * tileBox.width + (col * tileBox.width);
+			trans.x = -(cols * .5f) * tileBox.width + (col * tileBox.width) + tileBox.width * .5f;
 			tileGrid[row][col].translate(trans);
 		}
 	}
