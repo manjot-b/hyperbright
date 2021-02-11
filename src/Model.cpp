@@ -115,7 +115,7 @@ void Model::update()
 	m_scale = 1;
 }
 
-void Model::updateModelMatrix(glm::mat4& modelPose)
+void Model::setModelMatrix(const glm::mat4& modelPose)
 {
 	modelMatrix = modelPose;
 }
@@ -139,14 +139,14 @@ void Model::scale(const float scale)
 	m_scale = scale;
 }
 
-void Model::setPosition(glm::vec3 _position)
+void Model::setPosition(const glm::vec3& position)
 {
-	wPosition = _position;
+	m_position = position;
 }
 
 const glm::vec3& Model::getPosition() const
 {
-	return wPosition;
+	return m_position;
 }
 
 void Model::computeBoundingBox()
