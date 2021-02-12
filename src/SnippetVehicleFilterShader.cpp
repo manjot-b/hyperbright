@@ -30,6 +30,8 @@
 #include <new>
 #include "SnippetVehicleFilterShader.h"
 #include "PxPhysicsAPI.h"
+#include <iostream>
+
 
 namespace snippetvehicle
 {
@@ -46,9 +48,11 @@ PxFilterFlags VehicleFilterShader
 	PX_UNUSED(constantBlock);
 	PX_UNUSED(constantBlockSize);
 
+	//Let triggers through
 	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
 	{
 		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		std::cout << "COLLIDING WITH TRIGGER VOLUME\n";
 		return PxFilterFlag::eDEFAULT;
 	}
 
