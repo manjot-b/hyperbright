@@ -44,6 +44,21 @@ PxVehicleDrive4W* gVehicle4W = NULL;
 
 bool					gIsVehicleInAir = true;
 
+class CollisionCallBack : public physx::PxSimulationEventCallback {
+	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints);  PX_UNUSED(count); }
+	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors);  PX_UNUSED(count); }
+	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors);  PX_UNUSED(count); }
+	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {}
+	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
+
+		//for (physx::PxU32 i = 0; i < count; i++) {
+			std::cout << "BALLING!! \n";
+		//}
+	}
+	void onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) {}
+};
+CollisionCallBack collisionCallBack;
+
 Simulate::Simulate(std::vector<std::shared_ptr<Model>>& _physicsModels) :
 	physicsModels(_physicsModels)
 {
@@ -333,6 +348,9 @@ void Simulate::initPhysics()
 	gVehicleSceneQueryData = VehicleSceneQueryData::allocate(1, PX_MAX_NB_WHEELS, 1, 1, WheelSceneQueryPreFilterBlocking, NULL, gAllocator);
 	gBatchQuery = VehicleSceneQueryData::setUpBatchedSceneQuery(0, *gVehicleSceneQueryData, gScene);
 
+
+	sceneDesc.simulationEventCallback = &collisionCallBack; // SET OUR COLLISION DETECTION
+
 	//Create the friction table for each combination of tire and surface type.
 	gFrictionPairs = createFrictionPairs(gMaterial);
 
@@ -359,7 +377,7 @@ void Simulate::initPhysics()
 	startBrakeMode();
 
 	///////////////////////////////////// BOX
-	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_DRIVABLE_OBSTACLE, snippetvehicle::COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
+	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	PxShape* boxWall = gPhysics->createShape(PxBoxGeometry(1.f,1.f,1.f), *gMaterial, false);
 	PxRigidStatic* wallActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0,0,0)));
 	boxWall->setSimulationFilterData(obstFilterData);
@@ -370,7 +388,6 @@ void Simulate::initPhysics()
 	wallActor->setGlobalPose(PxTransform(PxVec3(0,2,5)));
 	wallActor->attachShape(*boxWall);
 
-	
 	gScene->addActor(*wallActor);
 
 	std::cout << "PhysX Initialized" << std::endl;
@@ -448,7 +465,7 @@ void Simulate::setModelPose(std::shared_ptr<Model>& model)
 		std::vector<PxRigidActor*> actors(numActors);
 		gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
 		
-		std::cout << "number of actors: " << numActors << std::endl;
+		//std::cout << "number of actors: " << numActors << std::endl;
 
 		PxShape* shapes[128]; // max number of shapes per actor is 128
 		for (int i = 0; i < numActors; i++)
@@ -553,7 +570,3 @@ void Simulate::cleanupPhysics()
 
 	std::cout << "Cleaned up PhysX" << std::endl;
 }
-
-class Collision : physx::PxSimulationEventCallback{
-
-};
