@@ -29,17 +29,19 @@ class Model : public Renderer::IRenderable
 
 		void render(const Shader& shader) const;
 		void update();
-		void updateModelMatrix(glm::mat4& modelPose);
+		void setModelMatrix(const glm::mat4& modelPose);
 		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
 
-		void setPosition(glm::vec3 position);
 		bool isDynamic() const;
 
 		const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 
+		void setPosition(const glm::vec3& position);
 		const glm::vec3& getPosition() const;
+		void setColor(const glm::vec4& color);
+		const glm::vec4& getColor() const;
 		const BoundingBox& getBoundingBox() const;
 
 		bool shouldRender = false;
@@ -52,7 +54,7 @@ class Model : public Renderer::IRenderable
 		glm::vec3 m_rotate;			// how much to rotate along each axis
 		float m_scale;				// scale to apply to model
 		glm::vec3 m_translation;	// translation vector
-		glm::vec3 wPosition;
+		glm::vec3 m_position;
 		glm::vec4 m_color;
 
 		int const dynamicObject;
