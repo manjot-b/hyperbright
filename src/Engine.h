@@ -46,6 +46,7 @@ private:
 	std::shared_ptr<Model> skyBox;
 	std::shared_ptr<Model> tile;
 	std::shared_ptr<Model> tileBorder;
+	std::shared_ptr<Model> powerup;
 
 	// Rename/remove as required.
 	std::shared_ptr<Texture> face;

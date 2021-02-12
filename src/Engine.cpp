@@ -75,6 +75,9 @@ void Engine::initEntities()
 	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
 	renderables.push_back(skyBox);
 
+	powerup = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
+	renderables.push_back(powerup);
+
 	bool copyModel = true;
 	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
 	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
