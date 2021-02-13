@@ -8,17 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "Simulate.h"
-#include "Arena.h"
-#include "Pickup.h"
-#include "Ai.h"
-#include "Arena.h"
-#include "Vehicle.h"
-#include "DevUI.h"
-#include "Controller.h"
+
+#include "Model.h"
 #include "Renderer.h"
-#include "PickupManager.h"
 #include "Texture.h"
+#include "Vehicle.h"
 
 class Engine
 {

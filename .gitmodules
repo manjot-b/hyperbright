@@ -10,3 +10,6 @@
 [submodule "dep/imgui"]
 	path = dep/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "dep/openal"]
+	path = dep/openal
+	url = https://github.com/kcat/openal-soft.git

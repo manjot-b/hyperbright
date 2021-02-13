@@ -1,13 +1,16 @@
 #include "Engine.h"
-#include "Simulate.h"
-#include "Pickup.h"
-#include "Ai.h"
-#include "Vehicle.h"
-#include "DevUI.h"
-#include "Controller.h"
 
 #include <filesystem>
 #include <iostream>
+
+#include "Ai.h"
+#include "Arena.h"
+#include "AudioPlayer.h"
+#include "Controller.h"
+#include "DevUI.h"
+#include "Pickup.h"
+#include "Simulate.h"
+
 
 #define STARTGAME 1
 #define NOINPUT 0
@@ -22,6 +25,9 @@ Engine::Engine() :
 	// load textures into a shared pointer.
 	loadTextures();
 	initEntities();
+
+	// TO-DO: CONSTRUCT AUDIOPLAYER CORRECTLY. THIS IS ONLY A STUB
+	AudioPlayer audioPlayer;
 }
 
 
