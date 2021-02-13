@@ -33,13 +33,13 @@ Engine::~Engine() {}
 */
 std::shared_ptr<Model> Engine::loadModel(std::string ref,
 	bool inPhysx,
-	Model::MoveType type,
+	const char* name,
 	const std::shared_ptr<Texture>& texture,
 	const glm::vec4& color,
 	bool copyModel)
 {
 	std::cout << "Loading " << ref << "..." << std::flush;
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture, color, false);
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, name, texture, color, false);
 
 	// Don't store the model in the list if it just meant to be copied from.
 	if (!copyModel)
@@ -68,19 +68,22 @@ void Engine::loadTextures()
 void Engine::initEntities()
 {
 	// load boxcar > physicsModels[0]
-	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face, glm::vec4(.3f, .3f, 1.f, 0.f));
+	vehicle = loadModel("rsc/models/boxcar.obj", true, "player", nullptr, glm::vec4(.3f, .3f, 1.f, 0.f));
 	renderables.push_back(vehicle);
 
+	ai1 = loadModel("rsc/models/boxcar.obj", true, "ai1", nullptr, glm::vec4(.8f, .8f, .3f, 0.f));
+	renderables.push_back(ai1);
+
 	// background box > staticModels[0]
-	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
+	skyBox = loadModel("rsc/models/cube.obj", false, "skybox", background);
 	renderables.push_back(skyBox);
 
-	powerup = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
-	renderables.push_back(powerup);
+	wall = loadModel("rsc/models/cube.obj", true, "wall", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
+	renderables.push_back(wall);
 
 	bool copyModel = true;
-	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
-	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
+	tile = loadModel("rsc/models/tile.obj", false, "tile", nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
+	tileBorder = loadModel("rsc/models/tile_edge.obj", false, "tileborder", nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
 
 }
 
@@ -124,7 +127,7 @@ void Engine::run()
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics(controller.output);
+		simulator.stepPhysics(controller.output, deltaSec);
 		simulator.checkVehicleOverTile(*arena, *vehicle);
 		
 

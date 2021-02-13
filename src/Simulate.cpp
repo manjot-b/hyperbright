@@ -41,6 +41,9 @@ PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
 PxRigidStatic* gGroundPlane = NULL;
 PxVehicleDrive4W* gVehicle4W = NULL;
+PxVehicleDrive4W* gVehicle4W_ai1 = NULL;
+PxVehicleDrive4W* gVehicle4W_ai2 = NULL;
+PxVehicleDrive4W* gVehicle4W_ai3 = NULL;
 
 bool					gIsVehicleInAir = true;
 
@@ -357,13 +360,16 @@ void Simulate::initPhysics()
 	//Create a plane to drive on.
 	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
 	gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
+	gGroundPlane->userData = "ground";
 	gScene->addActor(*gGroundPlane);
 
+	//////////////////////////// Player
 	//Create a vehicle that will drive on the plane.
 	VehicleDesc vehicleDesc = initVehicleDesc();
 	gVehicle4W = createVehicle4W(vehicleDesc, gPhysics, gCooking);
 	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y * 0.5f + vehicleDesc.wheelRadius + 1.0f) + 2, -20.f), PxQuat(PxIdentity));
 	gVehicle4W->getRigidDynamicActor()->setGlobalPose(startTransform);
+	gVehicle4W->getRigidDynamicActor()->userData = "player";
 	gScene->addActor(*gVehicle4W->getRigidDynamicActor());
 
 	//Set the vehicle to rest in first gear.
@@ -376,18 +382,32 @@ void Simulate::initPhysics()
 	gVehicleOrderProgress = 0;
 	startBrakeMode();
 
+	//////////////////////////// AI
+	//Create a vehicle that will drive on the plane.
+	PxTransform ai1StartTransform(PxVec3(10, (vehicleDesc.chassisDims.y * 0.5f + vehicleDesc.wheelRadius + 1.0f) + 5, -15.f), PxQuat(PxIdentity));
+	gVehicle4W_ai1 = createVehicle4W(vehicleDesc, gPhysics, gCooking);
+	gVehicle4W_ai1->getRigidDynamicActor()->setGlobalPose(ai1StartTransform);
+	gVehicle4W_ai1->getRigidDynamicActor()->userData = "ai1";
+	gScene->addActor(*gVehicle4W_ai1->getRigidDynamicActor());
+
+	gVehicle4W_ai1->setToRestState();
+	gVehicle4W_ai1->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
+	gVehicle4W_ai1->mDriveDynData.setUseAutoGears(true);
+
+
+
 	///////////////////////////////////// BOX
 	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-	PxShape* boxWall = gPhysics->createShape(PxBoxGeometry(1.f,1.f,1.f), *gMaterial, false);
-	PxRigidStatic* wallActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0,0,0)));
+	PxShape* boxWall = gPhysics->createShape(PxBoxGeometry(0.7f, 0.7f, 0.7f), *gMaterial, false);
+	PxRigidDynamic* wallActor = gPhysics->createRigidDynamic(PxTransform(PxVec3(0,0,0)));
 	boxWall->setSimulationFilterData(obstFilterData);
 
-	boxWall->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
+	boxWall->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);//FLAGS TO SET AS TRIGGER VOLUME
 	boxWall->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
 
 	wallActor->setGlobalPose(PxTransform(PxVec3(0,2,5)));
 	wallActor->attachShape(*boxWall);
-
+	wallActor->userData = "wall";
 	gScene->addActor(*wallActor);
 
 	std::cout << "PhysX Initialized" << std::endl;
@@ -415,23 +435,21 @@ void incrementDrivingMode(bool input[])
 		}
 }
 
-void Simulate::stepPhysics(bool input[])
+void Simulate::stepPhysics(bool input[], float deltaSec)
 {
-	const PxF32 timestep = 1.0f / 60.0f;
-
 	//Cycle through the driving modes to demonstrate how to accelerate/reverse/brake/turn etc.
 	incrementDrivingMode(input);
 
 	//Update the control inputs for the vehicle.
 	if (gMimicKeyInputs)
 	{
-		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, timestep, gIsVehicleInAir, *gVehicle4W);
+		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, deltaSec, gIsVehicleInAir, *gVehicle4W);
 	}
 	else
 	{
-		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, timestep, gIsVehicleInAir, *gVehicle4W);
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, deltaSec, gIsVehicleInAir, *gVehicle4W);
 	}
-
+	//////////////////// PLAYER
 	//Raycasts.
 	PxVehicleWheels* vehicles[1] = { gVehicle4W };
 	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
@@ -442,13 +460,29 @@ void Simulate::stepPhysics(bool input[])
 	const PxVec3 grav = gScene->getGravity();
 	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
 	PxVehicleWheelQueryResult vehicleQueryResults[1] = { {wheelQueryResults, gVehicle4W->mWheelsSimData.getNbWheels()} };
-	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 1, vehicles, vehicleQueryResults);
+	PxVehicleUpdates(deltaSec, grav, *gFrictionPairs, 1, vehicles, vehicleQueryResults);
 
 	//Work out if the vehicle is in the air.
 	gIsVehicleInAir = gVehicle4W->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
 
+	////////////////////// AI
+		//Raycasts.
+	PxVehicleWheels* vehicles_ai[1] = { gVehicle4W_ai1 };
+	PxRaycastQueryResult* raycastResults_ai = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
+	const PxU32 raycastResultsSize_ai = gVehicleSceneQueryData->getQueryResultBufferSize();
+	PxVehicleSuspensionRaycasts(gBatchQuery, 1, vehicles_ai, raycastResultsSize_ai, raycastResults_ai);
+
+	//Vehicle update.
+	const PxVec3 grav_ai = gScene->getGravity();
+	PxWheelQueryResult wheelQueryResults_ai[PX_MAX_NB_WHEELS];
+	PxVehicleWheelQueryResult vehicleQueryResults_ai[1] = { {wheelQueryResults_ai, gVehicle4W_ai1->mWheelsSimData.getNbWheels()} };
+	PxVehicleUpdates(deltaSec, grav_ai, *gFrictionPairs, 1, vehicles_ai, vehicleQueryResults_ai);
+
+	//Work out if the vehicle is in the air.
+	gIsVehicleInAir = gVehicle4W_ai1->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
+
 	//Scene update.
-	gScene->simulate(timestep);
+	gScene->simulate(deltaSec);
 	gScene->fetchResults(true);
 
 	for (auto& model : physicsModels)
@@ -472,17 +506,19 @@ void Simulate::setModelPose(std::shared_ptr<Model>& model)
 		{
 			const PxU32 numShapes = actors[i]->getNbShapes();
 			actors[i]->getShapes(shapes, numShapes);
-			for (int j = 0; j < numShapes; j++)
-			{
-				
-				if (shapes[j]->getGeometryType() == PxGeometryType::eCONVEXMESH)
+
+			std::string actorName = reinterpret_cast<const char*>(actors[i]->userData);
+			std::string modelName = model->getId();
+
+			if (actorName == modelName) {
+				for (int j = 0; j < numShapes; j++)
 				{
 					PxMat44 boxPose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
-					
+
 					glm::mat4 modelMatrix;
 					std::memcpy(&modelMatrix, &boxPose, sizeof(PxMat44));
 					model->setModelMatrix(modelMatrix);
-					
+
 					glm::vec3 modelPos;
 					std::memcpy(&modelPos, &(boxPose.getPosition()), sizeof(PxVec3));
 					model->setPosition(modelPos);
@@ -505,51 +541,48 @@ void Simulate::cookMeshes()
 {
 	for (auto& model : physicsModels)
 	{
-		if (!model->isDynamic())
+		const std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
+		for (auto& mesh : meshes)
 		{
-			const std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
-			for (auto& mesh : meshes)
+			std::vector<PxVec3> pxVertices;
+			std::vector<Vertex> meshVerts = mesh->getVertices();
+			std::vector<unsigned int> indices = mesh->getIndices();
+
+			// convert Vertex positions into PxVec3
+			for (int i = 0; i < meshVerts.size(); i++)
 			{
-				std::vector<PxVec3> pxVertices;
-				std::vector<Vertex> meshVerts = mesh->getVertices();
-				std::vector<unsigned int> indices = mesh->getIndices();
-
-				// convert Vertex positions into PxVec3
-				for (int i = 0; i < meshVerts.size(); i++)
-				{
-					pxVertices.push_back(PxVec3(meshVerts[i].position.x, meshVerts[i].position.y, meshVerts[i].position.z));
-				}
-
-				PxTriangleMeshDesc meshDesc;
-				meshDesc.points.count = pxVertices.size();
-				meshDesc.points.stride = sizeof(PxVec3);
-				meshDesc.points.data = pxVertices.data();
-
-				meshDesc.triangles.count = indices.size() / 3;
-				meshDesc.triangles.stride = 3 * sizeof(PxU32);
-				meshDesc.triangles.data = indices.data();
-
-				PxDefaultMemoryOutputStream writeBuffer;
-				gCooking->cookTriangleMesh(meshDesc, writeBuffer);
-
-				PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-				PxTriangleMesh* triMesh = gPhysics->createTriangleMesh(readBuffer);
-
-				PxTransform trans(PxVec3(0.f, 10.f, -2.f));
-				PxRigidStatic* rigidStat = gPhysics->createRigidStatic(trans);
-				PxShape* shape = PxRigidActorExt::createExclusiveShape(*rigidStat, PxTriangleMeshGeometry(triMesh), *gMaterial);
-				shape->setLocalPose(trans);
-
-				rigidStat = PxCreateStatic(*gPhysics, trans, *shape);
-				rigidStat->attachShape(*shape);
-				gScene->addActor(*rigidStat);
-
-				// can't figure out how to create dynamic shapes with cooked mesh
-				// Might revisit this issue if time allows.
-				/*PxRigidDynamic* rigidDyn = PxCreateDynamic(*gPhysics, trans, PxTriangleMeshGeometry(triMesh), *gMaterial, 1.f);
-				rigidDyn->setAngularVelocity(PxVec3(0.f, 0.f, 1.f));
-				gScene->addActor(*rigidDyn);*/
+				pxVertices.push_back(PxVec3(meshVerts[i].position.x, meshVerts[i].position.y, meshVerts[i].position.z));
 			}
+
+			PxTriangleMeshDesc meshDesc;
+			meshDesc.points.count = pxVertices.size();
+			meshDesc.points.stride = sizeof(PxVec3);
+			meshDesc.points.data = pxVertices.data();
+
+			meshDesc.triangles.count = indices.size() / 3;
+			meshDesc.triangles.stride = 3 * sizeof(PxU32);
+			meshDesc.triangles.data = indices.data();
+
+			PxDefaultMemoryOutputStream writeBuffer;
+			gCooking->cookTriangleMesh(meshDesc, writeBuffer);
+
+			PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+			PxTriangleMesh* triMesh = gPhysics->createTriangleMesh(readBuffer);
+
+			PxTransform trans(PxVec3(0.f, 10.f, -2.f));
+			PxRigidStatic* rigidStat = gPhysics->createRigidStatic(trans);
+			PxShape* shape = PxRigidActorExt::createExclusiveShape(*rigidStat, PxTriangleMeshGeometry(triMesh), *gMaterial);
+			shape->setLocalPose(trans);
+
+			rigidStat = PxCreateStatic(*gPhysics, trans, *shape);
+			rigidStat->attachShape(*shape);
+			gScene->addActor(*rigidStat);
+
+			// can't figure out how to create dynamic shapes with cooked mesh
+			// Might revisit this issue if time allows.
+			/*PxRigidDynamic* rigidDyn = PxCreateDynamic(*gPhysics, trans, PxTriangleMeshGeometry(triMesh), *gMaterial, 1.f);
+			rigidDyn->setAngularVelocity(PxVec3(0.f, 0.f, 1.f));
+			gScene->addActor(*rigidDyn);*/
 		}
 	}
 }
