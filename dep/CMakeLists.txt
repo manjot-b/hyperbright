@@ -64,3 +64,9 @@ add_subdirectory(${PHYSX_ROOT_DIR}/compiler/public)
 # Add physx libraries to target
 target_link_libraries(${CMAKE_PROJECT_NAME} ${PHYSX_LIBRARIES})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${PHYSX_INCLUDE_DIRS})
+
+# OpenAL audio libraary.
+set(ALSOFT_EXAMPLES OFF CACHE BOOL "Build examples.")
+set(ALSOFT_UTILS OFF CACHE BOOL "Build utilities.")
+add_subdirectory(openal)
+target_link_libraries(${CMAKE_PROJECT_NAME} OpenAL)
