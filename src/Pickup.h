@@ -1,12 +1,11 @@
 #pragma once
+class Vehicle;//Forward declaration
+class PickupManager;
+#include <string>
 
 #include <glm/glm.hpp>
 
 #include <memory>
-
-#include "PickupManager.h"
-
-class Vehicle;
 
 #define BATTERY 0
 #define SPEED 1
@@ -22,10 +21,10 @@ class Pickup
 public:
 	Pickup();
 	~Pickup();
-	Pickup(int pickupType, PickupManager pickupMan);
+	Pickup(int pickupType, std::shared_ptr<PickupManager> pickupManager );
 	void activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
-	void initialCollision(Vehicle vehicle);
+	void initialCollision(std::shared_ptr<Vehicle> vehicle);
 	bool active;
 	//bool beingCarried;
 	bool timeRemaining();
@@ -38,5 +37,5 @@ private:
 	bool slowTrapActive;
 	float speedOldMax;
 	//Vehicle* carriedBy;
-	PickupManager pickupManager;
+	std::shared_ptr<PickupManager> pickupManager;
 };

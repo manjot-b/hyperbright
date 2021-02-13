@@ -23,15 +23,9 @@ public:
 	int color; //CHANGE TYPE LATER
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION
-	Pickup pickupEquiped;//set as null for default
 
-	// Movement calls for vehicle
-	// accelerate
-	// brake
-	// turn left
-	// turn left hard
-	// turn right 
-	// turn right hard
+	std::shared_ptr<Pickup> pickupEquiped;//set as null for default
+
 private:
 	void updateForward();
 
