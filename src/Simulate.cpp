@@ -403,7 +403,7 @@ void Simulate::initPhysics()
 	boxWall->setSimulationFilterData(obstFilterData);
 
 	boxWall->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);//FLAGS TO SET AS TRIGGER VOLUME
-	boxWall->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	boxWall->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
 
 	wallActor->setGlobalPose(PxTransform(PxVec3(0,2,5)));
 	wallActor->attachShape(*boxWall);

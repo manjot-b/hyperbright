@@ -5,36 +5,31 @@
 #include "Pickup.h"
 #include "Model.h"
 
+using namespace std;
+using namespace glm;
+
 class Vehicle
 {
 public:
 	Vehicle();
-	Vehicle(std::shared_ptr<Model> carModel, glm::vec3 startDir);
+	Vehicle(shared_ptr<Model> carModel, vec3 color, vec3 startPos, vec3 startDir);
 	~Vehicle();
 	void reset();
 
-
-	void drive(std::queue<int> inputs);
-	float getSpeed() { return speed; }
-	glm::vec3 getForward() { return forward; }
-	void resetAngle() { theta = M_PI / 2; }
+	vec3 getColor() { return color; }
+	vec3 getForward() { return forward; }
 
 	int energy;
-	int color; //CHANGE TYPE LATER
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION
 
-	std::shared_ptr<Pickup> pickupEquiped;//set as null for default
+	shared_ptr<Pickup> pickupEquiped;//set as null for default
 
 private:
-	void updateForward();
+	shared_ptr<Model> carModel;
 
-	std::shared_ptr<Model> carModel;
-
-	float speed;
-	float turnSpd;
-	glm::vec3 forward;
-
-	float targetAngle;
-	float theta;
+	const char* id;
+	vec3 color;
+	vec3 forward;
+	vec3 start_position;
 };
