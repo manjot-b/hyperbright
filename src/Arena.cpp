@@ -46,7 +46,7 @@ Arena::Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> til
 	{
 		tileGrid[row] = std::vector<Tile>(cols, Tile(tile, tileBorder));
 
-		trans.z = -(rows * .5f) * tileBox.depth + (row * tileBox.depth) + tileBox.depth * 0.5;
+		trans.z = (rows * .5f) * tileBox.depth - (row * tileBox.depth) - tileBox.depth * 0.5;	// in OpenGL forward z points out of screen
 		for (unsigned int col = 0; col < tileGrid[row].size(); col++)
 		{
 			trans.x = -(cols * .5f) * tileBox.width + (col * tileBox.width) + tileBox.width * .5f;
@@ -82,7 +82,7 @@ std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
 	unsigned int cols = tileGrid[0].size();
 
 	int col = (coords.x + (cols * .5f) * tileWidth) / tileWidth;
-	int row = (coords.z + (rows * .5f) * tileDepth) / tileDepth;
+	int row = ((rows * .5f) * tileWidth - coords.z) / tileWidth;
 
 	if (col < 0 || col > cols - 1 || row < 0 || row > rows - 1)
 	{

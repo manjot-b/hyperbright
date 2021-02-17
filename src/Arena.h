@@ -38,6 +38,6 @@ private:
 	TileGrid tileGrid;
 
 	float tileWidth;
-	float tileDepth;
+	float tileBorderWidth;	// This is the width of one edge of the border.
 	float tileCollisionRadius;
 };
