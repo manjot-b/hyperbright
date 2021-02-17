@@ -62,9 +62,6 @@ Arena::Arena(const std::shared_ptr<Model> tile,
 	tileWidth = tileBox.width;
 	tileBorderWidth = (tileBorder->getBoundingBox().width - tileBox.width) * 0.5f;	// width of only one edge.
 	wallWidth = wall->getBoundingBox().width;
-
-	addWall(wall, 0, 0, EXTENSION::X_AXIS, 2);
-	addWall(wall, 14, 5, EXTENSION::Z_AXIS, 7);
 }
 
 Arena::~Arena() {}
@@ -115,14 +112,14 @@ void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
 }
 
-void Arena::addWall(std::shared_ptr<Model>& wall, unsigned int row, unsigned int col, EXTENSION direction, unsigned int cellsCovered)
+void Arena::addWall(std::shared_ptr<Model>& wall, unsigned int row, unsigned int col, WALL_DIRECTION direction, unsigned int cellsCovered)
 {
 	glm::vec2 scale = glm::vec2(
 		(cellsCovered * tileWidth + 2 * cellsCovered * tileBorderWidth),
 		tileWidth + 2 * tileBorderWidth
 	) / wallWidth;
 
-	if (direction == EXTENSION::Z_AXIS)
+	if (direction == WALL_DIRECTION::Z_AXIS)
 	{	
 		std::swap(scale.x, scale.y);
 	}

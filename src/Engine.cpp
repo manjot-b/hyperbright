@@ -108,6 +108,13 @@ void Engine::run()
 
 	int arena_size = 40;
 	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, wall, arena_size, arena_size);
+	arena->addWall(wall, 0, 0, Arena::WALL_DIRECTION::X_AXIS, 2);
+	arena->addWall(wall, 14, 5, Arena::WALL_DIRECTION::Z_AXIS, 7);
+	arena->addWall(wall, 4, 17, Arena::WALL_DIRECTION::Z_AXIS, 1);
+	arena->addWall(wall, 5, 17, Arena::WALL_DIRECTION::Z_AXIS, 1);
+	arena->addWall(wall, 4, 18, Arena::WALL_DIRECTION::Z_AXIS, 1);
+	arena->addWall(wall, 5, 18, Arena::WALL_DIRECTION::Z_AXIS, 1);
+
 	renderables.push_back(arena);
 
 	while (!controller.isWindowClosed()) {
