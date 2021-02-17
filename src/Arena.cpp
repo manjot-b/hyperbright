@@ -41,7 +41,7 @@ Arena::Arena(const std::shared_ptr<Model> tile,
 	std::shared_ptr<Model> wall,
 	unsigned int rows,
 	unsigned int cols) :
-	tileGrid(rows), tileCollisionRadius(0.5f)
+	tileGrid(rows), wall(wall), tileCollisionRadius(0.5f)
 {
 	const BoundingBox& tileBox = tileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
@@ -112,17 +112,13 @@ void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
 }
 
-void Arena::addWall(std::shared_ptr<Model>& wall, unsigned int row, unsigned int col, WALL_DIRECTION direction, unsigned int cellsCovered)
+void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
 {
 	glm::vec2 scale = glm::vec2(
-		(cellsCovered * tileWidth + 2 * cellsCovered * tileBorderWidth),
-		tileWidth + 2 * tileBorderWidth
+		(width * tileWidth + 2 * width * tileBorderWidth),
+		(length * tileWidth + 2 * length * tileBorderWidth)
 	) / wallWidth;
 
-	if (direction == WALL_DIRECTION::Z_AXIS)
-	{	
-		std::swap(scale.x, scale.y);
-	}
 	wall->scale(glm::vec3(scale.x, 1, scale.y));
 
 	glm::vec2 currentPos = glm::vec2(wall->getBoundingBox().x, -wall->getBoundingBox().z) * scale;

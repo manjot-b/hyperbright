@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "Ai.h"
-#include "Arena.h"
 #include "AudioPlayer.h"
 #include "Controller.h"
 #include "DevUI.h"
@@ -92,7 +91,10 @@ void Engine::initEntities()
 	bool copyModel = true;
 	tile = loadModel("rsc/models/tile.obj", false, "tile", nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
 	tileBorder = loadModel("rsc/models/tile_edge.obj", false, "tileborder", nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
-	wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
+	std::shared_ptr<Model> wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
+	
+	int arena_size = 40;
+	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, wall, arena_size, arena_size);
 }
 
 
@@ -106,15 +108,9 @@ void Engine::run()
 	DevUI devUI(renderer.getWindow());
 	Controller controller(renderer.getWindow(), camera, vehicles[0]);
 
-	int arena_size = 40;
-	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, wall, arena_size, arena_size);
-	arena->addWall(wall, 0, 0, Arena::WALL_DIRECTION::X_AXIS, 2);
-	arena->addWall(wall, 14, 5, Arena::WALL_DIRECTION::Z_AXIS, 7);
-	arena->addWall(wall, 4, 17, Arena::WALL_DIRECTION::Z_AXIS, 1);
-	arena->addWall(wall, 5, 17, Arena::WALL_DIRECTION::Z_AXIS, 1);
-	arena->addWall(wall, 4, 18, Arena::WALL_DIRECTION::Z_AXIS, 1);
-	arena->addWall(wall, 5, 18, Arena::WALL_DIRECTION::Z_AXIS, 1);
-
+	arena->addWall(0, 0, 2, 2);
+	arena->addWall(14, 5, 1, 7);
+	arena->addWall(4, 17, 5, 2);
 	renderables.push_back(arena);
 
 	while (!controller.isWindowClosed()) {

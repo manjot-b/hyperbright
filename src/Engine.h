@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-
+#include "Arena.h"
 #include "Model.h"
 #include "Renderer.h"
 #include "Texture.h"
@@ -23,6 +23,7 @@ public:
 private:
 	Camera camera;
 	Renderer renderer;
+	std::shared_ptr<Arena> arena;
 
 	float deltaSec;
 	//Ai aiPlayers[4];
@@ -41,7 +42,6 @@ private:
 	std::shared_ptr<Model> tile;
 	std::shared_ptr<Model> tileBorder;
 	std::shared_ptr<Model> powerup;
-	std::shared_ptr<Model> wall;
 	std::shared_ptr<Model> triggerVolume;
 
 	// Rename/remove as required.

@@ -31,7 +31,7 @@ public:
 	std::optional<glm::vec2> isOnTile(const glm::vec3& coords) const;
 
 	void setTileColor(const glm::vec2& tileCoords, const glm::vec4& color);
-	void addWall(std::shared_ptr<Model>& wall, unsigned int row, unsigned int col, WALL_DIRECTION direction, unsigned int cellsCovered);
+	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
 	
 private:
 	class Tile : public Renderer::IRenderable {
@@ -49,6 +49,7 @@ private:
 	using TileGrid = std::vector<std::vector<Tile>>;
 	TileGrid tileGrid;
 
+	std::shared_ptr<Model> wall;
 	using WallList = std::vector<std::unique_ptr<Model>>;
 	WallList walls;
 
