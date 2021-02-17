@@ -38,10 +38,11 @@ private:
 	// e.g. the plane should be Arena, car should be Vehicle.
 	std::shared_ptr<Model> vehicle;
 	std::shared_ptr<Model> ai1;
-	std::shared_ptr<Model> skyBox;
 	std::shared_ptr<Model> tile;
 	std::shared_ptr<Model> tileBorder;
+	std::shared_ptr<Model> powerup;
 	std::shared_ptr<Model> wall;
+	std::shared_ptr<Model> triggerVolume;
 
 	// Rename/remove as required.
 	std::shared_ptr<Texture> face;

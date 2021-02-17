@@ -86,16 +86,13 @@ void Engine::initEntities()
 	Vehicle ai1(ai1, ai1Color, vec3(15.f, 7.f, -15.f), vec3(0.f, 0.f, 1.f));
 	vehicles.push_back(std::make_shared<Vehicle>(ai1));
 
-	// background box > staticModels[0]
-	//skyBox = loadModel("rsc/models/cube.obj", false, "skybox", background);
-	//renderables.push_back(skyBox);
-
-	wall = loadModel("rsc/models/cube.obj", true, "wall", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
-	renderables.push_back(wall);
+	triggerVolume = loadModel("rsc/models/cube.obj", true, "trigger", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
+	renderables.push_back(triggerVolume);
 
 	bool copyModel = true;
 	tile = loadModel("rsc/models/tile.obj", false, "tile", nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
 	tileBorder = loadModel("rsc/models/tile_edge.obj", false, "tileborder", nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
+	wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
 }
 
 
@@ -110,7 +107,7 @@ void Engine::run()
 	Controller controller(renderer.getWindow(), camera, vehicles[0]);
 
 	int arena_size = 40;
-	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, arena_size, arena_size);
+	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, wall, arena_size, arena_size);
 	renderables.push_back(arena);
 
 	while (!controller.isWindowClosed()) {

@@ -28,6 +28,7 @@ class Model : public Renderer::IRenderable
 		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
+		void scale(const glm::vec3& scale);
 
 		const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 
@@ -47,7 +48,7 @@ class Model : public Renderer::IRenderable
 		BoundingBox boundingBox;
 		glm::mat4 modelMatrix;
 		glm::vec3 m_rotate;			// how much to rotate along each axis
-		float m_scale;				// scale to apply to model
+		glm::vec3 m_scale;			// scale to apply to model
 		glm::vec3 m_translation;	// translation vector
 		glm::vec3 m_position;
 		glm::vec4 m_color;

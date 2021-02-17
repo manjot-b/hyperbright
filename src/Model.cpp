@@ -107,12 +107,12 @@ void Model::update()
 	// Apply transformations
 	modelMatrix = glm::translate(modelMatrix, m_translation);
 	modelMatrix = modelMatrix * glm::eulerAngleXYZ(m_rotate.x, m_rotate.y, m_rotate.z);
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(m_scale, m_scale, m_scale));
+	modelMatrix = glm::scale(modelMatrix, m_scale);
 
 	// Reset transformation values
 	m_translation = glm::vec3(0);
 	m_rotate = glm::vec3(0);
-	m_scale = 1;
+	m_scale = glm::vec3(1);
 }
 
 void Model::setModelMatrix(const glm::mat4& modelPose)
@@ -135,6 +135,11 @@ void Model::rotate(const glm::vec3 &rotate)
 }
 
 void Model::scale(const float scale)
+{
+	this->scale(glm::vec3(scale));
+}
+
+void Model::scale(const glm::vec3& scale)
 {
 	m_scale = scale;
 }
@@ -177,12 +182,12 @@ void Model::computeBoundingBox()
 void Model::scaleToViewport()
 {
 	// Scale by the longest edge.
-	m_scale = 1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth));
+	m_scale = glm::vec3(1 / glm::max(boundingBox.width, glm::max(boundingBox.height, boundingBox.depth)));
 
 	// Put center of bounding at (0, 0, 0).
-	float xTrans = -(boundingBox.x + boundingBox.width*0.5f) * m_scale;
-	float yTrans = -(boundingBox.y + boundingBox.height*0.5f) * m_scale;
-	float zTrans = -(boundingBox.z + boundingBox.depth*0.5f) * m_scale;
+	float xTrans = -(boundingBox.x + boundingBox.width*0.5f) * m_scale.x;
+	float yTrans = -(boundingBox.y + boundingBox.height*0.5f) * m_scale.y;
+	float zTrans = -(boundingBox.z + boundingBox.depth*0.5f) * m_scale.z;
 	m_translation = glm::vec3(xTrans, yTrans, zTrans);
 	update();
 }
