@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <queue>
+#include <glm/gtc/quaternion.hpp>
 #include "Pickup.h"
 #include "Model.h"
 
@@ -16,20 +17,23 @@ public:
 	~Vehicle();
 	void reset();
 
+	const char* getId() { return id; }
 	vec3 getColor() { return color; }
 	vec3 getForward() { return forward; }
+	const vec3 getStartPos() { return start_position; }
+	quat getOrientation();
 
-	int energy;
+	float energy;
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION
 
 	shared_ptr<Pickup> pickupEquiped;//set as null for default
+	shared_ptr<Model> carModel;
 
 private:
-	shared_ptr<Model> carModel;
 
 	const char* id;
 	vec3 color;
 	vec3 forward;
-	vec3 start_position;
+	const vec3 start_position;
 };

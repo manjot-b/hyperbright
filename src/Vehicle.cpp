@@ -2,6 +2,7 @@
 #include "Controller.h"
 #include <iostream>
 
+
 using namespace std;
 using namespace glm;
 
@@ -20,4 +21,15 @@ Vehicle::~Vehicle() {
 void Vehicle::reset() {
 	//Set to begining of game values
 
+}
+
+quat Vehicle::getOrientation()
+{
+	forward = normalize(forward);
+	vec3 v(0.f, 1.f, 0.f);
+	vec3 u = normalize(cross(forward, v));
+	vec3 normal = normalize(cross(u, forward));
+	mat4 m = lookAt(vec3(0.f), forward, normal);
+
+	return quat_cast(m);
 }
