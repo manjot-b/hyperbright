@@ -54,6 +54,7 @@ PxFilterFlags VehicleFilterShader
 		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
 		std::cout << "COLLIDING WITH TRIGGER VOLUME\n";
 		return PxFilterFlag::eDEFAULT;
+		//return PxFilterFlags();
 	}
 
 	if( (0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)) )
