@@ -10,6 +10,7 @@
 #include "Arena.h"
 #include "Pickup.h"
 #include "Model.h"
+#include "AudioPlayer.h"
 
 class Simulate
 {
@@ -20,10 +21,9 @@ public:
 	void setModelPose(std::shared_ptr<Model>& model);
 	void cookMeshes();
 	void checkVehicleOverTile(Arena& arena, Model& model);
-
+	void setAudioPlayer(std::shared_ptr<AudioPlayer> audioPlayer);
 	void cleanupPhysics();
 private:
 	void initPhysics();
-
 	std::vector<std::shared_ptr<Model>>& physicsModels;
 };

@@ -25,9 +25,7 @@ Engine::Engine() :
 	// load textures into a shared pointer.
 	loadTextures();
 	initEntities();
-
-	// TO-DO: CONSTRUCT AUDIOPLAYER CORRECTLY. THIS IS ONLY A STUB
-	AudioPlayer audioPlayer;
+	setupAudioPlayer();
 }
 
 
@@ -64,6 +62,10 @@ std::shared_ptr<Model> Engine::loadModel(std::string ref,
 	return model;
 }
 
+void Engine::setupAudioPlayer() {
+	audioPlayer = std::shared_ptr<AudioPlayer>(new AudioPlayer);
+}
+
 void Engine::loadTextures()
 {
 	face = std::make_shared<Texture>("rsc/images/awesomeface.png");
@@ -98,6 +100,7 @@ void Engine::initEntities()
 void Engine::run()
 {
 	Simulate simulator(physicsModels);
+	simulator.setAudioPlayer(audioPlayer);
 	DevUI devUI(renderer.getWindow());
 	Controller controller(renderer.getWindow(), camera);
 
@@ -112,10 +115,8 @@ void Engine::run()
 	renderables.push_back(arena);
 
 	// SOUND SETUP
-	AudioPlayer audioPlayer;
-	audioPlayer.loadSound("rsc/sounds/car_loop.wav");
-	audioPlayer.playSound(0);
-
+	audioPlayer->playGameMusic();
+	audioPlayer->playCarIdle();
 
 	while (!controller.isWindowClosed()) {
 		// update global time

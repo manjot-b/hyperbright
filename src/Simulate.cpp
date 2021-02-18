@@ -43,6 +43,7 @@ PxRigidStatic* gGroundPlane = NULL;
 PxVehicleDrive4W* gVehicle4W = NULL;
 
 bool					gIsVehicleInAir = true;
+std::shared_ptr<AudioPlayer> audioPlayer;
 
 class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints);  PX_UNUSED(count); }
@@ -52,7 +53,8 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
 
 		//for (physx::PxU32 i = 0; i < count; i++) {
-			std::cout << "BALLING!! \n";
+			std::cout << "PICKUP COLLISION \n";
+			audioPlayer->playPickupCollision();
 		//}
 	}
 	void onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) {}
@@ -576,4 +578,8 @@ void Simulate::cleanupPhysics()
 	PX_RELEASE(gFoundation);
 
 	std::cout << "Cleaned up PhysX" << std::endl;
+}
+
+void Simulate::setAudioPlayer(std::shared_ptr<AudioPlayer> player) {
+	audioPlayer = player;
 }

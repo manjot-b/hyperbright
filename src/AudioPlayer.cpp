@@ -4,10 +4,14 @@
 #include <AL/alc.h>
 
 #include <iostream>
+#define GAMEMUSIC 0
+#define PICKUPCOLLISION 1
+#define CARIDLE 2
 
-#define NUM_BUFFERS 2
-#define NUM_SOURCES 2
-#define NUM_ENVIRONMENTS 2
+
+#define NUM_BUFFERS 3 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 3
+#define NUM_ENVIRONMENTS 3
 ALfloat listenerPos[] = { 0.0,0.0,4.0 };
 ALfloat listenerVel[] = { 0.0,0.0,0.0 };
 ALfloat listenerOri[] = { 0.0,0.0,1.0, 0.0,1.0,0.0 };
@@ -59,11 +63,12 @@ struct WAVE_Data {
     int subChunk2Size; //Stores the size of the data block
 };
 
-/*
- * Load wave file function. No need for ALUT with this
- */
+void AudioPlayer::loadSound(const char* filename) {
+    loadWavFile(filename, buffer + curLoaded, &size, &freq, &format);
+    curLoaded++;
+}
 
-void CheckError(int op = -1, int _err = 0) {
+void AudioPlayer::CheckError(int op = -1, int _err = 0) {
     int err;
     if (op == -1)
         err = alGetError(); // clear any error messages
@@ -85,7 +90,7 @@ void CheckError(int op = -1, int _err = 0) {
     return;
 }
 
-bool _strcmp(const char* base, const char* cp) {
+bool AudioPlayer::_strcmp(const char* base, const char* cp) {
     for (int lx = 0; base[lx] != 0; lx++) {
         if (cp[lx] != base[lx])
             return false;
@@ -93,7 +98,7 @@ bool _strcmp(const char* base, const char* cp) {
     return true;
 }
 
-bool loadWavFile(const char* filename, ALuint* buffer,
+bool AudioPlayer::loadWavFile(const char* filename, ALuint* buffer,
     ALsizei* size, ALsizei* frequency,
     ALenum* format) {
     //Local Declarations
@@ -185,7 +190,7 @@ bool loadWavFile(const char* filename, ALuint* buffer,
     }
 }
 
-void init() {
+void AudioPlayer::init() {
     alListenerfv(AL_POSITION, listenerPos);
     alListenerfv(AL_VELOCITY, listenerVel);
     alListenerfv(AL_ORIENTATION, listenerOri);
@@ -193,34 +198,29 @@ void init() {
     // Generate buffers, or else no sound will happen!
     alGenSources(NUM_SOURCES, source);
     CheckError();
-
-    // BGM test
-    /*
-    loadWavFile("rsc/sounds/game_music.wav", buffer, &size, &freq, &format);
-    CheckError();
     
-    alSourcef(source[0], AL_PITCH, 1.0f);
-    alSourcef(source[0], AL_GAIN, 1.0f);
-    alSourcefv(source[0], AL_POSITION, source0Pos);
-    alSourcefv(source[0], AL_VELOCITY, source0Vel);
-    alSourcei(source[0], AL_BUFFER, buffer[0]);
-    alSourcei(source[0], AL_LOOPING, AL_TRUE);
-    */
-    //alSourcePlay(source[0]);
-    
+    loadSound("rsc/sounds/game_music_2.wav");
+    alSourcef(source[GAMEMUSIC], AL_PITCH, 1.0f);
+    alSourcef(source[GAMEMUSIC], AL_GAIN, 0.5f);
+    alSourcefv(source[GAMEMUSIC], AL_POSITION, source0Pos);
+    alSourcefv(source[GAMEMUSIC], AL_VELOCITY, source0Vel);
+    alSourcei(source[GAMEMUSIC], AL_BUFFER, buffer[GAMEMUSIC]);
+    alSourcei(source[GAMEMUSIC], AL_LOOPING, AL_TRUE);
 
-   // for (int lx = 0; lx < 1000000000; lx++);
-    // SE test
-    /*
-    loadWavFile("rsc/sounds/car_loop.wav", buffer + 1, &size, &freq, &format);
-    alSourcef(source[1], AL_PITCH, 1.0f);
-    alSourcef(source[1], AL_GAIN, 1.0f);
-    alSourcefv(source[1], AL_POSITION, source0Pos);
-    alSourcefv(source[1], AL_VELOCITY, source0Vel);
-    alSourcei(source[1], AL_BUFFER, buffer[1]);
-    */
-    //alSourcei(source[1], AL_LOOPING, AL_TRUE);
-    //alSourcePlay(source[1]);
+    loadSound("rsc/sounds/pickup_collision.wav");
+    alSourcef(source[PICKUPCOLLISION], AL_PITCH, 1.0f);
+    alSourcef(source[PICKUPCOLLISION], AL_GAIN, 1.0f);
+    alSourcefv(source[PICKUPCOLLISION], AL_POSITION, source0Pos);
+    alSourcefv(source[PICKUPCOLLISION], AL_VELOCITY, source0Vel);
+    alSourcei(source[PICKUPCOLLISION], AL_BUFFER, buffer[PICKUPCOLLISION]);
+
+    loadSound("rsc/sounds/car_idle_loop.wav");
+    alSourcef(source[CARIDLE], AL_PITCH, 1.0f);
+    alSourcef(source[CARIDLE], AL_GAIN, 0.5f);
+    alSourcefv(source[CARIDLE], AL_POSITION, source0Pos);
+    alSourcefv(source[CARIDLE], AL_VELOCITY, source0Vel);
+    alSourcei(source[CARIDLE], AL_BUFFER, buffer[CARIDLE]);
+    alSourcei(source[CARIDLE], AL_LOOPING, AL_TRUE);
 
     return;
 }
@@ -250,17 +250,45 @@ AudioPlayer::~AudioPlayer() {
     alcCloseDevice(device);
 }
 
-void AudioPlayer::loadSound(const char* filename) {
-    loadWavFile(filename, buffer + curLoaded, &size, &freq, &format);
-    curLoaded++;
-}
-
-void AudioPlayer::playSound(int number) {//LOOPS A SOUND
+//USED FOR TESTING AND INITIAL DESIGN DELETE LATER
+void AudioPlayer::playMusic(int number) {
     alSourcef(source[number], AL_PITCH, 1.0f);
     alSourcef(source[number], AL_GAIN, 1.0f);
     alSourcefv(source[number], AL_POSITION, source0Pos);
     alSourcefv(source[number], AL_VELOCITY, source0Vel);
     alSourcei(source[number], AL_BUFFER, buffer[number]);
-    alSourcei(source[0], AL_LOOPING, AL_TRUE);
+    alSourcei(source[number], AL_LOOPING, AL_TRUE);
     alSourcePlay(source[number]);
+}
+
+//USED FOR TESTING AND INITIAL DESIGN DELETE LATER
+void AudioPlayer::playSound(int number) {
+    alSourcef(source[number], AL_PITCH, 1.0f);
+    alSourcef(source[number], AL_GAIN, 1.0f);
+    alSourcefv(source[number], AL_POSITION, source0Pos);
+    alSourcefv(source[number], AL_VELOCITY, source0Vel);
+    alSourcei(source[number], AL_BUFFER, buffer[number]);
+    alSourcePlay(source[number]);
+}
+
+void AudioPlayer::playGameMusic() {
+    alSourcePlay(source[GAMEMUSIC]);
+}
+
+void AudioPlayer::stopGameMusic() {
+    alSourceStop(source[GAMEMUSIC]);
+}
+
+void AudioPlayer::playPickupCollision() {
+    
+    alSourcePlay(source[PICKUPCOLLISION]);
+}
+
+void AudioPlayer::playCarIdle() {
+ 
+    alSourcePlay(source[CARIDLE]);
+}
+
+void AudioPlayer::stopCarIdle() {
+    alSourceStop(source[CARIDLE]);
 }
