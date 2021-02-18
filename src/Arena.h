@@ -13,13 +13,21 @@
 class Arena : public Renderer::IRenderable
 {
 public:
-	Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> tileBorder, unsigned int length, unsigned int width);
+	using WallList = std::vector<std::shared_ptr<Model>>;
+
+	Arena(const std::shared_ptr<Model> tile,
+		const std::shared_ptr<Model> tileBorder,
+		std::shared_ptr<Model> wall,
+		unsigned int length,
+		unsigned int width);
 	~Arena();
 
 	void render(const Shader& shader) const;
 	std::optional<glm::vec2> isOnTile(const glm::vec3& coords) const;
 
 	void setTileColor(const glm::vec2& tileCoords, const glm::vec4& color);
+	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
+	const WallList& getWalls() const;
 	
 private:
 	class Tile : public Renderer::IRenderable {
@@ -37,7 +45,11 @@ private:
 	using TileGrid = std::vector<std::vector<Tile>>;
 	TileGrid tileGrid;
 
+	std::shared_ptr<Model> wall;
+	WallList walls;
+
 	float tileWidth;
-	float tileDepth;
+	float tileBorderWidth;	// This is the width of one edge of the border.
 	float tileCollisionRadius;
+	float wallWidth;
 };

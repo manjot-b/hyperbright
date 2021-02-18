@@ -13,7 +13,6 @@
 class Model : public Renderer::IRenderable
 {
 	public:
-
 		Model(const std::string &objPath,
 			const char* id,
 			std::shared_ptr<Texture> texture,
@@ -24,13 +23,15 @@ class Model : public Renderer::IRenderable
 
 		void render(const Shader& shader) const;
 		void update();
-		void setModelMatrix(const glm::mat4& modelPose);
 		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);
 		void scale(float scale);
+		void scale(const glm::vec3& scale);
+
 
 		const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
-
+		void setModelMatrix(const glm::mat4& modelPose);
+		const glm::mat4& getModelMatrix() const;
 		void setPosition(const glm::vec3& position);
 		const glm::vec3& getPosition() const;
 		void setColor(const glm::vec4& color);
@@ -47,7 +48,7 @@ class Model : public Renderer::IRenderable
 		BoundingBox boundingBox;
 		glm::mat4 modelMatrix;
 		glm::vec3 m_rotate;			// how much to rotate along each axis
-		float m_scale;				// scale to apply to model
+		glm::vec3 m_scale;			// scale to apply to model
 		glm::vec3 m_translation;	// translation vector
 		glm::vec3 m_position;
 		glm::vec4 m_color;
