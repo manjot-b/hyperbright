@@ -17,6 +17,6 @@ void main()
 {
     gl_Position = perspective * view * model * vec4(inPosition, 1.0);
 	texCoord = inTexCoord;
-	n = vec3(model * vec4(inNormal,0.f));
-	vertexPos = vec3(model * vec4(inPosition,0.f));
+	n = vec3(model * vec4(inNormal, 0.f));
+	vertexPos = vec3(model * vec4(inPosition, 1.f));
 }

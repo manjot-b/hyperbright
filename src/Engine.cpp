@@ -98,6 +98,7 @@ void Engine::initEntities()
 	arena->addWall(0, 0, 2, 2);
 	arena->addWall(14, 5, 1, 7);
 	arena->addWall(4, 17, 5, 2);
+	arena->addWall(10, 10, 1, 1);
 	renderables.push_back(arena);
 }
 
