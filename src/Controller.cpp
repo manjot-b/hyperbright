@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-Controller::Controller(GLFWwindow* _window, Camera& _camera) :
-	window(_window), camera(_camera), modelIndex(0), isCursorShowing(false), manualCamera(false)
+Controller::Controller(GLFWwindow* _window, Camera& _camera, std::shared_ptr<Vehicle>& _playerVehicle) :
+	window(_window), camera(_camera), playerVehicle(_playerVehicle), isCursorShowing(false), manualCamera(false)
 
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
@@ -21,15 +21,7 @@ Controller::Controller(GLFWwindow* _window, Camera& _camera) :
 Controller::~Controller() {
 
 }
-/*
-std::queue<int> Controller::gameInput() {
-	//User input
-	std::cout << "Queue count: " << currentDrivingControls.size() << std::endl;
-	std::queue<int> copy;
-	currentDrivingControls.swap(copy);
-	return copy;
-}
-*/
+
 bool upPressed;
 bool downPressed;
 bool leftPressed;
@@ -60,12 +52,13 @@ void Controller::processInput(float deltaSec)
 		camera.processKeyboard(Camera::Movement::DOWN, deltaSec);
 	}
 
+	//playerVehicle->resetControls();
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		//std::cout << "Up key PRESSED" << std::endl;
 		if (!upPressed)
 		{
-			//currentDrivingControls.push(ACCEL);
+			std::cout << "Up key PRESSED" << std::endl;
+			playerVehicle->accelerateForward();
 			upPressed = true;
 		}
 	}
@@ -75,6 +68,7 @@ void Controller::processInput(float deltaSec)
 		if (upPressed)
 		{
 			std::cout << "Up key RELEASED" << std::endl;
+			playerVehicle->stopForward();
 			upPressed = false;
 		}
 	}
@@ -84,7 +78,7 @@ void Controller::processInput(float deltaSec)
 		if (!downPressed)
 		{
 			std::cout << "Down key PRESSED" << std::endl;
-			//currentDrivingControls.push(BRAKE);
+			playerVehicle->accelerateReverse();
 			downPressed = true;
 		}
 	}
@@ -94,23 +88,19 @@ void Controller::processInput(float deltaSec)
 		if (downPressed)
 		{
 			std::cout << "Down key RELEASED" << std::endl;
+			playerVehicle->stopReverse();
 			downPressed = false;
 		}
 	}
-	/*
-	if (!upPressed && !downPressed)
-	{
-		currentDrivingControls.push(NO_ACC);
-	}
-	*/
+
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
 		if (!leftPressed)
 		{
 			std::cout << "Left key PRESSED" << std::endl;
+			playerVehicle->turnLeft();
 			leftPressed = true;
 		}
-		//currentDrivingControls.push(TURN_LEFT);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
@@ -118,6 +108,7 @@ void Controller::processInput(float deltaSec)
 		if (leftPressed)
 		{
 			std::cout << "Left key RELEASED" << std::endl;
+			playerVehicle->stopLeft();
 			leftPressed = false;
 		}
 	}
@@ -127,9 +118,9 @@ void Controller::processInput(float deltaSec)
 		if (!rightPressed)
 		{
 			std::cout << "Right key PRESSED" << std::endl;
+			playerVehicle->turnRight();
 			rightPressed = true;
 		}
-		//currentDrivingControls.push(TURN_RIGHT);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
@@ -137,13 +128,10 @@ void Controller::processInput(float deltaSec)
 		if (rightPressed)
 		{
 			std::cout << "Right key RELEASED" << std::endl;
+			playerVehicle->stopRight();
 			rightPressed = false;
 		}
 	}
-	output[0] = upPressed;
-	output[1] = downPressed;
-	output[2] = leftPressed;
-	output[3] = rightPressed;
 }
 
 void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -163,10 +151,6 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 			{
 				controller->toggleCursor();
 			}
-			break;
-		case GLFW_KEY_N:
-			controller->nextModel();
-			std::cout << "Next Model. Index: " << controller->modelIndex << std::endl;
 			break;
 		case GLFW_KEY_C:
 			controller->manualCamera = !controller->manualCamera;
@@ -207,18 +191,6 @@ void Controller::scrollCallback(GLFWwindow* window, double xoffset, double yoffs
 		controller->camera.processMouseScroll(Camera::Movement::FORWARD, yoffset);
 	if (yoffset < 0)
 		controller->camera.processMouseScroll(Camera::Movement::BACKWARD, -yoffset);
-}
-
-void Controller::nextModel()
-{
-	if (modelIndex == numModels)
-	{
-		modelIndex = 0;
-	}
-	else
-	{
-		modelIndex++;
-	}
 }
 
 void Controller::toggleCursor()

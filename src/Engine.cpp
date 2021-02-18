@@ -101,9 +101,9 @@ void Engine::run()
 {
 	Simulate simulator(physicsModels, vehicles);
 	DevUI devUI(renderer.getWindow());
-	Controller controller(renderer.getWindow(), camera);
+	Controller controller(renderer.getWindow(), camera, vehicles[0]);
 
-	int arena_size = 50;
+	int arena_size = 40;
 	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, arena_size, arena_size);
 	renderables.push_back(arena);
 
@@ -126,7 +126,7 @@ void Engine::run()
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics(controller.output, fpsLimit);
+		simulator.stepPhysics(fpsLimit);
 		simulator.checkVehicleOverTile(*arena, *vehicle);
 		
 

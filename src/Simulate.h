@@ -18,7 +18,7 @@ class Simulate
 public:
 	Simulate(vector<shared_ptr<Model>>& physicsModels, vector<shared_ptr<Vehicle>>& vehicles);
 	~Simulate();
-	void stepPhysics(bool input[], float deltaSec);
+	void stepPhysics(float deltaSec);
 	void setModelPose(std::shared_ptr<Model>& model);
 	void cookMeshes();
 	void checkVehicleOverTile(Arena& arena, Model& model);
@@ -34,3 +34,14 @@ private:
 	// A list of vehicles needed for initializing the vehicle actors and updating vehicle stats
 	vector<shared_ptr<Vehicle>>& vehicles;
 };
+
+namespace Driving {
+	void startAccelerateForwardsMode(int v);
+	void startAccelerateReverseMode(int v);
+	void startBrakeMode(int v);
+	void startTurnHardLeftMode(int v);
+	void startTurnHardRightMode(int v);
+	void startHandbrakeTurnLeftMode(int v);
+	void startHandbrakeTurnRightMode(int v);
+	void releaseAllControls(int v);
+}

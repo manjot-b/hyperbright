@@ -1,6 +1,7 @@
 #include "Simulate.h"
 #include "Controller.h"
 #include "Vehicle.h"
+#include "DevUI.h"
 
 #include <vehicle/PxVehicleUtil.h>
 
@@ -118,7 +119,7 @@ PxVehiclePadSmoothingData gPadSmoothingData =
 	}
 };
 
-PxVehicleDrive4WRawInputData gVehicleInputData;
+PxVehicleDrive4WRawInputData gVehicleInputData[4];
 
 enum DriveMode
 {
@@ -129,23 +130,6 @@ enum DriveMode
 	eDRIVE_MODE_HARD_TURN_RIGHT,
 	eDRIVE_MODE_HANDBRAKE_TURN_RIGHT,
 	eDRIVE_MODE_BRAKE,
-	eDRIVE_MODE_NONE
-};
-
-DriveMode gDriveModeOrder[] =
-{
-	eDRIVE_MODE_BRAKE,
-	eDRIVE_MODE_ACCEL_FORWARDS,
-	eDRIVE_MODE_BRAKE,
-	eDRIVE_MODE_ACCEL_REVERSE,
-	eDRIVE_MODE_BRAKE,
-	eDRIVE_MODE_HARD_TURN_LEFT,
-	eDRIVE_MODE_BRAKE,
-	eDRIVE_MODE_HARD_TURN_RIGHT,
-	eDRIVE_MODE_ACCEL_FORWARDS,
-	eDRIVE_MODE_HANDBRAKE_TURN_LEFT,
-	eDRIVE_MODE_ACCEL_FORWARDS,
-	eDRIVE_MODE_HANDBRAKE_TURN_RIGHT,
 	eDRIVE_MODE_NONE
 };
 
@@ -196,116 +180,115 @@ VehicleDesc initVehicleDesc()
 	return vehicleDesc;
 }
 
-void startAccelerateForwardsMode()
-{
-	if (gMimicKeyInputs)
+namespace Driving {
+	void startAccelerateForwardsMode(int v)
 	{
-		gVehicleInputData.setDigitalAccel(true);
+		gVehicle4W[v]->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
+		if (gMimicKeyInputs)
+		{
+			gVehicleInputData[v].setDigitalAccel(true);
+		}
+		else
+		{
+			gVehicleInputData[v].setAnalogAccel(1.0f);
+		}
 	}
-	else
-	{
-		gVehicleInputData.setAnalogAccel(1.0f);
-	}
-}
 
-void startAccelerateReverseMode()
-{
-	gVehicle4W[0]->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
+	void startAccelerateReverseMode(int v)
+	{
+		gVehicle4W[v]->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
 
-	if (gMimicKeyInputs)
-	{
-		gVehicleInputData.setDigitalAccel(true);
+		if (gMimicKeyInputs)
+		{
+			gVehicleInputData[v].setDigitalAccel(true);
+		}
+		else
+		{
+			gVehicleInputData[v].setAnalogAccel(1.0f);
+		}
 	}
-	else
-	{
-		gVehicleInputData.setAnalogAccel(1.0f);
-	}
-}
 
-void startBrakeMode()
-{
-	if (gMimicKeyInputs)
+	void startBrakeMode(int v)
 	{
-		gVehicleInputData.setDigitalBrake(true);
+		if (gMimicKeyInputs)
+		{
+			gVehicleInputData[v].setDigitalBrake(true);
+		}
+		else
+		{
+			gVehicleInputData[v].setAnalogBrake(1.0f);
+		}
 	}
-	else
-	{
-		gVehicleInputData.setAnalogBrake(1.0f);
-	}
-}
 
-void startTurnHardLeftMode()
-{
-	if (gMimicKeyInputs)
+	void startTurnHardLeftMode(int v)
 	{
-		//gVehicleInputData.setDigitalAccel(true);
-		gVehicleInputData.setDigitalSteerLeft(true);
+		if (gMimicKeyInputs)
+		{
+			gVehicleInputData[v].setDigitalSteerLeft(true);
+		}
+		else
+		{
+			gVehicleInputData[v].setAnalogSteer(-1.0f);
+		}
 	}
-	else
-	{
-		//gVehicleInputData.setAnalogAccel(true);
-		gVehicleInputData.setAnalogSteer(-1.0f);
-	}
-}
 
-void startTurnHardRightMode()
-{
-	if (gMimicKeyInputs)
+	void startTurnHardRightMode(int v)
 	{
-		//gVehicleInputData.setDigitalAccel(true);
-		gVehicleInputData.setDigitalSteerRight(true);
+		if (gMimicKeyInputs)
+		{
+			gVehicleInputData[v].setDigitalSteerRight(true);
+		}
+		else
+		{
+			gVehicleInputData[v].setAnalogSteer(1.0f);
+		}
 	}
-	else
-	{
-		//gVehicleInputData.setAnalogAccel(1.0f);
-		gVehicleInputData.setAnalogSteer(1.0f);
-	}
-}
 
-void startHandbrakeTurnLeftMode()
-{
-	if (gMimicKeyInputs)
+	void startHandbrakeTurnLeftMode(int v)
 	{
-		gVehicleInputData.setDigitalSteerLeft(true);
-		gVehicleInputData.setDigitalHandbrake(true);
+		if (gMimicKeyInputs)
+		{
+			gVehicleInputData[v].setDigitalSteerLeft(true);
+			gVehicleInputData[v].setDigitalHandbrake(true);
+		}
+		else
+		{
+			gVehicleInputData[v].setAnalogSteer(-1.0f);
+			gVehicleInputData[v].setAnalogHandbrake(1.0f);
+		}
 	}
-	else
-	{
-		gVehicleInputData.setAnalogSteer(-1.0f);
-		gVehicleInputData.setAnalogHandbrake(1.0f);
-	}
-}
 
-void startHandbrakeTurnRightMode()
-{
-	if (gMimicKeyInputs)
+	void startHandbrakeTurnRightMode(int v)
 	{
-		gVehicleInputData.setDigitalSteerRight(true);
-		gVehicleInputData.setDigitalHandbrake(true);
+		if (gMimicKeyInputs)
+		{
+			gVehicleInputData[v].setDigitalSteerRight(true);
+			gVehicleInputData[v].setDigitalHandbrake(true);
+		}
+		else
+		{
+			gVehicleInputData[v].setAnalogSteer(1.0f);
+			gVehicleInputData[v].setAnalogHandbrake(1.0f);
+		}
 	}
-	else
-	{
-		gVehicleInputData.setAnalogSteer(1.0f);
-		gVehicleInputData.setAnalogHandbrake(1.0f);
-	}
-}
 
-void releaseAllControls()
-{
-	if (gMimicKeyInputs)
+	void releaseAllControls(int v)
 	{
-		gVehicleInputData.setDigitalAccel(false);
-		gVehicleInputData.setDigitalSteerLeft(false);
-		gVehicleInputData.setDigitalSteerRight(false);
-		gVehicleInputData.setDigitalBrake(false);
-		gVehicleInputData.setDigitalHandbrake(false);
-	}
-	else
-	{
-		gVehicleInputData.setAnalogAccel(0.0f);
-		gVehicleInputData.setAnalogSteer(0.0f);
-		gVehicleInputData.setAnalogBrake(0.0f);
-		gVehicleInputData.setAnalogHandbrake(0.0f);
+		if (gMimicKeyInputs)
+		{
+			gVehicleInputData[v].setDigitalAccel(false);
+			gVehicleInputData[v].setDigitalSteerLeft(false);
+			gVehicleInputData[v].setDigitalSteerRight(false);
+			gVehicleInputData[v].setDigitalBrake(false);
+			gVehicleInputData[v].setDigitalHandbrake(false);
+		}
+		else
+		{
+			gVehicleInputData[v].setAnalogAccel(0.0f);
+			gVehicleInputData[v].setAnalogSteer(0.0f);
+			gVehicleInputData[v].setAnalogBrake(0.0f);
+			gVehicleInputData[v].setAnalogHandbrake(0.0f);
+		}
 	}
 }
 
@@ -362,7 +345,7 @@ void Simulate::initPhysics()
 	gGroundPlane->userData = NULL;
 	gScene->addActor(*gGroundPlane);
 
-
+	//Create Vehicle bodies
 	VehicleDesc vehicleDesc = initVehicleDesc();
 	vector<shared_ptr<Vehicle>>::iterator iter = vehicles.begin();
 	for (int i = 0;  i < 2; i++, iter++) {
@@ -378,44 +361,6 @@ void Simulate::initPhysics()
 		gVehicle4W[i]->getRigidDynamicActor()->userData = (void*)vehicle->getId();
 		gScene->addActor(*gVehicle4W[i]->getRigidDynamicActor());
 	}
-
-	/*//////////////////////////// Player
-	//Create a vehicle that will drive on the plane.
-	VehicleDesc vehicleDesc = initVehicleDesc();
-	gVehicle4W = createVehicle4W(vehicleDesc, gPhysics, gCooking);
-
-	vec3 playerStartPos = vehicles[0]->getStartPos();
-	quat playerOrientation = vehicles[0]->getOrientation();
-	std::cout << "x: " << playerOrientation.x << " y: " << playerOrientation.y << " z: " << playerOrientation.z << std::endl;
-	PxQuat playerPxOrientation(playerOrientation.x, playerOrientation.y, playerOrientation.z, playerOrientation.w);
-	PxTransform startTransform(PxVec3(playerStartPos.x, playerStartPos.y, playerStartPos.z), playerPxOrientation);
-	gVehicle4W->getRigidDynamicActor()->setGlobalPose(startTransform);
-	gVehicle4W->getRigidDynamicActor()->userData = (void*)vehicles[0]->getId();
-	gScene->addActor(*gVehicle4W->getRigidDynamicActor());
-
-	//Set the vehicle to rest in first gear.
-	//Set the vehicle to use auto-gears.
-	gVehicle4W->setToRestState();
-	gVehicle4W->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
-	gVehicle4W->mDriveDynData.setUseAutoGears(true);
-
-	gVehicleModeTimer = 0.0f;
-	gVehicleOrderProgress = 0;
-	startBrakeMode();
-
-	//////////////////////////// AI
-	//Create a vehicle that will drive on the plane.
-	PxTransform ai1StartTransform(PxVec3(10, (vehicleDesc.chassisDims.y * 0.5f + vehicleDesc.wheelRadius + 1.0f) + 5, -15.f), PxQuat(PxIdentity));
-	gVehicle4W_ai1 = createVehicle4W(vehicleDesc, gPhysics, gCooking);
-	gVehicle4W_ai1->getRigidDynamicActor()->setGlobalPose(ai1StartTransform);
-	gVehicle4W_ai1->getRigidDynamicActor()->userData = "ai1";
-	gScene->addActor(*gVehicle4W_ai1->getRigidDynamicActor());
-
-	gVehicle4W_ai1->setToRestState();
-	gVehicle4W_ai1->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
-	gVehicle4W_ai1->mDriveDynData.setUseAutoGears(true);
-	*/
-
 
 	///////////////////////////////////// BOX
 	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
@@ -434,42 +379,48 @@ void Simulate::initPhysics()
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
-void incrementDrivingMode(bool input[])
+void setDriveMode(VehicleController ctrl)
 {
-		releaseAllControls();
-		//FORWARD OR BACKWARD
-		if (input[0]) {
-			gVehicle4W[0]->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
-			startAccelerateForwardsMode();
-		}
-		else if (input[1]) {
-			gVehicle4W[0]->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
-			startAccelerateReverseMode();
-		}
+	int vNum = ctrl.contrId;
 
-		//LEFT OR RIGHT (seems to be backwards?)
-		if (input[3]) {
-			startTurnHardLeftMode();
-		}
-		else if (input[2]) {
-			startTurnHardRightMode();
-		}
+	Driving::releaseAllControls(vNum);
+	//FORWARD OR BACKWARD
+	if (ctrl.input[0]) {
+		Driving::startAccelerateForwardsMode(vNum);
+	}
+	else if (ctrl.input[1]) {
+		Driving::startAccelerateReverseMode(vNum);
+	}
+
+	//LEFT OR RIGHT
+	if (ctrl.input[2]) {
+		Driving::startTurnHardLeftMode(vNum);
+	}
+	else if (ctrl.input[3]) {
+		Driving::startTurnHardRightMode(vNum);
+	}
 }
 
-void Simulate::stepPhysics(bool input[], float frameRate)
-{
-	//Cycle through the driving modes to demonstrate how to accelerate/reverse/brake/turn etc.
-	incrementDrivingMode(input);
-
-	//Update the control inputs for the vehicle.
+void smoothControlValues(int vNum, float frameRate) {
 	if (gMimicKeyInputs)
 	{
-		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, frameRate, gIsVehicleInAir, *gVehicle4W[0]);
+		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData[vNum], frameRate, gIsVehicleInAir, *gVehicle4W[vNum]);
 	}
 	else
 	{
-		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, frameRate, gIsVehicleInAir, *gVehicle4W[0]);
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData[vNum], frameRate, gIsVehicleInAir, *gVehicle4W[vNum]);
 	}
+}
+
+void Simulate::stepPhysics(float frameRate)
+{
+	//Cycle through the vehicles and set there driving mode
+	for (auto& vehicle : vehicles) {
+		VehicleController& ctrl = vehicle->getController();
+		setDriveMode(ctrl);
+		smoothControlValues(ctrl.contrId, frameRate);
+	}
+
 	//////////////////// PLAYER
 	//Raycasts.
 	PxVehicleWheels* vehicles[1] = { gVehicle4W[0] };
