@@ -37,10 +37,11 @@ private:
 	// These should eventually be their specific classes rather than Model.
 	// e.g. the plane should be Arena, car should be Vehicle.
 	std::shared_ptr<Model> vehicle;
+	std::shared_ptr<Model> ai1;
 	std::shared_ptr<Model> skyBox;
 	std::shared_ptr<Model> tile;
 	std::shared_ptr<Model> tileBorder;
-	std::shared_ptr<Model> powerup;
+	std::shared_ptr<Model> wall;
 
 	// Rename/remove as required.
 	std::shared_ptr<Texture> face;
@@ -58,7 +59,7 @@ private:
   
 	std::shared_ptr<Model> loadModel(std::string ref,
 		bool inPhysx,
-		Model::MoveType type,
+		const char* name,
 		const std::shared_ptr<Texture>& texture,
 		const glm::vec4& color = glm::vec4(0.3, 0.3, 0.3, 0),
 		bool copyModel = false);
