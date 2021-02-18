@@ -15,13 +15,6 @@ class Arena : public Renderer::IRenderable
 public:
 	using WallList = std::vector<std::shared_ptr<Model>>;
 
-	/*
-	 * The direction a wall extends in from its starting point.
-	 */
-	enum class WALL_DIRECTION {
-		X_AXIS,
-		Z_AXIS
-	};
 	Arena(const std::shared_ptr<Model> tile,
 		const std::shared_ptr<Model> tileBorder,
 		std::shared_ptr<Model> wall,
