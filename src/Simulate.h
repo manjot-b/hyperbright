@@ -16,11 +16,12 @@ using namespace std;
 class Simulate
 {
 public:
-	Simulate(vector<shared_ptr<Model>>& physicsModels, vector<shared_ptr<Vehicle>>& vehicles);
+
+	Simulate(vector<shared_ptr<Model>>& physicsModels, vector<shared_ptr<Vehicle>>& vehicles, const Arena& arena);
 	~Simulate();
 	void stepPhysics(float deltaSec);
 	void setModelPose(std::shared_ptr<Model>& model);
-	void cookMeshes();
+	void cookMeshes(const std::shared_ptr<Model>& mesh, bool useModelMatrix = false);
 	void checkVehicleOverTile(Arena& arena, Model& model);
 
 	void cleanupPhysics();

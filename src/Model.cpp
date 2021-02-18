@@ -15,7 +15,7 @@ Model::Model(const std::string &objPath,
 	const glm::vec4& color,
 	bool fitToViewPort) :
 	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), id(id), m_texture(texture),
-	m_color(color)
+	m_color(color), m_position(.0f)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -45,6 +45,7 @@ Model::Model(const Model& model)
 	m_scale = model.m_scale;
 	m_translation = model.m_translation;
 	m_color = model.m_color;
+	m_position = model.m_position;
 
 	for (const auto& mesh : model.meshes)
 	{
@@ -100,7 +101,7 @@ void Model::render(const Shader& shader) const
 }
 
 /**
- * Updates the model matrix. Should be called before draw().
+ * Updates the model matrix and position. Should be called before draw().
  */
 void Model::update()
 {
@@ -109,15 +110,12 @@ void Model::update()
 	modelMatrix = modelMatrix * glm::eulerAngleXYZ(m_rotate.x, m_rotate.y, m_rotate.z);
 	modelMatrix = glm::scale(modelMatrix, m_scale);
 
+	m_position = modelMatrix * glm::vec4(m_position, 1.f);
+
 	// Reset transformation values
 	m_translation = glm::vec3(0);
 	m_rotate = glm::vec3(0);
 	m_scale = glm::vec3(1);
-}
-
-void Model::setModelMatrix(const glm::mat4& modelPose)
-{
-	modelMatrix = modelPose;
 }
 
 void Model::translate(const glm::vec3& _translate)
@@ -192,11 +190,15 @@ void Model::scaleToViewport()
 	update();
 }
 
+const glm::mat4& Model::getModelMatrix() const { return modelMatrix; }
+
 const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }
 
 const BoundingBox& Model::getBoundingBox() const { return boundingBox; }
 
 const glm::vec4& Model::getColor() const { return m_color;  }
+
+void Model::setModelMatrix(const glm::mat4& modelPose) { modelMatrix = modelPose; }
 
 void Model::setColor(const glm::vec4& color) { m_color = color; }
 

@@ -13,6 +13,8 @@
 class Arena : public Renderer::IRenderable
 {
 public:
+	using WallList = std::vector<std::shared_ptr<Model>>;
+
 	/*
 	 * The direction a wall extends in from its starting point.
 	 */
@@ -32,6 +34,7 @@ public:
 
 	void setTileColor(const glm::vec2& tileCoords, const glm::vec4& color);
 	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
+	const WallList& getWalls() const;
 	
 private:
 	class Tile : public Renderer::IRenderable {
@@ -50,7 +53,6 @@ private:
 	TileGrid tileGrid;
 
 	std::shared_ptr<Model> wall;
-	using WallList = std::vector<std::unique_ptr<Model>>;
 	WallList walls;
 
 	float tileWidth;

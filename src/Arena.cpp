@@ -137,8 +137,11 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 	wall->translate(trans);
 
 	wall->update();
-	walls.push_back(std::make_unique<Model>(*wall));
+	walls.push_back(std::make_shared<Model>(*wall));
 
 	// Reset scale and translation for other walls that need to be added.
 	wall->setModelMatrix(glm::mat4(1.f));
+	wall->setPosition(glm::vec3(.0f, .0f, .0f));
 }
+
+const Arena::WallList& Arena::getWalls() const { return walls; }

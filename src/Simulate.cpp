@@ -61,9 +61,16 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 };
 CollisionCallBack collisionCallBack;
 
-Simulate::Simulate(vector<shared_ptr<Model>>& _physicsModels, vector<shared_ptr<Vehicle>>& _vehicles) :
-	physicsModels(_physicsModels), vehicles(_vehicles) {
+
+Simulate::Simulate(vector<shared_ptr<Model>>& _physicsModels, vector<shared_ptr<Vehicle>>& _vehicles, const Arena& arena) :
+	physicsModels(_physicsModels), vehicles(_vehicles)
+{
 	initPhysics();
+
+	for (const auto& wall : arena.getWalls())
+	{
+		cookMeshes(wall, true);
+	}
 }
 
 Simulate::~Simulate() {
@@ -511,53 +518,60 @@ void Simulate::checkVehicleOverTile(Arena& arena, Model& model)
 	}
 }
 
-void Simulate::cookMeshes()
+void Simulate::cookMeshes(const std::shared_ptr<Model>& model, bool useModelMatrix)
 {
-	for (auto& model : physicsModels)
+	const std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
+	for (auto& mesh : meshes)
 	{
-		const std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
-		for (auto& mesh : meshes)
+		std::vector<PxVec3> pxVertices;
+		const std::vector<Vertex>& meshVerts = mesh->getVertices();
+		const std::vector<unsigned int>& indices = mesh->getIndices();
+
+		// convert Vertex positions into PxVec3
+		for (int i = 0; i < meshVerts.size(); i++)
 		{
-			std::vector<PxVec3> pxVertices;
-			std::vector<Vertex> meshVerts = mesh->getVertices();
-			std::vector<unsigned int> indices = mesh->getIndices();
-
-			// convert Vertex positions into PxVec3
-			for (int i = 0; i < meshVerts.size(); i++)
+			glm::vec4 mpos = glm::vec4(meshVerts[i].position, 1.f);
+			if (useModelMatrix)
 			{
-				pxVertices.push_back(PxVec3(meshVerts[i].position.x, meshVerts[i].position.y, meshVerts[i].position.z));
+				mpos = mpos * model->getModelMatrix();
 			}
-
-			PxTriangleMeshDesc meshDesc;
-			meshDesc.points.count = pxVertices.size();
-			meshDesc.points.stride = sizeof(PxVec3);
-			meshDesc.points.data = pxVertices.data();
-
-			meshDesc.triangles.count = indices.size() / 3;
-			meshDesc.triangles.stride = 3 * sizeof(PxU32);
-			meshDesc.triangles.data = indices.data();
-
-			PxDefaultMemoryOutputStream writeBuffer;
-			gCooking->cookTriangleMesh(meshDesc, writeBuffer);
-
-			PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-			PxTriangleMesh* triMesh = gPhysics->createTriangleMesh(readBuffer);
-
-			PxTransform trans(PxVec3(0.f, 10.f, -2.f));
-			PxRigidStatic* rigidStat = gPhysics->createRigidStatic(trans);
-			PxShape* shape = PxRigidActorExt::createExclusiveShape(*rigidStat, PxTriangleMeshGeometry(triMesh), *gMaterial);
-			shape->setLocalPose(trans);
-
-			rigidStat = PxCreateStatic(*gPhysics, trans, *shape);
-			rigidStat->attachShape(*shape);
-			gScene->addActor(*rigidStat);
-
-			// can't figure out how to create dynamic shapes with cooked mesh
-			// Might revisit this issue if time allows.
-			/*PxRigidDynamic* rigidDyn = PxCreateDynamic(*gPhysics, trans, PxTriangleMeshGeometry(triMesh), *gMaterial, 1.f);
-			rigidDyn->setAngularVelocity(PxVec3(0.f, 0.f, 1.f));
-			gScene->addActor(*rigidDyn);*/
+			PxVec3 pos;
+			std::memcpy(&pos, &mpos, sizeof(PxVec3));
+			pxVertices.push_back(pos);
 		}
+
+		PxTriangleMeshDesc meshDesc;
+		meshDesc.points.count = pxVertices.size();
+		meshDesc.points.stride = sizeof(PxVec3);
+		meshDesc.points.data = pxVertices.data();
+
+		meshDesc.triangles.count = indices.size() / 3;
+		meshDesc.triangles.stride = 3 * sizeof(PxU32);
+		meshDesc.triangles.data = indices.data();
+
+		PxDefaultMemoryOutputStream writeBuffer;
+
+		if (!gCooking->cookTriangleMesh(meshDesc, writeBuffer))
+		{
+			std::cout << "Error: Could not cook triangle mesh.\n";
+		}
+
+		PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+		PxTriangleMesh* triMesh = gPhysics->createTriangleMesh(readBuffer);
+
+		PxVec3 pos;
+		std::memcpy(&pos, &(model->getPosition()), sizeof(PxVec3));
+		PxTransform trans(pos);
+
+		PxRigidStatic* rigidStat = gPhysics->createRigidStatic(PxTransform(pos));
+		PxShape* shape = PxRigidActorExt::createExclusiveShape(*rigidStat, PxTriangleMeshGeometry(triMesh), *gMaterial);
+		gScene->addActor(*rigidStat);
+
+		// can't figure out how to create dynamic shapes with cooked mesh
+		// Might revisit this issue if time allows.
+		/*PxRigidDynamic* rigidDyn = PxCreateDynamic(*gPhysics, trans, PxTriangleMeshGeometry(triMesh), *gMaterial, 1.f);
+		rigidDyn->setAngularVelocity(PxVec3(0.f, 0.f, 1.f));
+		gScene->addActor(*rigidDyn);*/
 	}
 }
 
