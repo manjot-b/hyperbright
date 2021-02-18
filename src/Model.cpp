@@ -19,7 +19,7 @@ Model::Model(const std::string &objPath,
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
-			aiProcess_Triangulate | aiProcess_GenSmoothNormals);	
+			aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 	if (!scene)
 	{
 		std::cerr <<  "Error loading " << objPath << ".\n" << importer.GetErrorString() << std::endl;

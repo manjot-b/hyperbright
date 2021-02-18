@@ -551,6 +551,7 @@ void Simulate::cookMeshes(const std::shared_ptr<Model>& model, bool useModelMatr
 
 		PxDefaultMemoryOutputStream writeBuffer;
 
+
 		if (!gCooking->cookTriangleMesh(meshDesc, writeBuffer))
 		{
 			std::cout << "Error: Could not cook triangle mesh.\n";
@@ -564,7 +565,13 @@ void Simulate::cookMeshes(const std::shared_ptr<Model>& model, bool useModelMatr
 		PxTransform trans(pos);
 
 		PxRigidStatic* rigidStat = gPhysics->createRigidStatic(PxTransform(pos));
-		PxShape* shape = PxRigidActorExt::createExclusiveShape(*rigidStat, PxTriangleMeshGeometry(triMesh), *gMaterial);
+		PxShape* shape = gPhysics->createShape(PxTriangleMeshGeometry(triMesh), *gMaterial, true);
+		// This is needed for collisions to work.
+		PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+
+		shape->setSimulationFilterData(obstFilterData);
+		shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+		rigidStat->attachShape(*shape);
 		gScene->addActor(*rigidStat);
 
 		// can't figure out how to create dynamic shapes with cooked mesh

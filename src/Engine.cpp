@@ -95,7 +95,6 @@ void Engine::initEntities()
 	
 	int arena_size = 40;
 	arena = std::make_shared<Arena>(tile, tileBorder, wall, arena_size, arena_size);
-	arena = std::make_shared<Arena>(tile, tileBorder, wall, 25, 25);
 	arena->addWall(0, 0, 2, 2);
 	arena->addWall(14, 5, 1, 7);
 	arena->addWall(4, 17, 5, 2);
