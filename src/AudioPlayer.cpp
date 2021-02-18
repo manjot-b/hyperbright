@@ -2,12 +2,11 @@
 
 #include <AL/al.h>
 #include <AL/alc.h>
-
 #include <iostream>
+
 #define GAMEMUSIC 0
 #define PICKUPCOLLISION 1
 #define CARIDLE 2
-
 
 #define NUM_BUFFERS 3 //NUMBER OF SOUND FILES
 #define NUM_SOURCES 3
@@ -41,9 +40,7 @@ struct RIFF_Header {
     char format[4];
 };
 
-/*
- * Struct to hold fmt subchunk data for WAVE files.
- */
+//Struct to hold fmt subchunk data for WAVE files.
 struct WAVE_Format {
     char subChunkID[4];
     int subChunkSize;
@@ -55,18 +52,20 @@ struct WAVE_Format {
     short bitsPerSample;
 };
 
-/*
- * Struct to hold the data of the wave file
- */
+//Struct to hold the data of the wave file
 struct WAVE_Data {
     char subChunkID[4]; //should contain the word data
     int subChunk2Size; //Stores the size of the data block
 };
 
+//////////////////////////////////////////////////////////////////////////////
+
 void AudioPlayer::loadSound(const char* filename) {
     loadWavFile(filename, buffer + curLoaded, &size, &freq, &format);
     curLoaded++;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 void AudioPlayer::CheckError(int op = -1, int _err = 0) {
     int err;
@@ -90,6 +89,8 @@ void AudioPlayer::CheckError(int op = -1, int _err = 0) {
     return;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool AudioPlayer::_strcmp(const char* base, const char* cp) {
     for (int lx = 0; base[lx] != 0; lx++) {
         if (cp[lx] != base[lx])
@@ -97,6 +98,8 @@ bool AudioPlayer::_strcmp(const char* base, const char* cp) {
     }
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool AudioPlayer::loadWavFile(const char* filename, ALuint* buffer,
     ALsizei* size, ALsizei* frequency,
@@ -190,6 +193,8 @@ bool AudioPlayer::loadWavFile(const char* filename, ALuint* buffer,
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void AudioPlayer::init() {
     alListenerfv(AL_POSITION, listenerPos);
     alListenerfv(AL_VELOCITY, listenerVel);
@@ -225,6 +230,8 @@ void AudioPlayer::init() {
     return;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 AudioPlayer::AudioPlayer()
 {
     device = alcOpenDevice(nullptr);
@@ -243,6 +250,7 @@ AudioPlayer::AudioPlayer()
     init();
 }
 
+//////////////////////////////////////////////////////////////////////////////
 
 AudioPlayer::~AudioPlayer() {
     alcMakeContextCurrent(NULL);
@@ -250,6 +258,7 @@ AudioPlayer::~AudioPlayer() {
     alcCloseDevice(device);
 }
 
+//////////////////////////////////////////////////////////////////////////////
 //USED FOR TESTING AND INITIAL DESIGN DELETE LATER
 void AudioPlayer::playMusic(int number) {
     alSourcef(source[number], AL_PITCH, 1.0f);
@@ -261,6 +270,7 @@ void AudioPlayer::playMusic(int number) {
     alSourcePlay(source[number]);
 }
 
+//////////////////////////////////////////////////////////////////////////////
 //USED FOR TESTING AND INITIAL DESIGN DELETE LATER
 void AudioPlayer::playSound(int number) {
     alSourcef(source[number], AL_PITCH, 1.0f);
@@ -271,23 +281,33 @@ void AudioPlayer::playSound(int number) {
     alSourcePlay(source[number]);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void AudioPlayer::playGameMusic() {
     alSourcePlay(source[GAMEMUSIC]);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void AudioPlayer::stopGameMusic() {
     alSourceStop(source[GAMEMUSIC]);
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 void AudioPlayer::playPickupCollision() {
     
     alSourcePlay(source[PICKUPCOLLISION]);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void AudioPlayer::playCarIdle() {
  
     alSourcePlay(source[CARIDLE]);
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 void AudioPlayer::stopCarIdle() {
     alSourceStop(source[CARIDLE]);

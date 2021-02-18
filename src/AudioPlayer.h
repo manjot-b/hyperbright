@@ -6,8 +6,8 @@ class AudioPlayer
 public:
 	AudioPlayer();
 	~AudioPlayer();
-	void playSound(int number);
-	void playMusic(int number);
+	void playSound(int number);//USED FOR TESTING AND INITIAL DESIGN DELETE LATER
+	void playMusic(int number);//USED FOR TESTING AND INITIAL DESIGN DELETE LATER
 	void playGameMusic();
 	void stopGameMusic();
 	void playPickupCollision();
