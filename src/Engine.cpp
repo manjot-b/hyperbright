@@ -111,6 +111,12 @@ void Engine::run()
 	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, 25, 25);
 	renderables.push_back(arena);
 
+	// SOUND SETUP
+	AudioPlayer audioPlayer;
+	audioPlayer.loadSound("rsc/sounds/car_loop.wav");
+	audioPlayer.playSound(0);
+
+
 	while (!controller.isWindowClosed()) {
 		// update global time
 		float currentFrame = glfwGetTime();
@@ -146,6 +152,7 @@ void Engine::run()
 
 		glfwPollEvents();
 	}
+
 
 	//runMenu();
 	return;
