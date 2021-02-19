@@ -20,7 +20,7 @@ public:
 	};
 
     // constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, -2.0f, 10.0f),
+    Camera(glm::vec3 position = glm::vec3(0.0f, 5.0f, 0.0f),
 			glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
 			float yaw = -90.0f, float pitch = 0.0f);
 
@@ -31,7 +31,7 @@ public:
     void processKeyboard(Movement direction, float deltaTime);
     void processMouseMovement(float xoffset, float yoffset);
     void processMouseScroll(Movement direction, float yoffset);
-    void updateCameraVectors(glm::vec3 poi);
+    void updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi);
 
 private:
 	glm::mat4 view;

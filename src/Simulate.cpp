@@ -361,7 +361,7 @@ void Simulate::initPhysics()
 		gVehicle4W[i] = createVehicle4W(vehicleDesc, gPhysics, gCooking);
 		Vehicle* vehicle = iter->get();
 
-		vec3 playerStartPos = vehicle->getStartPos();
+		vec3 playerStartPos = vehicle->getPosition();
 		quat playerOrientation = vehicle->getOrientation();
 		std::cout << "car: " << vehicle->getId() << " initialized" << std::endl;
 		PxQuat playerPxOrientation(playerOrientation.x, playerOrientation.y, playerOrientation.z, playerOrientation.w);
@@ -432,32 +432,32 @@ void Simulate::stepPhysics(float frameRate)
 
 	//////////////////// PLAYER
 	//Raycasts.
-	PxVehicleWheels* vehicles[1] = { gVehicle4W[0] };
+	PxVehicleWheels* pxVehicles[1] = { gVehicle4W[0] };
 	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
 	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getQueryResultBufferSize();
-	PxVehicleSuspensionRaycasts(gBatchQuery, 1, vehicles, raycastResultsSize, raycastResults);
-
+	PxVehicleSuspensionRaycasts(gBatchQuery, 1, pxVehicles, raycastResultsSize, raycastResults);
+	
 	//Vehicle update.
 	const PxVec3 grav = gScene->getGravity();
 	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
 	PxVehicleWheelQueryResult vehicleQueryResults[1] = { {wheelQueryResults, gVehicle4W[0]->mWheelsSimData.getNbWheels()} };
-	PxVehicleUpdates(frameRate, grav, *gFrictionPairs, 1, vehicles, vehicleQueryResults);
+	PxVehicleUpdates(frameRate, grav, *gFrictionPairs, 1, pxVehicles, vehicleQueryResults);
 
 	//Work out if the vehicle is in the air.
 	gIsVehicleInAir = gVehicle4W[0]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
 
 	////////////////////// AI
 		//Raycasts.
-	PxVehicleWheels* vehicles_ai[1] = { gVehicle4W[1] };
+	PxVehicleWheels* pxVehicles_ai[1] = { gVehicle4W[1] };
 	PxRaycastQueryResult* raycastResults_ai = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
 	const PxU32 raycastResultsSize_ai = gVehicleSceneQueryData->getQueryResultBufferSize();
-	PxVehicleSuspensionRaycasts(gBatchQuery, 1, vehicles_ai, raycastResultsSize_ai, raycastResults_ai);
+	PxVehicleSuspensionRaycasts(gBatchQuery, 1, pxVehicles_ai, raycastResultsSize_ai, raycastResults_ai);
 
 	//Vehicle update.
 	const PxVec3 grav_ai = gScene->getGravity();
 	PxWheelQueryResult wheelQueryResults_ai[PX_MAX_NB_WHEELS];
 	PxVehicleWheelQueryResult vehicleQueryResults_ai[1] = { {wheelQueryResults_ai, gVehicle4W[1]->mWheelsSimData.getNbWheels()} };
-	PxVehicleUpdates(frameRate, grav_ai, *gFrictionPairs, 1, vehicles_ai, vehicleQueryResults_ai);
+	PxVehicleUpdates(frameRate, grav_ai, *gFrictionPairs, 1, pxVehicles_ai, vehicleQueryResults_ai);
 
 	//Work out if the vehicle is in the air.
 	gIsVehicleInAir = gVehicle4W[1]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
@@ -470,6 +470,11 @@ void Simulate::stepPhysics(float frameRate)
 	{
 		setModelPose(model);
 	}
+
+	vehicles[0]->updatePositionAndDirection();
+	/*for (auto& vehicle : vehicles) {
+		vehicle->updatePositionAndOrientation();
+	}*/
 }
 
 void Simulate::setModelPose(std::shared_ptr<Model>& model)
@@ -491,20 +496,23 @@ void Simulate::setModelPose(std::shared_ptr<Model>& model)
 			if (actors[i]->userData != NULL) {
 				const char* actorName = reinterpret_cast<const char*>(actors[i]->userData);
 				const char* modelName = model->getId();
-
+				
 				if (actorName == modelName) {
-					for (int j = 0; j < numShapes; j++)
-					{
-						PxMat44 boxPose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
-
-						mat4 modelMatrix;
-						memcpy(&modelMatrix, &boxPose, sizeof(PxMat44));
-						model->setModelMatrix(modelMatrix);
-
-						vec3 modelPos;
-						memcpy(&modelPos, &(boxPose.getPosition()), sizeof(PxVec3));
-						model->setPosition(modelPos);
+					PxMat44 boxPose;
+					if (numShapes > 0) {
+						boxPose = (PxShapeExt::getGlobalPose(*shapes[6], *actors[i]));
 					}
+					else {
+						boxPose = (PxShapeExt::getGlobalPose(*shapes[0], *actors[i]));
+					}
+					mat4 modelMatrix;
+					memcpy(&modelMatrix, &boxPose, sizeof(PxMat44));
+					model->setModelMatrix(modelMatrix);
+
+					vec3 modelPos;
+					memcpy(&modelPos, &(boxPose.getPosition()), sizeof(PxVec3));
+					model->setPosition(modelPos);
+					
 				}
 			}
 		}

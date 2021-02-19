@@ -23,11 +23,13 @@ public:
 	~Vehicle();
 	void reset();
 
+	void updatePositionAndDirection();
+
 	const char* getId() { return id; }
 	VehicleController getController() { return ctrl; }
 	vec3 getColor() { return color; }
-	vec3 getForward() { return forward; }
-	const vec3 getStartPos() { return start_position; }
+	vec3 getForward() { return position + 2.f*direction; }
+	const vec3 getPosition() { return position; }
 	quat getOrientation();
 
 	float energy;
@@ -56,7 +58,8 @@ private:
 
 	const char* id;
 	vec3 color;
-	vec3 forward;
-	const vec3 start_position;
+	vec3 direction;
+	const vec3 startDirection;
+	vec3 position;
 	VehicleController ctrl;
 };
