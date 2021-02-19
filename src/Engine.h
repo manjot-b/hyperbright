@@ -8,7 +8,11 @@
 #include <string>
 #include <vector>
 
+
+#include "AudioPlayer.h"
+
 #include "Arena.h"
+
 #include "Model.h"
 #include "Renderer.h"
 #include "Texture.h"
@@ -48,6 +52,9 @@ private:
 	std::shared_ptr<Texture> face;
 	std::shared_ptr<Texture> tree;
 	std::shared_ptr<Texture> background;
+
+	std::shared_ptr<AudioPlayer> audioPlayer;
+	void setupAudioPlayer();
 
 	glm::vec3 rotate;
 	float scale;

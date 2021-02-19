@@ -24,9 +24,7 @@ Engine::Engine() :
 	// load textures into a shared pointer.
 	loadTextures();
 	initEntities();
-
-	// TO-DO: CONSTRUCT AUDIOPLAYER CORRECTLY. THIS IS ONLY A STUB
-	AudioPlayer audioPlayer;
+	setupAudioPlayer();
 }
 
 
@@ -61,6 +59,10 @@ std::shared_ptr<Model> Engine::loadModel(std::string ref,
 
 	std::cout << "Loaded Entity.\n";
 	return model;
+}
+
+void Engine::setupAudioPlayer() {
+	audioPlayer = std::shared_ptr<AudioPlayer>(new AudioPlayer);
 }
 
 void Engine::loadTextures()
@@ -109,9 +111,16 @@ void Engine::initEntities()
 // the game (menu/arena/pause etc) and appropriate func.
 void Engine::run()
 {
+
 	Simulate simulator(physicsModels, vehicles, *arena);
+  simulator.setAudioPlayer(audioPlayer);
+
 	DevUI devUI(renderer.getWindow());
 	Controller controller(renderer.getWindow(), camera, vehicles[0]);
+
+	// SOUND SETUP
+	audioPlayer->playGameMusic();
+	audioPlayer->playCarIdle();
 
 	while (!controller.isWindowClosed()) {
 		// update global time
@@ -148,6 +157,7 @@ void Engine::run()
 
 		glfwPollEvents();
 	}
+
 
 	//runMenu();
 	return;

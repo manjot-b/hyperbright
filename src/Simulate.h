@@ -10,6 +10,7 @@
 #include "Arena.h"
 #include "Pickup.h"
 #include "Model.h"
+#include "AudioPlayer.h"
 
 using namespace std;
 
@@ -23,10 +24,11 @@ public:
 	void setModelPose(std::shared_ptr<Model>& model);
 	void cookMeshes(const std::shared_ptr<Model>& mesh, bool useModelMatrix = false);
 	void checkVehicleOverTile(Arena& arena, Model& model);
-
+	void setAudioPlayer(std::shared_ptr<AudioPlayer> audioPlayer);
 	void cleanupPhysics();
 private:
 	void initPhysics();
+
 
 	// physicsModels are all moving/colliding objects in the game including the vehicles
 	// this list is used to update the graphical models with the transforms created by PhysX
@@ -34,6 +36,7 @@ private:
 
 	// A list of vehicles needed for initializing the vehicle actors and updating vehicle stats
 	vector<shared_ptr<Vehicle>>& vehicles;
+
 };
 
 namespace Driving {
