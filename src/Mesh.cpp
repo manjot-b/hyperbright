@@ -2,10 +2,13 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh(const aiMesh* mesh)
+Mesh::Mesh(const aiMesh* mesh, const InstanceModelMatricesPtr& instancedModelMatrices)
 {
 	extractDataFromMesh(mesh);
-	vertexArray = std::make_unique<VertexArray>(vertices, indices);
+	if (instancedModelMatrices)
+		vertexArray = std::make_unique<VertexArray>(vertices, indices, *instancedModelMatrices);
+	else
+		vertexArray = std::make_unique<VertexArray>(vertices, indices);
 	calcBoundingBox();
 }
 
@@ -66,10 +69,22 @@ void Mesh::extractDataFromMesh(const aiMesh* mesh)
 	}	
 }
 
-void Mesh::draw() const
+/*
+ * Draws the mesh to the screen. If instanceCount is greater than 0 then use instancing to
+ * draw the mesh. Otherwise, draw only a single mesh.
+*/
+
+void Mesh::draw(unsigned int instanceCount) const
 {
 	vertexArray->bind();
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	if (instanceCount > 0)
+	{
+		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, instanceCount);
+	}
+	else
+	{
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	}
 	glBindVertexArray(0);
 }
 
@@ -104,4 +119,9 @@ void Mesh::calcBoundingBox()
 const BoundingBox& Mesh::getBoundingBox() const
 {
 	return boundingBox;
+}
+
+void Mesh::setInstanceModelMatrices(const std::vector<glm::mat4>& instanceModelMatrices)
+{
+	vertexArray->setInstanceModelMatrices(instanceModelMatrices);
 }

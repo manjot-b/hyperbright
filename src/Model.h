@@ -13,11 +13,12 @@
 class Model : public Renderer::IRenderable
 {
 	public:
-		Model(const std::string &objPath,
+		Model(const std::string& objPath,
 			const char* id,
 			std::shared_ptr<Texture> texture,
 			const glm::vec4& color,
-			bool fitToViewPort = true);
+			InstanceModelMatricesPtr instanceModelMatrices = nullptr,
+			bool fitToViewPort = false);
 		Model(const Model& model);
 		~Model();
 
@@ -37,7 +38,8 @@ class Model : public Renderer::IRenderable
 		void setColor(const glm::vec4& color);
 		const glm::vec4& getColor() const;
 		const BoundingBox& getBoundingBox() const;
-		const char* getId() { return id; }
+		const char* getId() const { return id; };
+		void setInstanceModelMatrices(InstanceModelMatricesPtr instanceModelMatrices);
 
 		bool shouldRender = false;
 
@@ -45,6 +47,8 @@ class Model : public Renderer::IRenderable
 		std::vector<std::unique_ptr<Mesh>> meshes;
 
 		const char* id;
+		InstanceModelMatricesPtr m_instanceModelMatrices;
+
 		BoundingBox boundingBox;
 		glm::mat4 modelMatrix;
 		glm::vec3 m_rotate;			// how much to rotate along each axis

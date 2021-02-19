@@ -13,9 +13,10 @@ Model::Model(const std::string &objPath,
 	const char* id,
 	std::shared_ptr<Texture> texture,
 	const glm::vec4& color,
+	std::shared_ptr<std::vector<glm::mat4>> instanceModelMatrices,
 	bool fitToViewPort) :
 	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), id(id), m_texture(texture),
-	m_color(color), m_position(.0f)
+	m_color(color), m_position(.0f), m_instanceModelMatrices(instanceModelMatrices)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -25,7 +26,7 @@ Model::Model(const std::string &objPath,
 		std::cerr <<  "Error loading " << objPath << ".\n" << importer.GetErrorString() << std::endl;
 	}
 
-	extractDataFromNode(scene, scene->mRootNode);	
+	extractDataFromNode(scene, scene->mRootNode);
 	computeBoundingBox();
 
 	if (fitToViewPort)
@@ -65,7 +66,7 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
 	{
 		// aiNode contains indicies to index the objects in aiScene.
 		const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(std::make_unique<Mesh>(mesh));
+		meshes.push_back(std::make_unique<Mesh>(mesh, m_instanceModelMatrices));
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -85,7 +86,10 @@ void Model::render(const Shader& shader) const
 {
 	
 	bool hasTexture = m_texture != nullptr;
+	bool isInstance = m_instanceModelMatrices != nullptr;
+
 	shader.setUniform1i("hasTexture", hasTexture);
+	shader.setUniform1i("isInstance", isInstance);
 	shader.setUniform4fv("vertexColor", m_color);
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
@@ -96,7 +100,10 @@ void Model::render(const Shader& shader) const
 
 	for(auto &mesh : meshes)
 	{
-		mesh->draw();
+		unsigned int count = 0;
+		if (m_instanceModelMatrices)
+			count = m_instanceModelMatrices->size();
+		mesh->draw(count);
 	}
 }
 
@@ -188,6 +195,15 @@ void Model::scaleToViewport()
 	float zTrans = -(boundingBox.z + boundingBox.depth*0.5f) * m_scale.z;
 	m_translation = glm::vec3(xTrans, yTrans, zTrans);
 	update();
+}
+
+void Model::setInstanceModelMatrices(InstanceModelMatricesPtr instanceModelMatrices)
+{
+	m_instanceModelMatrices = instanceModelMatrices;
+	for (auto& mesh : meshes)
+	{
+		mesh->setInstanceModelMatrices(*instanceModelMatrices);
+	}
 }
 
 const glm::mat4& Model::getModelMatrix() const { return modelMatrix; }
