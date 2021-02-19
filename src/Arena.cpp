@@ -1,66 +1,61 @@
 #include "Arena.h"
 
-Arena::Tile::Tile(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> tileBorder) :
-	tile(*tile), tileBorder(*tileBorder)
-{
+#include <glm/gtc/matrix_transform.hpp>
 
-}
 
-void Arena::Tile::render(const Shader& shader) const
-{
-	tile.render(shader);
-	tileBorder.render(shader);
-}
+Arena::Tile::Tile(glm::mat4& modelMatrix) : modelMatrix(modelMatrix) {}
 
 void Arena::Tile::translate(const glm::vec3& trans)
 {
-	tile.translate(trans);
-	tileBorder.translate(trans);
-
-	tile.update();
-	tileBorder.update();
+	modelMatrix = glm::translate(modelMatrix, trans);
 }
 
 void Arena::Tile::setColor(const glm::vec4& color)
 {
-	tile.setColor(color);
+	//TO-DO: Make colour instanced.
+	//tile.setColor(color);
 }
 
 /*
  Construct an arena:
 
  Parameters:
-	tile: Will copy the tile model.
-	tileBorder: Will copy the tile border.
 	wall: This wall model will be modified several times before being copied.
 	rows: The number of tiles on the z-axis.
 	cols: The number of tiles on the x-axis.
 */
-Arena::Arena(const std::shared_ptr<Model> tile,
-	const std::shared_ptr<Model> tileBorder,
+Arena::Arena(
 	std::shared_ptr<Model> wall,
-	unsigned int rows,
-	unsigned int cols) :
+	size_t rows,
+	size_t cols) :
+	tileModelMatrices( std::make_shared<std::vector<glm::mat4>>( rows * cols, glm::mat4(1.f) )),
 	tileGrid(rows), wall(wall), tileCollisionRadius(0.5f)
 {
-	const BoundingBox& tileBox = tileBorder->getBoundingBox();
+	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr, glm::vec4(0.3f, 0.3f, 0.3f, 0.f), nullptr, false);
+	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), nullptr, false);
+
+	const BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
 	trans.y = -tileBox.height / 2.f;	// Top of grid should be at y=0
 
-	for (unsigned int row = 0; row < tileGrid.size(); row++)
+	for (size_t row = 0; row < rows; row++)
 	{
-		tileGrid[row] = std::vector<Tile>(cols, Tile(tile, tileBorder));
-
+		tileGrid[row] = std::vector<Tile>();
 		trans.z = (rows * .5f) * tileBox.depth - (row * tileBox.depth) - tileBox.depth * 0.5;	// in OpenGL forward z points out of screen
-		for (unsigned int col = 0; col < tileGrid[row].size(); col++)
+		
+		for (size_t col = 0; col < cols; col++)
 		{
+			tileGrid[row].push_back(Tile((*tileModelMatrices)[row * rows + col]));
 			trans.x = -(cols * .5f) * tileBox.width + (col * tileBox.width) + tileBox.width * .5f;
 			tileGrid[row][col].translate(trans);
 		}
 	}
 
-	tileWidth = tileBox.width;
-	tileBorderWidth = (tileBorder->getBoundingBox().width - tileBox.width) * 0.5f;	// width of only one edge.
+	instancedTile->setInstanceModelMatrices(tileModelMatrices);
+	instancedTileBorder->setInstanceModelMatrices(tileModelMatrices);
+
+	tileWidth = instancedTile->getBoundingBox().width;
+	tileBorderWidth = (tileBox.width - instancedTile->getBoundingBox().width) * 0.5f;	// width of only one edge.
 	wallWidth = wall->getBoundingBox().width;
 }
 
@@ -68,13 +63,8 @@ Arena::~Arena() {}
 
 void Arena::render(const Shader& shader) const
 {
-	for (const auto& row : tileGrid)
-	{
-		for (const auto& tile : row)
-		{
-			tile.render(shader);
-		}
-	}
+	instancedTile->render(shader);
+	instancedTileBorder->render(shader);
 
 	for (const auto& wall : walls)
 	{
@@ -120,15 +110,17 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 	) / wallWidth;
 
 	wall->scale(glm::vec3(scale.x, 1, scale.y));
+	const BoundingBox& wallBox = wall->getBoundingBox();
 
-	glm::vec2 currentPos = glm::vec2(wall->getBoundingBox().x, -wall->getBoundingBox().z) * scale;
+	glm::vec2 currentPos = glm::vec2(wallBox.x, -wallBox.z) * scale;	// the front left of the box, not the origin.
 
 	unsigned int rows = tileGrid.size();
 	unsigned int cols = tileGrid[0].size();
+	float fullTileWidth = tileWidth + 2.f * tileBorderWidth;
 
 	glm::vec2 targetPos = glm::vec2(
-		-(cols * .5f) * (tileWidth + tileBorderWidth) + (col * (tileWidth + tileBorderWidth)),
-		(rows * .5f) * (tileWidth + tileBorderWidth) - (row * (tileWidth + tileBorderWidth))
+		-(cols * .5f) * fullTileWidth + (col * fullTileWidth),
+		(rows * .5f) * fullTileWidth - (row * fullTileWidth)
 	);
 
 	float yTrans = wall->getBoundingBox().height * 0.5f;	// Base of wall at y=0

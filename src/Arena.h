@@ -15,11 +15,10 @@ class Arena : public Renderer::IRenderable
 public:
 	using WallList = std::vector<std::shared_ptr<Model>>;
 
-	Arena(const std::shared_ptr<Model> tile,
-		const std::shared_ptr<Model> tileBorder,
+	Arena(
 		std::shared_ptr<Model> wall,
-		unsigned int length,
-		unsigned int width);
+		size_t length,
+		size_t width);
 	~Arena();
 
 	void render(const Shader& shader) const;
@@ -30,17 +29,21 @@ public:
 	const WallList& getWalls() const;
 	
 private:
-	class Tile : public Renderer::IRenderable {
+	class Tile {
 	public:
-		Tile(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> tileBorder);
-		void render(const Shader& shader) const;
+		Tile(glm::mat4& modelMatrix);
 		void translate(const glm::vec3& trans);
 		void setColor(const glm::vec4& color);
 
 	private:
-		Model tile;
-		Model tileBorder;
+		glm::mat4& modelMatrix;
 	};
+
+	std::shared_ptr<Model> instancedTile;
+	std::shared_ptr<Model> instancedTileBorder;
+
+	// Each tile/tile border is instanced, so we need to store all model matrices in one array.
+	InstanceModelMatricesPtr tileModelMatrices;
 
 	using TileGrid = std::vector<std::vector<Tile>>;
 	TileGrid tileGrid;
