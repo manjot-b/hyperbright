@@ -10,7 +10,7 @@ using namespace glm;
 Vehicle::Vehicle() {}
 
 Vehicle::Vehicle(shared_ptr<Model> _carModel, vec3 color, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
-	: carModel(_carModel), color(color), start_position(startPos), forward(startDir)
+	: carModel(_carModel), color(color), position(startPos), direction(startDir), startDirection(startDir)
 {
 	id = carModel->getId();
 	if (strcmp(id, "player") == 0) {
@@ -26,8 +26,16 @@ Vehicle::Vehicle(shared_ptr<Model> _carModel, vec3 color, vec3 startPos, vec3 st
 		ctrl.contrId = 3;
 	}
 	else {
-		cout << "unknown vehilce name. see vehicle constructor" << endl;
+		cout << "unknown vehicle name. see vehicle constructor" << endl;
 	}
+}
+
+void Vehicle::updatePositionAndDirection() {
+	position = carModel->getPosition();
+	mat4 modelMatrix = carModel->getModelMatrix();
+	mat4 rotMatrix = { modelMatrix[0], modelMatrix[1], modelMatrix[2], vec4(0.f, 0.f, 0.f, 1.f) };
+	
+	direction = normalize(vec3(rotMatrix * vec4(0.f, 0.f, 1.f, 1.0f)));	
 }
 
 Vehicle::~Vehicle() {
@@ -41,11 +49,11 @@ void Vehicle::reset() {
 
 quat Vehicle::getOrientation()
 {
-	forward = normalize(forward);
-	vec3 v(0.f, 1.f, 0.f);
-	vec3 u = normalize(cross(forward, v));
-	vec3 normal = normalize(cross(u, forward));
-	mat4 m = lookAt(vec3(0.f), forward, normal);
+	direction = normalize(direction);
+	vec3 worldUp(0.f, 1.f, 0.f);
+	vec3 right = normalize(cross(direction, worldUp));
+	vec3 up = normalize(cross(right, direction));
+	mat4 m = lookAt(vec3(0.f), direction, up);
 
 	return quat_cast(m);
 }

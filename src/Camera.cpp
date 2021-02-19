@@ -94,14 +94,16 @@ void Camera::updateCameraVectors()
 	view = glm::lookAt(position, direction,  up);
 }
 
-void Camera::updateCameraVectors(glm::vec3 poi)
+void Camera::updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi)
 {
-	glm::vec3 newPos = poi - position;
-	front = glm::normalize(poi - newPos);
+	float newX = vehPosition.x - (poi.x - vehPosition.x)*3.f;
+	float newZ = vehPosition.z - (poi.z - vehPosition.z)*3.f;
+	
+	position = { newX, 5.f, newZ };
+	front = glm::normalize(poi - position);
 	right = glm::normalize(glm::cross(front, worldUp));
 	up = glm::normalize(glm::cross(right, front));
 
-	direction = newPos + front;
-	view = glm::lookAt(newPos, direction, up);
-
+	direction = position + front;
+	view = glm::lookAt(position, direction, up);
 }
