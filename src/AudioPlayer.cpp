@@ -204,9 +204,9 @@ void AudioPlayer::init() {
     alGenSources(NUM_SOURCES, source);
     CheckError();
     
-    loadSound("rsc/sounds/game_music_2.wav");
+    loadSound("rsc/sounds/game_music.wav");
     alSourcef(source[GAMEMUSIC], AL_PITCH, 1.0f);
-    alSourcef(source[GAMEMUSIC], AL_GAIN, 0.5f);
+    alSourcef(source[GAMEMUSIC], AL_GAIN, 2.0f);
     alSourcefv(source[GAMEMUSIC], AL_POSITION, source0Pos);
     alSourcefv(source[GAMEMUSIC], AL_VELOCITY, source0Vel);
     alSourcei(source[GAMEMUSIC], AL_BUFFER, buffer[GAMEMUSIC]);
@@ -221,7 +221,7 @@ void AudioPlayer::init() {
 
     loadSound("rsc/sounds/car_idle_loop.wav");
     alSourcef(source[CARIDLE], AL_PITCH, 1.0f);
-    alSourcef(source[CARIDLE], AL_GAIN, 0.5f);
+    alSourcef(source[CARIDLE], AL_GAIN, 0.25f);
     alSourcefv(source[CARIDLE], AL_POSITION, source0Pos);
     alSourcefv(source[CARIDLE], AL_VELOCITY, source0Vel);
     alSourcei(source[CARIDLE], AL_BUFFER, buffer[CARIDLE]);
