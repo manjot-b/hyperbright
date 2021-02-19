@@ -25,13 +25,8 @@ public:
 		NO_TURN
 	};
 
-	Controller(GLFWwindow* window, Camera& camera);
+	Controller(GLFWwindow* window, Camera& camera, std::shared_ptr<Vehicle>& playerVehicle);
 	~Controller();
-
-	// Temporary model selection 
-	int modelIndex;
-	void nextModel();
-	int numModels;
 
 	////// toggle the window cursor on!!!
 	void toggleCursor();
@@ -42,12 +37,13 @@ public:
 
 	//std::queue<int> gameInput();
 	void processInput(float deltaSec);
-	bool output[4];
 	bool isCameraManual() { return manualCamera; }
 
 private:
 	GLFWwindow* window;
 	Camera& camera;
+
+	std::shared_ptr<Vehicle> playerVehicle;
 
 	bool manualCamera;
 	bool firstMouse;

@@ -23,8 +23,8 @@ class Mesh
 		void extractDataFromMesh(const aiMesh* mesh);
 		const BoundingBox& getBoundingBox() const;
 		
-		std::vector<Vertex> getVertices() const { return vertices; }
-		std::vector<unsigned int> getIndices() const { return indices; }
+		const std::vector<Vertex>& getVertices() const { return vertices; }
+		const std::vector<unsigned int>& getIndices() const { return indices; }
 
 	private:
 		std::vector<Vertex> vertices;

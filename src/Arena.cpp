@@ -32,11 +32,16 @@ void Arena::Tile::setColor(const glm::vec4& color)
  Parameters:
 	tile: Will copy the tile model.
 	tileBorder: Will copy the tile border.
+	wall: This wall model will be modified several times before being copied.
 	rows: The number of tiles on the z-axis.
 	cols: The number of tiles on the x-axis.
 */
-Arena::Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> tileBorder, unsigned int rows, unsigned int cols) :
-	tileGrid(rows), tileCollisionRadius(0.5f)
+Arena::Arena(const std::shared_ptr<Model> tile,
+	const std::shared_ptr<Model> tileBorder,
+	std::shared_ptr<Model> wall,
+	unsigned int rows,
+	unsigned int cols) :
+	tileGrid(rows), wall(wall), tileCollisionRadius(0.5f)
 {
 	const BoundingBox& tileBox = tileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
@@ -46,7 +51,7 @@ Arena::Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> til
 	{
 		tileGrid[row] = std::vector<Tile>(cols, Tile(tile, tileBorder));
 
-		trans.z = -(rows * .5f) * tileBox.depth + (row * tileBox.depth) + tileBox.depth * 0.5;
+		trans.z = (rows * .5f) * tileBox.depth - (row * tileBox.depth) - tileBox.depth * 0.5;	// in OpenGL forward z points out of screen
 		for (unsigned int col = 0; col < tileGrid[row].size(); col++)
 		{
 			trans.x = -(cols * .5f) * tileBox.width + (col * tileBox.width) + tileBox.width * .5f;
@@ -55,7 +60,8 @@ Arena::Arena(const std::shared_ptr<Model> tile, const std::shared_ptr<Model> til
 	}
 
 	tileWidth = tileBox.width;
-	tileDepth = tileBox.depth;
+	tileBorderWidth = (tileBorder->getBoundingBox().width - tileBox.width) * 0.5f;	// width of only one edge.
+	wallWidth = wall->getBoundingBox().width;
 }
 
 Arena::~Arena() {}
@@ -68,6 +74,11 @@ void Arena::render(const Shader& shader) const
 		{
 			tile.render(shader);
 		}
+	}
+
+	for (const auto& wall : walls)
+	{
+		wall->render(shader);
 	}
 }
 
@@ -82,7 +93,7 @@ std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
 	unsigned int cols = tileGrid[0].size();
 
 	int col = (coords.x + (cols * .5f) * tileWidth) / tileWidth;
-	int row = (coords.z + (rows * .5f) * tileDepth) / tileDepth;
+	int row = ((rows * .5f) * tileWidth - coords.z) / tileWidth;
 
 	if (col < 0 || col > cols - 1 || row < 0 || row > rows - 1)
 	{
@@ -100,3 +111,37 @@ void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
 {
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
 }
+
+void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
+{
+	glm::vec2 scale = glm::vec2(
+		(width * tileWidth + 2 * width * tileBorderWidth),
+		(length * tileWidth + 2 * length * tileBorderWidth)
+	) / wallWidth;
+
+	wall->scale(glm::vec3(scale.x, 1, scale.y));
+
+	glm::vec2 currentPos = glm::vec2(wall->getBoundingBox().x, -wall->getBoundingBox().z) * scale;
+
+	unsigned int rows = tileGrid.size();
+	unsigned int cols = tileGrid[0].size();
+
+	glm::vec2 targetPos = glm::vec2(
+		-(cols * .5f) * (tileWidth + tileBorderWidth) + (col * (tileWidth + tileBorderWidth)),
+		(rows * .5f) * (tileWidth + tileBorderWidth) - (row * (tileWidth + tileBorderWidth))
+	);
+
+	float yTrans = wall->getBoundingBox().height * 0.5f;	// Base of wall at y=0
+	glm::vec3 trans(targetPos.x - currentPos.x, yTrans, targetPos.y - currentPos.y);
+
+	wall->translate(trans);
+
+	wall->update();
+	walls.push_back(std::make_shared<Model>(*wall));
+
+	// Reset scale and translation for other walls that need to be added.
+	wall->setModelMatrix(glm::mat4(1.f));
+	wall->setPosition(glm::vec3(.0f, .0f, .0f));
+}
+
+const Arena::WallList& Arena::getWalls() const { return walls; }

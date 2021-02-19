@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "Ai.h"
-#include "Arena.h"
 #include "AudioPlayer.h"
 #include "Controller.h"
 #include "DevUI.h"
@@ -37,13 +36,13 @@ Engine::~Engine() {}
 */
 std::shared_ptr<Model> Engine::loadModel(std::string ref,
 	bool inPhysx,
-	Model::MoveType type,
+	const char* name,
 	const std::shared_ptr<Texture>& texture,
 	const glm::vec4& color,
 	bool copyModel)
 {
 	std::cout << "Loading " << ref << "..." << std::flush;
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, type, texture, color, false);
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, name, texture, color, false);
 
 	// Don't store the model in the list if it just meant to be copied from.
 	if (!copyModel)
@@ -75,21 +74,34 @@ void Engine::loadTextures()
 
 void Engine::initEntities()
 {
+	vec4 playerColor = vec4(.3f, .3f, 1.f, 0.f);
+	vec4 ai1Color = vec4(.8f, .8f, .3f, 0.f);
 	// load boxcar > physicsModels[0]
-	vehicle = loadModel("rsc/models/boxcar.obj", true, Model::MoveType::DYNAMIC, face, glm::vec4(.3f, .3f, 1.f, 0.f));
+	vehicle = loadModel("rsc/models/boxcar.obj", true, "player", nullptr, playerColor);
 	renderables.push_back(vehicle);
+	Vehicle player(vehicle, playerColor, vec3(6.f, 7.f, -20.f), vec3(0.f, 0.f, -1.f));
+	vehicles.push_back(std::make_shared<Vehicle>(player));
+	
+	ai1 = loadModel("rsc/models/boxcar.obj", true, "ai1", nullptr, ai1Color);
+	renderables.push_back(ai1);
+	Vehicle ai1(ai1, ai1Color, vec3(15.f, 7.f, -15.f), vec3(0.f, 0.f, 1.f));
+	vehicles.push_back(std::make_shared<Vehicle>(ai1));
 
-	// background box > staticModels[0]
-	skyBox = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, background);
-	renderables.push_back(skyBox);
-
-	powerup = loadModel("rsc/models/cube.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
-	renderables.push_back(powerup);
+	triggerVolume = loadModel("rsc/models/cube.obj", true, "trigger", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
+	renderables.push_back(triggerVolume);
 
 	bool copyModel = true;
-	tile = loadModel("rsc/models/tile.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
-	tileBorder = loadModel("rsc/models/tile_edge.obj", false, Model::MoveType::STATIC, nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
-
+	std::shared_ptr<Model> tile = loadModel("rsc/models/tile.obj", false, "tile", nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
+	std::shared_ptr<Model> tileBorder = loadModel("rsc/models/tile_edge.obj", false, "tileborder", nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
+	std::shared_ptr<Model> wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
+	
+	int arena_size = 40;
+	arena = std::make_shared<Arena>(tile, tileBorder, wall, arena_size, arena_size);
+	arena->addWall(0, 0, 2, 2);
+	arena->addWall(14, 5, 1, 7);
+	arena->addWall(4, 17, 5, 2);
+	arena->addWall(10, 10, 1, 1);
+	renderables.push_back(arena);
 }
 
 
@@ -99,20 +111,12 @@ void Engine::initEntities()
 // the game (menu/arena/pause etc) and appropriate func.
 void Engine::run()
 {
-	Simulate simulator(physicsModels);
-	simulator.setAudioPlayer(audioPlayer);
+
+	Simulate simulator(physicsModels, vehicles, *arena);
+  simulator.setAudioPlayer(audioPlayer);
+
 	DevUI devUI(renderer.getWindow());
-	Controller controller(renderer.getWindow(), camera);
-
-	// moving the boxcar off origin
-	vehicle->translate(glm::vec3(0.0f, 0.0f, -2.0f));
-
-	// tmp huge background box
-	skyBox->scale(100);
-	skyBox->update();
-
-	std::shared_ptr<Arena> arena = std::make_shared<Arena>(tile, tileBorder, 25, 25);
-	renderables.push_back(arena);
+	Controller controller(renderer.getWindow(), camera, vehicles[0]);
 
 	// SOUND SETUP
 	audioPlayer->playGameMusic();
@@ -137,7 +141,7 @@ void Engine::run()
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics(controller.output);
+		simulator.stepPhysics(fpsLimit);
 		simulator.checkVehicleOverTile(*arena, *vehicle);
 		
 
