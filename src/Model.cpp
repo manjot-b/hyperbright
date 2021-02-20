@@ -9,13 +9,15 @@
 
 #include <iostream>
 
-Model::Model(const std::string &objPath,
+Model::Model(const std::string& objPath,
 	const char* id,
 	std::shared_ptr<Texture> texture,
-	const glm::vec4& color,
+	std::optional<glm::vec4> color,
+	InstanceModelMatricesPtr instanceModelMatrices,
+	InstanceColorsPtr instanceColors,
 	bool fitToViewPort) :
 	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), id(id), m_texture(texture),
-	m_color(color), m_position(.0f)
+	m_color(color), m_position(.0f), m_instanceModelMatrices(instanceModelMatrices), m_instanceColors(instanceColors)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -25,7 +27,16 @@ Model::Model(const std::string &objPath,
 		std::cerr <<  "Error loading " << objPath << ".\n" << importer.GetErrorString() << std::endl;
 	}
 
-	extractDataFromNode(scene, scene->mRootNode);	
+	extractDataFromNode(scene, scene->mRootNode);
+
+	if (m_instanceColors)
+	{
+		for (auto& mesh : meshes)
+		{
+			mesh->setInstanceColors(*m_instanceColors);
+		}
+	}
+
 	computeBoundingBox();
 
 	if (fitToViewPort)
@@ -65,7 +76,7 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
 	{
 		// aiNode contains indicies to index the objects in aiScene.
 		const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(std::make_unique<Mesh>(mesh));
+		meshes.push_back(std::make_unique<Mesh>(mesh, m_instanceModelMatrices));
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -85,8 +96,14 @@ void Model::render(const Shader& shader) const
 {
 	
 	bool hasTexture = m_texture != nullptr;
+	bool isInstance = m_instanceModelMatrices != nullptr;
+	bool isInstanceColor = m_instanceColors != nullptr;
+
 	shader.setUniform1i("hasTexture", hasTexture);
-	shader.setUniform4fv("vertexColor", m_color);
+	shader.setUniform1i("isInstance", isInstance);
+	shader.setUniform1i("isInstanceColor", isInstanceColor);
+	// Set to red if color should have a value but doesn't.
+	shader.setUniform4fv("vertexColor", m_color.value_or(glm::vec4(1.f, 0.f, 0.f, 1.f)));
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
 	if (m_texture)
@@ -96,7 +113,10 @@ void Model::render(const Shader& shader) const
 
 	for(auto &mesh : meshes)
 	{
-		mesh->draw();
+		unsigned int count = 0;
+		if (m_instanceModelMatrices)
+			count = m_instanceModelMatrices->size();
+		mesh->draw(count);
 	}
 }
 
@@ -190,13 +210,31 @@ void Model::scaleToViewport()
 	update();
 }
 
+void Model::setInstanceModelMatrices(InstanceModelMatricesPtr instanceModelMatrices)
+{
+	m_instanceModelMatrices = instanceModelMatrices;
+	for (auto& mesh : meshes)
+	{
+		mesh->setInstanceModelMatrices(*instanceModelMatrices);
+	}
+}
+
+void Model::setInstanceColors(InstanceColorsPtr instanceColors)
+{
+	m_instanceColors = instanceColors;
+	for (auto& mesh : meshes)
+	{
+		mesh->setInstanceColors(*instanceColors);
+	}
+}
+
 const glm::mat4& Model::getModelMatrix() const { return modelMatrix; }
 
 const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }
 
 const BoundingBox& Model::getBoundingBox() const { return boundingBox; }
 
-const glm::vec4& Model::getColor() const { return m_color;  }
+std::optional<glm::vec4> Model::getColor() const { return m_color;  }
 
 void Model::setModelMatrix(const glm::mat4& modelPose) { modelMatrix = modelPose; }
 

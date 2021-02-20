@@ -524,7 +524,7 @@ void Simulate::checkVehicleOverTile(Arena& arena, Model& model)
 	std::optional<glm::vec2> tileCoords = arena.isOnTile(model.getPosition());
 	if (tileCoords)
 	{
-		arena.setTileColor(*tileCoords, model.getColor());
+		arena.setTileColor(*tileCoords, model.getColor().value());
 	}
 }
 

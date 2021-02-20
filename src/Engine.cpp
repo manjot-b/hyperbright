@@ -42,7 +42,7 @@ std::shared_ptr<Model> Engine::loadModel(std::string ref,
 	bool copyModel)
 {
 	std::cout << "Loading " << ref << "..." << std::flush;
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, name, texture, color, false);
+	std::shared_ptr<Model> model = std::make_unique<Model>(ref, name, texture, color);
 
 	// Don't store the model in the list if it just meant to be copied from.
 	if (!copyModel)
@@ -91,12 +91,10 @@ void Engine::initEntities()
 	renderables.push_back(triggerVolume);
 
 	bool copyModel = true;
-	std::shared_ptr<Model> tile = loadModel("rsc/models/tile.obj", false, "tile", nullptr, glm::vec4(0.3f, 0.3f, 0.3f ,0.f), copyModel);
-	std::shared_ptr<Model> tileBorder = loadModel("rsc/models/tile_edge.obj", false, "tileborder", nullptr, glm::vec4(0.2f ,0.2f ,0.2f ,0.f), copyModel);
 	std::shared_ptr<Model> wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
 	
-	int arena_size = 20;
-	arena = std::make_shared<Arena>(tile, tileBorder, wall, arena_size, arena_size);
+	int arena_size = 75;
+	arena = std::make_shared<Arena>(wall, arena_size, arena_size);
 	arena->addWall(0, 0, 2, 2);
 	arena->addWall(14, 5, 1, 7);
 	arena->addWall(4, 17, 5, 2);
