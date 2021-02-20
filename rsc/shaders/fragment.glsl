@@ -3,17 +3,15 @@
 in vec2 texCoord;
 in vec3 n;
 in vec3 vertexPos;
+in vec4 vertexClr;
 
 uniform sampler2D tex;
 uniform bool hasTexture;
-uniform vec4 vertexColor;
 uniform vec3 light;
 uniform vec3 pointOfView;
 uniform float d;
 
 out vec4 fragColor;
-
-
 
 void main()
 {
@@ -32,6 +30,6 @@ void main()
 	}
 	else
 	{
-		fragColor = (1 / (d * d)) * (vec4(diff * vertexColor) + vec4(spec * vertexColor)) + vec4(0.1 * vertexColor);
+		fragColor = (1 / (d * d)) * (vec4(diff * vertexClr) + vec4(spec * vertexClr)) + vec4(0.1 * vertexClr);
 	}
 }

@@ -48,21 +48,24 @@ void VertexArray::initVertexArray(const std::vector<Vertex>& vertices, const std
 /*
 Generates an instance buffer.
 	Parameters:
+		bufferId: The bufferId to store the buffer into. If it already exists then ovewrite the data in it.
 		data: A vector of T containing the data. T could be glm::vec4 or even glm::mat4 for example.
 		attribLocation: The starting location for the attribute pointer.
 		attribSize: How many attribute locations a T takes up. GLSL allows for a max size of vec4 for a single attribute location.
 		components: The number of components in a single attribute location.
 		stride: The size in bytes between consecutive vertex attributes. A value of 0 means tightly packed. For exapmle, a tightly packed array of mat4
 				would have a stride of sizeof(glm::vec4), because a mat4 is made up of 4 vec4s.
-		bufferId: The bufferId to store the buffer into. If it already exists then ovewrite the data in it.
+		drawType: Should be GL_STATIC_DRAW or GL_DYNAMIC_DRAW depending on usage.
 */
 template <typename T>
-void VertexArray::initInstanceArray(const std::vector<T>& data,
+void VertexArray::initInstanceArray(
+	unsigned int& bufferId,
+	const std::vector<T>& data,
 	unsigned int attribLocation,
 	size_t attribSize,
 	unsigned int components,
 	unsigned int stride,
-	unsigned int& bufferId)
+	GLenum drawType)
 {
 	if (!bufferId)
 	{
@@ -100,12 +103,12 @@ VertexArray::~VertexArray()
 void VertexArray::setInstanceModelMatrices(const std::vector<glm::mat4>& modelMatrices)
 {
 	// Assume that the vertex attribute starts at position 3.
-	initInstanceArray(modelMatrices, 3, 4, 4, sizeof(glm::mat4), instanceModelBufferId);
+	initInstanceArray(instanceModelBufferId, modelMatrices, 3, 4, 4, sizeof(glm::mat4), GL_STATIC_DRAW);
 }
 
-void VertexArray::setInstanceColors(const std::vector<glm::vec3>& colors)
+void VertexArray::setInstanceColors(const std::vector<glm::vec4>& colors)
 {
-	initInstanceArray(colors, 7, 1, 4, 0, instanceColorBufferId);
+	initInstanceArray(instanceColorBufferId, colors, 7, 1, 4, 0, GL_DYNAMIC_DRAW);
 }
 
 unsigned int VertexArray::getId() const

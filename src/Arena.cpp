@@ -3,7 +3,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-Arena::Tile::Tile(glm::mat4& modelMatrix) : modelMatrix(modelMatrix) {}
+Arena::Tile::Tile(glm::mat4& modelMatrix, glm::vec4& color) :
+	modelMatrix(modelMatrix), color(color)
+{}
 
 void Arena::Tile::translate(const glm::vec3& trans)
 {
@@ -12,8 +14,7 @@ void Arena::Tile::translate(const glm::vec3& trans)
 
 void Arena::Tile::setColor(const glm::vec4& color)
 {
-	//TO-DO: Make colour instanced.
-	//tile.setColor(color);
+	this->color = color;
 }
 
 /*
@@ -29,10 +30,11 @@ Arena::Arena(
 	size_t rows,
 	size_t cols) :
 	tileModelMatrices( std::make_shared<std::vector<glm::mat4>>( rows * cols, glm::mat4(1.f) )),
+	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, glm::vec4(.3f, .3f, .3f, 1.f)) ),
 	tileGrid(rows), wall(wall), tileCollisionRadius(0.5f)
 {
-	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr, glm::vec4(0.3f, 0.3f, 0.3f, 0.f), nullptr, false);
-	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), nullptr, false);
+	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr, std::nullopt);
+	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f));
 
 	const BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
@@ -45,13 +47,15 @@ Arena::Arena(
 		
 		for (size_t col = 0; col < cols; col++)
 		{
-			tileGrid[row].push_back(Tile((*tileModelMatrices)[row * rows + col]));
+			unsigned int instanceIdx = row * rows + col;
+			tileGrid[row].push_back(Tile((*tileModelMatrices)[instanceIdx], (*tileColors)[instanceIdx]));
 			trans.x = -(cols * .5f) * tileBox.width + (col * tileBox.width) + tileBox.width * .5f;
 			tileGrid[row][col].translate(trans);
 		}
 	}
 
 	instancedTile->setInstanceModelMatrices(tileModelMatrices);
+	instancedTile->setInstanceColors(tileColors);
 	instancedTileBorder->setInstanceModelMatrices(tileModelMatrices);
 
 	tileWidth = instancedTile->getBoundingBox().width;
@@ -63,6 +67,7 @@ Arena::~Arena() {}
 
 void Arena::render(const Shader& shader) const
 {
+	instancedTile->setInstanceColors(tileColors);
 	instancedTile->render(shader);
 	instancedTileBorder->render(shader);
 
@@ -82,8 +87,9 @@ std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
 	unsigned int rows = tileGrid.size();
 	unsigned int cols = tileGrid[0].size();
 
-	int col = (coords.x + (cols * .5f) * tileWidth) / tileWidth;
-	int row = ((rows * .5f) * tileWidth - coords.z) / tileWidth;
+	float fullTileWidth = tileWidth + 2.f * tileBorderWidth;
+	int col = (coords.x + (cols * .5f) * fullTileWidth) / fullTileWidth;
+	int row = ((rows * .5f) * fullTileWidth - coords.z) / fullTileWidth;
 
 	if (col < 0 || col > cols - 1 || row < 0 || row > rows - 1)
 	{

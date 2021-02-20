@@ -9,14 +9,15 @@
 
 #include <iostream>
 
-Model::Model(const std::string &objPath,
+Model::Model(const std::string& objPath,
 	const char* id,
 	std::shared_ptr<Texture> texture,
-	const glm::vec4& color,
-	std::shared_ptr<std::vector<glm::mat4>> instanceModelMatrices,
+	std::optional<glm::vec4> color,
+	InstanceModelMatricesPtr instanceModelMatrices,
+	InstanceColorsPtr instanceColors,
 	bool fitToViewPort) :
 	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), id(id), m_texture(texture),
-	m_color(color), m_position(.0f), m_instanceModelMatrices(instanceModelMatrices)
+	m_color(color), m_position(.0f), m_instanceModelMatrices(instanceModelMatrices), m_instanceColors(instanceColors)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -27,6 +28,15 @@ Model::Model(const std::string &objPath,
 	}
 
 	extractDataFromNode(scene, scene->mRootNode);
+
+	if (m_instanceColors)
+	{
+		for (auto& mesh : meshes)
+		{
+			mesh->setInstanceColors(*m_instanceColors);
+		}
+	}
+
 	computeBoundingBox();
 
 	if (fitToViewPort)
@@ -87,10 +97,13 @@ void Model::render(const Shader& shader) const
 	
 	bool hasTexture = m_texture != nullptr;
 	bool isInstance = m_instanceModelMatrices != nullptr;
+	bool isInstanceColor = m_instanceColors != nullptr;
 
 	shader.setUniform1i("hasTexture", hasTexture);
 	shader.setUniform1i("isInstance", isInstance);
-	shader.setUniform4fv("vertexColor", m_color);
+	shader.setUniform1i("isInstanceColor", isInstanceColor);
+	// Set to red if color should have a value but doesn't.
+	shader.setUniform4fv("vertexColor", m_color.value_or(glm::vec4(1.f, 0.f, 0.f, 1.f)));
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
 	if (m_texture)
@@ -206,13 +219,22 @@ void Model::setInstanceModelMatrices(InstanceModelMatricesPtr instanceModelMatri
 	}
 }
 
+void Model::setInstanceColors(InstanceColorsPtr instanceColors)
+{
+	m_instanceColors = instanceColors;
+	for (auto& mesh : meshes)
+	{
+		mesh->setInstanceColors(*instanceColors);
+	}
+}
+
 const glm::mat4& Model::getModelMatrix() const { return modelMatrix; }
 
 const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return meshes; }
 
 const BoundingBox& Model::getBoundingBox() const { return boundingBox; }
 
-const glm::vec4& Model::getColor() const { return m_color;  }
+std::optional<glm::vec4> Model::getColor() const { return m_color;  }
 
 void Model::setModelMatrix(const glm::mat4& modelPose) { modelMatrix = modelPose; }
 

@@ -26,6 +26,7 @@ class Mesh
 		const BoundingBox& getBoundingBox() const;
 		
 		void setInstanceModelMatrices(const std::vector<glm::mat4>& instanceModelMatrices);
+		void setInstanceColors(const std::vector<glm::vec4>& instanceModelMatrices);
 		const std::vector<Vertex>& getVertices() const { return vertices; }
 		const std::vector<unsigned int>& getIndices() const { return indices; }
 

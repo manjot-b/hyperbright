@@ -31,12 +31,13 @@ public:
 private:
 	class Tile {
 	public:
-		Tile(glm::mat4& modelMatrix);
+		Tile(glm::mat4& modelMatrix, glm::vec4& color);
 		void translate(const glm::vec3& trans);
 		void setColor(const glm::vec4& color);
 
 	private:
 		glm::mat4& modelMatrix;
+		glm::vec4& color;
 	};
 
 	std::shared_ptr<Model> instancedTile;
@@ -44,6 +45,7 @@ private:
 
 	// Each tile/tile border is instanced, so we need to store all model matrices in one array.
 	InstanceModelMatricesPtr tileModelMatrices;
+	InstanceColorsPtr tileColors;
 
 	using TileGrid = std::vector<std::vector<Tile>>;
 	TileGrid tileGrid;

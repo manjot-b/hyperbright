@@ -125,3 +125,8 @@ void Mesh::setInstanceModelMatrices(const std::vector<glm::mat4>& instanceModelM
 {
 	vertexArray->setInstanceModelMatrices(instanceModelMatrices);
 }
+
+void Mesh::setInstanceColors(const std::vector<glm::vec4>& instanceColors)
+{
+	vertexArray->setInstanceColors(instanceColors);
+}

@@ -4,11 +4,14 @@
 
 #include <string>
 #include <memory>
+#include <optional>
 
 #include "Mesh.h"
 #include "Shader.h"
 #include "Renderer.h"
 #include "Texture.h"
+
+using InstanceColorsPtr = std::shared_ptr<std::vector<glm::vec4>>;
 
 class Model : public Renderer::IRenderable
 {
@@ -16,8 +19,9 @@ class Model : public Renderer::IRenderable
 		Model(const std::string& objPath,
 			const char* id,
 			std::shared_ptr<Texture> texture,
-			const glm::vec4& color,
+			std::optional<glm::vec4> color,
 			InstanceModelMatricesPtr instanceModelMatrices = nullptr,
+			InstanceColorsPtr instanceColors = nullptr,
 			bool fitToViewPort = false);
 		Model(const Model& model);
 		~Model();
@@ -36,10 +40,11 @@ class Model : public Renderer::IRenderable
 		void setPosition(const glm::vec3& position);
 		const glm::vec3& getPosition() const;
 		void setColor(const glm::vec4& color);
-		const glm::vec4& getColor() const;
+		std::optional<glm::vec4> getColor() const;
 		const BoundingBox& getBoundingBox() const;
 		const char* getId() const { return id; };
 		void setInstanceModelMatrices(InstanceModelMatricesPtr instanceModelMatrices);
+		void setInstanceColors(InstanceColorsPtr instanceColors);
 
 		bool shouldRender = false;
 
@@ -48,6 +53,7 @@ class Model : public Renderer::IRenderable
 
 		const char* id;
 		InstanceModelMatricesPtr m_instanceModelMatrices;
+		InstanceColorsPtr m_instanceColors;
 
 		BoundingBox boundingBox;
 		glm::mat4 modelMatrix;
@@ -55,7 +61,7 @@ class Model : public Renderer::IRenderable
 		glm::vec3 m_scale;			// scale to apply to model
 		glm::vec3 m_translation;	// translation vector
 		glm::vec3 m_position;
-		glm::vec4 m_color;
+		std::optional<glm::vec4> m_color;	// Don't need to set if instancedColors is set.
 
 		std::shared_ptr<Texture> m_texture;
 

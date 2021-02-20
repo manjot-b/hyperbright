@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 #include <vector>
@@ -19,7 +20,7 @@ class VertexArray
 		~VertexArray();
 
 		void setInstanceModelMatrices(const std::vector<glm::mat4>& modelMatrices);
-		void setInstanceColors(const std::vector<glm::vec3>& colors);
+		void setInstanceColors(const std::vector<glm::vec4>& colors);
 		unsigned int getId() const;
 		void bind() const;
 
@@ -32,10 +33,12 @@ class VertexArray
 
 		void initVertexArray(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 		template <typename T>
-		void initInstanceArray(const std::vector<T>& data,
+		void initInstanceArray(
+			unsigned int& bufferId,
+			const std::vector<T>& data,
 			unsigned int attribLocation,
 			size_t attribSize,
 			unsigned int components,
 			unsigned int stride,
-			unsigned int& bufferId);
+			GLenum drawType);
 };
