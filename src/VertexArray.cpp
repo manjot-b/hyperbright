@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 
 VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices) :
-	vertexBufferId(0), elementBufferId(0), instanceBufferId(0)
+	vertexBufferId(0), elementBufferId(0), instanceModelBufferId(0), instanceColorBufferId(0)
 {
 	initVertexArray(vertices, indices);
 }
@@ -11,7 +11,7 @@ VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<
 VertexArray::VertexArray(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<glm::mat4>& modelMatrices) :
 	VertexArray::VertexArray(vertices, indices)
 {
-	initInstanceArray(modelMatrices);
+	setInstanceModelMatrices(modelMatrices);
 }
 
 void VertexArray::initVertexArray(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices)
@@ -45,35 +45,43 @@ void VertexArray::initVertexArray(const std::vector<Vertex>& vertices, const std
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void VertexArray::initInstanceArray(const std::vector<glm::mat4>& modelMatrices)
+/*
+Generates an instance buffer.
+	Parameters:
+		data: A vector of T containing the data. T could be glm::vec4 or even glm::mat4 for example.
+		attribLocation: The starting location for the attribute pointer.
+		attribSize: How many attribute locations a T takes up. GLSL allows for a max size of vec4 for a single attribute location.
+		components: The number of components in a single attribute location.
+		stride: The size in bytes between consecutive vertex attributes. A value of 0 means tightly packed. For exapmle, a tightly packed array of mat4
+				would have a stride of sizeof(glm::vec4), because a mat4 is made up of 4 vec4s.
+		bufferId: The bufferId to store the buffer into. If it already exists then ovewrite the data in it.
+*/
+template <typename T>
+void VertexArray::initInstanceArray(const std::vector<T>& data,
+	unsigned int attribLocation,
+	size_t attribSize,
+	unsigned int components,
+	unsigned int stride,
+	unsigned int& bufferId)
 {
-	if (!instanceBufferId)
+	if (!bufferId)
 	{
-		glGenBuffers(1, &instanceBufferId);
+		glGenBuffers(1, &bufferId);
 	}
 		
 	glBindVertexArray(id);
-	glBindBuffer(GL_ARRAY_BUFFER, instanceBufferId);
-	glBufferData(GL_ARRAY_BUFFER, modelMatrices.size() * sizeof(glm::mat4), modelMatrices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), data.data(), GL_STATIC_DRAW);
 
-	// Assume that the vertex attribute starts at position 3.
-	// A glm::mat4 is made up of 4 glm::vec4s. We need to create an attribute pointer
-	// for each glm::vec4.
-	size_t vec4Size = sizeof(glm::vec4);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
-	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
-	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
-
-	// Update the data in the vertex attribute pointer for each instance.
-	glVertexAttribDivisor(3, 1);
-	glVertexAttribDivisor(4, 1);
-	glVertexAttribDivisor(5, 1);
-	glVertexAttribDivisor(6, 1);
+	// We need to create as many attribute pointers as requested.
+	unsigned int count = 0;
+	for (unsigned int i = attribLocation; i < attribLocation + attribSize; i++, count++)
+	{
+		glEnableVertexAttribArray(i);
+		glVertexAttribPointer(i, components, GL_FLOAT, GL_FALSE, stride, (void*)(count * sizeof(GL_FLOAT) * components));
+		// Update the data in the vertex attribute pointer for each instance.
+		glVertexAttribDivisor(i, 1);
+	}
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -85,13 +93,19 @@ VertexArray::~VertexArray()
 	glDeleteBuffers(1, &vertexBufferId);
 	glDeleteBuffers(1, &elementBufferId);
 
-	if (instanceBufferId)
-		glDeleteBuffers(1, &instanceBufferId);
+	if (instanceModelBufferId)
+		glDeleteBuffers(1, &instanceModelBufferId);
 }       
 
 void VertexArray::setInstanceModelMatrices(const std::vector<glm::mat4>& modelMatrices)
 {
-	initInstanceArray(modelMatrices);
+	// Assume that the vertex attribute starts at position 3.
+	initInstanceArray(modelMatrices, 3, 4, 4, sizeof(glm::mat4), instanceModelBufferId);
+}
+
+void VertexArray::setInstanceColors(const std::vector<glm::vec3>& colors)
+{
+	initInstanceArray(colors, 7, 1, 4, 0, instanceColorBufferId);
 }
 
 unsigned int VertexArray::getId() const

@@ -19,6 +19,7 @@ class VertexArray
 		~VertexArray();
 
 		void setInstanceModelMatrices(const std::vector<glm::mat4>& modelMatrices);
+		void setInstanceColors(const std::vector<glm::vec3>& colors);
 		unsigned int getId() const;
 		void bind() const;
 
@@ -26,8 +27,15 @@ class VertexArray
 		unsigned int id;
 		unsigned int vertexBufferId;
 		unsigned int elementBufferId;
-		unsigned int instanceBufferId;
+		unsigned int instanceModelBufferId;
+		unsigned int instanceColorBufferId;
 
 		void initVertexArray(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
-		void initInstanceArray(const std::vector<glm::mat4>& modelMatrices);
+		template <typename T>
+		void initInstanceArray(const std::vector<T>& data,
+			unsigned int attribLocation,
+			size_t attribSize,
+			unsigned int components,
+			unsigned int stride,
+			unsigned int& bufferId);
 };
