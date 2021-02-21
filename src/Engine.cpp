@@ -8,8 +8,6 @@
 #include "Controller.h"
 #include "DevUI.h"
 #include "Pickup.h"
-#include "Simulate.h"
-
 
 #define STARTGAME 1
 #define NOINPUT 0
@@ -45,7 +43,7 @@ std::shared_ptr<Model> Engine::loadModel(std::string ref,
 	std::shared_ptr<Model> model = std::make_unique<Model>(ref, name, texture, color);
 
 	// Don't store the model in the list if it just meant to be copied from.
-	if (!copyModel)
+	/*if (!copyModel)
 	{
 		if (inPhysx)
 		{
@@ -55,7 +53,7 @@ std::shared_ptr<Model> Engine::loadModel(std::string ref,
 		{
 			staticModels.push_back(model);
 		}
-	}
+	}*/
 
 	std::cout << "Loaded Entity.\n";
 	return model;
@@ -74,21 +72,22 @@ void Engine::loadTextures()
 
 void Engine::initEntities()
 {
-	vec4 playerColor = vec4(.3f, .3f, 1.f, 0.f);
-	vec4 ai1Color = vec4(.8f, .8f, .3f, 0.f);
-	// load boxcar > physicsModels[0]
-	vehicle = loadModel("rsc/models/boxcar.obj", true, "player", nullptr, playerColor);
-	renderables.push_back(vehicle);
-	Vehicle player(vehicle, playerColor, vec3(0.f, 3.f, 0.f), vec3(1.f, 0.f, 0.f));
-	vehicles.push_back(std::make_shared<Vehicle>(player));
+	glm::vec4 playerColor = glm::vec4(.3f, .3f, 1.f, 0.f);
+	glm::vec4 ai1Color = glm::vec4(.8f, .8f, .3f, 0.f);
 	
-	ai1 = loadModel("rsc/models/boxcar.obj", true, "ai1", nullptr, ai1Color);
-	renderables.push_back(ai1);
-	Vehicle ai1(ai1, ai1Color, vec3(15.f, 7.f, -15.f), vec3(0.f, 0.f, -1.f));
-	vehicles.push_back(std::make_shared<Vehicle>(ai1));
+	std::shared_ptr<Vehicle> player = std::make_shared<Vehicle>("player", playerColor, glm::vec3(0.f, 3.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
+	vehicles.push_back(player);
+	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(player));
+	physicsModels.push_back(std::static_pointer_cast<IPhysical>(player));
+	
 
-	triggerVolume = loadModel("rsc/models/cube.obj", true, "trigger", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
-	renderables.push_back(triggerVolume);
+	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", ai1Color, glm::vec3(15.f, 7.f, -15.f), glm::vec3(0.f, 0.f, -1.f));
+	vehicles.push_back(ai1);
+	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai1));
+	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai1));
+
+	/*triggerVolume = loadModel("rsc/models/cube.obj", true, "trigger", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
+	renderables.push_back(triggerVolume);*/
 
 	bool copyModel = true;
 	std::shared_ptr<Model> wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
@@ -100,6 +99,14 @@ void Engine::initEntities()
 	arena->addWall(4, 17, 5, 2);
 	arena->addWall(10, 10, 1, 1);
 	renderables.push_back(arena);
+
+	// TEMP
+	std::shared_ptr<Model> body = loadModel("rsc/models/car_body.obj", false, "body", nullptr, glm::vec4(0.9f, 0.f, 0.f, 1.f));
+	std::shared_ptr<Model> wheelsFront = loadModel("rsc/models/wheels_front.obj", false, "wf", nullptr, glm::vec4(0.1f, 0.1f, 0.1f, 1.f));
+	std::shared_ptr<Model> wheelsRear = loadModel("rsc/models/wheels_rear.obj", false, "wr", nullptr, glm::vec4(0.1f, 0.1f, 0.1f, 1.f));
+	renderables.push_back(body);
+	renderables.push_back(wheelsFront);
+	renderables.push_back(wheelsRear);
 }
 
 
@@ -139,7 +146,7 @@ void Engine::run()
 
 		// run a frame of simulation
 		simulator.stepPhysics(fpsLimit);
-		simulator.checkVehicleOverTile(*arena, *vehicle);
+		//simulator.checkVehicleOverTile(*arena, *vehicle);
 		
 
 		// set camera to player vehicles position

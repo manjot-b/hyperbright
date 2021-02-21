@@ -15,6 +15,7 @@
 
 #include "Model.h"
 #include "Renderer.h"
+#include "Simulate.h"
 #include "Texture.h"
 #include "Vehicle.h"
 
@@ -35,14 +36,11 @@ private:
 	//Pickup pickups[10];
 
 	std::vector<std::shared_ptr<Vehicle>> vehicles;
-	std::vector<std::shared_ptr<Model>> staticModels;
-	std::vector<std::shared_ptr<Model>> physicsModels;
+	std::vector<std::shared_ptr<IPhysical>> physicsModels;
 	std::vector<std::shared_ptr<Renderer::IRenderable>> renderables;
 
 	// These should eventually be their specific classes rather than Model.
 	// e.g. the plane should be Arena, car should be Vehicle.
-	std::shared_ptr<Model> vehicle;
-	std::shared_ptr<Model> ai1;
 	std::shared_ptr<Model> powerup;
 	std::shared_ptr<Model> triggerVolume;
 

@@ -10,7 +10,7 @@
 #include <iostream>
 
 Model::Model(const std::string& objPath,
-	const char* id,
+	const std::string& id,
 	std::shared_ptr<Texture> texture,
 	std::optional<glm::vec4> color,
 	InstanceModelMatricesPtr instanceModelMatrices,

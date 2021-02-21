@@ -1,38 +1,42 @@
 #include "Vehicle.h"
-#include "Controller.h"
-#include "Simulate.h"
+
 #include <iostream>
 #include <algorithm>
 
 using namespace std;
 using namespace glm;
 
-Vehicle::Vehicle() {}
-
-Vehicle::Vehicle(shared_ptr<Model> _carModel, vec3 color, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
-	: carModel(_carModel), color(color), position(startPos), direction(startDir), startDirection(startDir)
+Vehicle::Vehicle(const std::string& _id, vec4 color, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
+	: id(_id), color(color), position(startPos), direction(startDir), startDirection(startDir)
 {
-	id = carModel->getId();
-	if (strcmp(id, "player") == 0) {
+	string bodyIdSuffix = "body";
+	string wheelsFrontIdSuffix = "wheelsfront";
+	string wheelsRearIdSuffix = "wheelsRear";
+
+	if (id ==  "player") {
 		ctrl.contrId = 0;
 	}
-	else if (strcmp(id, "ai1") == 0) {
+	else if (id == "ai1") {
 		ctrl.contrId = 1;
 	}
-	else if (strcmp(id, "ai2") == 0) {
+	else if (id == "ai2") {
 		ctrl.contrId = 2;
 	}
-	else if (strcmp(id, "ai3") == 0) {
+	else if (id == "ai3") {
 		ctrl.contrId = 3;
 	}
 	else {
 		cout << "unknown vehicle name. see vehicle constructor" << endl;
 	}
+
+	body = std::make_unique<Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr, color);
+	wheelsFront = std::make_unique<Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr, vec4(0.1f, 0, 0, 1));
+	wheelsRear = std::make_unique<Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr, vec4(0.1f, 0, 0, 1));
 }
 
 void Vehicle::updatePositionAndDirection() {
-	position = carModel->getPosition();
-	mat4 modelMatrix = carModel->getModelMatrix();
+	position = body->getPosition();
+	mat4 modelMatrix = body->getModelMatrix();
 	mat4 rotMatrix = { modelMatrix[0], modelMatrix[1], modelMatrix[2], vec4(0.f, 0.f, 0.f, 1.f) };
 	
 	direction = normalize(vec3(rotMatrix * vec4(0.f, 0.f, 1.f, 1.0f)));	
@@ -45,6 +49,13 @@ Vehicle::~Vehicle() {
 void Vehicle::reset() {
 	//Set to begining of game values
 
+}
+
+void Vehicle::render(const Shader& shader) const
+{
+	body->render(shader);
+	wheelsFront->render(shader);
+	wheelsRear->render(shader);
 }
 
 quat Vehicle::getOrientation()
@@ -122,4 +133,16 @@ void Vehicle::stopRight()
 	ctrl.input[2] = 0;
 }
 
+void Vehicle::setModelMatrix(const glm::mat4& modelMat)
+{
+	body->setModelMatrix(modelMat);
+	wheelsFront->setModelMatrix(modelMat);
+	wheelsRear->setModelMatrix(modelMat);
+}
 
+void Vehicle::setPosition(const glm::vec3& position)
+{
+	body->setPosition(position);
+	wheelsFront->setPosition(position);
+	wheelsRear->setPosition(position);
+}

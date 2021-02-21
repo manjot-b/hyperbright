@@ -1,44 +1,47 @@
 #pragma once
+
 #define _USE_MATH_DEFINES
+#include <glm/gtc/quaternion.hpp>
+
 #include <math.h>
 #include <array>
-#include <glm/gtc/quaternion.hpp>
-#include "Pickup.h"
+#include <memory>
+
 #include "Model.h"
-
-
-using namespace std;
-using namespace glm;
+#include "Pickup.h"
+#include "Renderer.h"
+#include "Simulate.h"
 
 struct VehicleController {
 	int contrId;
 	int input[6] = { 0,0,0,0,0,0 };
 };
 
-class Vehicle
+class Vehicle : public Renderer::IRenderable, public IPhysical
 {
 public:
-	Vehicle();
-	Vehicle(shared_ptr<Model> carModel, vec3 color, vec3 startPos, vec3 startDir);
+	Vehicle(const std::string& id, glm::vec4 color, glm::vec3 startPos, glm::vec3 startDir);
 	~Vehicle();
 	void reset();
 
 	void updatePositionAndDirection();
 
-	const char* getId() { return id; }
+	const char* getId() const { return id.c_str(); }
 	VehicleController getController() { return ctrl; }
-	vec3 getColor() { return color; }
-	vec3 getForward() { return position + 2.f*direction; }
-	const vec3 getPosition() { return position; }
-	quat getOrientation();
+	glm::vec3 getColor() { return color; }
+	glm::vec3 getForward() { return position + 2.f*direction; }
+	const glm::vec3 getPosition() { return position; }
+	glm::quat getOrientation();
+
+	void setModelMatrix(const glm::mat4& modelMat);
+	void setPosition(const glm::vec3& position);
 
 	float energy;
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION
 
-	shared_ptr<Pickup> pickupEquiped;//set as null for default
-	shared_ptr<Model> carModel;
-
+	std::shared_ptr<Pickup> pickupEquiped;//set as null for default
+	
 	// driving movements act as a toggle. call the appropriate movement 
 	// function to start moving then call the cooresponding stop function 
 	void accelerateForward();
@@ -54,12 +57,18 @@ public:
 	void stopReverse();
 	void stopLeft();
 	void stopRight();
+
+	void render(const Shader& shader) const;
 private:
 
-	const char* id;
-	vec3 color;
-	vec3 direction;
-	const vec3 startDirection;
-	vec3 position;
+	std::string id;
+	glm::vec3 color;
+	glm::vec3 direction;
+	const glm::vec3 startDirection;
+	glm::vec3 position;
 	VehicleController ctrl;
+
+	std::unique_ptr<Model> body;
+	std::unique_ptr<Model> wheelsFront;
+	std::unique_ptr<Model> wheelsRear;
 };

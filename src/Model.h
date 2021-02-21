@@ -17,7 +17,7 @@ class Model : public Renderer::IRenderable
 {
 	public:
 		Model(const std::string& objPath,
-			const char* id,
+			const std::string& id,
 			std::shared_ptr<Texture> texture,
 			std::optional<glm::vec4> color,
 			InstanceModelMatricesPtr instanceModelMatrices = nullptr,
@@ -42,7 +42,7 @@ class Model : public Renderer::IRenderable
 		void setColor(const glm::vec4& color);
 		std::optional<glm::vec4> getColor() const;
 		const BoundingBox& getBoundingBox() const;
-		const char* getId() const { return id; };
+		const std::string& getId() const { return id; };
 		void setInstanceModelMatrices(InstanceModelMatricesPtr instanceModelMatrices);
 		void setInstanceColors(InstanceColorsPtr instanceColors);
 
@@ -51,7 +51,7 @@ class Model : public Renderer::IRenderable
 	private:
 		std::vector<std::unique_ptr<Mesh>> meshes;
 
-		const char* id;
+		std::string id;
 		InstanceModelMatricesPtr m_instanceModelMatrices;
 		InstanceColorsPtr m_instanceColors;
 
