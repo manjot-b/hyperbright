@@ -7,10 +7,9 @@
 class Ai
 {
 public:
-	Ai();
+	Ai(std::shared_ptr<Vehicle> v);
 	~Ai();
-	void reset();
-	void aiInput(Vehicle vehicle);
+	void aiInput();
 private:
-
+	std::shared_ptr<Vehicle> vehicle;
 };

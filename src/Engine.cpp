@@ -8,6 +8,7 @@
 #include "Controller.h"
 #include "DevUI.h"
 #include "Pickup.h"
+#include "AiManager.h"
 
 #define STARTGAME 1
 #define NOINPUT 0
@@ -111,6 +112,9 @@ void Engine::run()
 	Simulate simulator(physicsModels, vehicles, *arena);
 	simulator.setAudioPlayer(audioPlayer);
 
+	AiManager aiManager;
+	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
+
 	DevUI devUI(renderer.getWindow());
 	Controller controller(renderer.getWindow(), camera, vehicles[0]);
 
@@ -135,6 +139,9 @@ void Engine::run()
 
 		// controller 
 		controller.processInput(deltaSec);
+
+		//AI
+		aiManager.makeMoves();
 
 		// run a frame of simulation
 		simulator.stepPhysics(fpsLimit);
