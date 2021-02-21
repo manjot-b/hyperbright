@@ -30,8 +30,8 @@ Vehicle::Vehicle(const std::string& _id, vec4 color, vec3 startPos, vec3 startDi
 	}
 
 	body = std::make_unique<Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr, color);
-	wheelsFront = std::make_unique<Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr, vec4(0.1f, 0, 0, 1));
-	wheelsRear = std::make_unique<Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr, vec4(0.1f, 0, 0, 1));
+	wheelsFront = std::make_unique<Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr, vec4(.1f, .1f, .1f, 1));
+	wheelsRear = std::make_unique<Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr, vec4(.1f, .1f, .1f, 1));
 }
 
 void Vehicle::updatePositionAndDirection() {
@@ -135,9 +135,13 @@ void Vehicle::stopRight()
 
 void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 {
-	body->setModelMatrix(modelMat);
-	wheelsFront->setModelMatrix(modelMat);
-	wheelsRear->setModelMatrix(modelMat);
+	// Probably a better way to do this, but this is fine for now.
+	float scale = 0.45f;
+	glm::mat4 scaled = modelMat;
+	scaled = glm::scale(modelMat, glm::vec3(scale));
+	body->setModelMatrix(scaled);
+	wheelsFront->setModelMatrix(scaled);
+	wheelsRear->setModelMatrix(scaled);
 }
 
 void Vehicle::setPosition(const glm::vec3& position)
