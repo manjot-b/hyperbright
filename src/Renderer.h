@@ -33,8 +33,9 @@ class Renderer
 
 		std::unique_ptr<Shader> shader;
 
-		const unsigned int height = 800;
-		const unsigned int width = 800;
+		// 16:9 aspect ratio
+		const unsigned int height = 675;
+		const unsigned int width = 1200;
 
 		const Camera& camera;
 		glm::mat4 perspective;
