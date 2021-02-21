@@ -6,24 +6,37 @@
 
 #include <memory>
 
-#include "Vehicle.h"
 #include "Arena.h"
 #include "Pickup.h"
 #include "Model.h"
 #include "AudioPlayer.h"
 
-using namespace std;
+class Vehicle;
+
+/*
+Objects of this type are dynamic objects that should be part of the PhysX engine.
+*/
+class IPhysical
+{
+public:
+	virtual void setModelMatrix(const glm::mat4& modelMat) = 0;
+	virtual void setPosition(const glm::vec3& position) = 0;
+
+	// TO-DO: Remove this method and have PhysX actors store pointers to whatever object
+	// they need.
+	virtual const char* getId() const = 0;
+};
 
 class Simulate
 {
 public:
 
-	Simulate(vector<shared_ptr<Model>>& physicsModels, vector<shared_ptr<Vehicle>>& vehicles, const Arena& arena);
+	Simulate(std::vector<std::shared_ptr<IPhysical>>& physicsModels, std::vector<std::shared_ptr<Vehicle>>& vehicles, const Arena& arena);
 	~Simulate();
 	void stepPhysics(float deltaSec);
-	void setModelPose(std::shared_ptr<Model>& model);
+	void setModelPose(std::shared_ptr<IPhysical>& model);
 	void cookMeshes(const std::shared_ptr<Model>& mesh, bool useModelMatrix = false);
-	void checkVehicleOverTile(Arena& arena, Model& model);
+	void checkVehiclesOverTile(Arena& arena, const std::vector<std::shared_ptr<Vehicle>>& vehicles);
 	void setAudioPlayer(std::shared_ptr<AudioPlayer> audioPlayer);
 	void cleanupPhysics();
 private:
@@ -32,10 +45,10 @@ private:
 
 	// physicsModels are all moving/colliding objects in the game including the vehicles
 	// this list is used to update the graphical models with the transforms created by PhysX
-	vector<shared_ptr<Model>>& physicsModels;
+	std::vector<std::shared_ptr<IPhysical>>& physicsModels;
 
 	// A list of vehicles needed for initializing the vehicle actors and updating vehicle stats
-	vector<shared_ptr<Vehicle>>& vehicles;
+	std::vector<std::shared_ptr<Vehicle>>& vehicles;
 
 };
 

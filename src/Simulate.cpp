@@ -17,8 +17,10 @@
 #include "SnippetPVD.h"
 #include "SnippetUtils.h"
 
+using namespace std;
 using namespace physx;
 using namespace snippetvehicle;
+using namespace glm;
 
 PxDefaultAllocator		gAllocator;
 PxDefaultErrorCallback	gErrorCallback;
@@ -64,7 +66,7 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 CollisionCallBack collisionCallBack;
 
 
-Simulate::Simulate(vector<shared_ptr<Model>>& _physicsModels, vector<shared_ptr<Vehicle>>& _vehicles, const Arena& arena) :
+Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<Vehicle>>& _vehicles, const Arena& arena) :
 	physicsModels(_physicsModels), vehicles(_vehicles)
 {
 	initPhysics();
@@ -367,12 +369,15 @@ void Simulate::initPhysics()
 		PxQuat playerPxOrientation(playerOrientation.x, playerOrientation.y, playerOrientation.z, playerOrientation.w);
 		PxTransform startTransform(PxVec3(playerStartPos.x, playerStartPos.y, playerStartPos.z), playerPxOrientation);
 		gVehicle4W[i]->getRigidDynamicActor()->setGlobalPose(startTransform);
+
+		// TO-DO: Rather than storing a string id for each vehicle, see if we can store the pointer
+		// to the vehicle itself.
 		gVehicle4W[i]->getRigidDynamicActor()->userData = (void*)vehicle->getId();
 		gScene->addActor(*gVehicle4W[i]->getRigidDynamicActor());
 	}
 
 	///////////////////////////////////// BOX
-	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	/*PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	PxShape* boxWall = gPhysics->createShape(PxBoxGeometry(0.7f, 0.7f, 0.7f), *gMaterial, false);
 	PxRigidStatic* wallActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0,0,0)));
 	boxWall->setSimulationFilterData(obstFilterData);
@@ -382,8 +387,8 @@ void Simulate::initPhysics()
 
 	wallActor->setGlobalPose(PxTransform(PxVec3(0,0.7f,5)));
 	wallActor->attachShape(*boxWall);
-	wallActor->userData = (void*)physicsModels[2]->getId();
-	gScene->addActor(*wallActor);
+	wallActor->userData = (void*)physicsModels[2]->getId().c_str();
+	gScene->addActor(*wallActor);*/
 
 	std::cout << "PhysX Initialized" << std::endl;
 }
@@ -477,7 +482,7 @@ void Simulate::stepPhysics(float frameRate)
 	}*/
 }
 
-void Simulate::setModelPose(std::shared_ptr<Model>& model)
+void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 {
 	PxU32 numActors = gScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
 	if (numActors)
@@ -519,12 +524,15 @@ void Simulate::setModelPose(std::shared_ptr<Model>& model)
 	}
 }
 
-void Simulate::checkVehicleOverTile(Arena& arena, Model& model)
+void Simulate::checkVehiclesOverTile(Arena& arena, const std::vector<std::shared_ptr<Vehicle>>& vehicles)
 {
-	std::optional<glm::vec2> tileCoords = arena.isOnTile(model.getPosition());
-	if (tileCoords)
+	for (const auto& vehicle : vehicles)
 	{
-		arena.setTileColor(*tileCoords, model.getColor().value());
+		std::optional<glm::vec2> tileCoords = arena.isOnTile(vehicle->getPosition());
+		if (tileCoords)
+		{
+			arena.setTileColor(*tileCoords, vehicle->getColor());
+		}
 	}
 }
 
