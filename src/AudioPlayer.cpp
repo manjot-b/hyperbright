@@ -253,6 +253,7 @@ AudioPlayer::AudioPlayer()
 //////////////////////////////////////////////////////////////////////////////
 
 AudioPlayer::~AudioPlayer() {
+    //alDeleteBuffers(NUM_BUFFERS,source);
     alcMakeContextCurrent(NULL);
     alcDestroyContext(ctx);
     alcCloseDevice(device);
