@@ -99,14 +99,6 @@ void Engine::initEntities()
 	arena->addWall(4, 17, 5, 2);
 	arena->addWall(10, 10, 1, 1);
 	renderables.push_back(arena);
-
-	// TEMP
-	std::shared_ptr<Model> body = loadModel("rsc/models/car_body.obj", false, "body", nullptr, glm::vec4(0.9f, 0.f, 0.f, 1.f));
-	std::shared_ptr<Model> wheelsFront = loadModel("rsc/models/wheels_front.obj", false, "wf", nullptr, glm::vec4(0.1f, 0.1f, 0.1f, 1.f));
-	std::shared_ptr<Model> wheelsRear = loadModel("rsc/models/wheels_rear.obj", false, "wr", nullptr, glm::vec4(0.1f, 0.1f, 0.1f, 1.f));
-	renderables.push_back(body);
-	renderables.push_back(wheelsFront);
-	renderables.push_back(wheelsRear);
 }
 
 
