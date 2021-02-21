@@ -44,7 +44,7 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 	}
 	else if (type == ZAP) {
 		zapOldColor = vehicles[indexOfFirstPlace].getColor();
-		vehicles[indexOfFirstPlace].getColor() = vehicles[indexOfActivator].getColor();
+		vehicles[indexOfFirstPlace].setColor(vehicles[indexOfActivator].getColor());
 		//move to active
 		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 
@@ -102,7 +102,7 @@ void Pickup::deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFir
 		//SET OLD VEHICLE MAX SPEED
 	}
 	else if (type == ZAP) {
-		vehicles[indexOfFirstPlace].getColor() = zapOldColor;
+		vehicles[indexOfFirstPlace].setColor(zapOldColor);
 	}
 	else if (type == HIGHVOLTAGE) {
 		//CHANGE COLOR LAYING AREA OF vehicles[indexOfActivator] TO ORIGINAL

@@ -146,7 +146,7 @@ void Engine::run()
 
 		// run a frame of simulation
 		simulator.stepPhysics(fpsLimit);
-		//simulator.checkVehicleOverTile(*arena, *vehicle);
+		simulator.checkVehiclesOverTile(*arena, vehicles);
 		
 
 		// set camera to player vehicles position

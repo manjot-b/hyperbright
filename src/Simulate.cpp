@@ -524,12 +524,15 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 	}
 }
 
-void Simulate::checkVehicleOverTile(Arena& arena, Model& model)
+void Simulate::checkVehiclesOverTile(Arena& arena, const std::vector<std::shared_ptr<Vehicle>>& vehicles)
 {
-	std::optional<glm::vec2> tileCoords = arena.isOnTile(model.getPosition());
-	if (tileCoords)
+	for (const auto& vehicle : vehicles)
 	{
-		arena.setTileColor(*tileCoords, model.getColor().value());
+		std::optional<glm::vec2> tileCoords = arena.isOnTile(vehicle->getPosition());
+		if (tileCoords)
+		{
+			arena.setTileColor(*tileCoords, vehicle->getColor());
+		}
 	}
 }
 

@@ -7,7 +7,7 @@ using namespace std;
 using namespace glm;
 
 Vehicle::Vehicle(const std::string& _id, vec4 color, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
-	: id(_id), color(color), position(startPos), direction(startDir), startDirection(startDir)
+	: id(_id), color(color), position(startPos), direction(normalize(startDir)), startDirection(startDir)
 {
 	string bodyIdSuffix = "body";
 	string wheelsFrontIdSuffix = "wheelsfront";
@@ -58,9 +58,8 @@ void Vehicle::render(const Shader& shader) const
 	wheelsRear->render(shader);
 }
 
-quat Vehicle::getOrientation()
+quat Vehicle::getOrientation() const
 {
-	direction = normalize(direction);
 	vec3 worldUp(0.f, 1.f, 0.f);
 	vec3 right = normalize(cross(direction, worldUp));
 	vec3 up = normalize(cross(right, direction));
@@ -146,6 +145,7 @@ void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 
 void Vehicle::setPosition(const glm::vec3& position)
 {
+	this->position = position;
 	body->setPosition(position);
 	wheelsFront->setPosition(position);
 	wheelsRear->setPosition(position);

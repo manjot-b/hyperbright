@@ -33,7 +33,7 @@ private:
 	int type;
 	float pickupTime;
 	float pickUpStartTime;
-	glm::vec3 zapOldColor;//CHANGE TYPE LATER
+	glm::vec4 zapOldColor;//CHANGE TYPE LATER
 	bool slowTrapActive;
 	float speedOldMax;
 	//Vehicle* carriedBy;
