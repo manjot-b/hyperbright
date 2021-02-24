@@ -91,6 +91,15 @@ if( MSVC )
 		DEPENDS ${PHYSX_DLL}
 		COMMENT "Copying ${PHYSX_DLL} => ${EXEC_DIR}"
 	)
+
+	# Copy freetype.dll for ftgl.
+	set(FREETYPE_DLL "${CMAKE_SOURCE_DIR}/dep/freetype-windows-binaries/release\ dll/win64")
+	add_custom_command (
+		TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${FREETYPE_DLL} ${EXEC_DIR}
+		DEPENDS ${FREETYPE_DLL}
+		COMMENT "Copying ${FREETYPE_DLL} => ${EXEC_DIR}"
+	)
 endif()
 
 add_subdirectory(dep)

@@ -6,6 +6,8 @@
 #include <iostream>
 #include <filesystem>
 
+#include "FontTest.h"
+
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
 * not be available until GLAD is initialized.
@@ -103,6 +105,7 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	glUseProgram(0);
 
 	devUI.render();
+	ftglTest::test();
 
 	glfwSwapBuffers(window);
 }
