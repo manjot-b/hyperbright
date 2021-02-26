@@ -1,18 +1,17 @@
 #include "Ai.h"
 
 
-Ai::Ai() {
-
+Ai::Ai(std::shared_ptr<Vehicle> v) {
+	vehicle = v;
 }
 
 Ai::~Ai() {
 
 }
 
-void Ai::reset() {
-	//Set to begining of game values
-}
+//Determines if Ai choose a new goal or continue on current goal. Sets input accordingly.
+void Ai::aiInput() {
 
-void Ai::aiInput(Vehicle vehicle) {
-	//Determines if Ai choose a new goal or continue on current goal. Sets input accordingly.
+	vehicle->accelerateForward();
+	vehicle->turnHardRight();
 }
