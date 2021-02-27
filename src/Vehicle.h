@@ -37,6 +37,7 @@ public:
 	void setPosition(const glm::vec3& position);
 	void setColor(const glm::vec4 _color) { color = _color; }
 
+	glm::vec2 currentTile;
 	float energy;
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION

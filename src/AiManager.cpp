@@ -13,3 +13,7 @@ void AiManager::makeMoves() {
 		loadedAi.at(i)->aiInput();
 	}
 }
+
+void AiManager::setArena(std::shared_ptr<Arena> a) {
+	arena = a;
+}

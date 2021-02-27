@@ -94,6 +94,7 @@ void Engine::initEntities()
 	std::shared_ptr<Model> wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
 	
 	int arena_size = 75;
+	//bool aiArenaRepresentation[75][75];
 	arena = std::make_shared<Arena>(wall, arena_size, arena_size);
 	arena->addWall(0, 0, 2, 2);
 	arena->addWall(14, 5, 1, 7);
@@ -113,14 +114,15 @@ void Engine::run()
 	simulator.setAudioPlayer(audioPlayer);
 
 	AiManager aiManager;
+	aiManager.setArena(arena);
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
 
 	DevUI devUI(renderer.getWindow());
 	Controller controller(renderer.getWindow(), camera, vehicles[0]);
 
 	// SOUND SETUP
-	//audioPlayer->playGameMusic();
-	//audioPlayer->playCarIdle();
+	audioPlayer->playGameMusic();
+	audioPlayer->playCarIdle();
 
 	while (!controller.isWindowClosed()) {
 		// update global time
@@ -160,7 +162,8 @@ void Engine::run()
 
 		glfwPollEvents();
 	}
-
+	audioPlayer->stopGameMusic();
+	audioPlayer->stopCarIdle();
 	//runMenu();
 	return;
 }

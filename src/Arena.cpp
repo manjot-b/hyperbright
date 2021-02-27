@@ -25,6 +25,8 @@ void Arena::Tile::setColor(const glm::vec4& color)
 	rows: The number of tiles on the z-axis.
 	cols: The number of tiles on the x-axis.
 */
+//bool AiArenaRepresentation;
+
 Arena::Arena(
 	std::shared_ptr<Model> wall,
 	size_t rows,
@@ -33,6 +35,7 @@ Arena::Arena(
 	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, glm::vec4(.3f, .3f, .3f, 1.f)) ),
 	tileGrid(rows), wall(wall), tileCollisionRadius(0.5f)
 {
+
 	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr, std::nullopt);
 	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f));
 
@@ -82,7 +85,7 @@ void Arena::render(const Shader& shader) const
  * Does not check the y-axis, only x and z. This function also uses the predefined radius
  * as a tolerance.
 */
-std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
+glm::vec2 Arena::isOnTile(const glm::vec3& coords) const
 {
 	unsigned int rows = tileGrid.size();
 	unsigned int cols = tileGrid[0].size();
@@ -94,7 +97,7 @@ std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
 	if (col < 0 || col > cols - 1 || row < 0 || row > rows - 1)
 	{
 		// Make sure the column and row are within the bounds.
-		return std::nullopt;
+		return glm::vec2(-1, -1);
 	}
 
 	// TO-DO:

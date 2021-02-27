@@ -22,7 +22,7 @@ public:
 	~Arena();
 
 	void render(const Shader& shader) const;
-	std::optional<glm::vec2> isOnTile(const glm::vec3& coords) const;
+	glm::vec2 isOnTile(const glm::vec3& coords) const;
 
 	void setTileColor(const glm::vec2& tileCoords, const glm::vec4& color);
 	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
