@@ -4,7 +4,7 @@
 
 
 Arena::Tile::Tile(glm::mat4& modelMatrix, glm::vec4& color) :
-	modelMatrix(modelMatrix), color(color)
+	modelMatrix(modelMatrix), color(color), _hasWall(false)
 {}
 
 void Arena::Tile::translate(const glm::vec3& trans)
@@ -16,6 +16,8 @@ void Arena::Tile::setColor(const glm::vec4& color)
 {
 	this->color = color;
 }
+
+bool Arena::Tile::hasWall() const { return _hasWall; }
 
 /*
  Construct an arena:
@@ -140,6 +142,14 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 	// Reset scale and translation for other walls that need to be added.
 	wall->setModelMatrix(glm::mat4(1.f));
 	wall->setPosition(glm::vec3(.0f, .0f, .0f));
+
+	for (unsigned int r = row; r < row + length; r++)
+	{
+		for (unsigned int c = col; c < col + width; c++)
+		{
+			tileGrid[r][c]._hasWall = true;
+		}
+	}
 }
 
 const Arena::WallList& Arena::getWalls() const { return walls; }
