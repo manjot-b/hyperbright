@@ -30,14 +30,18 @@ public:
 	
 private:
 	class Tile {
+	friend class Arena;
+
 	public:
 		Tile(glm::mat4& modelMatrix, glm::vec4& color);
 		void translate(const glm::vec3& trans);
 		void setColor(const glm::vec4& color);
+		bool hasWall() const;
 
 	private:
 		glm::mat4& modelMatrix;
 		glm::vec4& color;
+		bool _hasWall;
 	};
 
 	std::shared_ptr<Model> instancedTile;
