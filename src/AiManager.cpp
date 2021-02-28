@@ -10,6 +10,21 @@ void AiManager::loadAiVehicle(std::shared_ptr<Vehicle> vehicle) {
 
 void AiManager::makeMoves() {
 	for (int i = 0; i < loadedAi.size(); i++) {
-		loadedAi.at(i)->aiInput();
+		if (loadedAi.at(i)->state) {
+			loadedAi.at(i)->aiInput();
+		}
+		else {
+			generatePath(loadedAi.at(i));
+		}
 	}
+}
+
+void AiManager::setArena(std::shared_ptr<Arena> a) {
+	arena = a;
+}
+
+void AiManager::generatePath(std::shared_ptr<Ai> ai) {
+
+
+	ai->state = HASTARGET;
 }
