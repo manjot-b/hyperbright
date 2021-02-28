@@ -15,4 +15,6 @@ public:
 private:
 	std::vector<std::shared_ptr<Ai>> loadedAi;
 	std::shared_ptr<Arena> arena;
+
+	void generatePath(std::shared_ptr<Ai> ai);
 };
