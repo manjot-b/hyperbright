@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
+#include <iostream>
 #include "Vehicle.h"
 #define NOTARGET 0
 #define HASTARGET 1
@@ -13,9 +13,11 @@ public:
 	void aiInput();
 	int state;
 	std::vector<glm::vec2> path;
+	glm::vec2 targetTile;
+	glm::vec2 targetTilePosition;
+	std::shared_ptr<Vehicle> vehicle;
 private:
 	std::vector<glm::vec2> pathList;
-	std::shared_ptr<Vehicle> vehicle;
 	std::shared_ptr<Arena> arena;
 
 	//Might change to indicate which direction to turn

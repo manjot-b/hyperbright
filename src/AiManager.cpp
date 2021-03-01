@@ -4,9 +4,13 @@ AiManager::AiManager() {}
 
 AiManager::~AiManager() {}
 
+//////////////////////////////////////////////////////////////////
+
 void AiManager::loadAiVehicle(std::shared_ptr<Vehicle> vehicle) {
 	loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle)));
 }
+
+//////////////////////////////////////////////////////////////////
 
 void AiManager::makeMoves() {
 	for (int i = 0; i < loadedAi.size(); i++) {
@@ -14,17 +18,112 @@ void AiManager::makeMoves() {
 			loadedAi.at(i)->aiInput();
 		}
 		else {
-			generatePath(loadedAi.at(i));
+			if (loadedAi.at(i)->vehicle->currentTile.x != -1) {
+				generatePath(loadedAi.at(i));
+			}
 		}
 	}
 }
 
-void AiManager::setArena(std::shared_ptr<Arena> a) {
+//////////////////////////////////////////////////////////////////
+
+void AiManager::setArena(std::vector<std::vector<bool>> a) {
 	arena = a;
 }
 
+//////////////////////////////////////////////////////////////////
+//GENERATE PATH FOR GIVEN AI
 void AiManager::generatePath(std::shared_ptr<Ai> ai) {
+	ai->targetTile = generateTarget();
+	std::vector<glm::vec2> pathList;
+	glm::vec2 currentTile = ai->vehicle->currentTile;
+	glm::vec2 target = ai->targetTile;
+	std::shared_ptr<std::vector<glm::vec2>> pathListPtr = std::make_shared<std::vector<glm::vec2>>(pathList);
 
 
-	ai->state = HASTARGET;
+	std::cout << currentTile.x << " " << currentTile.y << std::endl;
+	if (currentTile.x < 0 || currentTile.y < 0) {//NEED FOR INITAL COLLISION COMING UP AS NEGATIVE
+		return;
+	}
+
+	if (target.x != currentTile.x) {//CHECK X AXIS
+		if (target.x > currentTile.x && currentTile.x + 1 < arena.size() && nextStep(target, glm::vec2(currentTile.x + 1, currentTile.y), pathListPtr)) {//RIGHT
+			ai->path = pathList;
+			ai->state = HASTARGET;
+			return;
+		}
+		else if (currentTile.x - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x - 1, currentTile.y), pathListPtr)) {//LEFT
+			ai->path = pathList;
+			ai->state = HASTARGET;
+			return;
+		}
+		//FORCE ALTERNATIVE / WALL PROTOCOL
+	}
+
+	//CHECK Y AXIS
+	if (target.y > currentTile.y && currentTile.y + 1 < arena.at(0).size() && nextStep(target, glm::vec2(currentTile.x, currentTile.y + 1), pathListPtr)) {//DOWN
+
+		ai->path = pathList;
+		ai->state = HASTARGET;
+		return;
+
+	}
+	else if (currentTile.y - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x, currentTile.y - 1), pathListPtr)) {//UP
+
+		ai->path = pathList;
+		ai->state = HASTARGET;
+		return;
+
+	}
+	//FORCE ALTERNATIVE / WALL PROTOCOL
+}
+
+//////////////////////////////////////////////////////////////////
+//DECIDE WHERE TO GO NEXT
+glm::vec2 AiManager::generateTarget() {
+	return glm::vec2(20, 20);//ARBITRARY FOR TESTING
+}
+
+//////////////////////////////////////////////////////////////////
+//DECIDE NEXT TILE TO GO TO IN PATH
+bool AiManager::nextStep(glm::vec2 target, glm::vec2 currentTile, std::shared_ptr<std::vector<glm::vec2>> pathList) {
+	
+	std::cout << currentTile.x << " " << currentTile.y << std::endl;
+	if (arena[currentTile.x][currentTile.y]) {//BASE CASE 1 WALL
+		return false;
+	}
+	
+	if (target == currentTile) {//BASE CASE 2 TARGET FOUND
+		pathList->push_back(target);
+		return true;
+	}
+
+
+	if (target.x!=currentTile.x) {//CHECK X AXIS
+		if (target.x > currentTile.x && currentTile.x + 1 < arena.size() && nextStep(target, glm::vec2(currentTile.x + 1, currentTile.y), pathList)) {//RIGHT
+			pathList->push_back(currentTile);
+			return true;
+		}
+		else if(currentTile.x - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x - 1, currentTile.y), pathList)){//LEFT
+			pathList->push_back(currentTile);
+			return true;
+		}
+		//FORCE ALTERNATIVE / WALL PROTOCOL
+	}
+
+	//CHECK Y AXIS
+	if (target.y > currentTile.y && currentTile.y + 1 < arena.at(0).size() && nextStep(target, glm::vec2(currentTile.x, currentTile.y + 1), pathList)) {//DOWN
+
+		pathList->push_back(currentTile);
+		return true;
+
+	}else if (currentTile.y - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x, currentTile.y - 1), pathList)) {//UP
+
+		pathList->push_back(currentTile);
+		return true;
+
+	}
+	//FORCE ALTERNATIVE / WALL PROTOCOL
+	
+	return false;
 }

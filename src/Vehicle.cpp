@@ -38,7 +38,7 @@ void Vehicle::updatePositionAndDirection() {
 	position = body->getPosition();
 	mat4 modelMatrix = body->getModelMatrix();
 	mat4 rotMatrix = { modelMatrix[0], modelMatrix[1], modelMatrix[2], vec4(0.f, 0.f, 0.f, 1.f) };
-	
+	currentTile = glm::vec2(-1,-1);
 	direction = normalize(vec3(rotMatrix * vec4(0.f, 0.f, 1.f, 1.0f)));	
 }
 
