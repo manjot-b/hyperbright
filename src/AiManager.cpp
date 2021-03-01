@@ -20,6 +20,7 @@ void AiManager::makeMoves() {
 		else {
 			if (loadedAi.at(i)->vehicle->currentTile.x != -1) {
 				generatePath(loadedAi.at(i));
+				std::cout<<loadedAi.at(i)->path.size()<<std::endl;
 			}
 		}
 	}
@@ -38,7 +39,7 @@ void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 	std::vector<glm::vec2> pathList;
 	glm::vec2 currentTile = ai->vehicle->currentTile;
 	glm::vec2 target = ai->targetTile;
-	std::shared_ptr<std::vector<glm::vec2>> pathListPtr = std::make_shared<std::vector<glm::vec2>>(pathList);
+	//std::shared_ptr<std::vector<glm::vec2>> pathListPtr = std::make_shared<std::vector<glm::vec2>>(pathList);
 
 
 	std::cout << currentTile.x << " " << currentTile.y << std::endl;
@@ -47,13 +48,13 @@ void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 	}
 
 	if (target.x != currentTile.x) {//CHECK X AXIS
-		if (target.x > currentTile.x && currentTile.x + 1 < arena.size() && nextStep(target, glm::vec2(currentTile.x + 1, currentTile.y), pathListPtr)) {//RIGHT
-			ai->path = pathList;
+		if (target.x > currentTile.x && currentTile.x + 1 < arena.size() && nextStep(target, glm::vec2(currentTile.x + 1, currentTile.y), ai->path)) {//RIGHT
+			//ai->path = pathList;
 			ai->state = HASTARGET;
 			return;
 		}
-		else if (currentTile.x - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x - 1, currentTile.y), pathListPtr)) {//LEFT
-			ai->path = pathList;
+		else if (currentTile.x - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x - 1, currentTile.y), ai->path)) {//LEFT
+			//ai->path = pathList;
 			ai->state = HASTARGET;
 			return;
 		}
@@ -61,16 +62,16 @@ void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 	}
 
 	//CHECK Y AXIS
-	if (target.y > currentTile.y && currentTile.y + 1 < arena.at(0).size() && nextStep(target, glm::vec2(currentTile.x, currentTile.y + 1), pathListPtr)) {//DOWN
+	if (target.y > currentTile.y && currentTile.y + 1 < arena.at(0).size() && nextStep(target, glm::vec2(currentTile.x, currentTile.y + 1), ai->path)) {//DOWN
 
-		ai->path = pathList;
+		//ai->path = pathList;
 		ai->state = HASTARGET;
 		return;
 
 	}
-	else if (currentTile.y - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x, currentTile.y - 1), pathListPtr)) {//UP
+	else if (currentTile.y - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x, currentTile.y - 1), ai->path)) {//UP
 
-		ai->path = pathList;
+		//ai->path = pathList;
 		ai->state = HASTARGET;
 		return;
 
@@ -81,31 +82,31 @@ void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 //////////////////////////////////////////////////////////////////
 //DECIDE WHERE TO GO NEXT
 glm::vec2 AiManager::generateTarget() {
-	return glm::vec2(20, 20);//ARBITRARY FOR TESTING
+
+	return glm::vec2(20, 45);//ARBITRARY FOR TESTING
 }
 
 //////////////////////////////////////////////////////////////////
 //DECIDE NEXT TILE TO GO TO IN PATH
-bool AiManager::nextStep(glm::vec2 target, glm::vec2 currentTile, std::shared_ptr<std::vector<glm::vec2>> pathList) {
-	
+bool AiManager::nextStep(glm::vec2 target, glm::vec2 currentTile, std::vector<glm::vec2> &pathList) {
 	std::cout << currentTile.x << " " << currentTile.y << std::endl;
 	if (arena[currentTile.x][currentTile.y]) {//BASE CASE 1 WALL
 		return false;
 	}
 	
 	if (target == currentTile) {//BASE CASE 2 TARGET FOUND
-		pathList->push_back(target);
+		pathList.push_back(target);
 		return true;
 	}
 
 
 	if (target.x!=currentTile.x) {//CHECK X AXIS
 		if (target.x > currentTile.x && currentTile.x + 1 < arena.size() && nextStep(target, glm::vec2(currentTile.x + 1, currentTile.y), pathList)) {//RIGHT
-			pathList->push_back(currentTile);
+			pathList.push_back(currentTile);
 			return true;
 		}
 		else if(currentTile.x - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x - 1, currentTile.y), pathList)){//LEFT
-			pathList->push_back(currentTile);
+			pathList.push_back(currentTile);
 			return true;
 		}
 		//FORCE ALTERNATIVE / WALL PROTOCOL
@@ -114,12 +115,12 @@ bool AiManager::nextStep(glm::vec2 target, glm::vec2 currentTile, std::shared_pt
 	//CHECK Y AXIS
 	if (target.y > currentTile.y && currentTile.y + 1 < arena.at(0).size() && nextStep(target, glm::vec2(currentTile.x, currentTile.y + 1), pathList)) {//DOWN
 
-		pathList->push_back(currentTile);
+		pathList.push_back(currentTile);
 		return true;
 
 	}else if (currentTile.y - 1 >= 0 && nextStep(target, glm::vec2(currentTile.x, currentTile.y - 1), pathList)) {//UP
 
-		pathList->push_back(currentTile);
+		pathList.push_back(currentTile);
 		return true;
 
 	}

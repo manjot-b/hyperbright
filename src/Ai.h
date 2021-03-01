@@ -17,9 +17,8 @@ public:
 	glm::vec2 targetTilePosition;
 	std::shared_ptr<Vehicle> vehicle;
 private:
-	std::vector<glm::vec2> pathList;
 	std::shared_ptr<Arena> arena;
 
 	//Might change to indicate which direction to turn
-	bool lookingAtTarget();//Retruns true if pointing in the direction of the targetTile
+	float lookingAtTarget();//Retruns true if pointing in the direction of the targetTile
 };

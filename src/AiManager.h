@@ -18,5 +18,6 @@ private:
 
 	void generatePath(std::shared_ptr<Ai> ai);
 	glm::vec2 generateTarget();
-	bool nextStep(glm::vec2 target, glm::vec2 currentTile, std::shared_ptr<std::vector<glm::vec2>> pathList);
+	//bool nextStep(glm::vec2 target, glm::vec2 currentTile, std::shared_ptr<std::vector<glm::vec2>> pathList);
+	bool nextStep(glm::vec2 target, glm::vec2 currentTile, std::vector<glm::vec2> &pathList);
 };
