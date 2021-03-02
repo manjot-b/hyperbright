@@ -5,9 +5,9 @@
 
 #include <iostream>
 #include <filesystem>
+#include <FTGL/ftgl.h>
 
-#include "FontTest.h"
-
+FTGLPixmapFont font("c:/windows/fonts/arial.ttf");
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
 * not be available until GLAD is initialized.
@@ -44,7 +44,7 @@ void Renderer::initWindow()
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 	window = glfwCreateWindow(width, height, "OpenGL Example", nullptr, nullptr);
 	if (!window)
@@ -86,7 +86,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	devUI: An imgui window.
 */
 
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, bool paused, bool index)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -105,7 +105,33 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	glUseProgram(0);
 
 	devUI.render();
-	ftglTest::test();
 
+	/*
+	if (font.Error()) {
+		std::cerr << "Fail to load font" << std::endl;
+	}
+	else {
+		std::cout << "Font Loaded" << std::endl;
+	} */
+
+	
+	if (paused) {
+		if (index == 0) {
+			glPushAttrib(GL_ALL_ATTRIB_BITS);
+			font.FaceSize(70);
+			font.Render("Resume", -1, FTPoint(500, 500, 0));
+			font.FaceSize(50);
+			font.Render("Quit", -1, FTPoint(500, 400, 0));
+			glPopAttrib();
+		}
+		else {
+			glPushAttrib(GL_ALL_ATTRIB_BITS);
+			font.FaceSize(50);
+			font.Render("Resume", -1, FTPoint(500, 500, 0));
+			font.FaceSize(70);
+			font.Render("Quit", -1, FTPoint(500, 400, 0));
+			glPopAttrib();
+		}
+	}
 	glfwSwapBuffers(window);
 }

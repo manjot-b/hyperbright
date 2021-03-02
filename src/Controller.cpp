@@ -3,7 +3,7 @@
 #include <iostream>
 
 Controller::Controller(GLFWwindow* _window, Camera& _camera, std::shared_ptr<Vehicle>& _playerVehicle) :
-	window(_window), camera(_camera), playerVehicle(_playerVehicle), isCursorShowing(false), manualCamera(false)
+	window(_window), camera(_camera), playerVehicle(_playerVehicle), isCursorShowing(false), manualCamera(false), paused(false), index(0)
 
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
@@ -31,106 +31,117 @@ void Controller::processInput(float deltaSec)
 {
 	float rotationSpeed = glm::radians(135.0f) * deltaSec;
 	float scaleSpeed = 1.0f + 1.0f * deltaSec;
-
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		camera.processKeyboard(Camera::Movement::RIGHT, deltaSec);
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		camera.processKeyboard(Camera::Movement::LEFT, deltaSec);
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		camera.processKeyboard(Camera::Movement::UP, deltaSec);
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		camera.processKeyboard(Camera::Movement::DOWN, deltaSec);
-	}
-
-	//playerVehicle->resetControls();
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-	{
-		if (!upPressed)
+	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
+	if (controller->paused == false) {
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			std::cout << "Up key PRESSED" << std::endl;
-			playerVehicle->accelerateForward();
-			upPressed = true;
+			camera.processKeyboard(Camera::Movement::RIGHT, deltaSec);
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE)
-	{
-		if (upPressed)
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			std::cout << "Up key RELEASED" << std::endl;
-			playerVehicle->stopForward();
-			upPressed = false;
+			camera.processKeyboard(Camera::Movement::LEFT, deltaSec);
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-	{
-		if (!downPressed)
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
-			std::cout << "Down key PRESSED" << std::endl;
-			playerVehicle->accelerateReverse();
-			downPressed = true;
+			camera.processKeyboard(Camera::Movement::UP, deltaSec);
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)
-	{
-		if (downPressed)
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
-			std::cout << "Down key RELEASED" << std::endl;
-			playerVehicle->stopReverse();
-			downPressed = false;
+			camera.processKeyboard(Camera::Movement::DOWN, deltaSec);
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-	{
-		if (!leftPressed)
+		//playerVehicle->resetControls();
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 		{
-			std::cout << "Left key PRESSED" << std::endl;
-			playerVehicle->turnLeft();
-			leftPressed = true;
+			if (!upPressed)
+			{
+				std::cout << "Up key PRESSED" << std::endl;
+				playerVehicle->accelerateForward();
+				upPressed = true;
+			}
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
-	{
-		if (leftPressed)
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE)
 		{
-			std::cout << "Left key RELEASED" << std::endl;
-			playerVehicle->stopLeft();
-			leftPressed = false;
+			if (upPressed)
+			{
+				std::cout << "Up key RELEASED" << std::endl;
+				playerVehicle->stopForward();
+				upPressed = false;
+			}
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-	{
-		if (!rightPressed)
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
-			std::cout << "Right key PRESSED" << std::endl;
-			playerVehicle->turnRight();
-			rightPressed = true;
+			if (!downPressed)
+			{
+				std::cout << "Down key PRESSED" << std::endl;
+				playerVehicle->accelerateReverse();
+				downPressed = true;
+			}
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
-	{
-		if (rightPressed)
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)
 		{
-			std::cout << "Right key RELEASED" << std::endl;
-			playerVehicle->stopRight();
-			rightPressed = false;
+			if (downPressed)
+			{
+				std::cout << "Down key RELEASED" << std::endl;
+				playerVehicle->stopReverse();
+				downPressed = false;
+			}
 		}
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		{
+			if (!leftPressed)
+			{
+				std::cout << "Left key PRESSED" << std::endl;
+				playerVehicle->turnLeft();
+				leftPressed = true;
+			}
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
+		{
+			if (leftPressed)
+			{
+				std::cout << "Left key RELEASED" << std::endl;
+				playerVehicle->stopLeft();
+				leftPressed = false;
+			}
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		{
+			if (!rightPressed)
+			{
+				std::cout << "Right key PRESSED" << std::endl;
+				playerVehicle->turnRight();
+				rightPressed = true;
+			}
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
+		{
+			if (rightPressed)
+			{
+				std::cout << "Right key RELEASED" << std::endl;
+				playerVehicle->stopRight();
+				rightPressed = false;
+			}
+		}
+	} else {
+		playerVehicle->stopLeft();
+		playerVehicle->stopRight();
+		playerVehicle->stopForward();
+		playerVehicle->stopReverse();
+		upPressed = false;
+		downPressed = false;
+		leftPressed = false;
+		rightPressed = false;
 	}
 }
 
@@ -138,23 +149,55 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (action == GLFW_PRESS)
+	if (action == GLFW_PRESS && controller->paused == false)
 	{
 		switch (key)
 		{
-		case GLFW_KEY_ESCAPE:
-			controller->setWindowShouldClose(true);
-			break;
-
 		case GLFW_KEY_SPACE:
 			if (mods & GLFW_MOD_CONTROL)
 			{
 				controller->toggleCursor();
 			}
 			break;
+
 		case GLFW_KEY_C:
 			controller->manualCamera = !controller->manualCamera;
 			std::cout << "Switch to manual camer." << std::endl;
+			break;
+
+		case GLFW_KEY_ESCAPE:
+			controller->paused = !controller->paused;
+			break;
+		}
+
+	}
+	else if (action == GLFW_PRESS && controller->paused == true) {
+		switch (key) {
+			case GLFW_KEY_UP:
+			if (controller->index == 0) {
+				controller->index = 1;
+			}
+			else {
+				controller->index--;
+			}
+			break;
+
+			case GLFW_KEY_DOWN:
+			if (controller->index == 1) {
+				controller->index = 0;
+			}
+			else {
+				controller->index++;
+			}
+			break;
+
+			case GLFW_KEY_ENTER:
+			if (controller->index == 1) {
+				controller->setWindowShouldClose(true);
+			}
+			else {
+				controller->paused = !controller->paused;
+			}
 			break;
 		}
 	}

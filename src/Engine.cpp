@@ -13,7 +13,6 @@
 #define NOINPUT 0
 #define ENDGAME 2
 
-
 Engine::Engine() :
 	camera(), renderer(camera),
 	deltaSec(0.0f), rotate(0), scale(1),
@@ -131,6 +130,10 @@ void Engine::run()
 			deltaSec = currentFrame - lastFrame;
 		}
 		lastFrame = currentFrame;
+
+		if (controller.isPaused()) {
+			deltaSec = 0.f;
+		}
 		devUI.update(deltaSec);
 
 		// controller 
@@ -149,12 +152,10 @@ void Engine::run()
 		}
 
 		// render the updated position of all models and ImGui
-		renderer.render(renderables, devUI);
+		renderer.render(renderables, devUI, controller.isPaused(), controller.getIndex());
 
 		glfwPollEvents();
 	}
-
-	//runMenu();
 	return;
 }
 

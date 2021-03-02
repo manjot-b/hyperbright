@@ -9,5 +9,5 @@
  - Camera's point of interest (POI) follows the mouse automatically. 
  - Mouse Scroll to zoom in and out
  - CTRL + SPACE toggles the cursor so you may manage the UI
- - Escape to exit application
  - Camera initially follows the dynamic object. Press C to switch to manual control.
+ - Escape to open an menu, use arrow keys and enter to select.
