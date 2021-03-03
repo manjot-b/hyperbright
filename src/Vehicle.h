@@ -29,7 +29,7 @@ public:
 	const char* getId() const { return id.c_str(); }
 	VehicleController getController() { return ctrl; }
 	const glm::vec4& getColor() const { return color; }
-	glm::vec3 getForward() const { return position + 2.f*direction; }
+	glm::vec3 getForward() const { return position + direction; }
 	const glm::vec3& getPosition() const { return position; }
 	glm::quat getOrientation() const;
 

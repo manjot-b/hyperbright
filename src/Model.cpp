@@ -33,7 +33,7 @@ Model::Model(const std::string& objPath,
 	{
 		for (auto& mesh : meshes)
 		{
-			mesh->setInstanceColors(*m_instanceColors);
+			mesh->setInstanceColors(*m_instanceColors); 
 		}
 	}
 
@@ -133,9 +133,9 @@ void Model::update()
 	m_position = modelMatrix * glm::vec4(m_position, 1.f);
 
 	// Reset transformation values
-	m_translation = glm::vec3(0);
-	m_rotate = glm::vec3(0);
-	m_scale = glm::vec3(1);
+	//m_translation = glm::vec3(0);
+	//m_rotate = glm::vec3(0);
+	//m_scale = glm::vec3(1);
 }
 
 void Model::translate(const glm::vec3& _translate)
