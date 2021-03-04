@@ -29,13 +29,10 @@ bool Arena::Tile::hasWall() const { return _hasWall; }
 */
 //bool AiArenaRepresentation;
 
-Arena::Arena(
-	std::shared_ptr<Model> wall,
-	size_t rows,
-	size_t cols) :
+Arena::Arena(size_t rows, size_t cols) :
 	tileModelMatrices( std::make_shared<std::vector<glm::mat4>>( rows * cols, glm::mat4(1.f) )),
 	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, glm::vec4(.3f, .3f, .3f, 1.f)) ),
-	tileGrid(rows), wall(wall), tileCollisionRadius(0.5f)
+	tileGrid(rows), tileCollisionRadius(0.5f)
 {
 
 	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr, std::nullopt);
@@ -65,7 +62,6 @@ Arena::Arena(
 
 	tileWidth = instancedTile->getBoundingBox().width;
 	tileBorderWidth = (tileBox.width - instancedTile->getBoundingBox().width) * 0.5f;	// width of only one edge.
-	wallWidth = wall->getBoundingBox().width;
 }
 
 Arena::~Arena() {}
@@ -115,6 +111,10 @@ void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
 
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
 {
+	walls.push_back(std::make_unique<Model>("rsc/models/wall.obj", "wall" + walls.size(), nullptr, glm::vec4(.2f, .2f, .2f, 1.f)));
+	auto& wall = walls.back();
+	float wallWidth = wall->getBoundingBox().width;
+
 	glm::vec2 scale = glm::vec2(
 		(width * tileWidth + 2 * width * tileBorderWidth),
 		(length * tileWidth + 2 * length * tileBorderWidth)
@@ -138,13 +138,7 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 	glm::vec3 trans(targetPos.x - currentPos.x, yTrans, targetPos.y - currentPos.y);
 
 	wall->translate(trans);
-
 	wall->update();
-	walls.push_back(std::make_shared<Model>(*wall));
-
-	// Reset scale and translation for other walls that need to be added.
-	wall->setModelMatrix(glm::mat4(1.f));
-	wall->setPosition(glm::vec3(.0f, .0f, .0f));
 
 	for (unsigned int r = row; r < row + length; r++)
 	{

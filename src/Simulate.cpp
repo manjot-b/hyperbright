@@ -73,7 +73,7 @@ Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_
 
 	for (const auto& wall : arena.getWalls())
 	{
-		cookMeshes(wall, true);
+		cookMeshes(*wall, true);
 	}
 }
 
@@ -537,9 +537,9 @@ void Simulate::checkVehiclesOverTile(Arena& arena, const std::vector<std::shared
 	}
 }
 
-void Simulate::cookMeshes(const std::shared_ptr<Model>& model, bool useModelMatrix)
+void Simulate::cookMeshes(const Model& model, bool useModelMatrix)
 {
-	const std::vector<std::unique_ptr<Mesh>>& meshes = model->getMeshes();
+	const std::vector<std::unique_ptr<Mesh>>& meshes = model.getMeshes();
 	for (auto& mesh : meshes)
 	{
 		std::vector<PxVec3> pxVertices;
@@ -552,7 +552,7 @@ void Simulate::cookMeshes(const std::shared_ptr<Model>& model, bool useModelMatr
 			glm::vec4 mpos = glm::vec4(meshVerts[i].position, 1.f);
 			if (useModelMatrix)
 			{
-				mpos = mpos * model->getModelMatrix();
+				mpos = mpos * model.getModelMatrix();
 			}
 			PxVec3 pos;
 			std::memcpy(&pos, &mpos, sizeof(PxVec3));
@@ -580,7 +580,7 @@ void Simulate::cookMeshes(const std::shared_ptr<Model>& model, bool useModelMatr
 		PxTriangleMesh* triMesh = gPhysics->createTriangleMesh(readBuffer);
 
 		PxVec3 pos;
-		std::memcpy(&pos, &(model->getPosition()), sizeof(PxVec3));
+		std::memcpy(&pos, &(model.getPosition()), sizeof(PxVec3));
 		PxTransform trans(pos);
 
 		PxRigidStatic* rigidStat = gPhysics->createRigidStatic(PxTransform(pos));

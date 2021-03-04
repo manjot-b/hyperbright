@@ -35,7 +35,7 @@ public:
 	~Simulate();
 	void stepPhysics(float deltaSec);
 	void setModelPose(std::shared_ptr<IPhysical>& model);
-	void cookMeshes(const std::shared_ptr<Model>& mesh, bool useModelMatrix = false);
+	void cookMeshes(const Model& mesh, bool useModelMatrix = false);
 	void checkVehiclesOverTile(Arena& arena, const std::vector<std::shared_ptr<Vehicle>>& vehicles);
 	void setAudioPlayer(std::shared_ptr<AudioPlayer> audioPlayer);
 	void cleanupPhysics();
