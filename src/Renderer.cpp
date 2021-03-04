@@ -25,7 +25,7 @@ Renderer::Renderer(const Camera& camera) : camera(camera)
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 
-	shader->setUniform3fv("light", glm::vec3(10.f, 10.f, 0.f));
+	shader->setUniform3fv("light", glm::vec3(0.f, 10.f, 0.f));
 	shader->setUniform3fv("pointOfView", camera.getPosition());
 	shader->setUniform1f("d", 1.f);
 
