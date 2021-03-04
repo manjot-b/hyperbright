@@ -36,7 +36,7 @@ Arena::Arena(size_t rows, size_t cols) :
 {
 
 	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr, std::nullopt);
-	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f));
+	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr, std::nullopt);
 
 	const BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
@@ -111,7 +111,7 @@ void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
 
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
 {
-	walls.push_back(std::make_unique<Model>("rsc/models/wall.obj", "wall" + walls.size(), nullptr, glm::vec4(.2f, .2f, .2f, 1.f)));
+	walls.push_back(std::make_unique<Model>("rsc/models/wall.obj", "walal" + walls.size(), nullptr, std::nullopt));
 	auto& wall = walls.back();
 	float wallWidth = wall->getBoundingBox().width;
 
