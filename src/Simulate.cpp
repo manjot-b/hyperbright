@@ -533,6 +533,9 @@ void Simulate::checkVehiclesOverTile(Arena& arena, const std::vector<std::shared
 		{
 			vehicle->currentTile = tileCoords;
 			arena.setTileColor(tileCoords, vehicle->getColor());
+			
+			
+			glm::vec3 worldCoords = arena.getTilePos(tileCoords);
 		}
 	}
 }

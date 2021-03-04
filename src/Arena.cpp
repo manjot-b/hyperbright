@@ -113,6 +113,11 @@ void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
 }
 
+glm::vec3 Arena::getTilePos(const glm::vec2& coords) const
+{
+	return tileGrid[coords.x][coords.y].modelMatrix[3];
+}
+
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
 {
 	glm::vec2 scale = glm::vec2(
