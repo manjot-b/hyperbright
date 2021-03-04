@@ -20,7 +20,7 @@ void AiManager::makeMoves() {
 		else {
 			if (loadedAi.at(i)->vehicle->currentTile.x != -1) {
 				generatePath(loadedAi.at(i));
-				std::cout<<loadedAi.at(i)->path.size()<<std::endl;
+				//std::cout<<loadedAi.at(i)->path.size()<<std::endl;
 			}
 		}
 	}
@@ -42,7 +42,7 @@ void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 	//std::shared_ptr<std::vector<glm::vec2>> pathListPtr = std::make_shared<std::vector<glm::vec2>>(pathList);
 
 
-	std::cout << currentTile.x << " " << currentTile.y << std::endl;
+	//std::cout << currentTile.x << " " << currentTile.y << std::endl;
 	if (currentTile.x < 0 || currentTile.y < 0) {//NEED FOR INITAL COLLISION COMING UP AS NEGATIVE
 		return;
 	}
@@ -89,7 +89,7 @@ glm::vec2 AiManager::generateTarget() {
 //////////////////////////////////////////////////////////////////
 //DECIDE NEXT TILE TO GO TO IN PATH
 bool AiManager::nextStep(glm::vec2 target, glm::vec2 currentTile, std::vector<glm::vec2> &pathList) {
-	std::cout << currentTile.x << " " << currentTile.y << std::endl;
+	//std::cout << currentTile.x << " " << currentTile.y << std::endl;
 	if (arena[currentTile.x][currentTile.y]) {//BASE CASE 1 WALL
 		return false;
 	}

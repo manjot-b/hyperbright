@@ -18,8 +18,8 @@ void Ai::aiInput() {
 		state = NOTARGET;
 		return;
 	}
-	std::cout << "Size:"<< path.size() << std::endl;
-	std::cout << "Current path:" << path.back().x << " " << path.back().y << std::endl;
+	//std::cout << "Size:"<< path.size() << std::endl;
+	//std::cout << "Current path:" << path.back().x << " " << path.back().y << std::endl;
 	if (path.size() > 0) {
 		if (vehicle->currentTile == path.back()) {
 			std::cout << "NEXT TILE REACHED" << std::endl;
