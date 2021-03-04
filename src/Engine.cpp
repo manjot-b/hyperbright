@@ -7,11 +7,15 @@
 #include "AudioPlayer.h"
 #include "Controller.h"
 #include "DevUI.h"
+#include <FTGL/ftgl.h>
 #include "Pickup.h"
 
 #define STARTGAME 1
 #define NOINPUT 0
 #define ENDGAME 2
+#define LOADOUT 3
+
+FTGLPixmapFont menuFont("rsc/fonts/ROGFonts-Regular.otf");
 
 Engine::Engine() :
 	camera(), renderer(camera),
@@ -140,8 +144,10 @@ void Engine::run()
 		controller.processInput(deltaSec);
 
 		// run a frame of simulation
-		simulator.stepPhysics(fpsLimit);
-		simulator.checkVehiclesOverTile(*arena, vehicles);
+		if (!controller.isPaused()) {
+			simulator.stepPhysics(fpsLimit);
+			simulator.checkVehiclesOverTile(*arena, vehicles);
+		}
 		
 
 		// set camera to player vehicles position
@@ -167,16 +173,17 @@ Responsible for starting and ending the game.
 void Engine::runMenu() {
 
 	//***** Initialize anything needed for the main menu HERE *****
-
 	int selection = NOINPUT;
 	while (1) {
 		selection = menuInput();
-		// ***** RENDER MENU HERE *****
-
 		if (selection == STARTGAME) {//START GAME
-			runGame();
+			//runGame();
+			break;
 		}
 		else if (selection == ENDGAME) {//END GAME
+			break;
+		}
+		else if (selection == LOADOUT) {//LOADOUT
 			break;
 		}
 	}

@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <FTGL/ftgl.h>
 
-FTGLPixmapFont font("c:/windows/fonts/arial.ttf");
+FTGLPixmapFont font("rsc/fonts/ROGFonts-Regular.otf");
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
 * not be available until GLAD is initialized.
@@ -118,18 +118,24 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	if (paused) {
 		if (index == 0) {
 			glPushAttrib(GL_ALL_ATTRIB_BITS);
+			glPixelTransferf(GL_RED_BIAS, 0);
+			glPixelTransferf(GL_GREEN_BIAS, -1);
+			glPixelTransferf(GL_BLUE_BIAS, -1);
 			font.FaceSize(70);
-			font.Render("Resume", -1, FTPoint(500, 500, 0));
+			font.Render("Resume", -1, FTPoint(425, 400, 0));//(window size / 2) - ((string length * FontSize) / 4) + (Fontsize / 2)
 			font.FaceSize(50);
-			font.Render("Quit", -1, FTPoint(500, 400, 0));
+			font.Render("Quit", -1, FTPoint(525, 300, 0));
 			glPopAttrib();
 		}
 		else {
 			glPushAttrib(GL_ALL_ATTRIB_BITS);
+			glPixelTransferf(GL_RED_BIAS, 0);
+			glPixelTransferf(GL_GREEN_BIAS, -1);
+			glPixelTransferf(GL_BLUE_BIAS, -1);
 			font.FaceSize(50);
-			font.Render("Resume", -1, FTPoint(500, 500, 0));
+			font.Render("Resume", -1, FTPoint(475, 400, 0));
 			font.FaceSize(70);
-			font.Render("Quit", -1, FTPoint(500, 400, 0));
+			font.Render("Quit", -1, FTPoint(495, 300, 0));
 			glPopAttrib();
 		}
 	}
