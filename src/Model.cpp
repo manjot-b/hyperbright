@@ -12,12 +12,11 @@
 Model::Model(const std::string& objPath,
 	const std::string& id,
 	std::shared_ptr<Texture> texture,
-	std::optional<glm::vec4> color,
 	InstanceModelMatricesPtr instanceModelMatrices,
 	InstanceColorsPtr instanceColors,
 	bool fitToViewPort) :
 	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), id(id), m_texture(texture),
-	m_color(color), m_position(.0f), m_instanceModelMatrices(instanceModelMatrices), m_instanceColors(instanceColors)
+	m_position(.0f), m_instanceModelMatrices(instanceModelMatrices), m_instanceColors(instanceColors)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(objPath,
@@ -83,8 +82,6 @@ void Model::render(const Shader& shader) const
 	shader.setUniform1i("hasTexture", hasTexture);
 	shader.setUniform1i("isInstance", isInstance);
 	shader.setUniform1i("isInstanceColor", isInstanceColor);
-	// Set to red if color should have a value but doesn't.
-	//shader.setUniform4fv("vertexColor", m_color.value_or(glm::vec4(1.f, 0.f, 0.f, 1.f)));
 	
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
@@ -95,7 +92,7 @@ void Model::render(const Shader& shader) const
 
 	for(auto &mesh : meshes)
 	{
-		shader.setUniform4fv("color", mesh->material.color);
+		shader.setUniform4fv("color", mesh->material.color);	// Not used if model has instanceColors
 		shader.setUniform1f("diffuseCoeff", mesh->material.diffuse);
 		shader.setUniform1f("specularCoeff", mesh->material.specular);
 		shader.setUniform1f("shininess", mesh->material.shininess);
@@ -222,11 +219,15 @@ const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const { return mesh
 
 const BoundingBox& Model::getBoundingBox() const { return boundingBox; }
 
-std::optional<glm::vec4> Model::getColor() const { return m_color;  }
-
 void Model::setModelMatrix(const glm::mat4& modelPose) { modelMatrix = modelPose; }
 
-void Model::setColor(const glm::vec4& color) { m_color = color; }
+void Model::setColor(const glm::vec4& color)
+{
+	for (auto& mesh : meshes)
+	{
+		mesh->material.color = color;
+	}
+}
 
 void Model::setPosition(const glm::vec3& position) { m_position = position; }
 

@@ -19,7 +19,6 @@ class Model : public Renderer::IRenderable
 		Model(const std::string& objPath,
 			const std::string& id,
 			std::shared_ptr<Texture> texture,
-			std::optional<glm::vec4> color,
 			InstanceModelMatricesPtr instanceModelMatrices = nullptr,
 			InstanceColorsPtr instanceColors = nullptr,
 			bool fitToViewPort = false);
@@ -40,7 +39,6 @@ class Model : public Renderer::IRenderable
 		void setPosition(const glm::vec3& position);
 		const glm::vec3& getPosition() const;
 		void setColor(const glm::vec4& color);
-		std::optional<glm::vec4> getColor() const;
 		const BoundingBox& getBoundingBox() const;
 		const std::string& getId() const { return id; };
 		void setInstanceModelMatrices(InstanceModelMatricesPtr instanceModelMatrices);
@@ -61,7 +59,6 @@ class Model : public Renderer::IRenderable
 		glm::vec3 m_scale;			// scale to apply to model
 		glm::vec3 m_translation;	// translation vector
 		glm::vec3 m_position;
-		std::optional<glm::vec4> m_color;	// Don't need to set if instancedColors is set.
 
 		std::shared_ptr<Texture> m_texture;
 

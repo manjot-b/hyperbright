@@ -24,14 +24,16 @@ class Mesh
 		
 		void setInstanceModelMatrices(const std::vector<glm::mat4>& instanceModelMatrices);
 		void setInstanceColors(const std::vector<glm::vec4>& instanceModelMatrices);
-		const std::vector<Vertex>& getVertices() const { return vertices; }
-		const std::vector<unsigned int>& getIndices() const { return indices; }
+		const std::vector<Vertex>& getVertices() const;
+		const std::vector<unsigned int>& getIndices() const;
+		const std::string& getName() const;
 
 	private:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		std::unique_ptr<VertexArray> vertexArray;
 		BoundingBox boundingBox;
+		std::string name;
 
 		void calcBoundingBox();
 };

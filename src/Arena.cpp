@@ -35,8 +35,8 @@ Arena::Arena(size_t rows, size_t cols) :
 	tileGrid(rows), tileCollisionRadius(0.5f)
 {
 
-	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr, std::nullopt);
-	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr, std::nullopt);
+	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr);
+	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr);
 
 	const BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
@@ -111,7 +111,7 @@ void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
 
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
 {
-	walls.push_back(std::make_unique<Model>("rsc/models/wall.obj", "walal" + walls.size(), nullptr, std::nullopt));
+	walls.push_back(std::make_unique<Model>("rsc/models/wall.obj", "walal" + walls.size(), nullptr));
 	auto& wall = walls.back();
 	float wallWidth = wall->getBoundingBox().width;
 

@@ -29,9 +29,19 @@ Vehicle::Vehicle(const std::string& _id, vec4 color, vec3 startPos, vec3 startDi
 		cout << "unknown vehicle name. see vehicle constructor" << endl;
 	}
 
-	body = std::make_unique<Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr, color);
-	wheelsFront = std::make_unique<Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr, vec4(.1f, .1f, .1f, 1));
-	wheelsRear = std::make_unique<Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr, vec4(.1f, .1f, .1f, 1));
+	body = std::make_unique<Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr);
+	for (auto& mesh : body->getMeshes())
+	{
+		// The name of the material is "body".
+		if (mesh->getName() == "body")
+		{
+			mesh->material.color = color;
+			break;
+		}
+	}
+
+	wheelsFront = std::make_unique<Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr);
+	wheelsRear = std::make_unique<Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr);
 }
 
 void Vehicle::updatePositionAndDirection() {

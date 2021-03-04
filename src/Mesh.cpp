@@ -58,8 +58,15 @@ void Mesh::extractDataFromMesh(const aiScene* scene, const aiMesh* mesh)
 
 	if (scene->HasMaterials())
 	{
-		float gamma = 1 / 2.2f;
 		const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+
+		// Each mesh should have 1 material, so set the name of the mesh to the name
+		// of the material.
+		aiString aiName;
+		mat->Get(AI_MATKEY_NAME, aiName);
+		name = std::string(aiName.C_Str());
+
+		float gamma = 1 / 2.2f;
 		aiColor3D diff;
 		mat->Get(AI_MATKEY_COLOR_DIFFUSE, diff);
 		std::memcpy(&(material.color), &diff, sizeof(aiColor3D));
@@ -138,3 +145,9 @@ void Mesh::setInstanceColors(const std::vector<glm::vec4>& instanceColors)
 {
 	vertexArray->setInstanceColors(instanceColors);
 }
+
+const std::vector<Vertex>& Mesh::getVertices() const { return vertices; }
+
+const std::vector<unsigned int>& Mesh::getIndices() const { return indices; }
+
+const std::string& Mesh::getName() const { return name; }
