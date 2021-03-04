@@ -87,7 +87,7 @@ void Arena::render(const Shader& shader) const
  * Does not check the y-axis, only x and z. This function also uses the predefined radius
  * as a tolerance.
 */
-glm::vec2 Arena::isOnTile(const glm::vec3& coords) const
+std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
 {
 	unsigned int rows = tileGrid.size();
 	unsigned int cols = tileGrid[0].size();
@@ -99,7 +99,7 @@ glm::vec2 Arena::isOnTile(const glm::vec3& coords) const
 	if (col < 0 || col > cols - 1 || row < 0 || row > rows - 1)
 	{
 		// Make sure the column and row are within the bounds.
-		return glm::vec2(-1, -1);
+		return std::nullopt;
 	}
 
 	// TO-DO:
@@ -111,6 +111,11 @@ glm::vec2 Arena::isOnTile(const glm::vec3& coords) const
 void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
 {
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
+}
+
+glm::vec3 Arena::getTilePos(const glm::vec2& coords) const
+{
+	return tileGrid[coords.x][coords.y].modelMatrix[3];
 }
 
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
