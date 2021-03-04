@@ -528,14 +528,14 @@ void Simulate::checkVehiclesOverTile(Arena& arena, const std::vector<std::shared
 {
 	for (const auto& vehicle : vehicles)
 	{
-		glm::vec2 tileCoords = arena.isOnTile(vehicle->getPosition());
-		if (tileCoords.x != -1)
+		std::optional<glm::vec2> tileCoords = arena.isOnTile(vehicle->getPosition());
+		if (tileCoords)
 		{
-			vehicle->currentTile = tileCoords;
-			arena.setTileColor(tileCoords, vehicle->getColor());
+			vehicle->currentTile = *tileCoords;
+			arena.setTileColor(*tileCoords, vehicle->getColor());
 			
 			
-			glm::vec3 worldCoords = arena.getTilePos(tileCoords);
+			glm::vec3 worldCoords = arena.getTilePos(*tileCoords);
 		}
 	}
 }
