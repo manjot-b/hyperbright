@@ -91,7 +91,7 @@ void Engine::initEntities()
 	renderables.push_back(triggerVolume);*/
 
 	bool copyModel = true;
-	std::shared_ptr<Model> wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
+	std::shared_ptr<Model> wall = loadModel("rsc/models/wall.obj", false, "wall", face, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
 	
 	int arena_size = 75;
 	//bool aiArenaRepresentation[75][75];

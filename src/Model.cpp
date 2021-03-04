@@ -57,6 +57,7 @@ Model::Model(const Model& model)
 	m_translation = model.m_translation;
 	m_color = model.m_color;
 	m_position = model.m_position;
+	m_texture = model.m_texture;
 
 	for (const auto& mesh : model.meshes)
 	{
@@ -76,7 +77,7 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
 	{
 		// aiNode contains indicies to index the objects in aiScene.
 		const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(std::make_unique<Mesh>(mesh, m_instanceModelMatrices));
+		meshes.push_back(std::make_unique<Mesh>(scene, mesh, m_instanceModelMatrices));
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -103,7 +104,8 @@ void Model::render(const Shader& shader) const
 	shader.setUniform1i("isInstance", isInstance);
 	shader.setUniform1i("isInstanceColor", isInstanceColor);
 	// Set to red if color should have a value but doesn't.
-	shader.setUniform4fv("vertexColor", m_color.value_or(glm::vec4(1.f, 0.f, 0.f, 1.f)));
+	//shader.setUniform4fv("vertexColor", m_color.value_or(glm::vec4(1.f, 0.f, 0.f, 1.f)));
+	
 	shader.setUniformMatrix4fv("model", modelMatrix);
 
 	if (m_texture)
@@ -113,10 +115,16 @@ void Model::render(const Shader& shader) const
 
 	for(auto &mesh : meshes)
 	{
+		shader.setUniform4fv("color", mesh->material.color);
+		shader.setUniform1f("diffuseCoeff", mesh->material.diffuse);
+		shader.setUniform1f("specularCoeff", mesh->material.specular);
+		shader.setUniform1f("shininess", mesh->material.shininess);
+
 		unsigned int count = 0;
 		if (m_instanceModelMatrices)
 			count = m_instanceModelMatrices->size();
-		mesh->draw(count);
+
+		mesh->render(count);
 	}
 }
 

@@ -2,9 +2,9 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh(const aiMesh* mesh, const InstanceModelMatricesPtr& instancedModelMatrices)
+Mesh::Mesh(const aiScene* scene, const aiMesh* mesh, const InstanceModelMatricesPtr& instancedModelMatrices)
 {
-	extractDataFromMesh(mesh);
+	extractDataFromMesh(scene, mesh);
 	if (instancedModelMatrices)
 		vertexArray = std::make_unique<VertexArray>(vertices, indices, *instancedModelMatrices);
 	else
@@ -22,6 +22,7 @@ Mesh::Mesh(const Mesh& mesh)
 	// GPU, which is generally not what we want.
 	vertexArray = std::make_unique<VertexArray>(vertices, indices);
 	boundingBox = mesh.boundingBox;
+	material = mesh.material;
 }
 
 Mesh::~Mesh() {}
@@ -29,7 +30,7 @@ Mesh::~Mesh() {}
 /**
  * Fills the buffer with the vertex data from the mesh.
  */
-void Mesh::extractDataFromMesh(const aiMesh* mesh)
+void Mesh::extractDataFromMesh(const aiScene* scene, const aiMesh* mesh)
 {
 	// First, extract all the vertex data, i.e. position, normal, etc.
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -66,7 +67,27 @@ void Mesh::extractDataFromMesh(const aiMesh* mesh)
 		{
 			indices.push_back(face.mIndices[j]);
 		}
-	}	
+	}
+
+	if (scene->HasMaterials())
+	{
+		float gamma = 1 / 2.2f;
+		const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+		aiColor3D diff;
+		mat->Get(AI_MATKEY_COLOR_DIFFUSE, diff);
+		std::memcpy(&(material.color), &diff, sizeof(aiColor3D));
+		material.color.r = glm::pow(material.color.r, gamma);
+		material.color.g = glm::pow(material.color.g, gamma);
+		material.color.b = glm::pow(material.color.b, gamma);
+		material.color.a = 1.f;
+
+		float shininess;
+		mat->Get(AI_MATKEY_SHININESS, shininess);
+		material.shininess = shininess < 1.f ? 1.f : shininess;
+
+		material.diffuse = 1.f;
+		material.specular = 1.f;
+	}
 }
 
 /*
@@ -74,7 +95,7 @@ void Mesh::extractDataFromMesh(const aiMesh* mesh)
  * draw the mesh. Otherwise, draw only a single mesh.
 */
 
-void Mesh::draw(unsigned int instanceCount) const
+void Mesh::render(unsigned int instanceCount) const
 {
 	vertexArray->bind();
 	if (instanceCount > 0)
