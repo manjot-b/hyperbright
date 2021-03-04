@@ -12,19 +12,6 @@ Mesh::Mesh(const aiScene* scene, const aiMesh* mesh, const InstanceModelMatrices
 	calcBoundingBox();
 }
 
-Mesh::Mesh(const Mesh& mesh)
-{
-	vertices = mesh.vertices;
-	indices = mesh.indices;
-
-	// Need to create a new vertex array so that we get new buffer id's.
-	// Otherwise two different VertexArrays could point to the same buffer on the
-	// GPU, which is generally not what we want.
-	vertexArray = std::make_unique<VertexArray>(vertices, indices);
-	boundingBox = mesh.boundingBox;
-	material = mesh.material;
-}
-
 Mesh::~Mesh() {}
 
 /**

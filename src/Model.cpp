@@ -45,26 +45,6 @@ Model::Model(const std::string& objPath,
 	}
 }
 
-/*
- * Deep copy the model.
- */
-Model::Model(const Model& model)
-{
-	boundingBox = model.boundingBox;
-	modelMatrix = model.modelMatrix;
-	m_rotate = model.m_rotate;
-	m_scale = model.m_scale;
-	m_translation = model.m_translation;
-	m_color = model.m_color;
-	m_position = model.m_position;
-	m_texture = model.m_texture;
-
-	for (const auto& mesh : model.meshes)
-	{
-		meshes.push_back(std::make_unique<Mesh>(*mesh));
-	}
-}
-
 Model::~Model() {}
 
 /**

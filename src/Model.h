@@ -23,7 +23,7 @@ class Model : public Renderer::IRenderable
 			InstanceModelMatricesPtr instanceModelMatrices = nullptr,
 			InstanceColorsPtr instanceColors = nullptr,
 			bool fitToViewPort = false);
-		Model(const Model& model);
+		Model(const Model& model) = delete;		// Multiple models may end up with same VAO.
 		~Model();
 
 		void render(const Shader& shader) const;

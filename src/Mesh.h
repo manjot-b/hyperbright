@@ -16,7 +16,7 @@ class Mesh
 		Material material;
 
 		Mesh(const aiScene* scene, const aiMesh* mesh, const InstanceModelMatricesPtr& instancedModelMatrices);
-		Mesh(const Mesh& mesh);
+		Mesh(const Mesh& mesh) = delete;	// Multiple meshes may end up with the same VAO.
 		~Mesh();
 		void render(unsigned int instanceCount) const;
 		void extractDataFromMesh(const aiScene* scene, const aiMesh* mesh);
