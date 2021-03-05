@@ -29,37 +29,6 @@ Engine::Engine() :
 
 Engine::~Engine() {}
 
-/*
- * Loads all models in rsc/models and stores them in a vector. Requires glad
- * to have loaded opengl function calls.
-*/
-std::shared_ptr<Model> Engine::loadModel(std::string ref,
-	bool inPhysx,
-	const char* name,
-	const std::shared_ptr<Texture>& texture,
-	const glm::vec4& color,
-	bool copyModel)
-{
-	std::cout << "Loading " << ref << "..." << std::flush;
-	std::shared_ptr<Model> model = std::make_unique<Model>(ref, name, texture, color);
-
-	// Don't store the model in the list if it just meant to be copied from.
-	/*if (!copyModel)
-	{
-		if (inPhysx)
-		{
-			physicsModels.push_back(model);
-		}
-		else
-		{
-			staticModels.push_back(model);
-		}
-	}*/
-
-	std::cout << "Loaded Entity.\n";
-	return model;
-}
-
 void Engine::setupAudioPlayer() {
 	audioPlayer = std::shared_ptr<AudioPlayer>(new AudioPlayer);
 }
@@ -89,13 +58,10 @@ void Engine::initEntities()
 
 	/*triggerVolume = loadModel("rsc/models/cube.obj", true, "trigger", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
 	renderables.push_back(triggerVolume);*/
-
-	bool copyModel = true;
-	std::shared_ptr<Model> wall = loadModel("rsc/models/wall.obj", false, "wall", nullptr, glm::vec4(0.2f, 0.2f, 0.2f, 0.f), copyModel);
 	
 	int arena_size = 75;
 	//bool aiArenaRepresentation[75][75];
-	arena = std::make_shared<Arena>(wall, arena_size, arena_size);
+	arena = std::make_shared<Arena>(arena_size, arena_size);
 	arena->addWall(0, 0, 2, 2);
 	arena->addWall(14, 5, 1, 7);
 	arena->addWall(4, 17, 5, 2);

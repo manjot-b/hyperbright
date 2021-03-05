@@ -29,9 +29,30 @@ Vehicle::Vehicle(const std::string& _id, vec4 color, vec3 startPos, vec3 startDi
 		cout << "unknown vehicle name. see vehicle constructor" << endl;
 	}
 
-	body = std::make_unique<Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr, color);
-	wheelsFront = std::make_unique<Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr, vec4(.1f, .1f, .1f, 1));
-	wheelsRear = std::make_unique<Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr, vec4(.1f, .1f, .1f, 1));
+	body = std::make_unique<Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr);
+	
+	unsigned int index = 0;
+	for (auto& mesh : body->getMeshes())
+	{
+		// The name of the material is "body".
+		if (mesh->getName() == "body")
+		{
+			mesh->material.color = color;
+		}
+		else if (mesh->getName() == "front_lights")
+		{
+			mesh->material.isEmission = true;
+		}
+		else if (mesh->getName() == "rear_lights")
+		{
+			brakeLightsIdx = index;
+		}
+
+		index++;
+	}
+
+	wheelsFront = std::make_unique<Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr);
+	wheelsRear = std::make_unique<Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr);
 }
 
 void Vehicle::updatePositionAndDirection() {
@@ -76,6 +97,10 @@ void Vehicle::accelerateForward()
 void Vehicle::accelerateReverse()
 {
 	ctrl.input[1] = 1;
+
+	// TO-DO: Implement this feature in braking instead. Currently the brake lights
+	// turn on even if the vehicle is reversing, not only braking.
+	body->getMeshes()[brakeLightsIdx]->material.isEmission = true;
 }
 
 void Vehicle::brake()
@@ -120,6 +145,7 @@ void Vehicle::stopForward()
 void Vehicle::stopReverse()
 {
 	ctrl.input[1] = 0;
+	body->getMeshes()[brakeLightsIdx]->material.isEmission = false;
 }
 
 void Vehicle::stopLeft()

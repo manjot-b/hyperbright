@@ -5,36 +5,35 @@
 #include <vector>
 #include <memory>
 
-#include "Vertex.h"
+#include "MeshUtils.h"
 #include "VertexArray.h"
 
 using InstanceModelMatricesPtr = std::shared_ptr<std::vector<glm::mat4>>;
 
-struct BoundingBox
-{
-	float x, y, z, width, height, depth;
-};
-
 class Mesh
 {
 	public:
-		Mesh(const aiMesh* mesh, const InstanceModelMatricesPtr& instancedModelMatrices);
-		Mesh(const Mesh& mesh);
+		Material material;
+
+		Mesh(const aiScene* scene, const aiMesh* mesh, const InstanceModelMatricesPtr& instancedModelMatrices);
+		Mesh(const Mesh& mesh) = delete;	// Multiple meshes may end up with the same VAO.
 		~Mesh();
-		void draw(unsigned int instanceCount) const;
-		void extractDataFromMesh(const aiMesh* mesh);
+		void render(unsigned int instanceCount) const;
+		void extractDataFromMesh(const aiScene* scene, const aiMesh* mesh);
 		const BoundingBox& getBoundingBox() const;
 		
 		void setInstanceModelMatrices(const std::vector<glm::mat4>& instanceModelMatrices);
 		void setInstanceColors(const std::vector<glm::vec4>& instanceModelMatrices);
-		const std::vector<Vertex>& getVertices() const { return vertices; }
-		const std::vector<unsigned int>& getIndices() const { return indices; }
+		const std::vector<Vertex>& getVertices() const;
+		const std::vector<unsigned int>& getIndices() const;
+		const std::string& getName() const;
 
 	private:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		std::unique_ptr<VertexArray> vertexArray;
 		BoundingBox boundingBox;
+		std::string name;
 
 		void calcBoundingBox();
 };

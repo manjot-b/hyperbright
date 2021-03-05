@@ -60,13 +60,6 @@ private:
 	void runMenu();
 	int menuInput();
 	void runGame();
-  
-	std::shared_ptr<Model> loadModel(std::string ref,
-		bool inPhysx,
-		const char* name,
-		const std::shared_ptr<Texture>& texture,
-		const glm::vec4& color = glm::vec4(0.3, 0.3, 0.3, 0),
-		bool copyModel = false);
 	void loadTextures();
 	void initEntities();
 };

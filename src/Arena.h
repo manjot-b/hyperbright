@@ -13,12 +13,9 @@
 class Arena : public Renderer::IRenderable
 {
 public:
-	using WallList = std::vector<std::shared_ptr<Model>>;
+	using WallList = std::vector<std::unique_ptr<Model>>;
 
-	Arena(
-		std::shared_ptr<Model> wall,
-		size_t length,
-		size_t width);
+	Arena(size_t length, size_t width);
 	~Arena();
 
 	void render(const Shader& shader) const;
@@ -54,12 +51,9 @@ private:
 
 	using TileGrid = std::vector<std::vector<Tile>>;
 	TileGrid tileGrid;
-
-	std::shared_ptr<Model> wall;
 	WallList walls;
 
 	float tileWidth;
 	float tileBorderWidth;	// This is the width of one edge of the border.
 	float tileCollisionRadius;
-	float wallWidth;
 };
