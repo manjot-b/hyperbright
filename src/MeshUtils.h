@@ -20,4 +20,5 @@ struct Material
 	float diffuse;
 	float specular;
 	float shininess;
+	bool isEmission;
 };

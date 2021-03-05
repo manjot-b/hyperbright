@@ -81,6 +81,7 @@ void Mesh::extractDataFromMesh(const aiScene* scene, const aiMesh* mesh)
 
 		material.diffuse = 1.f;
 		material.specular = 1.f;
+		material.isEmission = false;
 	}
 }
 

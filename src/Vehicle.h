@@ -73,4 +73,5 @@ private:
 	std::unique_ptr<Model> body;
 	std::unique_ptr<Model> wheelsFront;
 	std::unique_ptr<Model> wheelsRear;
+	unsigned int brakeLightsIdx;
 };

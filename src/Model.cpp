@@ -96,6 +96,7 @@ void Model::render(const Shader& shader) const
 		shader.setUniform1f("diffuseCoeff", mesh->material.diffuse);
 		shader.setUniform1f("specularCoeff", mesh->material.specular);
 		shader.setUniform1f("shininess", mesh->material.shininess);
+		shader.setUniform1i("isEmission", mesh->material.isEmission);
 
 		unsigned int count = 0;
 		if (m_instanceModelMatrices)
