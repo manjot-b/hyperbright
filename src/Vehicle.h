@@ -33,6 +33,7 @@ public:
 	glm::vec3 getForward() const { return position + direction; }
 	const glm::vec3& getPosition() const { return position; }
 	glm::quat getOrientation() const;
+	teamStats::Teams getTeam() const { return team; }
 
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setPosition(const glm::vec3& position);
