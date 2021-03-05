@@ -45,13 +45,13 @@ void Engine::initEntities()
 	glm::vec4 playerColor = glm::vec4(.3f, .3f, 1.f, 0.f);
 	glm::vec4 ai1Color = glm::vec4(.8f, .8f, .3f, 0.f);
 	
-	std::shared_ptr<Vehicle> player = std::make_shared<Vehicle>("player", playerColor, glm::vec3(0.f, 3.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
+	std::shared_ptr<Vehicle> player = std::make_shared<Vehicle>("player", playerColor, glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
 	vehicles.push_back(player);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(player));
 	
 
-	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", ai1Color, glm::vec3(15.f, 7.f, -15.f), glm::vec3(0.f, 0.f, -1.f));
+	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", ai1Color, glm::vec3(14.f, 3.f, -14.f), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai1);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai1));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai1));
@@ -87,8 +87,8 @@ void Engine::run()
 	Controller controller(renderer.getWindow(), camera, vehicles[0]);
 
 	// SOUND SETUP
-	audioPlayer->playGameMusic();
-	audioPlayer->playCarIdle();
+	//audioPlayer->playGameMusic();
+	//audioPlayer->playCarIdle();
 
 	while (!controller.isWindowClosed()) {
 		// update global time
