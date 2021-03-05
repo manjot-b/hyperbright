@@ -33,6 +33,7 @@ private:
 	public:
 		Tile(glm::mat4& modelMatrix, glm::vec4& color);
 		void translate(const glm::vec3& trans);
+		void scale(float scale);
 		void setColor(const glm::vec4& color);
 		bool hasWall() const;
 
