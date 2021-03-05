@@ -25,7 +25,7 @@ public:
 	void setTileColor(const glm::vec2& tileCoords, const glm::vec4& color);
 	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
 	const WallList& getWalls() const;
-	
+	std::vector<std::vector<bool>> getAiArenaRepresentation();
 private:
 	class Tile {
 	friend class Arena;

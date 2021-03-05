@@ -80,7 +80,7 @@ void Engine::run()
 	simulator.setAudioPlayer(audioPlayer);
 
 	AiManager aiManager;
-	aiManager.setArena(arena);
+	aiManager.setArena(arena->getAiArenaRepresentation());
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
 
 	DevUI devUI(renderer.getWindow());
@@ -115,6 +115,12 @@ void Engine::run()
 		simulator.stepPhysics(fpsLimit);
 		simulator.checkVehiclesOverTile(*arena, vehicles);
 		
+		/*
+		std::cout<< vehicles.at(1)->currentTile.x;
+		std::cout << " ";
+		std::cout << vehicles.at(1)->currentTile.y;
+		std::cout << std::endl;
+		*/
 
 		// set camera to player vehicles position
 		if (!controller.isCameraManual())

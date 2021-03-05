@@ -155,3 +155,16 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 }
 
 const Arena::WallList& Arena::getWalls() const { return walls; }
+
+//MAY BE ADDING IN WRONG ORDER CHECK LATER
+std::vector<std::vector<bool>> Arena::getAiArenaRepresentation() {
+	std::vector<std::vector<bool>> arenaRep;
+	for (int i = 0; i < tileGrid.size() ; i++) {
+		std::vector<bool> nextCol;		
+		for (int j = 0; j < tileGrid.at(i).size(); j++) {
+			nextCol.emplace_back(tileGrid[i][j].hasWall());
+		}
+		arenaRep.emplace_back(nextCol);
+	}
+	return arenaRep;
+}
