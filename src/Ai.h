@@ -8,7 +8,7 @@
 class Ai
 {
 public:
-	Ai(std::shared_ptr<Vehicle> v);
+	Ai(std::shared_ptr<Vehicle> v, std::shared_ptr<Arena> a);
 	~Ai();
 	void aiInput();
 	int state;
@@ -16,8 +16,8 @@ public:
 	glm::vec2 targetTile;
 	glm::vec2 targetTilePosition;
 	std::shared_ptr<Vehicle> vehicle;
-private:
 	std::shared_ptr<Arena> arena;
+private:
 
 	//Might change to indicate which direction to turn
 	float lookingAtTarget();//Retruns true if pointing in the direction of the targetTile

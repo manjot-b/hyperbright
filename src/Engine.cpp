@@ -70,7 +70,6 @@ void Engine::initEntities()
 	renderables.push_back(triggerVolume);*/
 	
 	int arena_size = 75;
-	//bool aiArenaRepresentation[75][75];
 	arena = std::make_shared<Arena>(arena_size, arena_size);
 	arena->addWall(0, 0, 2, 2);
 	//arena->addWall(14, 5, 1, 7);
@@ -91,6 +90,7 @@ void Engine::run()
 
 	AiManager aiManager;
 	aiManager.setArena(arena->getAiArenaRepresentation());
+	aiManager.setArena(arena);
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
 
 	DevUI devUI(renderer.getWindow());
