@@ -94,7 +94,6 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniform3fv("pointOfView", camera.getPosition());
 
-
 	for (const auto& renderable : renderables)
 	{
 		renderable->render(*shader);

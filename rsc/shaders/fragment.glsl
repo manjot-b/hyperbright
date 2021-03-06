@@ -33,7 +33,7 @@ void main()
 
 		//basic phong shading
 		vec3 lightDir = normalize(light - vertexPos);
-		vec3 viewDir = normalize(pointOfView);
+		vec3 viewDir = normalize(pointOfView - vertexPos);
 		float diff = max(dot(lightDir, normal), 0.0) * diffuseCoeff;
 		vec3 reflect = 2 * dot(lightDir, normal) * normal - lightDir;
 		reflect = normalize(reflect);

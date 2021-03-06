@@ -23,11 +23,11 @@ void main()
 	if (isInstance)
 	{
 		worldPos = (instanceModel * vec4(inPosition, 1.0f));
-		normal = vec3(instanceModel * vec4(inNormal, 0.f));
+		normal = normalize(vec3(instanceModel * vec4(inNormal, 0.f)));
 	}
 	else
 	{
-		worldPos = model* vec4(inPosition, 1.0f);
+		worldPos = model * vec4(inPosition, 1.0f);
 
 		// Handles non-uniform scaling. If this makes the app too slow then compute
 		// the normal matrix on the CPU only for models that are non-uniformly scaled.
