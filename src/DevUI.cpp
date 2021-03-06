@@ -4,6 +4,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include "TeamStats.h"
+
 static int sliderFPS = 60;
 
 DevUI::DevUI(GLFWwindow* window) : showDemo(false)
@@ -49,6 +51,7 @@ void DevUI::render()
     ImGui::Begin("Dev Settings");
     ImGui::Text("Application average %.3f ms/frame %.3f FPS", _deltaSec*1000, 1/_deltaSec);
     ImGui::SliderInt("FPS Cap", &sliderFPS, 30, 144);
+    ImGui::Text("Scores:\nTeam 0: %u\nTeam 1: %u", teamStats::scores[teamStats::Teams::TEAM0], teamStats::scores[teamStats::Teams::TEAM1]);
 
     ImGui::End();
 

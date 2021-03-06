@@ -2,6 +2,7 @@
 #include "Controller.h"
 #include "Vehicle.h"
 #include "DevUI.h"
+#include "TeamStats.h"
 
 #include <vehicle/PxVehicleUtil.h>
 
@@ -532,8 +533,20 @@ void Simulate::checkVehiclesOverTile(Arena& arena, const std::vector<std::shared
 		std::optional<glm::vec2> tileCoords = arena.isOnTile(vehicle->getPosition());
 		if (tileCoords)
 		{
+			std::optional<teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
+			if (old && *old != vehicle->getTeam())
+			{
+				teamStats::scores[*old]--;
+				teamStats::scores[vehicle->getTeam()]++;
+				arena.setTileTeam(*tileCoords, vehicle->getTeam());
+			}
+			else if (!old)
+			{
+				teamStats::scores[vehicle->getTeam()]++;
+				arena.setTileTeam(*tileCoords, vehicle->getTeam());
+			}
+
 			vehicle->currentTile = *tileCoords;
-			arena.setTileColor(*tileCoords, vehicle->getColor());
 			
 			
 			glm::vec3 worldCoords = arena.getTilePos(*tileCoords);

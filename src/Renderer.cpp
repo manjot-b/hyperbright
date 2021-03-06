@@ -25,9 +25,29 @@ Renderer::Renderer(const Camera& camera) : camera(camera)
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 
-	shader->setUniform3fv("light", glm::vec3(0.f, 10.f, 0.f));
+	std::vector<Light> lights = {
+		{false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f)},
+		{true, glm::vec3(-130.f, 10.f, 130.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f}
+	};
+	shader->setUniform1i("lightCount", lights.size());
+	for (unsigned int i = 0; i < lights.size(); i++)
+	{
+		std::string isPointUniform = "lights[" + std::to_string(i) + "]" + ".isPoint";
+		std::string positionUniform = "lights[" + std::to_string(i) + "]" + ".position";
+		std::string colorUniform = "lights[" + std::to_string(i) + "]" + ".color";
+		std::string constantUniform = "lights[" + std::to_string(i) + "]" + ".constant";
+		std::string linearUniform = "lights[" + std::to_string(i) + "]" + ".linear";
+		std::string quadraticUniform = "lights[" + std::to_string(i) + "]" + ".quadratic";
+
+		shader->setUniform1i(isPointUniform.c_str(), lights[i].isPoint);
+		shader->setUniform3fv(positionUniform.c_str(), lights[i].position);
+		shader->setUniform3fv(colorUniform.c_str(), lights[i].color);
+		shader->setUniform1f(constantUniform.c_str(), lights[i].constant);
+		shader->setUniform1f(linearUniform.c_str(), lights[i].linear);
+		shader->setUniform1f(quadraticUniform.c_str(), lights[i].quadratic);
+	}
+
 	shader->setUniform3fv("pointOfView", camera.getPosition());
-	shader->setUniform1f("d", 1.f);
 
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
 
@@ -86,14 +106,13 @@ GLFWwindow* Renderer::getWindow() { return window; }
 
 void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI)
 {
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	shader->use();
 	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 	shader->setUniformMatrix4fv("perspective", perspective);
 	shader->setUniform3fv("pointOfView", camera.getPosition());
-
 
 	for (const auto& renderable : renderables)
 	{
