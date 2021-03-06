@@ -158,6 +158,7 @@ VehicleDesc initVehicleDesc()
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
 	const float vehScale = 1 / 3.5f;
+
 	const PxF32 chassisMass = 800.0f; // default 1500
 	const PxVec3 chassisDims(4.f * vehScale, 2.5f * vehScale, 10.1f * vehScale);
 	const PxVec3 chassisMOI
@@ -482,10 +483,13 @@ void Simulate::stepPhysics(float frameRate)
 		setModelPose(model);
 	}
 
+
+
 	// update the stats of each vehicle
 	for (auto& vehicle : vehicles) {
 		vehicle->updatePositionAndDirection();
 	}
+
 }
 
 void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)

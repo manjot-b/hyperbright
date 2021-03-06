@@ -162,6 +162,7 @@ void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 {
 	// Probably a better way to do this, but this is fine for now.
 	float scale = 1 / 3.5f; // this must match physX vehicle description in Simulate.cpp - initVehicleDesc()
+	
 	glm::vec3 translate(0.f, -1.8f, 0.f);
 
 	glm::mat4 final_transform = modelMat;
