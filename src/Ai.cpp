@@ -1,5 +1,4 @@
 #include "Ai.h"
-
 Ai::Ai(std::shared_ptr<Vehicle> v, std::shared_ptr<Arena> a) {
 	vehicle = v;
 	arena = a;
@@ -20,14 +19,14 @@ void Ai::aiInput() {
 		return;
 	}
 	//std::cout << "Size:"<< path.size() << std::endl;
-	std::cout << "Current path:" << path.back().x << " " << path.back().y << std::endl;
+	//std::cout << "Current path:" << path.back().x << " " << path.back().y << std::endl;
 	if (path.size() > 0) {
 		if (vehicle->currentTile == path.back()) {
-			std::cout << "NEXT TILE REACHED" << std::endl;
+			std::cout << "NEXT TILE REACHED " << vehicle->currentTile.x<<" "<< vehicle->currentTile.y << std::endl;
 			path.pop_back();
 		}
 		//std::cout << vehicle->currentTile.x<< " "<< vehicle->currentTile.y << std::endl;
-		std::cout << targetTile.x << " " << targetTile.y << std::endl;
+		//std::cout << targetTile.x << " " << targetTile.y << std::endl;
 		float angleBetween = lookingAtTarget() * (180.f/M_PI);
 		//float angleBetween = lookingAtTarget();
 
@@ -37,11 +36,11 @@ void Ai::aiInput() {
 		}
 		else if (angleBetween > 5.f  && angleBetween < 180.f) {
 			vehicle->turnRight();
-			//vehicle->accelerateForward();
+			vehicle->accelerateForward();
 		}
 		else {
 			vehicle->turnLeft();
-			//vehicle->accelerateForward();
+			vehicle->accelerateForward();
 		}
 	}
 }
@@ -58,11 +57,11 @@ float Ai::lookingAtTarget() {
 
 
 	glm::vec2 vehicleDirectionVector =glm::vec2(vehicle->getDirection().x, vehicle->getDirection().z);
-	std::cout << " Direction vector: " << vehicleDirectionVector.x << " " << vehicleDirectionVector.y << std::endl;
+	//std::cout << " Direction vector: " << vehicleDirectionVector.x << " " << vehicleDirectionVector.y << std::endl;
 
 	//glm::vec2 targetVector = glm::vec2( vehiclePosition.x - targetPosition.x , vehiclePosition.z - targetPosition.z);
 	glm::vec2 targetVector = glm::vec2( targetPosition.x - vehiclePosition.x, targetPosition.z - vehiclePosition.z);
-	std::cout << " target vector: " << targetVector.x << " " << targetVector.y << std::endl;
+	//std::cout << " target vector: " << targetVector.x << " " << targetVector.y << std::endl;
 
 	return acos(glm::dot(vehicleDirectionVector, targetVector) / (glm::length(vehicleDirectionVector) * glm::length(targetVector)));
 }

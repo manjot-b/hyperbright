@@ -37,14 +37,12 @@ void AiManager::setArena(std::shared_ptr<Arena> a) {
 
 void AiManager::setArena(std::vector<std::vector<bool>> a) {
 	arenaRep = a;
-	counter = 0;
 }
 
 //////////////////////////////////////////////////////////////////
 //GENERATE PATH FOR GIVEN AI
 void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 	ai->targetTile = generateTarget();
-	counter++;
 	std::cout << "counter: " << counter << std::endl;
 	std::vector<glm::vec2> pathList;
 	glm::vec2 currentTile = ai->vehicle->currentTile;
@@ -93,12 +91,7 @@ void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 //DECIDE WHERE TO GO NEXT
 
 glm::vec2 AiManager::generateTarget() {
-	if (counter % 2 == 1) {
-		return glm::vec2(20, 44);
-	}
-	else {
-		return glm::vec2(20, 20);//ARBITRARY FOR TESTING
-	}
+	return glm::vec2(20, 41);
 }
 
 //////////////////////////////////////////////////////////////////
