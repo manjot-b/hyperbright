@@ -26,7 +26,7 @@ class Renderer
 
 		GLFWwindow* getWindow();
 
-		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, bool paused, bool index);
+		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, int slection, bool paused, bool index);
 
 	private:
 		GLFWwindow* window;

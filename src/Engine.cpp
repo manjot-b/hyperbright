@@ -20,7 +20,7 @@ FTGLPixmapFont menuFont("rsc/fonts/ROGFonts-Regular.otf");
 Engine::Engine() :
 	camera(), renderer(camera),
 	deltaSec(0.0f), rotate(0), scale(1),
-	lastFrame(0.0f)
+	lastFrame(0.0f), selection(NOINPUT)
 {
 	// load textures into a shared pointer.
 	loadTextures();
@@ -111,17 +111,97 @@ void Engine::initEntities()
 // the game (menu/arena/pause etc) and appropriate func.
 void Engine::run()
 {
-	Simulate simulator(physicsModels, vehicles, *arena);
-	simulator.setAudioPlayer(audioPlayer);
+	runMenu();
+	runGame();
+	endGame();
+	return;
+}
 
+
+/*
+This Function contains the loop for the main menu.
+Responsible for starting and ending the game.
+*/
+void Engine::runMenu() {
+
+	//***** Initialize anything needed for the main menu HERE *****
 	DevUI devUI(renderer.getWindow());
-	Controller controller(renderer.getWindow(), camera, vehicles[0]);
+	Controller controller(renderer.getWindow(), camera, vehicles[0], NOINPUT);
+
+	while (!controller.isWindowClosed()) {
+		// update global time
+		float currentFrame = glfwGetTime();
+		deltaSec = currentFrame - lastFrame;
+
+		float fpsLimit = (1.f / devUI.getSliderFPS());
+
+		//wait until a certain amount of time has past
+		while (deltaSec < fpsLimit) {
+			currentFrame = glfwGetTime();
+			deltaSec = currentFrame - lastFrame;
+		}
+		lastFrame = currentFrame;
+
+		if (controller.isPaused()) {
+			deltaSec = 0.f;
+		}
+		devUI.update(deltaSec);
+
+		// controller 
+		controller.processInput(deltaSec);
+
+		// render the updated position of all models and ImGui
+		renderer.render(renderables, devUI, selection, controller.isPaused(), controller.getIndex());
+
+		if (controller.stopLoop() == true) {
+			selection = STARTGAME;
+			break;
+		}
+		glfwPollEvents();
+	}
+
+	//***** Clean up anything needed for the main menu HERE *****
+
+	return;
+}
+
+//////////////////////////////////////////////////////////
+
+void Engine::runGame() {
+	/*
+	//***** Initialize game objects HERE *****
+	//reset AI to start of game settings
+	aiPlayers[1].reset();//ASSUMES 3 AI PLAYERS
+	aiPlayers[2].reset();//AI 0 is not used to match vehicle index (for now)
+	aiPlayers[3].reset();
+
+	//reset vehicles to start of game settings. (may need coordinates for starting positions as parameter)
+	vehicles[0].reset();//Player is 0
+	vehicles[1].reset();
+	vehicles[2].reset();
+	vehicles[3].reset();
+
+	//set up Pickups
+	*/
+
 
 	// SOUND SETUP
 	//audioPlayer->playGameMusic();
 	//audioPlayer->playCarIdle();
 
+	Simulate simulator(physicsModels, vehicles, *arena);
+	simulator.setAudioPlayer(audioPlayer);
+
+	DevUI devUI(renderer.getWindow());
+	Controller controller(renderer.getWindow(), camera, vehicles[0], STARTGAME);
+
 	while (!controller.isWindowClosed()) {
+
+		//AI GAME INPUT
+		//aiPlayers[1].aiInput(vehicles[1]);
+		//aiPlayers[2].aiInput(vehicles[2]);
+		//aiPlayers[3].aiInput(vehicles[3]);
+
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -148,7 +228,7 @@ void Engine::run()
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
 		}
-		
+
 
 		// set camera to player vehicles position
 		if (!controller.isCameraManual())
@@ -157,99 +237,19 @@ void Engine::run()
 			camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getForward());
 		}
 
+		//UI STUFF, SCORE KEEPING
+
 		// render the updated position of all models and ImGui
-		renderer.render(renderables, devUI, controller.isPaused(), controller.getIndex());
+		renderer.render(renderables, devUI, selection, controller.isPaused(), controller.getIndex());
 
 		glfwPollEvents();
 	}
-	return;
-}
-
-
-/*
-This Function contains the loop for the main menu.
-Responsible for starting and ending the game.
-*/
-void Engine::runMenu() {
-
-	//***** Initialize anything needed for the main menu HERE *****
-	int selection = NOINPUT;
-	while (1) {
-		selection = menuInput();
-		if (selection == STARTGAME) {//START GAME
-			//runGame();
-			break;
-		}
-		else if (selection == ENDGAME) {//END GAME
-			break;
-		}
-		else if (selection == LOADOUT) {//LOADOUT
-			break;
-		}
-	}
-
-	//***** Clean up anything needed for the main menu HERE *****
-
-	return;
-}
-
-//////////////////////////////////////////////////////////
-
-int Engine::menuInput() {
-	//This function will handle input from the user in the menu
-	//Returns an int which will indicate the users current selecting.
-	//return 0 for no input.
-	return 0;
-}
-
-//////////////////////////////////////////////////////////
-
-void Engine::runGame() {
-	/*
-	//***** Initialize game objects HERE *****
-	//reset AI to start of game settings
-	aiPlayers[1].reset();//ASSUMES 3 AI PLAYERS
-	aiPlayers[2].reset();//AI 0 is not used to match vehicle index (for now)
-	aiPlayers[3].reset();
-
-	//reset vehicles to start of game settings. (may need coordinates for starting positions as parameter)
-	vehicles[0].reset();//Player is 0
-	vehicles[1].reset();
-	vehicles[2].reset();
-	vehicles[3].reset();
-
-	//set up Pickups
-
-
-	//***** Initialize anything else needed for a game loop*****
-	//Simulate simulator;
-	//Controller controller;
-
-	//INTIALIZE RENDERER
-
-	while (1) {
-
-		//AI GAME INPUT
-		aiPlayers[1].aiInput(vehicles[1]);
-		aiPlayers[2].aiInput(vehicles[2]);
-		aiPlayers[3].aiInput(vehicles[3]);
-
-		//USER GAME INPUT
-		//controller.gameInput(vehicles[0]);
-
-		//SIMULATE FRAME
-		//simulator.simulateStep(vehicles, arena, pickups);
-
-		//UI STUFF, SCORE KEEPING
-
-		//RENDER FRAME
-		//renderer.renderGameStep(vehicles, arena, pickups);
-
-		if (false) {//QUIT CONDITION NEEDED
-			break;
-		}
-	}
-	*/
 
 	//Game loop clean up, before returning to menu
+}
+
+//A loop for endgame
+void Engine::endGame()
+{
+	return;
 }

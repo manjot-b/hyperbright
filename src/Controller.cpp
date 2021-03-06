@@ -2,8 +2,14 @@
 
 #include <iostream>
 
-Controller::Controller(GLFWwindow* _window, Camera& _camera, std::shared_ptr<Vehicle>& _playerVehicle) :
-	window(_window), camera(_camera), playerVehicle(_playerVehicle), isCursorShowing(false), manualCamera(false), paused(false), index(0)
+#define STARTGAME 1
+#define NOINPUT 0
+#define ENDGAME 2
+#define LOADOUT 3
+
+Controller::Controller(GLFWwindow* _window, Camera& _camera, std::shared_ptr<Vehicle>& _playerVehicle, int s) :
+	window(_window), camera(_camera), playerVehicle(_playerVehicle), isCursorShowing(false), manualCamera(false), paused(false), index(0),
+	selection(s), breakLoop(false)
 
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
@@ -149,7 +155,7 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (action == GLFW_PRESS && controller->paused == false)
+	if (action == GLFW_PRESS && controller->selection == STARTGAME && controller->paused == false)
 	{
 		switch (key)
 		{
@@ -171,7 +177,7 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 		}
 
 	}
-	else if (action == GLFW_PRESS && controller->paused == true) {
+	else if (action == GLFW_PRESS && controller->selection == STARTGAME && controller->paused == true) {
 		switch (key) {
 			case GLFW_KEY_UP:
 			if (controller->index == 0) {
@@ -198,6 +204,13 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 			else {
 				controller->paused = !controller->paused;
 			}
+			break;
+		}
+	}
+	else if (action == GLFW_PRESS && controller->selection == NOINPUT) {
+		switch (key) {
+		case GLFW_KEY_ENTER:
+			controller->breakLoop = !controller->breakLoop;
 			break;
 		}
 	}

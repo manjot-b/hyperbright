@@ -30,6 +30,7 @@ private:
 	Renderer renderer;
 	std::shared_ptr<Arena> arena;
 
+	int selection;
 	float deltaSec;
 	//Ai aiPlayers[4];
 	//Vehicle vehicles[4];
@@ -58,8 +59,8 @@ private:
 	float lastFrame;
 
 	void runMenu();
-	int menuInput();
 	void runGame();
+	void endGame();
   
 	std::shared_ptr<Model> loadModel(std::string ref,
 		bool inPhysx,
