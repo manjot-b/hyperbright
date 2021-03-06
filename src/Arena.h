@@ -9,6 +9,7 @@
 #include "Model.h"
 #include "Renderer.h"
 #include "Shader.h"
+#include "TeamStats.h"
 
 class Arena : public Renderer::IRenderable
 {
@@ -21,8 +22,9 @@ public:
 	void render(const Shader& shader) const;
 	std::optional<glm::vec2> isOnTile(const glm::vec3& coords) const;
 	glm::vec3 getTilePos(const glm::vec2& coords) const;
+	std::optional<teamStats::Teams> getTeamOnTile(const glm::vec2& coords) const;
 
-	void setTileColor(const glm::vec2& tileCoords, const glm::vec4& color);
+	void setTileTeam(const glm::vec2& tileCoords, teamStats::Teams team);
 	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
 	const WallList& getWalls() const;
 	std::vector<std::vector<bool>> getAiArenaRepresentation();
@@ -41,6 +43,7 @@ private:
 		glm::mat4& modelMatrix;
 		glm::vec4& color;
 		bool _hasWall;
+		std::optional<teamStats::Teams> team;	// tile may not have a team.
 	};
 
 	std::shared_ptr<Model> instancedTile;

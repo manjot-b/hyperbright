@@ -6,8 +6,8 @@
 using namespace std;
 using namespace glm;
 
-Vehicle::Vehicle(const std::string& _id, vec4 color, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
-	: id(_id), color(color), position(startPos), direction(normalize(startDir)), startDirection(startDir)
+Vehicle::Vehicle(const std::string& _id, teamStats::Teams team, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
+	: id(_id), team(team), color(teamStats::colors.at(team)), position(startPos), direction(normalize(startDir)), startDirection(startDir)
 {
 	string bodyIdSuffix = "body";
 	string wheelsFrontIdSuffix = "wheelsfront";

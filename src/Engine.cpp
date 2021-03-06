@@ -4,11 +4,12 @@
 #include <iostream>
 
 #include "Ai.h"
+#include "AiManager.h"
 #include "AudioPlayer.h"
 #include "Controller.h"
 #include "DevUI.h"
 #include "Pickup.h"
-#include "AiManager.h"
+#include "TeamStats.h"
 
 #define STARTGAME 1
 #define NOINPUT 0
@@ -41,17 +42,13 @@ void Engine::loadTextures()
 }
 
 void Engine::initEntities()
-{
-	glm::vec4 playerColor = glm::vec4(.3f, .3f, 1.f, 0.f);
-	glm::vec4 ai1Color = glm::vec4(.8f, .8f, .3f, 0.f);
-	
-	std::shared_ptr<Vehicle> player = std::make_shared<Vehicle>("player", playerColor, glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
+{	
+	std::shared_ptr<Vehicle> player = std::make_shared<Vehicle>("player", teamStats::Teams::TEAM0, glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
 	vehicles.push_back(player);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(player));
 	
-
-	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", ai1Color, glm::vec3(14.f, 3.f, -14.f), glm::vec3(0.f, 0.f, -1.f));
+	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", teamStats::Teams::TEAM1, glm::vec3(14.f, 3.f, -14.f), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai1);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai1));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai1));

@@ -4,7 +4,7 @@
 
 
 Arena::Tile::Tile(glm::mat4& modelMatrix, glm::vec4& color) :
-	modelMatrix(modelMatrix), color(color), _hasWall(false)
+	modelMatrix(modelMatrix), color(color), _hasWall(false), team(std::nullopt)
 {}
 
 void Arena::Tile::translate(const glm::vec3& trans)
@@ -113,14 +113,20 @@ std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
 	return glm::vec2(row, col);
 }
 
-void Arena::setTileColor(const glm::vec2& tileCoords, const glm::vec4& color)
+void Arena::setTileTeam(const glm::vec2& tileCoords, teamStats::Teams team)
 {
-	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
+	tileGrid[tileCoords.x][tileCoords.y].setColor(teamStats::colors.at(team));
+	tileGrid[tileCoords.x][tileCoords.y].team = team;
 }
 
 glm::vec3 Arena::getTilePos(const glm::vec2& coords) const
 {
 	return tileGrid[coords.x][coords.y].modelMatrix[3];
+}
+
+std::optional<teamStats::Teams> Arena::getTeamOnTile(const glm::vec2& coords) const
+{
+	return tileGrid[coords.x][coords.y].team;
 }
 
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
