@@ -42,9 +42,9 @@ void main()
 			vertexColor = color;
 
 		//basic phong shading
-		float ambient = 0.1f;
-		float diffuse = 0;
-		float specular = 0;
+		vec3 ambient = vec3(.1f);
+		vec3 diffuse = vec3(.0f);
+		vec3 specular = vec3(.0f);
 
 		vec3 viewDir = normalize(pointOfView - vertexPos);
 		for (int i = 0; i < lightCount; i++)
@@ -56,13 +56,13 @@ void main()
 				lightDir = normalize(-lights[i].position);
 			}
 			
-			diffuse += max(dot(lightDir, normal), 0.0) * diffuseCoeff;
+			diffuse += max(dot(lightDir, normal), 0.0) * diffuseCoeff * lights[i].color;
 			vec3 reflect = 2 * dot(lightDir, normal) * normal - lightDir;
 			reflect = normalize(reflect);
-			specular += pow(max(dot(reflect, viewDir), 0.0), shininess) * specularCoeff;
+			specular += pow(max(dot(reflect, viewDir), 0.0), shininess) * specularCoeff * lights[i].color;
 		}
-
-		fragColor = (1 / (d * d)) * (ambient + diffuse + specular) * vertexColor;
+		vec4 finalLight = vec4((ambient + diffuse + specular), 1.f);
+		fragColor = (1 / (d * d)) * finalLight * vertexColor;
 	}
 	else
 	{

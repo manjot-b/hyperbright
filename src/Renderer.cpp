@@ -26,16 +26,18 @@ Renderer::Renderer(const Camera& camera) : camera(camera)
 	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 
 	std::vector<Light> lights = {
-		{false, glm::vec3(-1.f, -1.f, 1.f)},
-		{true, glm::vec3(-130.f, 10.f, 130.f)}
+		{false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f)},
+		{true, glm::vec3(-130.f, 10.f, 130.f), glm::vec3(.7f, .7f, .1f)}
 	};
 	shader->setUniform1i("lightCount", lights.size());
 	for (unsigned int i = 0; i < lights.size(); i++)
 	{
 		std::string isPointUniform = "lights[" + std::to_string(i) + "]" + ".isPoint";
 		std::string positionUniform = "lights[" + std::to_string(i) + "]" + ".position";
+		std::string colorUniform = "lights[" + std::to_string(i) + "]" + ".color";
 		shader->setUniform1i(isPointUniform.c_str(), lights[i].isPoint);
 		shader->setUniform3fv(positionUniform.c_str(), lights[i].position);
+		shader->setUniform3fv(colorUniform.c_str(), lights[i].color);
 	}
 
 	shader->setUniform3fv("pointOfView", camera.getPosition());
@@ -98,7 +100,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 
 void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI)
 {
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	shader->use();
