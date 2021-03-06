@@ -44,7 +44,8 @@ PxBatchQuery* gBatchQuery = NULL;
 PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
 PxRigidStatic* gGroundPlane = NULL;
-PxVehicleDrive4W* gVehicle4W[4];
+int const number_of_vehicles = 4;
+PxVehicleDrive4W* gVehicle4W[number_of_vehicles];
 
 
 bool					gIsVehicleInAir = true;
@@ -361,7 +362,7 @@ void Simulate::initPhysics()
 	//Create Vehicle bodies
 	VehicleDesc vehicleDesc = initVehicleDesc();
 	vector<shared_ptr<Vehicle>>::iterator iter = vehicles.begin();
-	for (int i = 0;  i < 2; i++, iter++) {
+	for (int i = 0;  i < number_of_vehicles; i++, iter++) {
 		gVehicle4W[i] = createVehicle4W(vehicleDesc, gPhysics, gCooking);
 		Vehicle* vehicle = iter->get();
 
@@ -438,22 +439,24 @@ void Simulate::stepPhysics(float frameRate)
 	}
 
 	//////////////////// PLAYER
-	//Raycasts.
-	PxVehicleWheels* pxVehicles[1] = { gVehicle4W[0] };
-	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
-	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getQueryResultBufferSize();
-	PxVehicleSuspensionRaycasts(gBatchQuery, 1, pxVehicles, raycastResultsSize, raycastResults);
-	
-	//Vehicle update.
-	const PxVec3 grav = gScene->getGravity();
-	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
-	PxVehicleWheelQueryResult vehicleQueryResults[1] = { {wheelQueryResults, gVehicle4W[0]->mWheelsSimData.getNbWheels()} };
-	PxVehicleUpdates(frameRate, grav, *gFrictionPairs, 1, pxVehicles, vehicleQueryResults);
+	for (int i = 0; i < number_of_vehicles; i++) {
+		//Raycasts.
+		PxVehicleWheels* pxVehicles[1] = { gVehicle4W[i] };
+		PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
+		const PxU32 raycastResultsSize = gVehicleSceneQueryData->getQueryResultBufferSize();
+		PxVehicleSuspensionRaycasts(gBatchQuery, 1, pxVehicles, raycastResultsSize, raycastResults);
 
-	//Work out if the vehicle is in the air.
-	gIsVehicleInAir = gVehicle4W[0]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
+		//Vehicle update.
+		const PxVec3 grav = gScene->getGravity();
+		PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
+		PxVehicleWheelQueryResult vehicleQueryResults[1] = { {wheelQueryResults, gVehicle4W[i]->mWheelsSimData.getNbWheels()} };
+		PxVehicleUpdates(frameRate, grav, *gFrictionPairs, 1, pxVehicles, vehicleQueryResults);
 
-	////////////////////// AI
+		//Work out if the vehicle is in the air.
+		gIsVehicleInAir = gVehicle4W[i]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
+
+	}
+	/*////////////////////// AI
 		//Raycasts.
 	PxVehicleWheels* pxVehicles_ai[1] = { gVehicle4W[1] };
 	PxRaycastQueryResult* raycastResults_ai = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
@@ -468,20 +471,21 @@ void Simulate::stepPhysics(float frameRate)
 
 	//Work out if the vehicle is in the air.
 	gIsVehicleInAir = gVehicle4W[1]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
-
+	*/
 	//Scene update.
 	gScene->simulate(frameRate);
 	gScene->fetchResults(true);
 
+	// Update graphics models based on their phsyX model
 	for (auto& model : physicsModels)
 	{
 		setModelPose(model);
 	}
 
-	vehicles[0]->updatePositionAndDirection();
-	/*for (auto& vehicle : vehicles) {
-		vehicle->updatePositionAndOrientation();
-	}*/
+	// update the stats of each vehicle
+	for (auto& vehicle : vehicles) {
+		vehicle->updatePositionAndDirection();
+	}
 }
 
 void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
