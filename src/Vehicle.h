@@ -30,6 +30,7 @@ public:
 	VehicleController getController() { return ctrl; }
 	const glm::vec4& getColor() const { return color; }
 	glm::vec3 getForward() const { return position + direction; }
+	glm::vec3 getDirection() const { return direction; }
 	const glm::vec3& getPosition() const { return position; }
 	glm::quat getOrientation() const;
 
