@@ -12,6 +12,11 @@ void Arena::Tile::translate(const glm::vec3& trans)
 	modelMatrix = glm::translate(modelMatrix, trans);
 }
 
+void Arena::Tile::scale(float scale)
+{
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale));
+}
+
 void Arena::Tile::setColor(const glm::vec4& color)
 {
 	this->color = color;
@@ -37,6 +42,7 @@ Arena::Arena(size_t rows, size_t cols) :
 
 	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr);
 	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr);
+	const float scale = 2;
 
 	const BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
@@ -52,6 +58,9 @@ Arena::Arena(size_t rows, size_t cols) :
 			unsigned int instanceIdx = row * rows + col;
 			tileGrid[row].push_back(Tile((*tileModelMatrices)[instanceIdx], (*tileColors)[instanceIdx]));
 			trans.x = -(cols * .5f) * tileBox.width + (col * tileBox.width) + tileBox.width * .5f;
+
+			// Ordering matters.
+			tileGrid[row][col].scale(scale);
 			tileGrid[row][col].translate(trans);
 		}
 	}
@@ -60,8 +69,8 @@ Arena::Arena(size_t rows, size_t cols) :
 	instancedTile->setInstanceColors(tileColors);
 	instancedTileBorder->setInstanceModelMatrices(tileModelMatrices);
 
-	tileWidth = instancedTile->getBoundingBox().width;
-	tileBorderWidth = (tileBox.width - instancedTile->getBoundingBox().width) * 0.5f;	// width of only one edge.
+	tileWidth = instancedTile->getBoundingBox().width * scale;
+	tileBorderWidth = (tileBox.width - instancedTile->getBoundingBox().width) * 0.5f * scale;	// width of only one edge.
 }
 
 Arena::~Arena() {}
@@ -116,7 +125,7 @@ glm::vec3 Arena::getTilePos(const glm::vec2& coords) const
 
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
 {
-	walls.push_back(std::make_unique<Model>("rsc/models/wall.obj", "walal" + walls.size(), nullptr));
+	walls.push_back(std::make_unique<Model>("rsc/models/wall.obj", "wall" + walls.size(), nullptr));
 	auto& wall = walls.back();
 	float wallWidth = wall->getBoundingBox().width;
 
