@@ -96,10 +96,15 @@ void Camera::updateCameraVectors()
 
 void Camera::updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi)
 {
-	float newX = vehPosition.x - (poi.x - vehPosition.x)*4.f;
-	float newZ = vehPosition.z - (poi.z - vehPosition.z)*4.f;
+	float belowForward = 0.2f;
+	float aboveShoulder = 1.5f;
+	float behindShoulder = 3.4;
+
+	poi.y -= belowForward;
+	float newX = vehPosition.x - (poi.x - vehPosition.x)* behindShoulder;
+	float newZ = vehPosition.z - (poi.z - vehPosition.z)* behindShoulder;
 	
-	position = { newX, 2.f, newZ };
+	position = { newX, aboveShoulder, newZ };
 	front = glm::normalize(poi - position);
 	right = glm::normalize(glm::cross(front, worldUp));
 	up = glm::normalize(glm::cross(right, front));
