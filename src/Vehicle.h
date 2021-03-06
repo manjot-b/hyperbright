@@ -11,6 +11,7 @@
 #include "Pickup.h"
 #include "Renderer.h"
 #include "Simulate.h"
+#include "TeamStats.h"
 
 struct VehicleController {
 	int contrId;
@@ -20,7 +21,7 @@ struct VehicleController {
 class Vehicle : public Renderer::IRenderable, public IPhysical
 {
 public:
-	Vehicle(const std::string& id, glm::vec4 color, glm::vec3 startPos, glm::vec3 startDir);
+	Vehicle(const std::string& id, teamStats::Teams team, glm::vec3 startPos, glm::vec3 startDir);
 	~Vehicle();
 	void reset();
 
@@ -33,6 +34,7 @@ public:
 	glm::vec3 getDirection() const { return direction; }
 	const glm::vec3& getPosition() const { return position; }
 	glm::quat getOrientation() const;
+	teamStats::Teams getTeam() const { return team; }
 
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setPosition(const glm::vec3& position);
@@ -65,6 +67,7 @@ public:
 private:
 
 	std::string id;
+	teamStats::Teams team;
 	glm::vec4 color;
 	glm::vec3 direction;
 	const glm::vec3 startDirection;

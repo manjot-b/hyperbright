@@ -4,11 +4,12 @@
 #include <iostream>
 
 #include "Ai.h"
+#include "AiManager.h"
 #include "AudioPlayer.h"
 #include "Controller.h"
 #include "DevUI.h"
 #include "Pickup.h"
-#include "AiManager.h"
+#include "TeamStats.h"
 
 #define STARTGAME 1
 #define NOINPUT 0
@@ -41,20 +42,29 @@ void Engine::loadTextures()
 }
 
 void Engine::initEntities()
-{
-	glm::vec4 playerColor = glm::vec4(.3f, .3f, 1.f, 0.f);
-	glm::vec4 ai1Color = glm::vec4(.8f, .8f, .3f, 0.f);
-	
-	std::shared_ptr<Vehicle> player = std::make_shared<Vehicle>("player", playerColor, glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
+{	
+	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
+	std::shared_ptr<Vehicle> player = std::make_shared<Vehicle>("player", teamStats::Teams::TEAM0, glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
 	vehicles.push_back(player);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(player));
 	
-
-	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", ai1Color, glm::vec3(14.f, 3.f, -14.f), glm::vec3(0.f, 0.f, -1.f));
+	// Create the 4 ai vehicles, setting their starting position, direction, and team (which includes the color of the vehicle/tiles)
+	
+	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", teamStats::Teams::TEAM1, glm::vec3(14.f, 3.f, -10.f), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai1);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai1));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai1));
+
+	std::shared_ptr<Vehicle> ai2 = std::make_shared<Vehicle>("ai2", teamStats::Teams::TEAM2, glm::vec3(10.f, 3.f, -6.f), glm::vec3(0.f, 0.f, -1.f));
+	vehicles.push_back(ai2);
+	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai2));
+	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai2));
+
+	std::shared_ptr<Vehicle> ai3 = std::make_shared<Vehicle>("ai3", teamStats::Teams::TEAM3, glm::vec3(6.f, 3.f, -2.f), glm::vec3(0.f, 0.f, -1.f));
+	vehicles.push_back(ai3);
+	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai3));
+	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai3));
 
 	/*triggerVolume = loadModel("rsc/models/cube.obj", true, "trigger", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
 	renderables.push_back(triggerVolume);*/
@@ -62,9 +72,9 @@ void Engine::initEntities()
 	int arena_size = 75;
 	arena = std::make_shared<Arena>(arena_size, arena_size);
 	arena->addWall(0, 0, 2, 2);
-	arena->addWall(14, 5, 1, 7);
-	arena->addWall(4, 17, 5, 2);
-	arena->addWall(10, 10, 1, 1);
+	//arena->addWall(14, 5, 1, 7);
+	//arena->addWall(4, 17, 5, 2);
+	//arena->addWall(10, 10, 1, 1);
 	renderables.push_back(arena);
 }
 

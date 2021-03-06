@@ -9,6 +9,7 @@
 
 #include "Camera.h"
 #include "DevUI.h"
+#include "Light.h"
 #include "Shader.h"
 #include "Texture.h"
 
