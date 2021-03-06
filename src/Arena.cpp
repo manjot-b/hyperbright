@@ -42,7 +42,7 @@ Arena::Arena(size_t rows, size_t cols) :
 
 	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr);
 	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr);
-	const float scale = 2;
+	const float scale = 5;
 
 	const BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);

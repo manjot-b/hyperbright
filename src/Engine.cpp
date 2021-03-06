@@ -51,17 +51,17 @@ void Engine::initEntities()
 	
 	// Create the 4 ai vehicles, setting their starting position, direction, and team (which includes the color of the vehicle/tiles)
 	
-	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", teamStats::Teams::TEAM1, glm::vec3(14.f, 3.f, -10.f), glm::vec3(0.f, 0.f, -1.f));
+	std::shared_ptr<Vehicle> ai1 = std::make_shared<Vehicle>("ai1", teamStats::Teams::TEAM1, glm::vec3(60.f, 1.f, -60.f), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai1);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai1));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai1));
 
-	std::shared_ptr<Vehicle> ai2 = std::make_shared<Vehicle>("ai2", teamStats::Teams::TEAM2, glm::vec3(10.f, 3.f, -6.f), glm::vec3(0.f, 0.f, -1.f));
+	std::shared_ptr<Vehicle> ai2 = std::make_shared<Vehicle>("ai2", teamStats::Teams::TEAM2, glm::vec3(40.f, 1.f, -40.f), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai2);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai2));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai2));
 
-	std::shared_ptr<Vehicle> ai3 = std::make_shared<Vehicle>("ai3", teamStats::Teams::TEAM3, glm::vec3(6.f, 3.f, -2.f), glm::vec3(0.f, 0.f, -1.f));
+	std::shared_ptr<Vehicle> ai3 = std::make_shared<Vehicle>("ai3", teamStats::Teams::TEAM3, glm::vec3(20.f, 1.f, -20.f), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai3);
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai3));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai3));
