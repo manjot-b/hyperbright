@@ -89,7 +89,7 @@ void Engine::run()
 	simulator.setAudioPlayer(audioPlayer);
 
 	AiManager aiManager;
-	aiManager.setArena(arena->getAiArenaRepresentation());
+	//aiManager.setArena(arena->getAiArenaRepresentation());
 	aiManager.setArena(arena);
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
 	aiManager.loadAiVehicle(vehicles.at(2));
