@@ -32,19 +32,27 @@ void AiManager::setArena(std::shared_ptr<Arena> a) {
 }
 
 //////////////////////////////////////////////////////////////////
-
+/*
 void AiManager::setArena(std::vector<std::vector<bool>> a) {
 	arenaRep = a;
 }
+*/
 
 //////////////////////////////////////////////////////////////////
 //GENERATE PATH FOR GIVEN AI
 void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 	ai->targetTile = generateTarget();
 	std::cout << "Goal Tile for "<< ai->vehicle->getId()<<" : " << ai->targetTile.x << " "<< ai->targetTile.y << std::endl;
-	std::vector<glm::vec2> pathList;
-	glm::vec2 currentTile = ai->vehicle->currentTile;
-	glm::vec2 target = ai->targetTile;
+	//std::vector<glm::vec2> pathList;
+	//glm::vec2 currentTile = ai->vehicle->currentTile;
+	//glm::vec2 target = ai->targetTile;
+
+	ai->path.push_back(ai->targetTile);
+	ai->state = HASTARGET;
+	return;
+
+	/*
+
 	//std::shared_ptr<std::vector<glm::vec2>> pathListPtr = std::make_shared<std::vector<glm::vec2>>(pathList);
 
 
@@ -83,32 +91,33 @@ void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 
 	}
 	//FORCE ALTERNATIVE / WALL PROTOCOL
+	*/
 }
 
 //////////////////////////////////////////////////////////////////
 //DECIDE WHERE TO GO NEXT
-
 glm::vec2 AiManager::generateTarget() {
-	
+
 	int selector = rand() % 4;
 
 	if (selector == 0) {
 		return glm::vec2(20, 20);
 	}
 	else if(selector == 1){
-		return glm::vec2(20, 41);
+		return glm::vec2(20, 60);
 	}
 	else if (selector == 2) {
-		return glm::vec2(44, 44);
+		return glm::vec2(60, 60);
 	}
 	else if (selector == 3) {
-		return glm::vec2(12, 12);
+		return glm::vec2(60, 20);
 	} 
 	return glm::vec2(50, 50);
 }
 
 //////////////////////////////////////////////////////////////////
-//DECIDE NEXT TILE TO GO TO IN PATH
+//DECIDE NEXT TILE TO GO TO IN PATH (A*)
+/*
 bool AiManager::nextStep(glm::vec2 target, glm::vec2 currentTile, std::vector<glm::vec2> &pathList) {
 	//std::cout << "Path Plan: "<< currentTile.x << " " << currentTile.y << std::endl;
 	if (arenaRep[currentTile.x][currentTile.y]) {//BASE CASE 1 WALL
@@ -149,3 +158,5 @@ bool AiManager::nextStep(glm::vec2 target, glm::vec2 currentTile, std::vector<gl
 	
 	return false;
 }
+
+*/
