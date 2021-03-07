@@ -13,7 +13,7 @@ Ai::~Ai() {}
 void Ai::aiInput() {
 
 	if (vehicle->currentTile == targetTile) {
-		std::cout << "GOAL REACHED"<< std::endl;
+		std::cout << vehicle->getId() << " GOAL REACHED"<< std::endl;
 		path.pop_back();
 		state = NOTARGET;
 		return;
@@ -22,7 +22,7 @@ void Ai::aiInput() {
 	//std::cout << "Current path:" << path.back().x << " " << path.back().y << std::endl;
 	if (path.size() > 0) {
 		if (vehicle->currentTile == path.back()) {
-			std::cout << "NEXT TILE REACHED " << vehicle->currentTile.x<<" "<< vehicle->currentTile.y << std::endl;
+			std::cout<<vehicle->getId() << " NEXT TILE REACHED " << vehicle->currentTile.x<<" "<< vehicle->currentTile.y << std::endl;
 			path.pop_back();
 		}
 		//std::cout << vehicle->currentTile.x<< " "<< vehicle->currentTile.y << std::endl;
@@ -30,16 +30,25 @@ void Ai::aiInput() {
 		float angleBetween = lookingAtTarget() * (180.f/M_PI);
 		//float angleBetween = lookingAtTarget();
 
-		std::cout <<angleBetween <<std::endl;
-		if (angleBetween < 5.f && angleBetween >= 0) {
+		vehicle->stopLeft();
+		vehicle->stopRight();
+
+		//std::cout <<angleBetween <<std::endl;
+		if (angleBetween < 5.f && angleBetween > -5.f) {
+
 			vehicle->accelerateForward();
+			//std::cout << "straight" << std::endl;
 		}
-		else if (angleBetween > 5.f  && angleBetween < 180.f) {
+		else if (angleBetween > 0.f ) {
+			//vehicle->stopLeft();
 			vehicle->turnRight();
+			//std::cout << "right" << std::endl;
 			vehicle->accelerateForward();
 		}
 		else {
+			//vehicle->stopRight();
 			vehicle->turnLeft();
+			//std::cout << "left" << std::endl;
 			vehicle->accelerateForward();
 		}
 	}
@@ -56,12 +65,22 @@ float Ai::lookingAtTarget() {
 	glm::vec3 vehiclePosition = vehicle->getPosition();
 
 
-	glm::vec2 vehicleDirectionVector =glm::vec2(vehicle->getDirection().x, vehicle->getDirection().z);
+	glm::vec2 vehicleDirectionVector = glm::normalize(glm::vec2(vehicle->getDirection().x, vehicle->getDirection().z));
 	//std::cout << " Direction vector: " << vehicleDirectionVector.x << " " << vehicleDirectionVector.y << std::endl;
 
 	//glm::vec2 targetVector = glm::vec2( vehiclePosition.x - targetPosition.x , vehiclePosition.z - targetPosition.z);
-	glm::vec2 targetVector = glm::vec2( targetPosition.x - vehiclePosition.x, targetPosition.z - vehiclePosition.z);
+	glm::vec2 targetVector = glm::normalize(glm::vec2( targetPosition.x - vehiclePosition.x, targetPosition.z - vehiclePosition.z));
 	//std::cout << " target vector: " << targetVector.x << " " << targetVector.y << std::endl;
 
+	float dot = vehicleDirectionVector.x * -targetVector.y + vehicleDirectionVector.y * targetVector.x;
+	if (dot > 0) {
+		//std::cout << "b on the right of a" << std::endl;
+		return -acos(glm::dot(vehicleDirectionVector, targetVector) / (glm::length(vehicleDirectionVector) * glm::length(targetVector)));
+	}
+	else if (dot < 0) {
+		//std::cout << "b on the left of a" << std::endl;
+		return acos(glm::dot(vehicleDirectionVector, targetVector) / (glm::length(vehicleDirectionVector) * glm::length(targetVector)));
+	}
+	
 	return acos(glm::dot(vehicleDirectionVector, targetVector) / (glm::length(vehicleDirectionVector) * glm::length(targetVector)));
 }
