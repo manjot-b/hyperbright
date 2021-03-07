@@ -66,15 +66,17 @@ void Engine::initEntities()
 	renderables.push_back(std::static_pointer_cast<Renderer::IRenderable>(ai3));
 	physicsModels.push_back(std::static_pointer_cast<IPhysical>(ai3));
 
-	/*triggerVolume = loadModel("rsc/models/cube.obj", true, "trigger", nullptr, glm::vec4(.3f, 1.f, .5f, 0.f));
-	renderables.push_back(triggerVolume);*/
+	battery = std::make_shared<Model> ("rsc/models/cube.obj", "battery", nullptr);
+	battery->scale(glm::vec3(1.f, 3.f, 1.f));
+	battery->translate(glm::vec3(15.f, 1.5f, 5.f));
+	battery->update();
+	renderables.push_back(battery);
 	
 	int arena_size = 75;
+	//bool aiArenaRepresentation[75][75];
 	arena = std::make_shared<Arena>(arena_size, arena_size);
 	arena->addWall(0, 0, 2, 2);
-	//arena->addWall(14, 5, 1, 7);
-	//arena->addWall(4, 17, 5, 2);
-	//arena->addWall(10, 10, 1, 1);
+
 	renderables.push_back(arena);
 }
 
@@ -127,13 +129,6 @@ void Engine::run()
 		// run a frame of simulation
 		simulator.stepPhysics(fpsLimit);
 		simulator.checkVehiclesOverTile(*arena, vehicles);
-		
-		/*
-		std::cout<< vehicles.at(1)->currentTile.x;
-		std::cout << " ";
-		std::cout << vehicles.at(1)->currentTile.y;
-		std::cout << std::endl;
-		*/
 
 		// set camera to player vehicles position
 		if (!controller.isCameraManual())

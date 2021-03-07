@@ -57,7 +57,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (!upPressed)
 		{
-			std::cout << "Up key PRESSED" << std::endl;
+			//std::cout << "Up key PRESSED" << std::endl;
 			playerVehicle->accelerateForward();
 			upPressed = true;
 		}
@@ -67,7 +67,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (upPressed)
 		{
-			std::cout << "Up key RELEASED" << std::endl;
+			//std::cout << "Up key RELEASED" << std::endl;
 			playerVehicle->stopForward();
 			upPressed = false;
 		}
@@ -77,7 +77,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (!downPressed)
 		{
-			std::cout << "Down key PRESSED" << std::endl;
+			//std::cout << "Down key PRESSED" << std::endl;
 			playerVehicle->accelerateReverse();
 			downPressed = true;
 		}
@@ -87,7 +87,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (downPressed)
 		{
-			std::cout << "Down key RELEASED" << std::endl;
+			//std::cout << "Down key RELEASED" << std::endl;
 			playerVehicle->stopReverse();
 			downPressed = false;
 		}
@@ -97,7 +97,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (!leftPressed)
 		{
-			std::cout << "Left key PRESSED" << std::endl;
+			//std::cout << "Left key PRESSED" << std::endl;
 			playerVehicle->turnLeft();
 			leftPressed = true;
 		}
@@ -107,7 +107,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (leftPressed)
 		{
-			std::cout << "Left key RELEASED" << std::endl;
+			//std::cout << "Left key RELEASED" << std::endl;
 			playerVehicle->stopLeft();
 			leftPressed = false;
 		}
@@ -117,7 +117,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (!rightPressed)
 		{
-			std::cout << "Right key PRESSED" << std::endl;
+			//std::cout << "Right key PRESSED" << std::endl;
 			playerVehicle->turnRight();
 			rightPressed = true;
 		}
@@ -127,7 +127,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (rightPressed)
 		{
-			std::cout << "Right key RELEASED" << std::endl;
+			//std::cout << "Right key RELEASED" << std::endl;
 			playerVehicle->stopRight();
 			rightPressed = false;
 		}

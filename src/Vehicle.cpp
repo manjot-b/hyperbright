@@ -89,6 +89,21 @@ quat Vehicle::getOrientation() const
 	return quat_cast(m);
 }
 
+void Vehicle::reduceEnergy()
+{
+	if (energy > 0) energy -= 0.1f;
+}
+
+void Vehicle::restoreEnergy()
+{
+	energy = 1.f;
+}
+
+bool Vehicle::enoughEnergy()
+{
+	return (energy > 0) ? true : false;
+}
+
 void Vehicle::accelerateForward()
 {
 	ctrl.input[0] = 1;

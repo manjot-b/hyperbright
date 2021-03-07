@@ -35,13 +35,16 @@ public:
 	const glm::vec3& getPosition() const { return position; }
 	glm::quat getOrientation() const;
 	teamStats::Teams getTeam() const { return team; }
+	void reduceEnergy();
+	void restoreEnergy();
+	bool enoughEnergy();
 
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setPosition(const glm::vec3& position);
 	void setColor(const glm::vec4 _color) { color = _color; }
 
 	glm::vec2 currentTile;
-	float energy;
+	float energy = 1.f;
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION
 

@@ -39,10 +39,7 @@ private:
 	std::vector<std::shared_ptr<IPhysical>> physicsModels;
 	std::vector<std::shared_ptr<Renderer::IRenderable>> renderables;
 
-	// These should eventually be their specific classes rather than Model.
-	// e.g. the plane should be Arena, car should be Vehicle.
-	std::shared_ptr<Model> powerup;
-	std::shared_ptr<Model> triggerVolume;
+	std::shared_ptr<Model> battery;
 
 	// Rename/remove as required.
 	std::shared_ptr<Texture> face;

@@ -58,10 +58,14 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {}
 	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
 
-		//for (physx::PxU32 i = 0; i < count; i++) {
+		for (physx::PxU32 i = 0; i < count; i++) {
 			std::cout << "PICKUP COLLISION \n";
 			audioPlayer->playPickupCollision();
-		//}
+			if (strcmp(pairs[i].triggerActor->getName(), "battery") == 0) {
+				Vehicle* v = (Vehicle*)pairs[i].otherActor->userData;
+				v->restoreEnergy();
+			}
+		}
 	}
 	void onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) {}
 };
@@ -375,23 +379,24 @@ void Simulate::initPhysics()
 
 		// TO-DO: Rather than storing a string id for each vehicle, see if we can store the pointer
 		// to the vehicle itself.
-		gVehicle4W[i]->getRigidDynamicActor()->userData = (void*)vehicle->getId();
+		gVehicle4W[i]->getRigidDynamicActor()->userData = (void*)vehicle;
+		gVehicle4W[i]->getRigidDynamicActor()->setName(vehicle->getId());
 		gScene->addActor(*gVehicle4W[i]->getRigidDynamicActor());
 	}
 
-	///////////////////////////////////// BOX
-	/*PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-	PxShape* boxWall = gPhysics->createShape(PxBoxGeometry(0.7f, 0.7f, 0.7f), *gMaterial, false);
-	PxRigidStatic* wallActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0,0,0)));
-	boxWall->setSimulationFilterData(obstFilterData);
+	///////////////////////////////////// Battery
+	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	PxShape* batteryBox = gPhysics->createShape(PxBoxGeometry(0.5f, 1.5f, 0.5f), *gMaterial, false);
+	PxRigidStatic* battery = gPhysics->createRigidStatic(PxTransform(PxVec3(15.f,1.5f,5.f)));
+	batteryBox->setSimulationFilterData(obstFilterData);
 
-	boxWall->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
-	boxWall->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	batteryBox->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
+	batteryBox->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
 
-	wallActor->setGlobalPose(PxTransform(PxVec3(0,0.7f,5)));
-	wallActor->attachShape(*boxWall);
-	wallActor->userData = (void*)physicsModels[2]->getId().c_str();
-	gScene->addActor(*wallActor);*/
+	//wallActor->setGlobalPose(PxTransform(PxVec3(0,0.7f,5)));
+	battery->attachShape(*batteryBox);
+	battery->setName("battery");
+	gScene->addActor(*battery);
 
 	std::cout << "PhysX Initialized" << std::endl;
 }
@@ -490,7 +495,8 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 			actors[i]->getShapes(shapes, numShapes);
 			
 			if (actors[i]->userData != NULL) {
-				const char* actorName = reinterpret_cast<const char*>(actors[i]->userData);
+				//const char* actorName = reinterpret_cast<const char*>(actors[i]->userData);
+				const char* actorName = actors[i]->getName();
 				const char* modelName = model->getId();
 				
 				if (actorName == modelName) {
@@ -523,16 +529,20 @@ void Simulate::checkVehiclesOverTile(Arena& arena, const std::vector<std::shared
 		if (tileCoords)
 		{
 			std::optional<teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
-			if (old && *old != vehicle->getTeam())
+			if (old && *old != vehicle->getTeam() && vehicle->enoughEnergy())
 			{
 				teamStats::scores[*old]--;
 				teamStats::scores[vehicle->getTeam()]++;
 				arena.setTileTeam(*tileCoords, vehicle->getTeam());
+				vehicle->reduceEnergy();
+				cout << vehicle->energy << endl;
 			}
-			else if (!old)
+			else if (!old && vehicle->enoughEnergy())
 			{
 				teamStats::scores[vehicle->getTeam()]++;
 				arena.setTileTeam(*tileCoords, vehicle->getTeam());
+				vehicle->reduceEnergy();
+				cout << vehicle->energy << endl;
 			}
 
 			vehicle->currentTile = *tileCoords;
