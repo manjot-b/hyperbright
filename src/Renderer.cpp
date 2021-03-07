@@ -5,6 +5,14 @@
 
 #include <iostream>
 #include <filesystem>
+#include <FTGL/ftgl.h>
+
+#define STARTGAME 1
+#define NOINPUT 0
+#define ENDGAME 2
+#define LOADOUT 3
+
+FTGLPixmapFont font("rsc/fonts/ROGFonts-Regular.otf");
 
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
@@ -62,7 +70,7 @@ void Renderer::initWindow()
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 	window = glfwCreateWindow(width, height, "OpenGL Example", nullptr, nullptr);
 	if (!window)
@@ -104,7 +112,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	devUI: An imgui window.
 */
 
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, int selection, bool paused, int index)
 {
 	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -122,6 +130,40 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	glUseProgram(0);
 
 	devUI.render();
+
+	if (selection == STARTGAME && paused) {
+		if (index == 0) {
+			glPushAttrib(GL_ALL_ATTRIB_BITS);
+			glPixelTransferf(GL_RED_BIAS, 0);
+			glPixelTransferf(GL_GREEN_BIAS, -1);
+			glPixelTransferf(GL_BLUE_BIAS, -1);
+			font.FaceSize(70);
+			font.Render("Resume", -1, FTPoint(425, 400, 0));//(window size / 2) - ((string length * FontSize) / 4) + (Fontsize / 2)
+			font.FaceSize(50);
+			font.Render("Quit", -1, FTPoint(525, 300, 0));
+			glPopAttrib();
+		}
+		else {
+			glPushAttrib(GL_ALL_ATTRIB_BITS);
+			glPixelTransferf(GL_RED_BIAS, 0);
+			glPixelTransferf(GL_GREEN_BIAS, -1);
+			glPixelTransferf(GL_BLUE_BIAS, -1);
+			font.FaceSize(50);
+			font.Render("Resume", -1, FTPoint(475, 400, 0));
+			font.FaceSize(70);
+			font.Render("Quit", -1, FTPoint(495, 300, 0));
+			glPopAttrib();
+		}
+	}
+	else if (selection == NOINPUT) {
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
+		glPixelTransferf(GL_RED_BIAS, 0);
+		glPixelTransferf(GL_GREEN_BIAS, -1);
+		glPixelTransferf(GL_BLUE_BIAS, -1);
+		font.FaceSize(70);
+		font.Render("START", -1, FTPoint(425, 400, 0));//(window size / 2) - ((string length * FontSize) / 4) + (Fontsize / 2)
+		glPopAttrib();
+	}
 
 	glfwSwapBuffers(window);
 }

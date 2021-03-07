@@ -25,7 +25,7 @@ public:
 		NO_TURN
 	};
 
-	Controller(GLFWwindow* window, Camera& camera, std::shared_ptr<Vehicle>& playerVehicle);
+	Controller(GLFWwindow* window, Camera& camera, std::shared_ptr<Vehicle>& playerVehicle, int s);
 	~Controller();
 
 	////// toggle the window cursor on!!!
@@ -38,6 +38,9 @@ public:
 	//std::queue<int> gameInput();
 	void processInput(float deltaSec);
 	bool isCameraManual() { return manualCamera; }
+	bool isPaused() { return paused; }
+	int getIndex() { return index; }
+	bool stopLoop() { return breakLoop; }
 
 private:
 	GLFWwindow* window;
@@ -45,6 +48,10 @@ private:
 
 	std::shared_ptr<Vehicle> playerVehicle;
 
+	bool breakLoop;
+	int selection;
+	int index;
+	bool paused;
 	bool manualCamera;
 	bool firstMouse;
 	float lastX;
