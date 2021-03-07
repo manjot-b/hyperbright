@@ -83,7 +83,7 @@ void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 //DECIDE WHERE TO GO NEXT
 glm::vec2 AiManager::generateTarget() {
 
-	return glm::vec2(20, 45);//ARBITRARY FOR TESTING
+	return glm::vec2(10, 10);//ARBITRARY FOR TESTING
 }
 
 //////////////////////////////////////////////////////////////////

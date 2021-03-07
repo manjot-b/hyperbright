@@ -245,6 +245,8 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 			wheelMaterials, wheelConvexMeshes, numWheels, wheelSimFilterData,
 			chassisMaterials, chassisConvexMeshes, 1, chassisSimFilterData,
 			*physics);
+
+		veh4WActor->setName("vehicle");
 	}
 
 	//Set up the sim data for the wheels.
