@@ -20,7 +20,7 @@
 Engine::Engine() :
 	camera(), renderer(camera),
 	deltaSec(0.0f), rotate(0), scale(1),
-	lastFrame(0.0f), selection(NOINPUT)
+	lastFrame(0.0f), roundTimer(60), selection(NOINPUT)
 {
 	// load textures into a shared pointer.
 	loadTextures();
@@ -119,12 +119,7 @@ void Engine::runMenu() {
 		}
 		lastFrame = currentFrame;
 
-		if (controller.isPaused()) {
-			deltaSec = 0.f;
-		}
-		devUI.update(deltaSec);
-
-		// controller 
+		devUI.update(deltaSec, roundTimer);
 		controller.processInput(deltaSec);
 
 		// render the updated position of all models and ImGui
@@ -136,10 +131,6 @@ void Engine::runMenu() {
 		}
 		glfwPollEvents();
 	}
-
-	//***** Clean up anything needed for the main menu HERE *****
-
-	return;
 }
 //////////////////////////////////////////////////////////
 
@@ -158,11 +149,8 @@ void Engine::runGame() {
 	DevUI devUI(renderer.getWindow());
 	Controller controller(renderer.getWindow(), camera, vehicles[0], STARTGAME);
 
-	// SOUND SETUP
-	//audioPlayer->playGameMusic();
-	//audioPlayer->playCarIdle();
-
-	while (!controller.isWindowClosed()) {
+	bool roundOver = false;
+	while (!controller.isWindowClosed() && !roundOver) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -176,13 +164,7 @@ void Engine::runGame() {
 		}
 		lastFrame = currentFrame;
 
-		if (controller.isPaused()) {
-			deltaSec = 0.f;
-		}
 
-		devUI.update(deltaSec);
-
-		// controller 
 		controller.processInput(deltaSec);
 
 		//AI
@@ -190,9 +172,13 @@ void Engine::runGame() {
 
 		// run a frame of simulation
 		if (!controller.isPaused()) {
+			roundTimer -= deltaSec;
+			roundOver = roundTimer < 0.01f;
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
 		}
+
+		devUI.update(deltaSec, roundTimer);
 
 		// set camera to player vehicles position
 		if (!controller.isCameraManual())

@@ -54,6 +54,7 @@ private:
 	float scale;
 
 	float lastFrame;
+	float roundTimer;	// seconds.
 
 	void runMenu();
 	void endGame();

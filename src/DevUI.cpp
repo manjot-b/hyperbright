@@ -28,9 +28,10 @@ DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 DevUI::~DevUI() {}
 
 
-void DevUI::update(float deltaSec)
+void DevUI::update(float deltaSec, float roundTimer)
 {
     _deltaSec = deltaSec;
+    _roundTimer = roundTimer;
 }
 
 /**
@@ -50,6 +51,7 @@ void DevUI::render()
 
     ImGui::Begin("Dev Settings");
     ImGui::Text("Application average %.3f ms/frame %.3f FPS", _deltaSec*1000, 1/_deltaSec);
+    ImGui::Text("Time: %.2f s", _roundTimer);
     ImGui::SliderInt("FPS Cap", &sliderFPS, 30, 144);
     ImGui::Text("Scores:\nTeam 0: %u\nTeam 1: %u", teamStats::scores[teamStats::Teams::TEAM0], teamStats::scores[teamStats::Teams::TEAM1]);
 
