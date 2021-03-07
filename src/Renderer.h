@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "DevUI.h"
 #include "Light.h"
+#include "Menu.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -27,7 +28,7 @@ class Renderer
 
 		GLFWwindow* getWindow();
 
-		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, int slection, bool paused, int index);
+		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, Menu& menu);
 
 	private:
 		GLFWwindow* window;

@@ -1,31 +1,25 @@
 #include "Engine.h"
 
-#include <filesystem>
 #include <iostream>
 
 #include "Ai.h"
 #include "AiManager.h"
 #include "AudioPlayer.h"
-#include "Controller.h"
 #include "DevUI.h"
 #include "Pickup.h"
 #include "TeamStats.h"
 
-#define STARTGAME 1
-#define NOINPUT 0
-#define ENDGAME 2
-#define LOADOUT 3
-
 
 Engine::Engine() :
-	camera(), renderer(camera),
-	deltaSec(0.0f), rotate(0), scale(1),
-	lastFrame(0.0f), roundTimer(60), selection(NOINPUT)
+	camera(), renderer(camera), menu(), devUI(renderer.getWindow()),
+	deltaSec(0.0f), lastFrame(0.0f), roundTimer(60)
 {
 	// load textures into a shared pointer.
 	loadTextures();
 	initEntities();
 	setupAudioPlayer();
+
+	controller = std::make_unique<Controller>(renderer.getWindow(), camera, vehicles[0], menu);
 }
 
 
@@ -82,30 +76,20 @@ void Engine::initEntities()
 }
 
 
-/////// Needs to be cleaned up ///////
-// Engine::run should initiate the Controller and DevUI 
-// then simply keep track of the current window state of
-// the game (menu/arena/pause etc) and appropriate func.
 void Engine::run()
 {
-	runMenu();
+	runMainMenu();
 	runGame();
 	endGame();
-	return;
 }
 
 
 /*
 This Function contains the loop for the main menu.
-Responsible for starting and ending the game.
 */
-void Engine::runMenu() {
+void Engine::runMainMenu() {
 
-	//***** Initialize anything needed for the main menu HERE *****
-	DevUI devUI(renderer.getWindow());
-	Controller controller(renderer.getWindow(), camera, vehicles[0], NOINPUT);
-
-	while (!controller.isWindowClosed()) {
+	while (menu.getState() == Menu::State::MAIN) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -120,15 +104,11 @@ void Engine::runMenu() {
 		lastFrame = currentFrame;
 
 		devUI.update(deltaSec, roundTimer);
-		controller.processInput(deltaSec);
+		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
-		// render the updated position of all models and ImGui
-		renderer.render(renderables, devUI, selection, controller.isPaused(), controller.getIndex());
+		// render only the menu for now.
+		renderer.render(renderables, devUI, menu);
 
-		if (controller.stopLoop() == true) {
-			selection = STARTGAME;
-			break;
-		}
 		glfwPollEvents();
 	}
 }
@@ -145,12 +125,8 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
-
-	DevUI devUI(renderer.getWindow());
-	Controller controller(renderer.getWindow(), camera, vehicles[0], STARTGAME);
-
 	bool roundOver = false;
-	while (!controller.isWindowClosed() && !roundOver) {
+	while (!controller->isWindowClosed() && !roundOver) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -165,13 +141,13 @@ void Engine::runGame() {
 		lastFrame = currentFrame;
 
 
-		controller.processInput(deltaSec);
+		controller->processInput(deltaSec);
 
 		//AI
 		aiManager.makeMoves();
 
 		// run a frame of simulation
-		if (!controller.isPaused()) {
+		if (menu.getState() != Menu::State::PAUSE) {
 			roundTimer -= deltaSec;
 			roundOver = roundTimer < 0.01f;
 			simulator.stepPhysics(fpsLimit);
@@ -181,14 +157,14 @@ void Engine::runGame() {
 		devUI.update(deltaSec, roundTimer);
 
 		// set camera to player vehicles position
-		if (!controller.isCameraManual())
+		if (!controller->isCameraManual())
 		{
 			// grab position from player vehicle
 			camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getForward());
 		}
 
 		// render the updated position of all models and ImGui
-		renderer.render(renderables, devUI, selection, controller.isPaused(), controller.getIndex());
+		renderer.render(renderables, devUI, menu);
 
 		glfwPollEvents();
 	}

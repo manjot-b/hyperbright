@@ -1,10 +1,9 @@
 #pragma once
 
+#include <glad/glad.h>
 #include <FTGL/ftgl.h>
 
-#include "Renderer.h"
-
-class Menu : Renderer::IRenderable
+class Menu
 {
 public:
 	enum class State {
@@ -20,7 +19,7 @@ public:
 	};
 
 	Menu(State state = State::MAIN, PauseSelection selection = PauseSelection::RESUME);
-	void render(const Shader& shader);
+	void render();
 
 	State getState() const;
 	void setState(State state);

@@ -4,7 +4,7 @@ Menu::Menu(State state, PauseSelection selection) :
 	font("rsc/fonts/ROGFonts-Regular.otf"), _state(state), pauseSelection(selection)
 {}
 
-void Menu::render(const Shader&)
+void Menu::render()
 {
 	switch (_state)
 	{
