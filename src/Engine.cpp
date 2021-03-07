@@ -92,6 +92,9 @@ void Engine::run()
 	aiManager.setArena(arena->getAiArenaRepresentation());
 	aiManager.setArena(arena);
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
+	aiManager.loadAiVehicle(vehicles.at(2));
+	aiManager.loadAiVehicle(vehicles.at(3));
+
 
 	DevUI devUI(renderer.getWindow());
 	Controller controller(renderer.getWindow(), camera, vehicles[0]);
