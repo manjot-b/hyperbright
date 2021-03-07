@@ -72,7 +72,7 @@ void Engine::initEntities()
 	battery->update();
 	renderables.push_back(battery);
 	
-	int arena_size = 20;
+	int arena_size = 75;
 	//bool aiArenaRepresentation[75][75];
 	arena = std::make_shared<Arena>(arena_size, arena_size);
 	arena->addWall(0, 0, 2, 2);

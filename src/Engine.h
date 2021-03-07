@@ -39,6 +39,8 @@ private:
 	std::vector<std::shared_ptr<IPhysical>> physicsModels;
 	std::vector<std::shared_ptr<Renderer::IRenderable>> renderables;
 
+	std::shared_ptr<Model> battery;
+
 	// Rename/remove as required.
 	std::shared_ptr<Texture> face;
 	std::shared_ptr<Texture> tree;
