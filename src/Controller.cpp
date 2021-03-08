@@ -138,60 +138,88 @@ void Controller::processInput(float deltaSec)
 void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
+	switch (controller->menu.getState())
+	{
+	case Menu::State::MAIN:
+		controller->mainMenuKeyCallback(key, scancode, action, mods);
+		break;
+	case Menu::State::PAUSE:
+		controller->pauseMenuKeyCallback(key, scancode, action, mods);
+		break;
+	case Menu::State::NONE:
+		controller->noMenuKeyCallback(key, scancode, action, mods);
+		break;
+	}
 
+	// Be able to access the DevUI window from any menu
 	if (action == GLFW_PRESS)
 	{
-		if (controller->menu.getState() == Menu::State::MAIN)
+		switch (key)
 		{
-			switch (key) {
-			case GLFW_KEY_ENTER:
-				controller->menu.setState(Menu::State::NONE);
-				break;
-			}
-		}
-		else if (controller->menu.getState() == Menu::State::NONE)
-		{
-			switch (key)
+		case GLFW_KEY_SPACE:
+			if (mods & GLFW_MOD_CONTROL)
 			{
-			case GLFW_KEY_SPACE:
-				if (mods & GLFW_MOD_CONTROL)
-				{
-					controller->toggleCursor();
-				}
-				break;
-			case GLFW_KEY_C:
-				controller->manualCamera = !controller->manualCamera;
-				std::cout << "Switch to manual camera." << std::endl;
-				break;
-
-			case GLFW_KEY_ESCAPE:
-				controller->menu.setState(Menu::State::PAUSE);
-				break;
-			}
-		}
-		else if (controller->menu.getState() == Menu::State::PAUSE)
-		{
-			switch (key) {
-			case GLFW_KEY_UP:
-			case GLFW_KEY_DOWN:
-			{
-				Menu::PauseSelection selection = controller->menu.getPauseSelection();
-				controller->menu.setPauseSelection(
-					selection == Menu::PauseSelection::RESUME ? Menu::PauseSelection::QUIT : Menu::PauseSelection::RESUME);
+				controller->toggleCursor();
 			}
 			break;
+		}
+	}
+}
 
-			case GLFW_KEY_ENTER:
-				if (controller->menu.getPauseSelection() == Menu::PauseSelection::QUIT) {
-					controller->setWindowShouldClose(true);
-					//controller->menu.setPauseSelection(Menu::PauseSelection::RESUME);
-					//controller->menu.setState(Menu::State::MAIN);
-				}
-				else {
-					controller->menu.setState(Menu::State::NONE);
-				}
-				break;
+void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_ENTER:
+			menu.setState(Menu::State::NONE);
+			break;
+		}
+	}
+}
+
+void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key) {
+		case GLFW_KEY_UP:
+		case GLFW_KEY_DOWN:
+		{
+			Menu::PauseSelection selection = menu.getPauseSelection();
+			menu.setPauseSelection(
+				selection == Menu::PauseSelection::RESUME ? Menu::PauseSelection::QUIT : Menu::PauseSelection::RESUME);
+		}
+		break;
+
+		case GLFW_KEY_ENTER:
+			if (menu.getPauseSelection() == Menu::PauseSelection::QUIT) {
+				setWindowShouldClose(true);
+				//controller->menu.setPauseSelection(Menu::PauseSelection::RESUME);
+				//controller->menu.setState(Menu::State::MAIN);
 			}
+			else {
+				menu.setState(Menu::State::NONE);
+			}
+			break;
+		}
+	}
+}
+void Controller::noMenuKeyCallback(int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_C:
+			manualCamera = !manualCamera;
+			std::cout << "Switch to manual camera." << std::endl;
+			break;
+
+		case GLFW_KEY_ESCAPE:
+			menu.setState(Menu::State::PAUSE);
+			break;
 		}
 	}
 }
