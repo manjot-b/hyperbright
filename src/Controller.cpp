@@ -149,6 +149,9 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 	case Menu::State::NONE:
 		controller->noMenuKeyCallback(key, scancode, action, mods);
 		break;
+	case Menu::State::END:
+		controller->endMenuKeyCallback(key, scancode, action, mods);
+		break;
 	}
 
 	// Be able to access the DevUI window from any menu
@@ -219,6 +222,20 @@ void Controller::noMenuKeyCallback(int key, int scancode, int action, int mods)
 
 		case GLFW_KEY_ESCAPE:
 			menu.setState(Menu::State::PAUSE);
+			break;
+		}
+	}
+}
+
+void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_ENTER:
+			setWindowShouldClose(true);
+			//menu.setState(Menu::State::MAIN);
 			break;
 		}
 	}

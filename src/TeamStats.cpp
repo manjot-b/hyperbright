@@ -15,4 +15,11 @@ namespace teamStats
 		{Teams::TEAM2, 0},
 		{Teams::TEAM3, 0}
 	};
+
+	std::unordered_map<Teams, std::string> names = {
+		{Teams::TEAM0, "Player"},
+		{Teams::TEAM1, "CPU1"},
+		{Teams::TEAM2, "CPU2"},
+		{Teams::TEAM3, "CPU3"}
+	};
 }

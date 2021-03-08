@@ -125,8 +125,7 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
-	bool roundOver = false;
-	while (!controller->isWindowClosed() && !roundOver) {
+	while (!controller->isWindowClosed() && menu.getState() != Menu::State::END) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -149,7 +148,9 @@ void Engine::runGame() {
 		// run a frame of simulation
 		if (menu.getState() != Menu::State::PAUSE) {
 			roundTimer -= deltaSec;
-			roundOver = roundTimer < 0.01f;
+			if (roundTimer < 0.01f)
+				menu.setState(Menu::State::END);
+
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
 		}
@@ -176,5 +177,26 @@ void Engine::runGame() {
 //A loop for endgame
 void Engine::endGame()
 {
-	return;
+	while (!controller->isWindowClosed()) {
+		// update global time
+		float currentFrame = glfwGetTime();
+		deltaSec = currentFrame - lastFrame;
+
+		float fpsLimit = (1.f / devUI.getSliderFPS());
+
+		//wait until a certain amount of time has past
+		while (deltaSec < fpsLimit) {
+			currentFrame = glfwGetTime();
+			deltaSec = currentFrame - lastFrame;
+		}
+		lastFrame = currentFrame;
+
+		devUI.update(deltaSec, roundTimer);
+		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
+
+		// render only the menu for now.
+		renderer.render(renderables, devUI, menu);
+
+		glfwPollEvents();
+	}
 }
