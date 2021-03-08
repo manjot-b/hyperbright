@@ -7,10 +7,11 @@
 #define GAMEMUSIC 0
 #define PICKUPCOLLISION 1
 #define CARIDLE 2
+#define STARTMENUMUSIC 3
 
-#define NUM_BUFFERS 3 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 3
-#define NUM_ENVIRONMENTS 3
+#define NUM_BUFFERS 4 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 4
+#define NUM_ENVIRONMENTS 4
 ALfloat listenerPos[] = { 0.0,0.0,4.0 };
 ALfloat listenerVel[] = { 0.0,0.0,0.0 };
 ALfloat listenerOri[] = { 0.0,0.0,1.0, 0.0,1.0,0.0 };
@@ -221,11 +222,19 @@ void AudioPlayer::init() {
 
     loadSound("rsc/sounds/car_idle_loop.wav");
     alSourcef(source[CARIDLE], AL_PITCH, 1.0f);
-    alSourcef(source[CARIDLE], AL_GAIN, 0.25f);
+    alSourcef(source[CARIDLE], AL_GAIN, 0.1f);
     alSourcefv(source[CARIDLE], AL_POSITION, source0Pos);
     alSourcefv(source[CARIDLE], AL_VELOCITY, source0Vel);
     alSourcei(source[CARIDLE], AL_BUFFER, buffer[CARIDLE]);
     alSourcei(source[CARIDLE], AL_LOOPING, AL_TRUE);
+
+    loadSound("rsc/sounds/start_menu_music.wav");
+    alSourcef(source[STARTMENUMUSIC], AL_PITCH, 1.0f);
+    alSourcef(source[STARTMENUMUSIC], AL_GAIN, 1.0f);
+    alSourcefv(source[STARTMENUMUSIC], AL_POSITION, source0Pos);
+    alSourcefv(source[STARTMENUMUSIC], AL_VELOCITY, source0Vel);
+    alSourcei(source[STARTMENUMUSIC], AL_BUFFER, buffer[STARTMENUMUSIC]);
+    alSourcei(source[STARTMENUMUSIC], AL_LOOPING, AL_TRUE);
 
     return;
 }
@@ -312,4 +321,17 @@ void AudioPlayer::playCarIdle() {
 
 void AudioPlayer::stopCarIdle() {
     alSourceStop(source[CARIDLE]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playStartMenuMusic() {
+
+    alSourcePlay(source[STARTMENUMUSIC]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::stopStartMenuMusic() {
+    alSourceStop(source[STARTMENUMUSIC]);
 }

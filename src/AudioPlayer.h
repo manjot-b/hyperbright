@@ -10,6 +10,8 @@ public:
 	void playMusic(int number);//USED FOR TESTING AND INITIAL DESIGN DELETE LATER
 	void playGameMusic();
 	void stopGameMusic();
+	void playStartMenuMusic();
+	void stopStartMenuMusic();
 	void playPickupCollision();
 	void playCarIdle();
 	void stopCarIdle();
