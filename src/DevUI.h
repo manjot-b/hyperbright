@@ -10,10 +10,11 @@ class DevUI
 public:
 	DevUI(GLFWwindow* window);
 	~DevUI();
-	void update(float deltaSec);
+	void update(float deltaSec, float roundTimer);
 	void render();
 	int getSliderFPS();
 private:
 	bool showDemo;
 	float _deltaSec;
+	float _roundTimer;
 };

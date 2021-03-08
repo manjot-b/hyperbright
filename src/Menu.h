@@ -1,0 +1,37 @@
+#pragma once
+
+#include <glad/glad.h>
+#include <FTGL/ftgl.h>
+
+class Menu
+{
+public:
+	enum class State {
+		NONE,
+		MAIN,
+		PAUSE,
+		END
+	};
+
+	enum class PauseSelection {
+		RESUME,
+		QUIT
+	};
+
+	Menu(State state = State::MAIN, PauseSelection selection = PauseSelection::RESUME);
+	void render();
+
+	State getState() const;
+	void setState(State state);
+	PauseSelection getPauseSelection() const;
+	void setPauseSelection(PauseSelection selection);
+
+private:
+	FTGLPixmapFont font;
+	State _state;
+	PauseSelection pauseSelection;
+
+	void renderMain();
+	void renderPause();
+	void renderEnd();
+};

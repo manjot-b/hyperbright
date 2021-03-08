@@ -3,10 +3,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
+#include <memory>
 #include <queue>
 
-#include "Vehicle.h"
 #include "Camera.h"
+#include "Menu.h"
+#include "Vehicle.h"
 
 class Controller
 {
@@ -25,7 +28,7 @@ public:
 		NO_TURN
 	};
 
-	Controller(GLFWwindow* window, Camera& camera, std::shared_ptr<Vehicle>& playerVehicle, int s);
+	Controller(GLFWwindow* window, Camera& camera, std::shared_ptr<Vehicle>& playerVehicle, Menu& menu);
 	~Controller();
 
 	////// toggle the window cursor on!!!
@@ -38,20 +41,14 @@ public:
 	//std::queue<int> gameInput();
 	void processInput(float deltaSec);
 	bool isCameraManual() { return manualCamera; }
-	bool isPaused() { return paused; }
-	int getIndex() { return index; }
-	bool stopLoop() { return breakLoop; }
 
 private:
 	GLFWwindow* window;
 	Camera& camera;
+	Menu& menu;
 
 	std::shared_ptr<Vehicle> playerVehicle;
 
-	bool breakLoop;
-	int selection;
-	int index;
-	bool paused;
 	bool manualCamera;
 	bool firstMouse;
 	float lastX;
@@ -59,6 +56,10 @@ private:
 	std::queue<int> currentDrivingControls;
 
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void mainMenuKeyCallback(int key, int scancode, int action, int mods);
+	void pauseMenuKeyCallback(int key, int scancode, int action, int mods);
+	void noMenuKeyCallback(int key, int scancode, int action, int mods);
+	void endMenuKeyCallback(int key, int scancode, int action, int mods);
 	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 };

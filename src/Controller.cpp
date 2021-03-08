@@ -2,16 +2,9 @@
 
 #include <iostream>
 
-
-#define STARTGAME 1
-#define NOINPUT 0
-#define ENDGAME 2
-#define LOADOUT 3
-
-Controller::Controller(GLFWwindow* _window, Camera& _camera, std::shared_ptr<Vehicle>& _playerVehicle, int s) :
-	window(_window), camera(_camera), playerVehicle(_playerVehicle), isCursorShowing(false), manualCamera(false), paused(false), index(0),
-	selection(s), breakLoop(false)
-
+Controller::Controller(GLFWwindow* _window, Camera& _camera, std::shared_ptr<Vehicle>& _playerVehicle, Menu& _menu) :
+	window(_window), camera(_camera), playerVehicle(_playerVehicle), menu(_menu),
+	isCursorShowing(false), manualCamera(false)
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
 	glfwSetKeyCallback(window, keyCallback);
@@ -36,8 +29,9 @@ bool rightPressed;
 
 void Controller::processInput(float deltaSec)
 {
-	float rotationSpeed = glm::radians(135.0f) * deltaSec;
-	float scaleSpeed = 1.0f + 1.0f * deltaSec;
+	if (menu.getState() != Menu::State::NONE) {
+		return;
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
@@ -144,8 +138,24 @@ void Controller::processInput(float deltaSec)
 void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
+	switch (controller->menu.getState())
+	{
+	case Menu::State::MAIN:
+		controller->mainMenuKeyCallback(key, scancode, action, mods);
+		break;
+	case Menu::State::PAUSE:
+		controller->pauseMenuKeyCallback(key, scancode, action, mods);
+		break;
+	case Menu::State::NONE:
+		controller->noMenuKeyCallback(key, scancode, action, mods);
+		break;
+	case Menu::State::END:
+		controller->endMenuKeyCallback(key, scancode, action, mods);
+		break;
+	}
 
-	if (action == GLFW_PRESS && controller->selection == STARTGAME && controller->paused == false)
+	// Be able to access the DevUI window from any menu
+	if (action == GLFW_PRESS)
 	{
 		switch (key)
 		{
@@ -155,50 +165,77 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 				controller->toggleCursor();
 			}
 			break;
+		}
+	}
+}
+
+void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_ENTER:
+			menu.setState(Menu::State::NONE);
+			break;
+		}
+	}
+}
+
+void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key) {
+		case GLFW_KEY_UP:
+		case GLFW_KEY_DOWN:
+		{
+			Menu::PauseSelection selection = menu.getPauseSelection();
+			menu.setPauseSelection(
+				selection == Menu::PauseSelection::RESUME ? Menu::PauseSelection::QUIT : Menu::PauseSelection::RESUME);
+		}
+		break;
+
+		case GLFW_KEY_ENTER:
+			if (menu.getPauseSelection() == Menu::PauseSelection::QUIT) {
+				setWindowShouldClose(true);
+				//controller->menu.setPauseSelection(Menu::PauseSelection::RESUME);
+				//controller->menu.setState(Menu::State::MAIN);
+			}
+			else {
+				menu.setState(Menu::State::NONE);
+			}
+			break;
+		}
+	}
+}
+void Controller::noMenuKeyCallback(int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
 		case GLFW_KEY_C:
-			controller->manualCamera = !controller->manualCamera;
-			std::cout << "Switch to manual camer." << std::endl;
+			manualCamera = !manualCamera;
+			std::cout << "Switch to manual camera." << std::endl;
 			break;
 
 		case GLFW_KEY_ESCAPE:
-			controller->paused = !controller->paused;
+			menu.setState(Menu::State::PAUSE);
 			break;
 		}
 	}
-	else if (action == GLFW_PRESS && controller->selection == STARTGAME && controller->paused == true) {
-		switch (key) {
-		case GLFW_KEY_UP:
-			if (controller->index == 0) {
-				controller->index = 1;
-			}
-			else {
-				controller->index--;
-			}
-			break;
+}
 
-		case GLFW_KEY_DOWN:
-			if (controller->index == 1) {
-				controller->index = 0;
-			}
-			else {
-				controller->index++;
-			}
-			break;
-
+void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
 		case GLFW_KEY_ENTER:
-			if (controller->index == 1) {
-				controller->setWindowShouldClose(true);
-			}
-			else {
-				controller->paused = !controller->paused;
-			}
-			break;
-		}
-	}
-	else if (action == GLFW_PRESS && controller->selection == NOINPUT) {
-		switch (key) {
-		case GLFW_KEY_ENTER:
-			controller->breakLoop = !controller->breakLoop;
+			setWindowShouldClose(true);
+			//menu.setState(Menu::State::MAIN);
 			break;
 		}
 	}

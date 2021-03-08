@@ -8,12 +8,11 @@
 #include <string>
 #include <vector>
 
-
 #include "AudioPlayer.h"
-
 #include "Arena.h"
-
+#include "Controller.h"
 #include "Model.h"
+#include "Menu.h"
 #include "Renderer.h"
 #include "Simulate.h"
 #include "Texture.h"
@@ -27,14 +26,10 @@ public:
 	void run();
 private:
 	Camera camera;
-	Renderer renderer;
+	Menu menu;
+	DevUI devUI;
 	std::shared_ptr<Arena> arena;
-
-	int selection;
-	float deltaSec;
-	//Ai aiPlayers[4];
-	//Vehicle vehicles[4];
-	//Pickup pickups[10];
+	std::unique_ptr<Controller> controller;
 
 	std::vector<std::shared_ptr<Vehicle>> vehicles;
 	std::vector<std::shared_ptr<IPhysical>> physicsModels;
@@ -48,16 +43,15 @@ private:
 	std::shared_ptr<Texture> background;
 
 	std::shared_ptr<AudioPlayer> audioPlayer;
-	void setupAudioPlayer();
 
-	glm::vec3 rotate;
-	float scale;
-
+	float deltaSec;
 	float lastFrame;
+	float roundTimer;	// seconds.
 
-	void runMenu();
+	void runMainMenu();
 	void endGame();
 	void runGame();
 	void loadTextures();
 	void initEntities();
+	void setupAudioPlayer();
 };
