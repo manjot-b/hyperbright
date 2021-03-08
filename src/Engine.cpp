@@ -71,6 +71,8 @@ void Engine::initEntities()
 	//bool aiArenaRepresentation[75][75];
 	arena = std::make_shared<Arena>(arena_size, arena_size);
 	arena->addWall(0, 0, 2, 2);
+	arena->addWall(35, 35, 1, 7);
+	arena->addWall(45, 45, 5, 2);
 
 	renderables.push_back(arena);
 }
