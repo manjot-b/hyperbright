@@ -11,7 +11,7 @@
 
 
 Engine::Engine() :
-	camera(), renderer(camera), menu(), devUI(renderer.getWindow()),
+	camera(), menu(), devUI(Renderer::getInstance().getWindow()),
 	deltaSec(0.0f), lastFrame(0.0f), roundTimer(60)
 {
 	// load textures into a shared pointer.
@@ -19,7 +19,7 @@ Engine::Engine() :
 	initEntities();
 	setupAudioPlayer();
 
-	controller = std::make_unique<Controller>(renderer.getWindow(), camera, vehicles[0], menu);
+	controller = std::make_unique<Controller>(Renderer::getInstance().getWindow(), camera, vehicles[0], menu);
 }
 
 
@@ -107,7 +107,7 @@ void Engine::runMainMenu() {
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
 		// render only the menu for now.
-		renderer.render(renderables, devUI, menu);
+		Renderer::getInstance().render(renderables, devUI, menu, camera);
 
 		glfwPollEvents();
 	}
@@ -165,7 +165,7 @@ void Engine::runGame() {
 		}
 
 		// render the updated position of all models and ImGui
-		renderer.render(renderables, devUI, menu);
+		Renderer::getInstance().render(renderables, devUI, menu, camera);
 
 		glfwPollEvents();
 	}
@@ -195,7 +195,7 @@ void Engine::endGame()
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
 		// render only the menu for now.
-		renderer.render(renderables, devUI, menu);
+		Renderer::getInstance().render(renderables, devUI, menu, camera);
 
 		glfwPollEvents();
 	}

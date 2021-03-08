@@ -10,11 +10,8 @@
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
 * not be available until GLAD is initialized.
-*
-* Parameters:
-	camera: The camera for the scene. The renderer will not the alter the camera in any way.
 */
-Renderer::Renderer(const Camera& camera) : camera(camera)
+Renderer::Renderer()
 {
 	initWindow();
 	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -24,7 +21,6 @@ Renderer::Renderer(const Camera& camera) : camera(camera)
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 500.0f);
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
-	shader->setUniformMatrix4fv("view", camera.getViewMatrix());
 
 	std::vector<Light> lights = {
 		{false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f)},
@@ -48,14 +44,18 @@ Renderer::Renderer(const Camera& camera) : camera(camera)
 		shader->setUniform1f(quadraticUniform.c_str(), lights[i].quadratic);
 	}
 
-	shader->setUniform3fv("pointOfView", camera.getPosition());
-
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
 
 	glUseProgram(0);	// unbind shader
 }
 
 Renderer::~Renderer() {}
+
+Renderer& Renderer::getInstance()
+{
+	static Renderer renderer;	// instantiated only once.
+	return renderer;
+}
 
 void Renderer::initWindow()
 {
@@ -84,11 +84,8 @@ void Renderer::initWindow()
 
 	glfwSetFramebufferSizeCallback(window,
 			[](GLFWwindow* window, int newWidth, int newHeight) {
-
-		Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
-
 		glViewport(0, 0, newWidth, newHeight);
-		renderer->perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 500.0f);
+		Renderer::getInstance().perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 500.0f);
 	});
 
 	glEnable(GL_DEPTH_TEST);
@@ -106,7 +103,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	menu: The menu object.
 */
 
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, Menu& menu)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, Menu& menu, const Camera& camera)
 {
 	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

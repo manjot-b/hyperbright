@@ -23,12 +23,17 @@ class Renderer
 			virtual void render(const Shader& shader) const = 0;
 		};
 
-		Renderer(const Camera& camera);
+		Renderer();
 		~Renderer();
+		static Renderer& getInstance();
+
+		// The renderer is a singleton.
+		Renderer(const Renderer&) = delete;
+		void operator=(const Renderer&) = delete;
 
 		GLFWwindow* getWindow();
 
-		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, Menu& menu);
+		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, Menu& menu, const Camera& camera);
 
 	private:
 		GLFWwindow* window;
@@ -39,7 +44,6 @@ class Renderer
 		const unsigned int height = 675;
 		const unsigned int width = 1200;
 
-		const Camera& camera;
 		glm::mat4 perspective;
 
 		void initWindow();

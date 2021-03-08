@@ -26,7 +26,6 @@ public:
 	void run();
 private:
 	Camera camera;
-	Renderer renderer;
 	Menu menu;
 	DevUI devUI;
 	std::shared_ptr<Arena> arena;
