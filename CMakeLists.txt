@@ -5,8 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(${CMAKE_PROJECT_NAME})
 
-include_directories(inc)
-
 # Make sure OpenGL is on the system.
 find_package(OpenGL REQUIRED)
 
