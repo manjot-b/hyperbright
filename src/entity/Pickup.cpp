@@ -1,11 +1,10 @@
 #include "Pickup.h"
-#include "Vehicle.h"
-#include "PickupManager.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
 #include <iostream>
 
+#include "PickupManager.h"
 #include "Vehicle.h"
 
 Pickup::Pickup() {

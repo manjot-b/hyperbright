@@ -6,10 +6,10 @@
 #include <vector>
 #include <memory>
 
-#include "Model.h"
-#include "Renderer.h"
-#include "Shader.h"
-#include "TeamStats.h"
+#include "model/Model.h"
+#include "render/Renderer.h"
+#include "opengl-helper/Shader.h"
+#include "engine/TeamStats.h"
 
 class Arena : public Renderer::IRenderable
 {

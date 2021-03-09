@@ -1,9 +1,9 @@
 #pragma once
 #include <glm/glm.hpp>
 
-#include "Vehicle.h"
-#include "Ai.h"
-#include "Arena.h"
+#include "ai/Ai.h"
+#include "entity/Vehicle.h"
+#include "entity/Arena.h"
 
 class AiManager
 {

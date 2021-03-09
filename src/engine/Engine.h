@@ -8,15 +8,16 @@
 #include <string>
 #include <vector>
 
-#include "AudioPlayer.h"
-#include "Arena.h"
+#include "audio/AudioPlayer.h"
+#include "entity/Arena.h"
 #include "Controller.h"
-#include "Model.h"
-#include "Menu.h"
-#include "Renderer.h"
-#include "Simulate.h"
-#include "Texture.h"
-#include "Vehicle.h"
+#include "model/Model.h"
+#include "ui/Menu.h"
+#include "ui/DevUI.h"
+#include "render/Renderer.h"
+#include "physics/Simulate.h"
+#include "opengl-helper/Texture.h"
+#include "entity/Vehicle.h"
 
 class Engine
 {

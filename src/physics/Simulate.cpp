@@ -1,8 +1,8 @@
 #include "Simulate.h"
-#include "Controller.h"
-#include "Vehicle.h"
-#include "DevUI.h"
-#include "TeamStats.h"
+#include "engine/Controller.h"
+#include "entity/Vehicle.h"
+#include "ui/DevUI.h"
+#include "engine/TeamStats.h"
 
 #include <vehicle/PxVehicleUtil.h>
 

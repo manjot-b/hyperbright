@@ -2,13 +2,8 @@
 
 #include <iostream>
 
-#include "Ai.h"
-#include "AiManager.h"
-#include "AudioPlayer.h"
-#include "DevUI.h"
-#include "Pickup.h"
+#include "ai/AiManager.h"
 #include "TeamStats.h"
-
 
 Engine::Engine() :
 	camera(), menu(), devUI(Renderer::getInstance().getWindow()),

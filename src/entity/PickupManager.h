@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "Pickup.h"
-#include "Vehicle.h"
+#include "entity/Pickup.h"
+#include "entity/Vehicle.h"
 
 
 class PickupManager {

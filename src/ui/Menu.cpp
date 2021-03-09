@@ -4,7 +4,7 @@
 #include <array>
 #include <tuple>
 
-#include "TeamStats.h"
+#include "engine/TeamStats.h"
 
 Menu::Menu(State state, PauseSelection selection) :
 	font("rsc/fonts/ROGFonts-Regular.otf"), _state(state), pauseSelection(selection)

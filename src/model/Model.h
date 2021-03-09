@@ -7,9 +7,9 @@
 #include <optional>
 
 #include "Mesh.h"
-#include "Shader.h"
-#include "Renderer.h"
-#include "Texture.h"
+#include "opengl-helper/Shader.h"
+#include "opengl-helper/Texture.h"
+#include "render/Renderer.h"
 
 using InstanceColorsPtr = std::shared_ptr<std::vector<glm::vec4>>;
 

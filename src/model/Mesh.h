@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "MeshUtils.h"
-#include "VertexArray.h"
+#include "opengl-helper/VertexArray.h"
 
 using InstanceModelMatricesPtr = std::shared_ptr<std::vector<glm::mat4>>;
 

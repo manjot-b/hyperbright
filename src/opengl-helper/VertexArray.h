@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "MeshUtils.h"
+#include "model/MeshUtils.h"
 
 class VertexArray
 {

@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(${CMAKE_PROJECT_NAME})
 
-
 include_directories(inc)
 
 # Make sure OpenGL is on the system.
@@ -15,12 +14,36 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARIES} ${CMAKE_DL_LIBS})
 
-# Store all .cpp and .h file in SOURCES
+# Store all .cpp file in SOURCES
 file(GLOB_RECURSE SOURCES
 	"${CMAKE_SOURCE_DIR}/src/*.cpp"
-	"${CMAKE_SOURCE_DIR}/src/*.h"
+	"${CMAKE_SOURCE_DIR}/src/ai/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/audio/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/engine/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/entity/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/model/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/opengl-helper/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/physics/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/render/*.cpp"
+	"${CMAKE_SOURCE_DIR}/src/ui/*.cpp"
 )
-target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${SOURCES})
+file(GLOB_RECURSE HEADERS
+	"${CMAKE_SOURCE_DIR}/src/*.h"
+	"${CMAKE_SOURCE_DIR}/src/ai/*.h"
+	"${CMAKE_SOURCE_DIR}/src/audio/*.h"
+	"${CMAKE_SOURCE_DIR}/src/engine/*.h"
+	"${CMAKE_SOURCE_DIR}/src/entity/*.h"
+	"${CMAKE_SOURCE_DIR}/src/model/*.h"
+	"${CMAKE_SOURCE_DIR}/src/opengl-helper/*.h"
+	"${CMAKE_SOURCE_DIR}/src/physics/*.h"
+	"${CMAKE_SOURCE_DIR}/src/render/*.h"
+	"${CMAKE_SOURCE_DIR}/src/ui/*.h"
+)
+target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${SOURCES} ${HEADERS})
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/src")
+# Create a filter/folder in Visual Studio for the source and header files.
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "Source Files" FILES ${SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "Header Files" FILES ${HEADERS})
 
 file(GLOB_RECURSE RESOURCES
 	"${CMAKE_SOURCE_DIR}/rsc/*.glsl"

@@ -7,11 +7,11 @@
 #include <array>
 #include <memory>
 
-#include "Model.h"
-#include "Pickup.h"
-#include "Renderer.h"
-#include "Simulate.h"
-#include "TeamStats.h"
+#include "model/Model.h"
+#include "entity/Pickup.h"
+#include "render/Renderer.h"
+#include "physics/Simulate.h"
+#include "engine/TeamStats.h"
 
 struct VehicleController {
 	int contrId;

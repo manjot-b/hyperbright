@@ -2,7 +2,8 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
-#include "Vehicle.h"
+#include "entity/Vehicle.h"
+
 #define NOTARGET 0
 #define HASTARGET 1
 class Ai

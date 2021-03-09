@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "Camera.h"
-#include "DevUI.h"
 #include "Light.h"
-#include "Menu.h"
-#include "Shader.h"
-#include "Texture.h"
+#include "ui/DevUI.h"
+#include "ui/Menu.h"
+#include "opengl-helper/Shader.h"
+#include "opengl-helper/Texture.h"
 
 class Renderer
 {

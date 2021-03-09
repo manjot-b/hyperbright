@@ -7,9 +7,9 @@
 #include <memory>
 #include <queue>
 
-#include "Camera.h"
-#include "Menu.h"
-#include "Vehicle.h"
+#include "render/Camera.h"
+#include "ui/Menu.h"
+#include "entity/Vehicle.h"
 
 class Controller
 {

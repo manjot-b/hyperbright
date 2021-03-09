@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "Arena.h"
-#include "Pickup.h"
-#include "Model.h"
-#include "AudioPlayer.h"
+#include "entity/Arena.h"
+#include "entity/Pickup.h"
+#include "model/Model.h"
+#include "audio/AudioPlayer.h"
 
 class Vehicle;
 
