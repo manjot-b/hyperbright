@@ -26,6 +26,8 @@ file(GLOB_RECURSE RESOURCES
 	"${CMAKE_SOURCE_DIR}/rsc/*.glsl"
 	"${CMAKE_SOURCE_DIR}/rsc/*.jpeg"
 	"${CMAKE_SOURCE_DIR}/rsc/*.png"
+	"${CMAKE_SOURCE_DIR}/rsc/*.wav"
+	"${CMAKE_SOURCE_DIR}/rsc/*.otf"
 )
 
 # Don't include Wavefront obj files as resource files because visual studio thinks they
