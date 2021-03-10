@@ -2,19 +2,21 @@
 
 #include <glad/glad.h>
 
-VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices) :
+namespace hyperbright {
+namespace openGLHelper {
+VertexArray::VertexArray(const std::vector<model::Vertex> &vertices, const std::vector<unsigned int> &indices) :
 	vertexBufferId(0), elementBufferId(0), instanceModelBufferId(0), instanceColorBufferId(0)
 {
 	initVertexArray(vertices, indices);
 }
 
-VertexArray::VertexArray(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<glm::mat4>& modelMatrices) :
+VertexArray::VertexArray(const std::vector<model::Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<glm::mat4>& modelMatrices) :
 	VertexArray::VertexArray(vertices, indices)
 {
 	setInstanceModelMatrices(modelMatrices);
 }
 
-void VertexArray::initVertexArray(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices)
+void VertexArray::initVertexArray(const std::vector<model::Vertex>& vertices, const std::vector<unsigned int>& indices)
 {
 	glGenBuffers(1, &vertexBufferId); // gen buffer and store id in VBO
 	glGenBuffers(1, &elementBufferId);
@@ -22,7 +24,7 @@ void VertexArray::initVertexArray(const std::vector<Vertex>& vertices, const std
 
 	glBindVertexArray(id);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(model::Vertex), vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
@@ -30,13 +32,13 @@ void VertexArray::initVertexArray(const std::vector<Vertex>& vertices, const std
 	// set the vertex attribute pointers
 	// vertex Positions
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(model::Vertex), (void*)0);
 	// vertex normals
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(model::Vertex), (void*)offsetof(model::Vertex, normal));
 	// vertex texture
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(model::Vertex), (void*)offsetof(model::Vertex, texture));
 
 
 	// unbind VAO, VBO, and EBO
@@ -120,3 +122,5 @@ void VertexArray::bind() const
 {
 	glBindVertexArray(id);
 }
+}	// namespace openGLHelper
+}	// namespace hyperbright

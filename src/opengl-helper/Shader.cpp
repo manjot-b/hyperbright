@@ -8,7 +8,8 @@
 #include <fstream>
 #include <vector>
 
-
+namespace hyperbright {
+namespace openGLHelper {
 Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath)
 {
 	id = glCreateProgram();
@@ -154,3 +155,5 @@ void Shader::logUniformError(GLint uniformLocation, const char *uniform) const
 		status = glGetError();
 	}
 }
+}	// namespace openGLHelper
+}	// namespace hyperbright

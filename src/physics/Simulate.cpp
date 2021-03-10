@@ -18,6 +18,9 @@
 #include "SnippetPVD.h"
 #include "SnippetUtils.h"
 
+namespace hyperbright {
+namespace physics {
+
 using namespace std;
 using namespace physx;
 using namespace snippetvehicle;
@@ -49,7 +52,7 @@ PxVehicleDrive4W* gVehicle4W[number_of_vehicles];
 
 
 bool					gIsVehicleInAir = true;
-std::shared_ptr<AudioPlayer> audioPlayer;
+std::shared_ptr<audio::AudioPlayer> audioPlayer;
 
 class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints);  PX_UNUSED(count); }
@@ -62,7 +65,7 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 			std::cout << "PICKUP COLLISION \n";
 			audioPlayer->playPickupCollision();
 			if (strcmp(pairs[i].triggerActor->getName(), "battery") == 0) {
-				Vehicle* v = (Vehicle*)pairs[i].otherActor->userData;
+				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
 				v->restoreEnergy();
 			}
 		}
@@ -72,7 +75,7 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 CollisionCallBack collisionCallBack;
 
 
-Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<Vehicle>>& _vehicles, const Arena& arena) :
+Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena) :
 	physicsModels(_physicsModels), vehicles(_vehicles)
 {
 	initPhysics();
@@ -365,10 +368,10 @@ void Simulate::initPhysics()
 
 	//Create Vehicle bodies
 	VehicleDesc vehicleDesc = initVehicleDesc();
-	vector<shared_ptr<Vehicle>>::iterator iter = vehicles.begin();
-	for (int i = 0;  i < number_of_vehicles; i++, iter++) {
+	vector<shared_ptr<entity::Vehicle>>::iterator iter = vehicles.begin();
+	for (int i = 0; i < number_of_vehicles; i++, iter++) {
 		gVehicle4W[i] = createVehicle4W(vehicleDesc, gPhysics, gCooking);
-		Vehicle* vehicle = iter->get();
+		entity::Vehicle* vehicle = iter->get();
 
 		vec3 playerStartPos = vehicle->getPosition();
 		quat playerOrientation = vehicle->getOrientation();
@@ -387,7 +390,7 @@ void Simulate::initPhysics()
 	///////////////////////////////////// Battery
 	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	PxShape* batteryBox = gPhysics->createShape(PxBoxGeometry(0.5f, 1.5f, 0.5f), *gMaterial, false);
-	PxRigidStatic* battery = gPhysics->createRigidStatic(PxTransform(PxVec3(15.f,1.5f,5.f)));
+	PxRigidStatic* battery = gPhysics->createRigidStatic(PxTransform(PxVec3(15.f, 1.5f, 5.f)));
 	batteryBox->setSimulationFilterData(obstFilterData);
 
 	batteryBox->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
@@ -401,7 +404,7 @@ void Simulate::initPhysics()
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
-void setDriveMode(VehicleController ctrl)
+void setDriveMode(entity::VehicleController ctrl)
 {
 	int vNum = ctrl.contrId;
 
@@ -438,7 +441,7 @@ void Simulate::stepPhysics(float frameRate)
 {
 	//Cycle through the vehicles and set there driving mode
 	for (auto& vehicle : vehicles) {
-		VehicleController& ctrl = vehicle->getController();
+		entity::VehicleController& ctrl = vehicle->getController();
 		setDriveMode(ctrl);
 		smoothControlValues(ctrl.contrId, frameRate);
 	}
@@ -461,7 +464,7 @@ void Simulate::stepPhysics(float frameRate)
 		gIsVehicleInAir = gVehicle4W[i]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
 
 	}
-	
+
 	//Scene update.
 	gScene->simulate(frameRate);
 	gScene->fetchResults(true);
@@ -493,12 +496,12 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 		{
 			const PxU32 numShapes = actors[i]->getNbShapes();
 			actors[i]->getShapes(shapes, numShapes);
-			
+
 			if (actors[i]->userData != NULL) {
 				//const char* actorName = reinterpret_cast<const char*>(actors[i]->userData);
 				const char* actorName = actors[i]->getName();
 				const char* modelName = model->getId();
-				
+
 				if (actorName == modelName) {
 					PxMat44 boxPose;
 					if (numShapes > 0) {
@@ -514,52 +517,52 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 					vec3 modelPos;
 					memcpy(&modelPos, &(boxPose.getPosition()), sizeof(PxVec3));
 					model->setPosition(modelPos);
-					
+
 				}
 			}
 		}
 	}
 }
 
-void Simulate::checkVehiclesOverTile(Arena& arena, const std::vector<std::shared_ptr<Vehicle>>& vehicles)
+void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std::shared_ptr<entity::Vehicle>>& vehicles)
 {
 	for (const auto& vehicle : vehicles)
 	{
 		std::optional<glm::vec2> tileCoords = arena.isOnTile(vehicle->getPosition());
 		if (tileCoords)
 		{
-			std::optional<teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
+			std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
 			if (old && *old != vehicle->getTeam() && vehicle->enoughEnergy())
 			{
-				teamStats::scores[*old]--;
-				teamStats::scores[vehicle->getTeam()]++;
+				engine::teamStats::scores[*old]--;
+				engine::teamStats::scores[vehicle->getTeam()]++;
 				arena.setTileTeam(*tileCoords, vehicle->getTeam());
 				vehicle->reduceEnergy();
 				cout << vehicle->energy << endl;
 			}
 			else if (!old && vehicle->enoughEnergy())
 			{
-				teamStats::scores[vehicle->getTeam()]++;
+				engine::teamStats::scores[vehicle->getTeam()]++;
 				arena.setTileTeam(*tileCoords, vehicle->getTeam());
 				vehicle->reduceEnergy();
 				cout << vehicle->energy << endl;
 			}
 
 			vehicle->currentTile = *tileCoords;
-			
-			
+
+
 			glm::vec3 worldCoords = arena.getTilePos(*tileCoords);
 		}
 	}
 }
 
-void Simulate::cookMeshes(const Model& model, bool useModelMatrix)
+void Simulate::cookMeshes(const model::Model& model, bool useModelMatrix)
 {
-	const std::vector<std::unique_ptr<Mesh>>& meshes = model.getMeshes();
+	const std::vector<std::unique_ptr<model::Mesh>>& meshes = model.getMeshes();
 	for (auto& mesh : meshes)
 	{
 		std::vector<PxVec3> pxVertices;
-		const std::vector<Vertex>& meshVerts = mesh->getVertices();
+		const std::vector<model::Vertex>& meshVerts = mesh->getVertices();
 		const std::vector<unsigned int>& indices = mesh->getIndices();
 
 		// convert Vertex positions into PxVec3
@@ -646,6 +649,8 @@ void Simulate::cleanupPhysics()
 	std::cout << "Cleaned up PhysX" << std::endl;
 }
 
-void Simulate::setAudioPlayer(std::shared_ptr<AudioPlayer> player) {
+void Simulate::setAudioPlayer(std::shared_ptr<audio::AudioPlayer> player) {
 	audioPlayer = player;
 }
+}	// namespace physics
+}	// namespace hyperbright

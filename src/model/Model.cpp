@@ -9,9 +9,11 @@
 
 #include <iostream>
 
+namespace hyperbright {
+namespace model {
 Model::Model(const std::string& objPath,
 	const std::string& id,
-	std::shared_ptr<Texture> texture,
+	std::shared_ptr<openGLHelper::Texture> texture,
 	InstanceModelMatricesPtr instanceModelMatrices,
 	InstanceColorsPtr instanceColors,
 	bool fitToViewPort) :
@@ -72,7 +74,7 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
  * Draws the model. Remember to update() the model first.
  * Assumes the shader is already in use.
  */
-void Model::render(const Shader& shader) const
+void Model::render(const openGLHelper::Shader& shader) const
 {
 	
 	bool hasTexture = m_texture != nullptr;
@@ -233,3 +235,5 @@ void Model::setColor(const glm::vec4& color)
 void Model::setPosition(const glm::vec3& position) { m_position = position; }
 
 const glm::vec3& Model::getPosition() const { return m_position; }
+}	// namespace model
+}	// namespace hyperbright

@@ -14,13 +14,15 @@
 #include "opengl-helper/Shader.h"
 #include "opengl-helper/Texture.h"
 
+namespace hyperbright {
+namespace render {
 class Renderer
 {
 	public:
 		class IRenderable
 		{
 		public:
-			virtual void render(const Shader& shader) const = 0;
+			virtual void render(const openGLHelper::Shader& shader) const = 0;
 		};
 
 		Renderer();
@@ -33,12 +35,12 @@ class Renderer
 
 		GLFWwindow* getWindow();
 
-		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, Menu& menu, const Camera& camera);
+		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera);
 
 	private:
 		GLFWwindow* window;
 
-		std::unique_ptr<Shader> shader;
+		std::unique_ptr<openGLHelper::Shader> shader;
 
 		// 16:9 aspect ratio
 		const unsigned int height = 675;
@@ -48,3 +50,5 @@ class Renderer
 
 		void initWindow();
 };
+}   // namespace render
+}   // namespace hyperbright

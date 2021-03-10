@@ -19,6 +19,8 @@
 #include "opengl-helper/Texture.h"
 #include "entity/Vehicle.h"
 
+namespace hyperbright {
+namespace engine {
 class Engine
 {
 public:
@@ -26,24 +28,24 @@ public:
 	~Engine();
 	void run();
 private:
-	Camera camera;
-	Menu menu;
-	DevUI devUI;
-	std::shared_ptr<Arena> arena;
+	render::Camera camera;
+	ui::Menu menu;
+	ui::DevUI devUI;
+	std::shared_ptr<entity::Arena> arena;
 	std::unique_ptr<Controller> controller;
 
-	std::vector<std::shared_ptr<Vehicle>> vehicles;
-	std::vector<std::shared_ptr<IPhysical>> physicsModels;
-	std::vector<std::shared_ptr<Renderer::IRenderable>> renderables;
+	std::vector<std::shared_ptr<entity::Vehicle>> vehicles;
+	std::vector<std::shared_ptr<physics::IPhysical>> physicsModels;
+	std::vector<std::shared_ptr<render::Renderer::IRenderable>> renderables;
 
-	std::shared_ptr<Model> battery;
+	std::shared_ptr<model::Model> battery;
 
 	// Rename/remove as required.
-	std::shared_ptr<Texture> face;
-	std::shared_ptr<Texture> tree;
-	std::shared_ptr<Texture> background;
+	std::shared_ptr<openGLHelper::Texture> face;
+	std::shared_ptr<openGLHelper::Texture> tree;
+	std::shared_ptr<openGLHelper::Texture> background;
 
-	std::shared_ptr<AudioPlayer> audioPlayer;
+	std::shared_ptr<audio::AudioPlayer> audioPlayer;
 
 	float deltaSec;
 	float lastFrame;
@@ -56,3 +58,5 @@ private:
 	void initEntities();
 	void setupAudioPlayer();
 };
+}	// namespace engine
+}	// namespace hyperbright

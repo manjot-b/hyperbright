@@ -4,6 +4,8 @@
 #include "entity/Vehicle.h"
 
 
+namespace hyperbright {
+namespace entity {
 class PickupManager {
 public:
 	PickupManager();
@@ -23,3 +25,5 @@ private:
 	std::vector< std::shared_ptr<Pickup> > activePickups;//These pickups are active, but not on the arena
 	std::vector< std::shared_ptr<Pickup> > allPickups;//Keeps track of all the ptrs for easy tear down
 };
+}	// namespace entity
+}	// namespace hyperbright

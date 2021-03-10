@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+namespace hyperbright {
+namespace openGLHelper {
 /**
  * A basic texture loader.
  */
@@ -20,3 +22,5 @@ class Texture
 		int width;
 		int height;
 };
+}	// namespace openGLHelper
+}	// namespace hyperbright

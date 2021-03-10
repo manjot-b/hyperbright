@@ -7,6 +7,8 @@
 #include "PickupManager.h"
 #include "Vehicle.h"
 
+namespace hyperbright {
+namespace entity {
 Pickup::Pickup() {
 	type = 0;//DEFAULT
 	active = false;
@@ -149,3 +151,5 @@ bool Pickup::timeRemaining() {
 	}
 		return false;
 }
+}	// namespace entity
+}	// namespace hyperbright

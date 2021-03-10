@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+namespace hyperbright {
+namespace model {
 struct Vertex
 {
 	glm::vec3 position;
@@ -22,3 +24,5 @@ struct Material
 	float shininess;
 	bool isEmission;
 };
+}	// namespace model
+}	// namespace hyperbright

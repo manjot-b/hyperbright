@@ -2,7 +2,9 @@
 
 #include <iostream>
 
-Controller::Controller(GLFWwindow* _window, Camera& _camera, std::shared_ptr<Vehicle>& _playerVehicle, Menu& _menu) :
+namespace hyperbright {
+namespace engine {
+Controller::Controller(GLFWwindow* _window, render::Camera& _camera, std::shared_ptr<entity::Vehicle>& _playerVehicle, ui::Menu& _menu) :
 	window(_window), camera(_camera), playerVehicle(_playerVehicle), menu(_menu),
 	isCursorShowing(false), manualCamera(false)
 {
@@ -29,28 +31,28 @@ bool rightPressed;
 
 void Controller::processInput(float deltaSec)
 {
-	if (menu.getState() != Menu::State::NONE) {
+	if (menu.getState() != ui::Menu::State::NONE) {
 		return;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		camera.processKeyboard(Camera::Movement::RIGHT, deltaSec);
+		camera.processKeyboard(render::Camera::Movement::RIGHT, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		camera.processKeyboard(Camera::Movement::LEFT, deltaSec);
+		camera.processKeyboard(render::Camera::Movement::LEFT, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		camera.processKeyboard(Camera::Movement::UP, deltaSec);
+		camera.processKeyboard(render::Camera::Movement::UP, deltaSec);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		camera.processKeyboard(Camera::Movement::DOWN, deltaSec);
+		camera.processKeyboard(render::Camera::Movement::DOWN, deltaSec);
 	}
 
 	//playerVehicle->resetControls();
@@ -140,16 +142,16 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 	switch (controller->menu.getState())
 	{
-	case Menu::State::MAIN:
+	case ui::Menu::State::MAIN:
 		controller->mainMenuKeyCallback(key, scancode, action, mods);
 		break;
-	case Menu::State::PAUSE:
+	case ui::Menu::State::PAUSE:
 		controller->pauseMenuKeyCallback(key, scancode, action, mods);
 		break;
-	case Menu::State::NONE:
+	case ui::Menu::State::NONE:
 		controller->noMenuKeyCallback(key, scancode, action, mods);
 		break;
-	case Menu::State::END:
+	case ui::Menu::State::END:
 		controller->endMenuKeyCallback(key, scancode, action, mods);
 		break;
 	}
@@ -176,7 +178,7 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_ENTER:
-			menu.setState(Menu::State::NONE);
+			menu.setState(ui::Menu::State::NONE);
 			break;
 		}
 	}
@@ -190,20 +192,20 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 		case GLFW_KEY_UP:
 		case GLFW_KEY_DOWN:
 		{
-			Menu::PauseSelection selection = menu.getPauseSelection();
+			ui::Menu::PauseSelection selection = menu.getPauseSelection();
 			menu.setPauseSelection(
-				selection == Menu::PauseSelection::RESUME ? Menu::PauseSelection::QUIT : Menu::PauseSelection::RESUME);
+				selection == ui::Menu::PauseSelection::RESUME ? ui::Menu::PauseSelection::QUIT : ui::Menu::PauseSelection::RESUME);
 		}
 		break;
 
 		case GLFW_KEY_ENTER:
-			if (menu.getPauseSelection() == Menu::PauseSelection::QUIT) {
+			if (menu.getPauseSelection() == ui::Menu::PauseSelection::QUIT) {
 				setWindowShouldClose(true);
 				//controller->menu.setPauseSelection(Menu::PauseSelection::RESUME);
 				//controller->menu.setState(Menu::State::MAIN);
 			}
 			else {
-				menu.setState(Menu::State::NONE);
+				menu.setState(ui::Menu::State::NONE);
 			}
 			break;
 		}
@@ -221,7 +223,7 @@ void Controller::noMenuKeyCallback(int key, int scancode, int action, int mods)
 			break;
 
 		case GLFW_KEY_ESCAPE:
-			menu.setState(Menu::State::PAUSE);
+			menu.setState(ui::Menu::State::PAUSE);
 			break;
 		}
 	}
@@ -269,9 +271,9 @@ void Controller::scrollCallback(GLFWwindow* window, double xoffset, double yoffs
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
 	if (yoffset > 0)
-		controller->camera.processMouseScroll(Camera::Movement::FORWARD, yoffset);
+		controller->camera.processMouseScroll(render::Camera::Movement::FORWARD, yoffset);
 	if (yoffset < 0)
-		controller->camera.processMouseScroll(Camera::Movement::BACKWARD, -yoffset);
+		controller->camera.processMouseScroll(render::Camera::Movement::BACKWARD, -yoffset);
 }
 
 void Controller::toggleCursor()
@@ -290,3 +292,5 @@ bool Controller::isWindowClosed() const
 {
 	return glfwWindowShouldClose(window);
 }
+}	// namespace engine
+}	// namespace hyperbright

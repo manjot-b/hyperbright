@@ -11,8 +11,12 @@
 #include "model/Model.h"
 #include "audio/AudioPlayer.h"
 
-class Vehicle;
+namespace hyperbright {
+namespace entity {
+	class Vehicle;
+}	// namespace entity
 
+namespace physics {
 /*
 Objects of this type are dynamic objects that should be part of the PhysX engine.
 */
@@ -31,13 +35,13 @@ class Simulate
 {
 public:
 
-	Simulate(std::vector<std::shared_ptr<IPhysical>>& physicsModels, std::vector<std::shared_ptr<Vehicle>>& vehicles, const Arena& arena);
+	Simulate(std::vector<std::shared_ptr<IPhysical>>& physicsModels, std::vector<std::shared_ptr<entity::Vehicle>>& vehicles, const entity::Arena& arena);
 	~Simulate();
 	void stepPhysics(float deltaSec);
 	void setModelPose(std::shared_ptr<IPhysical>& model);
-	void cookMeshes(const Model& mesh, bool useModelMatrix = false);
-	void checkVehiclesOverTile(Arena& arena, const std::vector<std::shared_ptr<Vehicle>>& vehicles);
-	void setAudioPlayer(std::shared_ptr<AudioPlayer> audioPlayer);
+	void cookMeshes(const model::Model& mesh, bool useModelMatrix = false);
+	void checkVehiclesOverTile(entity::Arena& arena, const std::vector<std::shared_ptr<entity::Vehicle>>& vehicles);
+	void setAudioPlayer(std::shared_ptr<audio::AudioPlayer> audioPlayer);
 	void cleanupPhysics();
 private:
 	void initPhysics();
@@ -48,7 +52,7 @@ private:
 	std::vector<std::shared_ptr<IPhysical>>& physicsModels;
 
 	// A list of vehicles needed for initializing the vehicle actors and updating vehicle stats
-	std::vector<std::shared_ptr<Vehicle>>& vehicles;
+	std::vector<std::shared_ptr<entity::Vehicle>>& vehicles;
 
 };
 
@@ -61,4 +65,6 @@ namespace Driving {
 	void startHandbrakeTurnLeftMode(int v);
 	void startHandbrakeTurnRightMode(int v);
 	void releaseAllControls(int v);
-}
+	}
+}	// namespace physics
+}	// namespace hyperbright

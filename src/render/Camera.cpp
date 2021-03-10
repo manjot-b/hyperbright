@@ -5,6 +5,8 @@
 
 #include <vector>
 
+namespace hyperbright {
+namespace render {
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 	position(position),
 	front(glm::vec3(0.0f, 0.0f, -1.0f)),
@@ -112,3 +114,5 @@ void Camera::updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi)
 	direction = position + front;
 	view = glm::lookAt(position, direction, up);
 }
+}   // namespace render
+}   // namespace hyperbright

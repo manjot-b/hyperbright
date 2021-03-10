@@ -1,6 +1,9 @@
 #pragma once
 #include <AL/al.h>
 #include <AL/alc.h>
+
+namespace hyperbright {
+namespace audio {
 class AudioPlayer
 {
 public:
@@ -19,9 +22,11 @@ private:
 	void init();
 	int curLoaded;
 	void loadSound(const char* filename);
-	void AudioPlayer::CheckError(int op , int _err );
+	void AudioPlayer::CheckError(int op, int _err);
 	bool AudioPlayer::_strcmp(const char* base, const char* cp);
 	bool AudioPlayer::loadWavFile(const char* filename, ALuint* buffer,
 		ALsizei* size, ALsizei* frequency,
 		ALenum* format);
 };
+}	// namespace audio
+}	// namespace hyperbright

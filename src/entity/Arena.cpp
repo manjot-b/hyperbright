@@ -2,7 +2,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-
+namespace hyperbright {
+namespace entity {
 Arena::Tile::Tile(glm::mat4& modelMatrix, glm::vec4& color) :
 	modelMatrix(modelMatrix), color(color), _hasWall(false), team(std::nullopt)
 {}
@@ -40,11 +41,11 @@ Arena::Arena(size_t rows, size_t cols) :
 	tileGrid(rows), tileCollisionRadius(0.5f)
 {
 
-	instancedTile = std::make_shared<Model>("rsc/models/tile.obj", "tile", nullptr);
-	instancedTileBorder = std::make_shared<Model>("rsc/models/tile_edge.obj", "tile", nullptr);
+	instancedTile = std::make_shared<model::Model>("rsc/models/tile.obj", "tile", nullptr);
+	instancedTileBorder = std::make_shared<model::Model>("rsc/models/tile_edge.obj", "tile", nullptr);
 	const float scale = 5;
 
-	const BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
+	const model::BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
 	trans.y = -tileBox.height / 2.f;	// Top of grid should be at y=0
 
@@ -75,7 +76,7 @@ Arena::Arena(size_t rows, size_t cols) :
 
 Arena::~Arena() {}
 
-void Arena::render(const Shader& shader) const
+void Arena::render(const openGLHelper::Shader& shader) const
 {
 	instancedTile->setInstanceColors(tileColors);
 	instancedTile->render(shader);
@@ -113,9 +114,9 @@ std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
 	return glm::vec2(row, col);
 }
 
-void Arena::setTileTeam(const glm::vec2& tileCoords, teamStats::Teams team)
+void Arena::setTileTeam(const glm::vec2& tileCoords, engine::teamStats::Teams team)
 {
-	tileGrid[tileCoords.x][tileCoords.y].setColor(teamStats::colors.at(team));
+	tileGrid[tileCoords.x][tileCoords.y].setColor(engine::teamStats::colors.at(team));
 	tileGrid[tileCoords.x][tileCoords.y].team = team;
 }
 
@@ -124,14 +125,14 @@ glm::vec3 Arena::getTilePos(const glm::vec2& coords) const
 	return tileGrid[coords.x][coords.y].modelMatrix[3];
 }
 
-std::optional<teamStats::Teams> Arena::getTeamOnTile(const glm::vec2& coords) const
+std::optional<engine::teamStats::Teams> Arena::getTeamOnTile(const glm::vec2& coords) const
 {
 	return tileGrid[coords.x][coords.y].team;
 }
 
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
 {
-	walls.push_back(std::make_unique<Model>("rsc/models/wall.obj", "wall" + walls.size(), nullptr));
+	walls.push_back(std::make_unique<model::Model>("rsc/models/wall.obj", "wall" + walls.size(), nullptr));
 	auto& wall = walls.back();
 	float wallWidth = wall->getBoundingBox().width;
 
@@ -141,7 +142,7 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 	) / wallWidth;
 
 	wall->scale(glm::vec3(scale.x, 1, scale.y));
-	const BoundingBox& wallBox = wall->getBoundingBox();
+	const model::BoundingBox& wallBox = wall->getBoundingBox();
 
 	glm::vec2 currentPos = glm::vec2(wallBox.x, -wallBox.z) * scale;	// the front left of the box, not the origin.
 
@@ -183,3 +184,5 @@ std::vector<std::vector<bool>> Arena::getAiArenaRepresentation() {
 	}
 	return arenaRep;
 }
+}	// namespace entity
+}	// namespace hyperbright

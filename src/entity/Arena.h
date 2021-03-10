@@ -11,26 +11,28 @@
 #include "opengl-helper/Shader.h"
 #include "engine/TeamStats.h"
 
-class Arena : public Renderer::IRenderable
+namespace hyperbright {
+namespace entity {
+class Arena : public render::Renderer::IRenderable
 {
 public:
-	using WallList = std::vector<std::unique_ptr<Model>>;
+	using WallList = std::vector<std::unique_ptr<model::Model>>;
 
 	Arena(size_t length, size_t width);
 	~Arena();
 
-	void render(const Shader& shader) const;
+	void render(const openGLHelper::Shader& shader) const;
 	std::optional<glm::vec2> isOnTile(const glm::vec3& coords) const;
 	glm::vec3 getTilePos(const glm::vec2& coords) const;
-	std::optional<teamStats::Teams> getTeamOnTile(const glm::vec2& coords) const;
+	std::optional<engine::teamStats::Teams> getTeamOnTile(const glm::vec2& coords) const;
 
-	void setTileTeam(const glm::vec2& tileCoords, teamStats::Teams team);
+	void setTileTeam(const glm::vec2& tileCoords, engine::teamStats::Teams team);
 	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
 	const WallList& getWalls() const;
 	std::vector<std::vector<bool>> getAiArenaRepresentation();
 private:
 	class Tile {
-	friend class Arena;
+		friend class Arena;
 
 	public:
 		Tile(glm::mat4& modelMatrix, glm::vec4& color);
@@ -43,15 +45,15 @@ private:
 		glm::mat4& modelMatrix;
 		glm::vec4& color;
 		bool _hasWall;
-		std::optional<teamStats::Teams> team;	// tile may not have a team.
+		std::optional<engine::teamStats::Teams> team;	// tile may not have a team.
 	};
 
-	std::shared_ptr<Model> instancedTile;
-	std::shared_ptr<Model> instancedTileBorder;
+	std::shared_ptr<model::Model> instancedTile;
+	std::shared_ptr<model::Model> instancedTileBorder;
 
 	// Each tile/tile border is instanced, so we need to store all model matrices in one array.
-	InstanceModelMatricesPtr tileModelMatrices;
-	InstanceColorsPtr tileColors;
+	model::InstanceModelMatricesPtr tileModelMatrices;
+	model::InstanceColorsPtr tileColors;
 
 	using TileGrid = std::vector<std::vector<Tile>>;
 	TileGrid tileGrid;
@@ -61,3 +63,5 @@ private:
 	float tileBorderWidth;	// This is the width of one edge of the border.
 	float tileCollisionRadius;
 };
+}	// namespace entity
+}	// namespace hyperbright

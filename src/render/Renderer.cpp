@@ -6,7 +6,8 @@
 #include <iostream>
 
 
-
+namespace hyperbright {
+namespace render {
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
 * not be available until GLAD is initialized.
@@ -14,7 +15,7 @@
 Renderer::Renderer()
 {
 	initWindow();
-	shader = std::make_unique<Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
+	shader = std::make_unique<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
 
 
@@ -103,7 +104,7 @@ GLFWwindow* Renderer::getWindow() { return window; }
 *	menu: The menu object.
 */
 
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, DevUI& devUI, Menu& menu, const Camera& camera)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera)
 {
 	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -125,3 +126,5 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 
 	glfwSwapBuffers(window);
 }
+}   // namespace render
+}   // namespace hyperbright

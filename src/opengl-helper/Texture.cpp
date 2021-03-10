@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+namespace hyperbright {
+namespace openGLHelper {
 Texture::Texture(const char* filename)
 {
     glGenTextures(1, &id);
@@ -69,3 +71,5 @@ void Texture::bind(GLenum texture) const
 	glActiveTexture(texture);
 	glBindTexture(GL_TEXTURE_2D, id);	
 }
+}	// namespace openGLHelper
+}	// namespace hyperbright

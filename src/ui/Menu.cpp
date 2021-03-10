@@ -6,6 +6,8 @@
 
 #include "engine/TeamStats.h"
 
+namespace hyperbright {
+namespace ui {
 Menu::Menu(State state, PauseSelection selection) :
 	font("rsc/fonts/ROGFonts-Regular.otf"), _state(state), pauseSelection(selection)
 {}
@@ -61,14 +63,14 @@ void Menu::renderPause()
 
 void Menu::renderEnd()
 {
-	using TeamScore = std::tuple<teamStats::Teams, unsigned int>;
-	constexpr size_t count = static_cast<size_t>(teamStats::Teams::LAST);
+	using TeamScore = std::tuple<engine::teamStats::Teams, unsigned int>;
+	constexpr size_t count = static_cast<size_t>(engine::teamStats::Teams::LAST);
 	std::array<TeamScore, count> sortedScores;
 
 	for (unsigned int i = 0; i < count; i++)
 	{
-		teamStats::Teams team = static_cast<teamStats::Teams>(i);
-		sortedScores[i] = std::make_tuple(team, teamStats::scores[team]);
+		engine::teamStats::Teams team = static_cast<engine::teamStats::Teams>(i);
+		sortedScores[i] = std::make_tuple(team, engine::teamStats::scores[team]);
 	}
 	std::sort(sortedScores.begin(), sortedScores.end(), [](TeamScore a, TeamScore b) {
 		return std::get<1>(a) > std::get<1>(b);
@@ -82,8 +84,8 @@ void Menu::renderEnd()
 	font.FaceSize(70);
 	for (unsigned int i = 0; i < count; i++)
 	{
-		teamStats::Teams team = std::get<0>(sortedScores[i]);
-		std::string nameScore = teamStats::names[team] + ": " + std::to_string(std::get<1>(sortedScores[i]));
+		engine::teamStats::Teams team = std::get<0>(sortedScores[i]);
+		std::string nameScore = engine::teamStats::names[team] + ": " + std::to_string(std::get<1>(sortedScores[i]));
 		font.Render(nameScore.c_str(), -1, FTPoint(450, 500 - i*100, 0));
 	}
 	font.FaceSize(50);
@@ -99,3 +101,5 @@ void Menu::setState(State state) { _state = state; }
 Menu::PauseSelection Menu::getPauseSelection() const { return pauseSelection; }
 
 void Menu::setPauseSelection(PauseSelection selection) { pauseSelection = selection; }
+}	// namespace ui
+}	// namespace hyperbright

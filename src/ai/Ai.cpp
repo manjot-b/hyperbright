@@ -1,5 +1,8 @@
 #include "Ai.h"
-Ai::Ai(std::shared_ptr<Vehicle> v, std::shared_ptr<Arena> a) {
+
+namespace hyperbright {
+namespace ai {
+Ai::Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a) {
 	vehicle = v;
 	arena = a;
 	state = NOTARGET;
@@ -84,3 +87,5 @@ float Ai::lookingAtTarget() {
 	
 	return acos(glm::dot(vehicleDirectionVector, targetVector) / (glm::length(vehicleDirectionVector) * glm::length(targetVector)));
 }
+}	// namespace ai
+}	// namespace hyperbright

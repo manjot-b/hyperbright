@@ -2,13 +2,15 @@
 
 #include <glad/glad.h>
 
+namespace hyperbright {
+namespace model {
 Mesh::Mesh(const aiScene* scene, const aiMesh* mesh, const InstanceModelMatricesPtr& instancedModelMatrices)
 {
 	extractDataFromMesh(scene, mesh);
 	if (instancedModelMatrices)
-		vertexArray = std::make_unique<VertexArray>(vertices, indices, *instancedModelMatrices);
+		vertexArray = std::make_unique<openGLHelper::VertexArray>(vertices, indices, *instancedModelMatrices);
 	else
-		vertexArray = std::make_unique<VertexArray>(vertices, indices);
+		vertexArray = std::make_unique<openGLHelper::VertexArray>(vertices, indices);
 	calcBoundingBox();
 }
 
@@ -152,3 +154,5 @@ const std::vector<Vertex>& Mesh::getVertices() const { return vertices; }
 const std::vector<unsigned int>& Mesh::getIndices() const { return indices; }
 
 const std::string& Mesh::getName() const { return name; }
+}	// namespace model
+}	// namespace hyperbright

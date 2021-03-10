@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <FTGL/ftgl.h>
 
+namespace hyperbright {
+namespace ui {
 class Menu
 {
 public:
@@ -35,3 +37,5 @@ private:
 	void renderPause();
 	void renderEnd();
 };
+}	// namespace ui
+}	// namespace hyperbright

@@ -12,6 +12,10 @@
 #define NUM_BUFFERS 4 //NUMBER OF SOUND FILES
 #define NUM_SOURCES 4
 #define NUM_ENVIRONMENTS 4
+
+namespace hyperbright {
+namespace audio {
+
 ALfloat listenerPos[] = { 0.0,0.0,4.0 };
 ALfloat listenerVel[] = { 0.0,0.0,0.0 };
 ALfloat listenerOri[] = { 0.0,0.0,1.0, 0.0,1.0,0.0 };
@@ -31,10 +35,10 @@ ALCcontext* ctx;
 
 
 /*
- * Struct that holds the RIFF data of the Wave file.
- * The RIFF data is the meta data information that holds,
- * the ID, size and format of the wave file
- */
+    * Struct that holds the RIFF data of the Wave file.
+    * The RIFF data is the meta data information that holds,
+    * the ID, size and format of the wave file
+    */
 struct RIFF_Header {
     char chunkID[4];
     int chunkSize;//size not including chunkSize or chunkID
@@ -204,7 +208,7 @@ void AudioPlayer::init() {
     // Generate buffers, or else no sound will happen!
     alGenSources(NUM_SOURCES, source);
     CheckError();
-    
+
     loadSound("rsc/sounds/game_music.wav");
     alSourcef(source[GAMEMUSIC], AL_PITCH, 1.0f);
     alSourcef(source[GAMEMUSIC], AL_GAIN, 2.0f);
@@ -306,14 +310,14 @@ void AudioPlayer::stopGameMusic() {
 //////////////////////////////////////////////////////////////////////////////
 
 void AudioPlayer::playPickupCollision() {
-    
+
     alSourcePlay(source[PICKUPCOLLISION]);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 void AudioPlayer::playCarIdle() {
- 
+
     alSourcePlay(source[CARIDLE]);
 }
 
@@ -335,3 +339,5 @@ void AudioPlayer::playStartMenuMusic() {
 void AudioPlayer::stopStartMenuMusic() {
     alSourceStop(source[STARTMENUMUSIC]);
 }
+}	// namespace audio
+}   // namespace hyperbright

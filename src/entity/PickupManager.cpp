@@ -6,7 +6,8 @@
 #include <iostream>
 #include <algorithm>
 
-
+namespace hyperbright {
+namespace entity {
 PickupManager::PickupManager() {
 	
 }
@@ -81,3 +82,5 @@ void PickupManager::tearDown() {
 		allPickups.pop_back();
 	}
 }
+}	// namespace entity
+}	// namespace hyperbright

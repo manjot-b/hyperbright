@@ -6,20 +6,25 @@
 
 #define NOTARGET 0
 #define HASTARGET 1
+
+namespace hyperbright {
+namespace ai {
 class Ai
 {
 public:
-	Ai(std::shared_ptr<Vehicle> v, std::shared_ptr<Arena> a);
+	Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a);
 	~Ai();
 	void aiInput();
 	int state;
 	std::vector<glm::vec2> path;
 	glm::vec2 targetTile;
 	glm::vec2 targetTilePosition;
-	std::shared_ptr<Vehicle> vehicle;
-	std::shared_ptr<Arena> arena;
+	std::shared_ptr<entity::Vehicle> vehicle;
+	std::shared_ptr<entity::Arena> arena;
 private:
 
 	//Might change to indicate which direction to turn
 	float lookingAtTarget();//Retruns true if pointing in the direction of the targetTile
 };
+}	// namespace ai
+}	// namespace hyperbright

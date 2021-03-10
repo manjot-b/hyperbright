@@ -3,11 +3,14 @@
 #include <iostream>
 #include <algorithm>
 
+namespace hyperbright {
+namespace entity {
+
 using namespace std;
 using namespace glm;
 
-Vehicle::Vehicle(const std::string& _id, teamStats::Teams team, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
-	: id(_id), team(team), color(teamStats::colors.at(team)), position(startPos), direction(normalize(startDir)), startDirection(startDir)
+Vehicle::Vehicle(const std::string& _id, engine::teamStats::Teams team, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
+	: id(_id), team(team), color(engine::teamStats::colors.at(team)), position(startPos), direction(normalize(startDir)), startDirection(startDir)
 {
 	string bodyIdSuffix = "body";
 	string wheelsFrontIdSuffix = "wheelsfront";
@@ -29,7 +32,7 @@ Vehicle::Vehicle(const std::string& _id, teamStats::Teams team, vec3 startPos, v
 		cout << "unknown vehicle name. see vehicle constructor" << endl;
 	}
 
-	body = std::make_unique<Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr);
+	body = std::make_unique<model::Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr);
 	
 	unsigned int index = 0;
 	for (auto& mesh : body->getMeshes())
@@ -51,8 +54,8 @@ Vehicle::Vehicle(const std::string& _id, teamStats::Teams team, vec3 startPos, v
 		index++;
 	}
 
-	wheelsFront = std::make_unique<Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr);
-	wheelsRear = std::make_unique<Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr);
+	wheelsFront = std::make_unique<model::Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr);
+	wheelsRear = std::make_unique<model::Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr);
 }
 
 void Vehicle::updatePositionAndDirection() {
@@ -72,7 +75,7 @@ void Vehicle::reset() {
 
 }
 
-void Vehicle::render(const Shader& shader) const
+void Vehicle::render(const openGLHelper::Shader& shader) const
 {
 	body->render(shader);
 	wheelsFront->render(shader);
@@ -194,3 +197,5 @@ void Vehicle::setPosition(const glm::vec3& position)
 	wheelsFront->setPosition(position);
 	wheelsRear->setPosition(position);
 }
+}	// namespace entity
+}	// namespace hyperbright

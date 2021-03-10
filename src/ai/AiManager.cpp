@@ -1,11 +1,13 @@
 #include "AiManager.h"
 
+namespace hyperbright {
+namespace ai {
 AiManager::AiManager() {}
 
 AiManager::~AiManager() {}
 
 //////////////////////////////////////////////////////////////////
-void AiManager::loadAiVehicle(std::shared_ptr<Vehicle> vehicle) {
+void AiManager::loadAiVehicle(std::shared_ptr<entity::Vehicle> vehicle) {
 	loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena) ));
 }
 
@@ -27,7 +29,7 @@ void AiManager::makeMoves() {
 
 //////////////////////////////////////////////////////////////////
 
-void AiManager::setArena(std::shared_ptr<Arena> a) {
+void AiManager::setArena(std::shared_ptr<entity::Arena> a) {
 	arena = a;
 }
 
@@ -160,3 +162,5 @@ bool AiManager::nextStep(glm::vec2 target, glm::vec2 currentTile, std::vector<gl
 }
 
 */
+}	// namespace ai
+}	// namespace hyperbright

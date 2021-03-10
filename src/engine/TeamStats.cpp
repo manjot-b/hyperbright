@@ -1,7 +1,8 @@
 #include  "TeamStats.h"
 
-namespace teamStats
-{
+namespace hyperbright {
+namespace engine {
+namespace teamStats {
 	const std::unordered_map<Teams, glm::vec4> colors = {
 		{Teams::TEAM0, glm::vec4(.3f, .3f, 1.f, 0.f)},
 		{Teams::TEAM1, glm::vec4(.9f, .9f, .3f, 0.f)},
@@ -22,4 +23,6 @@ namespace teamStats
 		{Teams::TEAM2, "CPU2"},
 		{Teams::TEAM3, "CPU3"}
 	};
-}
+}	// namespace teamStats
+}	// namespace engine
+}	// namespace hyperbright

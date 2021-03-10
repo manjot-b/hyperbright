@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+namespace hyperbright {
+namespace render {
 struct Light
 {
 	bool isPoint;
@@ -13,3 +15,5 @@ struct Light
 	float linear;
 	float quadratic;
 };
+}   // namespace render
+}   // namespace hyperbright

@@ -8,6 +8,9 @@
 #include "MeshUtils.h"
 #include "opengl-helper/VertexArray.h"
 
+namespace hyperbright {
+namespace model {
+
 using InstanceModelMatricesPtr = std::shared_ptr<std::vector<glm::mat4>>;
 
 class Mesh
@@ -31,9 +34,11 @@ class Mesh
 	private:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
-		std::unique_ptr<VertexArray> vertexArray;
+		std::unique_ptr<openGLHelper::VertexArray> vertexArray;
 		BoundingBox boundingBox;
 		std::string name;
 
 		void calcBoundingBox();
 };
+}	// namespace model
+}	// namespace hyperbright

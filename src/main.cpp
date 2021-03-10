@@ -3,7 +3,7 @@
 int main(int argc, char *argv[])
 {
 	{
-		Engine engine;
+		hyperbright::engine::Engine engine;
 		engine.run();
 	}
 	// Need to terminate GLFW context after all OpenGL objects are deleted.

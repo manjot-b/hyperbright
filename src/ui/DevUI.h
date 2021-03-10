@@ -4,7 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-
+namespace hyperbright {
+namespace ui {
 class DevUI
 {
 public:
@@ -18,3 +19,5 @@ private:
 	float _deltaSec;
 	float _roundTimer;
 };
+}	// namespace ui
+}	// namespace hyperbright

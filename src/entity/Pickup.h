@@ -1,6 +1,5 @@
 #pragma once
-class Vehicle;//Forward declaration
-class PickupManager;
+
 #include <string>
 
 #include <glm/glm.hpp>
@@ -16,6 +15,13 @@ class PickupManager;
 #define SUCKER 6
 #define SYPHON 7
 
+namespace hyperbright {
+namespace entity {
+	class Vehicle;//Forward declaration
+	class PickupManager;
+}	// namespace entity
+
+namespace entity {
 class Pickup
 {
 public:
@@ -39,3 +45,5 @@ private:
 	//Vehicle* carriedBy;
 	std::shared_ptr<PickupManager> pickupManager;
 };
+}	// namespace entity
+}	// namespace hyperbright

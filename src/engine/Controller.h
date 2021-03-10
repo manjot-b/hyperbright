@@ -11,6 +11,8 @@
 #include "ui/Menu.h"
 #include "entity/Vehicle.h"
 
+namespace hyperbright {
+namespace engine {
 class Controller
 {
 public:
@@ -28,13 +30,13 @@ public:
 		NO_TURN
 	};
 
-	Controller(GLFWwindow* window, Camera& camera, std::shared_ptr<Vehicle>& playerVehicle, Menu& menu);
+	Controller(GLFWwindow* window, render::Camera& camera, std::shared_ptr<entity::Vehicle>& playerVehicle, ui::Menu& menu);
 	~Controller();
 
 	////// toggle the window cursor on!!!
 	void toggleCursor();
 	bool isCursorShowing;
-	
+
 	void setWindowShouldClose(bool close);
 	bool isWindowClosed() const;
 
@@ -44,10 +46,10 @@ public:
 
 private:
 	GLFWwindow* window;
-	Camera& camera;
-	Menu& menu;
+	render::Camera& camera;
+	ui::Menu& menu;
 
-	std::shared_ptr<Vehicle> playerVehicle;
+	std::shared_ptr<entity::Vehicle> playerVehicle;
 
 	bool manualCamera;
 	bool firstMouse;
@@ -63,3 +65,5 @@ private:
 	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 };
+}	// namespace engine
+}	// namespace hyperbright

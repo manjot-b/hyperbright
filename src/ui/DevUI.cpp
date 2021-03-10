@@ -6,6 +6,8 @@
 
 #include "engine/TeamStats.h"
 
+namespace hyperbright {
+namespace ui {
 static int sliderFPS = 60;
 
 DevUI::DevUI(GLFWwindow* window) : showDemo(false)
@@ -54,10 +56,10 @@ void DevUI::render()
     ImGui::Text("Time: %.2f s", _roundTimer);
     ImGui::SliderInt("FPS Cap", &sliderFPS, 30, 144);
     ImGui::Text("Scores:");
-    for (unsigned int i = static_cast<unsigned int>(teamStats::Teams::TEAM0); i != static_cast<unsigned int>(teamStats::Teams::LAST); i++)
+    for (unsigned int i = static_cast<unsigned int>(engine::teamStats::Teams::TEAM0); i != static_cast<unsigned int>(engine::teamStats::Teams::LAST); i++)
     {
-        teamStats::Teams team = static_cast<teamStats::Teams>(i);
-        ImGui::Text("Team %u: %u", i, teamStats::scores[team]);
+        engine::teamStats::Teams team = static_cast<engine::teamStats::Teams>(i);
+        ImGui::Text("Team %u: %u", i, engine::teamStats::scores[team]);
     }
     
 
@@ -71,3 +73,5 @@ void DevUI::render()
 int DevUI::getSliderFPS() {
     return sliderFPS;
 }
+}	// namespace ui
+}	// namespace hyperbright

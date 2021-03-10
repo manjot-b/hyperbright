@@ -11,21 +11,23 @@
 #include "opengl-helper/Texture.h"
 #include "render/Renderer.h"
 
+namespace hyperbright {
+namespace model {
 using InstanceColorsPtr = std::shared_ptr<std::vector<glm::vec4>>;
 
-class Model : public Renderer::IRenderable
+class Model : public render::Renderer::IRenderable
 {
 	public:
 		Model(const std::string& objPath,
 			const std::string& id,
-			std::shared_ptr<Texture> texture,
+			std::shared_ptr<openGLHelper::Texture> texture,
 			InstanceModelMatricesPtr instanceModelMatrices = nullptr,
 			InstanceColorsPtr instanceColors = nullptr,
 			bool fitToViewPort = false);
 		Model(const Model& model) = delete;		// Multiple models may end up with same VAO.
 		~Model();
 
-		void render(const Shader& shader) const;
+		void render(const openGLHelper::Shader& shader) const;
 		void update();
 		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);
@@ -60,10 +62,12 @@ class Model : public Renderer::IRenderable
 		glm::vec3 m_translation;	// translation vector
 		glm::vec3 m_position;
 
-		std::shared_ptr<Texture> m_texture;
+		std::shared_ptr<openGLHelper::Texture> m_texture;
 
 		void extractDataFromNode(const aiScene* scene, const aiNode* node);
 		void computeBoundingBox();
 		void scaleToViewport();
 		
 };
+}	// namespace model
+}	// namespace hyperbright
