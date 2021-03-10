@@ -78,3 +78,11 @@ add_subdirectory(ftgl)
 target_link_libraries(${CMAKE_PROJECT_NAME} ftgl)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ftgl/src")
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
+
+target_sources(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/glad/glad.cpp")
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/glad")
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/glm")
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/stb")
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/KHR")
