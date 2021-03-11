@@ -106,6 +106,10 @@ void Engine::initEntities()
 	battery->translate(glm::vec3(15.f, 1.5f, 5.f));
 	battery->update();
 	renderables.push_back(battery);
+
+	// Tempory pickup. Most likely want the pickup manager to handle creation and destruction.
+	auto pickup = std::make_shared<entity::Pickup>();
+	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(pickup));
 }
 
 

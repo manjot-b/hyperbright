@@ -9,7 +9,7 @@
 
 namespace hyperbright {
 namespace entity {
-Pickup::Pickup() {
+Pickup::Pickup() : model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", nullptr)) {
 	type = 0;//DEFAULT
 	active = false;
 }
@@ -18,7 +18,7 @@ Pickup::~Pickup() {
 
 }
 
-Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan ) {
+Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan ) : Pickup() {
 	pickupManager = pickupMan;
 	type = pickupType;
 	active = false;
@@ -151,5 +151,10 @@ bool Pickup::timeRemaining() {
 	}
 		return false;
 }
+
+void Pickup::render(const openGLHelper::Shader& shader) const {
+	model->render(shader);
+}
+
 }	// namespace entity
 }	// namespace hyperbright
