@@ -9,7 +9,7 @@ namespace hyperbright {
 namespace engine {
 Engine::Engine() :
 	camera(), menu(), devUI(render::Renderer::getInstance().getWindow()),
-	deltaSec(0.0f), lastFrame(0.0f), roundTimer(60)
+	deltaSec(0.0f), lastFrame(0.0f), roundTimer(600)
 {
 	// load textures into a shared pointer.
 	loadTextures();
@@ -35,25 +35,59 @@ void Engine::loadTextures()
 
 void Engine::initEntities()
 {	
+
+	int arena_size = 40;
+	//bool aiArenaRepresentation[75][75];
+	arena = std::make_shared<entity::Arena>(arena_size, arena_size);
+
+	// BUILD ARENA LAYOUT ///////////////////////
+	int wallLength = 12;
+	int wallWidth = 4;
+	arena->addWall(25, 5, wallLength, wallWidth);
+	arena->addWall(32, 5, wallLength, wallWidth);
+
+	arena->addWall(5, 5, wallWidth, wallLength);
+	arena->addWall(5, 12, wallWidth, wallLength);
+
+	arena->addWall(5, 24, wallLength, wallWidth);
+	arena->addWall(12, 24, wallLength, wallWidth);
+
+	arena->addWall(24, 25, wallWidth, wallLength);
+	arena->addWall(24, 32, wallWidth, wallLength);
+
+	arena->addWall(0, 0, 1, arena_size); //top
+	arena->addWall(0, arena_size - 1, 1, arena_size);//bottom
+
+	arena->addWall(0, 1, arena_size - 1, 1);//left
+	arena->addWall(arena_size - 1, 0, arena_size - 1, 1);//right
+	////////////////////////////////////////////
+
+	// Starting positions ////////////////////// 
+	glm::vec2 playerPosition = glm::vec2(18,18);
+	glm::vec2 ai1Position = glm::vec2(18,24);
+	glm::vec2 ai2Position = glm::vec2(24,18);
+	glm::vec2 ai3Position = glm::vec2(24,24);
+	////////////////////////////////////////////
+
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
-	std::shared_ptr<entity::Vehicle> player = std::make_shared<entity::Vehicle>("player", teamStats::Teams::TEAM0, glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
+	std::shared_ptr<entity::Vehicle> player = std::make_shared<entity::Vehicle>("player", teamStats::Teams::TEAM0, arena->getTilePos(playerPosition) + glm::vec3(0, 1.f ,0), glm::vec3(1.f, 0.f, 0.f));
 	vehicles.push_back(player);
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(player));
 	
 	// Create the 4 ai vehicles, setting their starting position, direction, and team (which includes the color of the vehicle/tiles)
 	
-	std::shared_ptr<entity::Vehicle> ai1 = std::make_shared<entity::Vehicle>("ai1", teamStats::Teams::TEAM1, glm::vec3(60.f, 1.f, -60.f), glm::vec3(0.f, 0.f, -1.f));
+	std::shared_ptr<entity::Vehicle> ai1 = std::make_shared<entity::Vehicle>("ai1", teamStats::Teams::TEAM1, arena->getTilePos(ai1Position) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai1);
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai1));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai1));
 
-	std::shared_ptr<entity::Vehicle> ai2 = std::make_shared<entity::Vehicle>("ai2", teamStats::Teams::TEAM2, glm::vec3(40.f, 1.f, -40.f), glm::vec3(0.f, 0.f, -1.f));
+	std::shared_ptr<entity::Vehicle> ai2 = std::make_shared<entity::Vehicle>("ai2", teamStats::Teams::TEAM2, arena->getTilePos(ai2Position) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai2);
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai2));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai2));
 
-	std::shared_ptr<entity::Vehicle> ai3 = std::make_shared<entity::Vehicle>("ai3", teamStats::Teams::TEAM3, glm::vec3(20.f, 1.f, -20.f), glm::vec3(0.f, 0.f, -1.f));
+	std::shared_ptr<entity::Vehicle> ai3 = std::make_shared<entity::Vehicle>("ai3", teamStats::Teams::TEAM3, arena->getTilePos(ai3Position) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai3);
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai3));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
@@ -64,12 +98,6 @@ void Engine::initEntities()
 	battery->update();
 	renderables.push_back(battery);
 	
-	int arena_size = 75;
-	//bool aiArenaRepresentation[75][75];
-	arena = std::make_shared<entity::Arena>(arena_size, arena_size);
-	arena->addWall(0, 0, 2, 2);
-	arena->addWall(35, 35, 1, 7);
-	arena->addWall(45, 45, 5, 2);
 
 	renderables.push_back(arena);
 }

@@ -6,6 +6,7 @@ Ai::Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a) {
 	vehicle = v;
 	arena = a;
 	state = NOTARGET;
+	targetTile = glm::vec2(20,20);
 	//path =  std::vector<glm::vec2>();
 }
 
