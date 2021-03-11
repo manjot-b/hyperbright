@@ -38,6 +38,7 @@ public:
 	bool timeRemaining();
 	//Position
 	void render(const openGLHelper::Shader& shader) const;
+	void animate(float deltaSec);
 private:
 	int type;
 	float pickupTime;
