@@ -9,7 +9,7 @@
 
 namespace hyperbright {
 namespace entity {
-Pickup::Pickup() {
+Pickup::Pickup() : model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", nullptr)) {
 	type = 0;//DEFAULT
 	active = false;
 }
@@ -18,7 +18,7 @@ Pickup::~Pickup() {
 
 }
 
-Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan ) {
+Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan ) : Pickup() {
 	pickupManager = pickupMan;
 	type = pickupType;
 	active = false;
@@ -151,5 +151,26 @@ bool Pickup::timeRemaining() {
 	}
 		return false;
 }
+
+void Pickup::render(const openGLHelper::Shader& shader) const {
+	model->render(shader);
+}
+
+void Pickup::animate(float deltaSec) {
+	const float rotSpeed = glm::radians(180.f) * deltaSec;
+	model->rotate(glm::vec3(0, rotSpeed, 0));
+	model->update();
+
+	// This is hacky but it works. Set the y-pos directly in the model matrix.
+	const float transSpeed = 5.f;
+	const float maxPos = 0.5f;
+	const float newPos = (glm::cos(transSpeed * glfwGetTime()) + 1) * 0.5f * maxPos;
+	glm::mat4 modelMat = model->getModelMatrix();
+	glm::vec4 pos = modelMat[3];
+	pos.y = newPos;
+	modelMat[3] = pos;
+	model->setModelMatrix(modelMat);
+}
+
 }	// namespace entity
 }	// namespace hyperbright

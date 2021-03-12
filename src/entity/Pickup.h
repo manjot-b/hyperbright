@@ -1,10 +1,12 @@
 #pragma once
 
-#include <string>
-
 #include <glm/glm.hpp>
 
 #include <memory>
+#include <string>
+
+#include "model/Model.h"
+#include "render/Renderer.h"
 
 #define BATTERY 0
 #define SPEED 1
@@ -22,7 +24,7 @@ namespace entity {
 }	// namespace entity
 
 namespace entity {
-class Pickup
+class Pickup : public render::Renderer::IRenderable
 {
 public:
 	Pickup();
@@ -35,6 +37,8 @@ public:
 	//bool beingCarried;
 	bool timeRemaining();
 	//Position
+	void render(const openGLHelper::Shader& shader) const;
+	void animate(float deltaSec);
 private:
 	int type;
 	float pickupTime;
@@ -44,6 +48,7 @@ private:
 	float speedOldMax;
 	//Vehicle* carriedBy;
 	std::shared_ptr<PickupManager> pickupManager;
+	std::shared_ptr<model::Model> model;
 };
 }	// namespace entity
 }	// namespace hyperbright
