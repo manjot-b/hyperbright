@@ -19,6 +19,7 @@
 #include "opengl-helper/Texture.h"
 #include "entity/Vehicle.h"
 #include "entity/Pickup.h"
+#include "entity/PickupManager.h"
 
 namespace hyperbright {
 namespace engine {
@@ -51,6 +52,8 @@ private:
 	std::shared_ptr<openGLHelper::Texture> background;
 
 	std::shared_ptr<audio::AudioPlayer> audioPlayer;
+	std::shared_ptr<entity::PickupManager> pickupManager;
+	//entity::PickupManager pickupManager;
 
 	float deltaSec;
 	float lastFrame;
