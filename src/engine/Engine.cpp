@@ -15,7 +15,7 @@ Engine::Engine() :
 	loadTextures();
 	initEntities();
 	setupAudioPlayer();
-
+	pickupManager = std::shared_ptr<entity::PickupManager> (new entity::PickupManager);
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], menu);
 }
 
@@ -76,6 +76,7 @@ void Engine::buildArena1 () {
 void Engine::initEntities()
 {	
 	buildArena1();//WE CAN HAVE DIFFERENT FUNCTIONS FOR DIFFERENT ARENA BUILDS
+	pickupManager->setUp(arena);
 	renderables.push_back(arena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)

@@ -13,6 +13,8 @@ public:
 	void setupPickups(int numberOfPickups, std::vector <glm::vec3> startingPositions);
 	void checkActivePickups();
 	void tearDown();
+	void setUp(std::shared_ptr<entity::Arena> arena);
+	std::vector<glm::vec3> onArenaPickupLocations;
 
 	std::vector< std::shared_ptr<Pickup> > onArenaPickups;//pickups to render and search for collisions
 	void removeFromActive(std::shared_ptr<Pickup> pickup);
