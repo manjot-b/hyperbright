@@ -9,7 +9,7 @@ namespace hyperbright {
 namespace engine {
 Engine::Engine() :
 	camera(), menu(), devUI(render::Renderer::getInstance().getWindow()),
-	deltaSec(0.0f), lastFrame(0.0f), roundTimer(600)
+	deltaSec(0.0f), lastFrame(0.0f), roundTimer(60)
 {
 	// load textures into a shared pointer.
 	loadTextures();
