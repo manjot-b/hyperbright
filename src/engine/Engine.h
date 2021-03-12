@@ -27,7 +27,10 @@ public:
 	Engine();
 	~Engine();
 	void run();
+	
 private:
+	void buildArena1();
+
 	render::Camera camera;
 	ui::Menu menu;
 	ui::DevUI devUI;
