@@ -70,3 +70,19 @@ set(ALSOFT_EXAMPLES OFF CACHE BOOL "Build examples.")
 set(ALSOFT_UTILS OFF CACHE BOOL "Build utilities.")
 add_subdirectory(openal)
 target_link_libraries(${CMAKE_PROJECT_NAME} OpenAL)
+
+# FTGL requires the Freetype library.
+set(FREETYPE_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/freetype-windows-binaries/release dll/win64/freetype.lib" CACHE STRING "")
+set(FREETYPE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/dep/freetype-windows-binaries/include" CACHE STRING "")
+add_subdirectory(ftgl)
+target_link_libraries(${CMAKE_PROJECT_NAME} ftgl)
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ftgl/src")
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
+
+target_sources(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/glad/glad.cpp")
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/glad")
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/glm")
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/stb")
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/KHR")
