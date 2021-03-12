@@ -18,6 +18,7 @@
 #include "physics/Simulate.h"
 #include "opengl-helper/Texture.h"
 #include "entity/Vehicle.h"
+#include "entity/Pickup.h"
 
 namespace hyperbright {
 namespace engine {
@@ -42,6 +43,7 @@ private:
 	std::vector<std::shared_ptr<render::Renderer::IRenderable>> renderables;
 
 	std::shared_ptr<model::Model> battery;
+	std::shared_ptr<entity::Pickup> pickup;
 
 	// Rename/remove as required.
 	std::shared_ptr<openGLHelper::Texture> face;

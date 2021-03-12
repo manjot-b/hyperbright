@@ -25,7 +25,8 @@ Renderer::Renderer()
 
 	std::vector<Light> lights = {
 		{false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f)},
-		{true, glm::vec3(-40.f, 10.f, -30.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f}
+		{true, glm::vec3(-40.f, 10.f, -30.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f},
+		{true, glm::vec3(0.f, 10.f, 0.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f}
 	};
 	shader->setUniform1i("lightCount", lights.size());
 	for (unsigned int i = 0; i < lights.size(); i++)
