@@ -8,6 +8,29 @@
 
 namespace hyperbright {
 namespace render {
+Renderer::IRenderable::IRenderable() {}
+
+Renderer::IRenderable::IRenderable(const std::shared_ptr<openGLHelper::Shader>& shader) : _shader(shader) {}
+
+const std::shared_ptr<openGLHelper::Shader>& Renderer::IRenderable::getShader() const
+{
+	return _shader;
+};
+void Renderer::IRenderable::setShader(const std::shared_ptr<openGLHelper::Shader>& shader)
+{
+	_shader = shader;
+}
+
+/*
+ The default shader accepts these. This function can be overriden if an IRenderable uses a custom shader.
+*/
+void Renderer::IRenderable::sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos) const
+{
+	_shader->setUniformMatrix4fv("perspective", projection);
+	_shader->setUniformMatrix4fv("view", view);
+	_shader->setUniform3fv("pointOfView", cameraPos);
+}
+
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
 * not be available until GLAD is initialized.
@@ -117,9 +140,7 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	for (const auto& renderable : renderables)
 	{
 		renderable->getShader()->use();
-		renderable->getShader()->setUniformMatrix4fv("view", camera.getViewMatrix());
-		renderable->getShader()->setUniformMatrix4fv("perspective", perspective);
-		renderable->getShader()->setUniform3fv("pointOfView", camera.getPosition());
+		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition());
 		renderable->render();
 	}
 
