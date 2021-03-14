@@ -22,7 +22,14 @@ class Renderer
 		class IRenderable
 		{
 		public:
-			virtual void render(const openGLHelper::Shader& shader) const = 0;
+			IRenderable();
+			IRenderable(const std::shared_ptr<openGLHelper::Shader>& shader);
+			virtual void render() const = 0;
+			const std::shared_ptr<openGLHelper::Shader>& getShader() const;
+			void setShader(const std::shared_ptr<openGLHelper::Shader>& shader);
+			virtual void sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos) const;
+		protected:
+			std::shared_ptr<openGLHelper::Shader> _shader;
 		};
 
 		Renderer();
@@ -34,13 +41,12 @@ class Renderer
 		void operator=(const Renderer&) = delete;
 
 		GLFWwindow* getWindow();
+		void initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> shader);
 
 		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera);
 
 	private:
 		GLFWwindow* window;
-
-		std::unique_ptr<openGLHelper::Shader> shader;
 
 		// 16:9 aspect ratio
 		const unsigned int height = 675;
