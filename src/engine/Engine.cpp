@@ -4,6 +4,7 @@
 
 #include "ai/AiManager.h"
 #include "TeamStats.h"
+#include "opengl-helper/CubeMap.h"
 
 namespace hyperbright {
 namespace engine {
@@ -31,6 +32,8 @@ void Engine::loadTextures()
 	face = std::make_shared<openGLHelper::Texture>("rsc/images/awesomeface.png");
 	tree = std::make_shared<openGLHelper::Texture>("rsc/images/tree.jpeg");
 	background = std::make_shared<openGLHelper::Texture>("rsc/images/background.jpg");
+
+	openGLHelper::CubeMap cubemap = openGLHelper::CubeMap("rsc/images/night_skybox.png");
 }
 
 //STARTING POSITIONS

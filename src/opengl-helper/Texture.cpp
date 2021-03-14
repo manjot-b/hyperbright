@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+// Only do this define in one cpp file.
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
