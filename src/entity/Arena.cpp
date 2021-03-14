@@ -35,14 +35,14 @@ bool Arena::Tile::hasWall() const { return _hasWall; }
 */
 //bool AiArenaRepresentation;
 
-Arena::Arena(size_t rows, size_t cols) :
+Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
 	tileModelMatrices( std::make_shared<std::vector<glm::mat4>>( rows * cols, glm::mat4(1.f) )),
 	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, glm::vec4(.3f, .3f, .3f, 1.f)) ),
 	tileGrid(rows), tileCollisionRadius(0.5f)
 {
 
-	instancedTile = std::make_shared<model::Model>("rsc/models/tile.obj", "tile", nullptr);
-	instancedTileBorder = std::make_shared<model::Model>("rsc/models/tile_edge.obj", "tile", nullptr);
+	instancedTile = std::make_shared<model::Model>("rsc/models/tile.obj", "tile", shader, nullptr);
+	instancedTileBorder = std::make_shared<model::Model>("rsc/models/tile_edge.obj", "tile", shader, nullptr);
 	const float scale = 5;
 
 	const model::BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
@@ -76,15 +76,15 @@ Arena::Arena(size_t rows, size_t cols) :
 
 Arena::~Arena() {}
 
-void Arena::render(const openGLHelper::Shader& shader) const
+void Arena::render() const
 {
 	instancedTile->setInstanceColors(tileColors);
-	instancedTile->render(shader);
-	instancedTileBorder->render(shader);
+	instancedTile->render();
+	instancedTileBorder->render();
 
 	for (const auto& wall : walls)
 	{
-		wall->render(shader);
+		wall->render();
 	}
 }
 
@@ -132,7 +132,7 @@ std::optional<engine::teamStats::Teams> Arena::getTeamOnTile(const glm::vec2& co
 
 void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
 {
-	walls.push_back(std::make_unique<model::Model>("rsc/models/wall.obj", "wall" + walls.size(), nullptr));
+	walls.push_back(std::make_unique<model::Model>("rsc/models/wall.obj", "wall" + walls.size(), _shader, nullptr));
 	auto& wall = walls.back();
 	float wallWidth = wall->getBoundingBox().width;
 

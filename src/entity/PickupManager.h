@@ -10,7 +10,7 @@ class PickupManager {
 public:
 	PickupManager();
 	~PickupManager();
-	void setupPickups(int numberOfPickups, std::vector <glm::vec3> startingPositions);
+	void setupPickups(int numberOfPickups, std::vector <glm::vec3> startingPositions, const std::shared_ptr<openGLHelper::Shader>& shader);
 	void checkActivePickups();
 	void tearDown();
 

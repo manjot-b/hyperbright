@@ -27,9 +27,9 @@ namespace entity {
 class Pickup : public render::Renderer::IRenderable
 {
 public:
-	Pickup();
+	Pickup(const std::shared_ptr<openGLHelper::Shader>& shader);
 	~Pickup();
-	Pickup(int pickupType, std::shared_ptr<PickupManager> pickupManager );
+	Pickup(int pickupType, std::shared_ptr<PickupManager> pickupManager, const std::shared_ptr<openGLHelper::Shader>& shader);
 	void activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void initialCollision(std::shared_ptr<Vehicle> vehicle);
@@ -37,7 +37,7 @@ public:
 	//bool beingCarried;
 	bool timeRemaining();
 	//Position
-	void render(const openGLHelper::Shader& shader) const;
+	void render() const;
 	void animate(float deltaSec);
 private:
 	int type;

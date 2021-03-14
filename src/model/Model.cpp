@@ -13,10 +13,11 @@ namespace hyperbright {
 namespace model {
 Model::Model(const std::string& objPath,
 	const std::string& id,
+	const std::shared_ptr<openGLHelper::Shader>& shader,
 	std::shared_ptr<openGLHelper::Texture> texture,
 	InstanceModelMatricesPtr instanceModelMatrices,
 	InstanceColorsPtr instanceColors,
-	bool fitToViewPort) :
+	bool fitToViewPort) : IRenderable(shader),
 	modelMatrix(1.0f), m_rotate(0), m_scale(1), m_translation(0), id(id), m_texture(texture),
 	m_position(.0f), m_instanceModelMatrices(instanceModelMatrices), m_instanceColors(instanceColors)
 {
@@ -74,18 +75,18 @@ void Model::extractDataFromNode(const aiScene* scene, const aiNode* node)
  * Draws the model. Remember to update() the model first.
  * Assumes the shader is already in use.
  */
-void Model::render(const openGLHelper::Shader& shader) const
+void Model::render() const
 {
 	
 	bool hasTexture = m_texture != nullptr;
 	bool isInstance = m_instanceModelMatrices != nullptr;
 	bool isInstanceColor = m_instanceColors != nullptr;
 
-	shader.setUniform1i("hasTexture", hasTexture);
-	shader.setUniform1i("isInstance", isInstance);
-	shader.setUniform1i("isInstanceColor", isInstanceColor);
+	_shader->setUniform1i("hasTexture", hasTexture);
+	_shader->setUniform1i("isInstance", isInstance);
+	_shader->setUniform1i("isInstanceColor", isInstanceColor);
 	
-	shader.setUniformMatrix4fv("model", modelMatrix);
+	_shader->setUniformMatrix4fv("model", modelMatrix);
 
 	if (m_texture)
 	{
@@ -94,11 +95,11 @@ void Model::render(const openGLHelper::Shader& shader) const
 
 	for(auto &mesh : meshes)
 	{
-		shader.setUniform4fv("color", mesh->material.color);	// Not used if model has instanceColors
-		shader.setUniform1f("diffuseCoeff", mesh->material.diffuse);
-		shader.setUniform1f("specularCoeff", mesh->material.specular);
-		shader.setUniform1f("shininess", mesh->material.shininess);
-		shader.setUniform1i("isEmission", mesh->material.isEmission);
+		_shader->setUniform4fv("color", mesh->material.color);	// Not used if model has instanceColors
+		_shader->setUniform1f("diffuseCoeff", mesh->material.diffuse);
+		_shader->setUniform1f("specularCoeff", mesh->material.specular);
+		_shader->setUniform1f("shininess", mesh->material.shininess);
+		_shader->setUniform1i("isEmission", mesh->material.isEmission);
 
 		unsigned int count = 0;
 		if (m_instanceModelMatrices)

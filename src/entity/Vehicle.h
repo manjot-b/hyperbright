@@ -23,7 +23,11 @@ struct VehicleController {
 class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
 {
 public:
-	Vehicle(const std::string& id, engine::teamStats::Teams team, glm::vec3 startPos, glm::vec3 startDir);
+	Vehicle(const std::string& id,
+		engine::teamStats::Teams team,
+		const std::shared_ptr<openGLHelper::Shader>& shader,
+		glm::vec3 startPos,
+		glm::vec3 startDir);
 	~Vehicle();
 	void reset();
 
@@ -68,7 +72,7 @@ public:
 	void stopLeft();
 	void stopRight();
 
-	void render(const openGLHelper::Shader& shader) const;
+	void render() const;
 private:
 
 	std::string id;
