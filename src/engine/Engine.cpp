@@ -14,13 +14,14 @@ Engine::Engine() :
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
+	
 	render::Renderer::getInstance().initShaderUniforms(shader);
+	pickupManager = std::make_unique<entity::PickupManager>();
 
 	// load textures into a shared pointer.
 	loadTextures();
 	initEntities();
 	setupAudioPlayer();
-	pickupManager = std::shared_ptr<entity::PickupManager> (new entity::PickupManager);
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], menu);
 }
 
