@@ -52,7 +52,7 @@ private:
 	std::shared_ptr<openGLHelper::Texture> background;
 
 	std::shared_ptr<audio::AudioPlayer> audioPlayer;
-	std::shared_ptr<entity::PickupManager> pickupManager;
+	//std::shared_ptr<entity::PickupManager> pickupManager;
 	//entity::PickupManager pickupManager;
 
 	float deltaSec;

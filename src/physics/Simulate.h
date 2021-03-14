@@ -35,13 +35,18 @@ class Simulate
 {
 public:
 
-	Simulate(std::vector<std::shared_ptr<IPhysical>>& physicsModels, std::vector<std::shared_ptr<entity::Vehicle>>& vehicles, const entity::Arena& arena);
+	Simulate(std::vector<std::shared_ptr<IPhysical>>& physicsModels, 
+		std::vector<std::shared_ptr<entity::Vehicle>>& vehicles, 
+		const entity::Arena& arena,
+		std::shared_ptr<entity::PickupManager>& pickupManager,
+		std::vector<std::shared_ptr<render::Renderer::IRenderable>>& renderables);
 	~Simulate();
 	void stepPhysics(float deltaSec);
 	void setModelPose(std::shared_ptr<IPhysical>& model);
 	void cookMeshes(const model::Model& mesh, bool useModelMatrix = false);
 	void checkVehiclesOverTile(entity::Arena& arena, const std::vector<std::shared_ptr<entity::Vehicle>>& vehicles);
 	void setAudioPlayer(std::shared_ptr<audio::AudioPlayer> audioPlayer);
+	void addPickup(std::shared_ptr<entity::Pickup>& pickup);
 	void cleanupPhysics();
 private:
 	void initPhysics();
@@ -53,6 +58,8 @@ private:
 
 	// A list of vehicles needed for initializing the vehicle actors and updating vehicle stats
 	std::vector<std::shared_ptr<entity::Vehicle>>& vehicles;
+	std::vector<std::shared_ptr<render::Renderer::IRenderable>>& renderables;
+	std::shared_ptr<entity::PickupManager>& pickupManager;
 
 };
 

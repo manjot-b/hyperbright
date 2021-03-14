@@ -15,7 +15,7 @@ Engine::Engine() :
 	loadTextures();
 	initEntities();
 	setupAudioPlayer();
-	pickupManager = std::shared_ptr<entity::PickupManager> (new entity::PickupManager);
+	//pickupManager = std::shared_ptr<entity::PickupManager> (new entity::PickupManager);
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], menu);
 }
 
@@ -76,7 +76,7 @@ void Engine::buildArena1 () {
 void Engine::initEntities()
 {	
 	buildArena1();//WE CAN HAVE DIFFERENT FUNCTIONS FOR DIFFERENT ARENA BUILDS
-	pickupManager->setUp(arena);
+	//pickupManager->setUp(arena);
 	renderables.push_back(arena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
@@ -126,7 +126,7 @@ void Engine::run()
 This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
-	audioPlayer->playStartMenuMusic();
+	//audioPlayer->playStartMenuMusic();
 	while (menu.getState() == ui::Menu::State::MAIN) {
 		// update global time
 		float currentFrame = glfwGetTime();
@@ -154,7 +154,10 @@ void Engine::runMainMenu() {
 //////////////////////////////////////////////////////////
 
 void Engine::runGame() {
-	physics::Simulate simulator(physicsModels, vehicles, *arena);
+	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena);
+	pickupManager->initPickups();
+
+	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager, renderables);
 	simulator.setAudioPlayer(audioPlayer);
 
 	ai::AiManager aiManager;
@@ -164,8 +167,8 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
-	audioPlayer->playGameMusic();
-	audioPlayer->playCarIdle();
+	//audioPlayer->playGameMusic();
+	//audioPlayer->playCarIdle();
 
 	while (!controller->isWindowClosed() && menu.getState() != ui::Menu::State::END) {
 		// update global time
@@ -187,7 +190,7 @@ void Engine::runGame() {
 		//AI
 		aiManager.makeMoves();
 
-		// run a frame of simulation
+		// Simulator
 		if (menu.getState() != ui::Menu::State::PAUSE) {
 			roundTimer -= deltaSec;
 			if (roundTimer < 0.01f)
@@ -196,7 +199,14 @@ void Engine::runGame() {
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
 
+			// check for pickups to be added to scene
+			while (pickupManager->toBeAddedPickups.size() > 0) {
+				simulator.addPickup(pickupManager->toBeAddedPickups.front());
+				pickupManager->toBeAddedPickups.pop();
+			}
+
 			pickup->animate(fpsLimit);
+			pickupManager->animate(fpsLimit);
 		}
 
 		devUI.update(deltaSec, roundTimer);

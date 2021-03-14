@@ -12,13 +12,14 @@ namespace entity {
 Pickup::Pickup() : model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", nullptr)) {
 	type = 0;//DEFAULT
 	active = false;
+	setArenaLocation(glm::vec3(0.f, 0.f, 3.f));
 }
 
 Pickup::~Pickup() {
 
 }
 
-Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan ) : Pickup() {
+Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan) : Pickup() {
 	pickupManager = pickupMan;
 	type = pickupType;
 	active = false;
@@ -26,6 +27,12 @@ Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan ) : Pick
 	slowTrapActive = false;
 	pickupTime = 5.f;
 	//position
+	if (type == STATION) {
+		// station model not  yet made
+	}
+	else {
+		model = std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", nullptr);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -169,7 +176,14 @@ void Pickup::animate(float deltaSec) {
 	glm::vec4 pos = modelMat[3];
 	pos.y = newPos;
 	modelMat[3] = pos;
+	//modelMat = glm::translate(modelMat, arenaLocation);
 	model->setModelMatrix(modelMat);
+}
+
+void Pickup::setArenaLocation(glm::vec3 _arenaLocation)
+{
+	arenaLocation = _arenaLocation;
+	model->translate(_arenaLocation);
 }
 
 }	// namespace entity
