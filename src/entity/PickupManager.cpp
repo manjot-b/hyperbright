@@ -20,12 +20,11 @@ PickupManager::PickupManager() {
 }
 
 PickupManager::~PickupManager() {
-
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
-void PickupManager::setUp(std::shared_ptr<entity::Arena> arena) {
+void PickupManager::setUp(const std::shared_ptr<entity::Arena>& arena) {
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 3)) + glm::vec3(0.f, 1.f, 0.f));
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 3)) + glm::vec3(0.f, 1.f, 0.f));
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 36)) + glm::vec3(0.f, 1.f, 0.f));
