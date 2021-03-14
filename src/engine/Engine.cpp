@@ -3,14 +3,14 @@
 #include <iostream>
 
 #include "ai/AiManager.h"
+#include "entity/SkyBox.h"
 #include "TeamStats.h"
-#include "opengl-helper/CubeMap.h"
 
 namespace hyperbright {
 namespace engine {
 Engine::Engine() :
 	camera(), menu(), devUI(render::Renderer::getInstance().getWindow()),
-	deltaSec(0.0f), lastFrame(0.0f), roundTimer(60)
+	deltaSec(0.0f), lastFrame(0.0f), roundTimer(600)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
@@ -36,8 +36,6 @@ void Engine::loadTextures()
 	face = std::make_shared<openGLHelper::Texture>("rsc/images/awesomeface.png");
 	tree = std::make_shared<openGLHelper::Texture>("rsc/images/tree.jpeg");
 	background = std::make_shared<openGLHelper::Texture>("rsc/images/background.jpg");
-
-	openGLHelper::CubeMap cubemap = openGLHelper::CubeMap("rsc/images/night_skybox.png");
 }
 
 //STARTING POSITIONS
@@ -82,6 +80,9 @@ void Engine::buildArena1 () {
 
 void Engine::initEntities()
 {	
+	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
+	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(skyBox));
+
 	buildArena1();//WE CAN HAVE DIFFERENT FUNCTIONS FOR DIFFERENT ARENA BUILDS
 	renderables.push_back(arena);
 

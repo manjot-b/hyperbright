@@ -19,6 +19,7 @@ class VertexArray
         */
 		VertexArray(const std::vector<model::Vertex> &vertices, const std::vector<unsigned int> &indices);
 		VertexArray(const std::vector<model::Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<glm::mat4>& modelMatrices);
+		VertexArray(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
 		~VertexArray();
 
 		void setInstanceModelMatrices(const std::vector<glm::mat4>& modelMatrices);

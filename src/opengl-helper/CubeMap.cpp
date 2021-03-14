@@ -18,7 +18,7 @@ CubeMap::CubeMap(const char* filename)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(false);    // cubemap texture should not be flipped.
     unsigned char* data = stbi_load(filename, &width, &height, &nrChannels, 0);
     if (!data)
     {
@@ -48,7 +48,7 @@ CubeMap::CubeMap(const char* filename)
             break;
         }
     }
-    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    //glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     stbi_image_free(data);
@@ -77,8 +77,8 @@ std::array<unsigned char*, 6> CubeMap::extractFaces(const unsigned char* cubemap
     extractFace(cubemap, width, height, nrChannels, faces[1], faceWidth, faceHeight, 0, faceHeight);               // left
     extractFace(cubemap, width, height, nrChannels, faces[2], faceWidth, faceHeight, faceWidth, 0);                // top
     extractFace(cubemap, width, height, nrChannels, faces[3], faceWidth, faceHeight, faceWidth, faceHeight * 2);   // bottom
-    extractFace(cubemap, width, height, nrChannels, faces[4], faceWidth, faceHeight, faceWidth * 3, faceHeight);   // back
-    extractFace(cubemap, width, height, nrChannels, faces[5], faceWidth, faceHeight, faceWidth, faceHeight);       // front
+    extractFace(cubemap, width, height, nrChannels, faces[4], faceWidth, faceHeight, faceWidth, faceHeight);       // front
+    extractFace(cubemap, width, height, nrChannels, faces[5], faceWidth, faceHeight, faceWidth * 3, faceHeight);   // back
 
     return faces;
 }

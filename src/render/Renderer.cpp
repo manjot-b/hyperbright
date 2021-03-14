@@ -39,7 +39,7 @@ Renderer::Renderer()
 {
 	initWindow();
 
-	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 500.0f);
+	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 1000.0f);
 }
 
 Renderer::~Renderer() {}
@@ -78,7 +78,7 @@ void Renderer::initWindow()
 	glfwSetFramebufferSizeCallback(window,
 			[](GLFWwindow* window, int newWidth, int newHeight) {
 		glViewport(0, 0, newWidth, newHeight);
-		Renderer::getInstance().perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 500.0f);
+		Renderer::getInstance().perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 1000.0f);
 	});
 
 	glEnable(GL_DEPTH_TEST);
