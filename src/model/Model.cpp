@@ -95,15 +95,18 @@ void Model::render() const
 
 	for(auto &mesh : meshes)
 	{
+		_shader->setUniform1i("shadingModel", static_cast<int>(mesh->material.shadingModel));
 		_shader->setUniform4fv("color", mesh->material.color);	// Not used if model has instanceColors
 		_shader->setUniform1f("diffuseCoeff", mesh->material.diffuse);
 		_shader->setUniform1f("specularCoeff", mesh->material.specular);
 		_shader->setUniform1f("shininess", mesh->material.shininess);
 		_shader->setUniform1i("isEmission", mesh->material.isEmission);
+		_shader->setUniform1f("roughness", mesh->material.roughness);
+		_shader->setUniform3fv("fresnel", mesh->material.fresnel);
+		_shader->setUniform1i("useBeckmann", mesh->material.useBeckmann);
+		_shader->setUniform1i("useGGX", mesh->material.useGGX);
 
-		unsigned int count = 0;
-		if (m_instanceModelMatrices)
-			count = m_instanceModelMatrices->size();
+		unsigned int count = m_instanceModelMatrices ? m_instanceModelMatrices->size() : 0;
 
 		mesh->render(count);
 	}

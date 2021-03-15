@@ -41,6 +41,9 @@ public:
 	const glm::vec3& getPosition() const { return position; }
 	glm::quat getOrientation() const;
 	engine::teamStats::Teams getTeam() const { return team; }
+	void setBodyMaterial(const model::Material& material);
+	const model::Material& getBodyMaterial() const;
+
 	void reduceEnergy();
 	void restoreEnergy();
 	bool enoughEnergy();
@@ -86,6 +89,7 @@ private:
 	std::unique_ptr<model::Model> body;
 	std::unique_ptr<model::Model> wheelsFront;
 	std::unique_ptr<model::Model> wheelsRear;
+	unsigned int bodyIdx;
 	unsigned int brakeLightsIdx;
 };
 }	// namespace entity

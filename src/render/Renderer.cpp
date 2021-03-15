@@ -28,7 +28,7 @@ void Renderer::IRenderable::sendSharedShaderUniforms(const glm::mat4& projection
 {
 	_shader->setUniformMatrix4fv("perspective", projection);
 	_shader->setUniformMatrix4fv("view", view);
-	_shader->setUniform3fv("pointOfView", cameraPos);
+	_shader->setUniform3fv("cameraPos", cameraPos);
 }
 
 /*

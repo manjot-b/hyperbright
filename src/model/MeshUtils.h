@@ -18,11 +18,22 @@ struct BoundingBox
 
 struct Material
 {
+	enum class ShadingModel {
+		PHONG = 0,
+		COOK_TORRANCE
+	} shadingModel;
+
 	glm::vec4 color;
 	float diffuse;
 	float specular;
 	float shininess;
 	bool isEmission;
+
+	// These values are used for cook-torrance shading.
+	float roughness;
+	glm::vec3 fresnel;
+	bool useBeckmann;
+	bool useGGX;
 };
 }	// namespace model
 }	// namespace hyperbright
