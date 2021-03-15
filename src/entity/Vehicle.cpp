@@ -3,8 +3,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include "model/MeshUtils.h"
-
 namespace hyperbright {
 namespace entity {
 
@@ -48,6 +46,7 @@ Vehicle::Vehicle(const std::string& _id,
 		// The name of the material is "body".
 		if (mesh->getName() == "body")
 		{
+			bodyIdx = index;
 			mesh->material.color = color;
 			mesh->material.shadingModel = model::Material::ShadingModel::COOK_TORRANCE;
 			mesh->material.roughness = 0.2f;
@@ -208,6 +207,16 @@ void Vehicle::setPosition(const glm::vec3& position)
 	body->setPosition(position);
 	wheelsFront->setPosition(position);
 	wheelsRear->setPosition(position);
+}
+
+void Vehicle::setBodyMaterial(const model::Material& material)
+{
+	body->getMeshes()[bodyIdx]->material = material;
+}
+
+const model::Material& Vehicle::getBodyMaterial() const
+{
+	return body->getMeshes()[bodyIdx]->material;
 }
 }	// namespace entity
 }	// namespace hyperbright

@@ -56,6 +56,7 @@ private:
 	std::shared_ptr<audio::AudioPlayer> audioPlayer;
 	std::unique_ptr<entity::PickupManager> pickupManager;
 
+	float fps;
 	float deltaSec;
 	float lastFrame;
 	float roundTimer;	// seconds.
@@ -66,6 +67,9 @@ private:
 	void loadTextures();
 	void initEntities();
 	void setupAudioPlayer();
+	void initDevUI();
+
+	void getDevUISettings();
 };
 }	// namespace engine
 }	// namespace hyperbright

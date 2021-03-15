@@ -8,7 +8,6 @@
 
 namespace hyperbright {
 namespace ui {
-static int sliderFPS = 60;
 
 DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 {
@@ -28,7 +27,6 @@ DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 }
 
 DevUI::~DevUI() {}
-
 
 void DevUI::update(float deltaSec, float roundTimer)
 {
@@ -54,13 +52,24 @@ void DevUI::render()
     ImGui::Begin("Dev Settings");
     ImGui::Text("Application average %.3f ms/frame %.3f FPS", _deltaSec*1000, 1/_deltaSec);
     ImGui::Text("Time: %.2f s", _roundTimer);
-    ImGui::SliderInt("FPS Cap", &sliderFPS, 30, 144);
+    ImGui::SliderInt("FPS Cap", &(settings.fps), 30, 144);
     ImGui::Text("Scores:");
     for (unsigned int i = static_cast<unsigned int>(engine::teamStats::Teams::TEAM0); i != static_cast<unsigned int>(engine::teamStats::Teams::LAST); i++)
     {
         engine::teamStats::Teams team = static_cast<engine::teamStats::Teams>(i);
         ImGui::Text("Team %u: %u", i, engine::teamStats::scores[team]);
     }
+
+    // Vehicle Body Material settings
+    ImGui::Text("Body material:");
+    ImGui::SliderInt("Shading Model", reinterpret_cast<int*>(&(settings.vehicleBodyMaterial.shadingModel)), 0, 1, "Phong or Cook-Torrance");
+    ImGui::SliderFloat("Diffuse Strength", &settings.vehicleBodyMaterial.diffuse, 0.0f, 1.0f);
+    ImGui::SliderFloat("Specular Strength", &settings.vehicleBodyMaterial.specular, 0.0f, 1.0f);
+    ImGui::SliderFloat("Shininess", &settings.vehicleBodyMaterial.shininess, 0.01f, 1000.0f);
+    ImGui::SliderFloat("Roughness", &settings.vehicleBodyMaterial.roughness, 0.01f, 1.0f);
+    ImGui::ColorEdit3("Fresnel", (float*)&settings.vehicleBodyMaterial.fresnel);
+    ImGui::Checkbox("Beckmann NDF", &settings.vehicleBodyMaterial.useBeckmann);
+    ImGui::Checkbox("GGX NDF", &settings.vehicleBodyMaterial.useGGX);
     
 
     ImGui::End();
@@ -69,9 +78,5 @@ void DevUI::render()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-//return the current FPS Cap
-int DevUI::getSliderFPS() {
-    return sliderFPS;
-}
 }	// namespace ui
 }	// namespace hyperbright

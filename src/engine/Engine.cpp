@@ -10,7 +10,7 @@ namespace hyperbright {
 namespace engine {
 Engine::Engine() :
 	camera(), menu(), devUI(render::Renderer::getInstance().getWindow()),
-	deltaSec(0.0f), lastFrame(0.0f), roundTimer(600)
+	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(600)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
@@ -22,6 +22,7 @@ Engine::Engine() :
 	loadTextures();
 	initEntities();
 	setupAudioPlayer();
+	initDevUI();
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], menu);
 }
 
@@ -30,6 +31,12 @@ Engine::~Engine() {}
 
 void Engine::setupAudioPlayer() {
 	audioPlayer = std::shared_ptr<audio::AudioPlayer>(new audio::AudioPlayer);
+}
+
+void Engine::initDevUI()
+{
+	devUI.settings.fps = fps;
+	devUI.settings.vehicleBodyMaterial = vehicles[0]->getBodyMaterial();
 }
 
 void Engine::loadTextures()
@@ -142,7 +149,7 @@ void Engine::runMainMenu() {
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
 
-		float fpsLimit = (1.f / devUI.getSliderFPS());
+		float fpsLimit = (1.f / fps);
 
 		//wait until a certain amount of time has past
 		while (deltaSec < fpsLimit) {
@@ -157,6 +164,7 @@ void Engine::runMainMenu() {
 		// render only the menu for now.
 		render::Renderer::getInstance().render(renderables, devUI, menu, camera);
 
+		getDevUISettings();
 		glfwPollEvents();
 	}
 	audioPlayer->stopStartMenuMusic();
@@ -182,7 +190,7 @@ void Engine::runGame() {
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
 
-		float fpsLimit = (1.f / devUI.getSliderFPS());
+		float fpsLimit = (1.f / fps);
 
 		//wait until a certain amount of time has past
 		while (deltaSec < fpsLimit) {
@@ -221,6 +229,7 @@ void Engine::runGame() {
 		// render the updated position of all models and ImGui
 		render::Renderer::getInstance().render(renderables, devUI, menu, camera);
 
+		getDevUISettings();
 		glfwPollEvents();
 	}
 	audioPlayer->stopGameMusic();
@@ -236,7 +245,7 @@ void Engine::endGame()
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
 
-		float fpsLimit = (1.f / devUI.getSliderFPS());
+		float fpsLimit = (1.f / fps);
 
 		//wait until a certain amount of time has past
 		while (deltaSec < fpsLimit) {
@@ -250,8 +259,20 @@ void Engine::endGame()
 
 		// render only the menu for now.
 		render::Renderer::getInstance().render(renderables, devUI, menu, camera);
-
+		
+		getDevUISettings();
 		glfwPollEvents();
+	}
+}
+
+void Engine::getDevUISettings() {
+	fps = devUI.settings.fps;
+
+	for (unsigned int i = 0; i < vehicles.size(); i++)
+	{
+		// We don't want all the vehicles to have the same color.
+		devUI.settings.vehicleBodyMaterial.color = teamStats::colors.at(static_cast<teamStats::Teams>(i));
+		vehicles[i]->setBodyMaterial(devUI.settings.vehicleBodyMaterial);
 	}
 }
 }	// namespace engine
