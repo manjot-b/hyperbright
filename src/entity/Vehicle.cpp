@@ -3,6 +3,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include "model/MeshUtils.h"
+
 namespace hyperbright {
 namespace entity {
 
@@ -47,6 +49,10 @@ Vehicle::Vehicle(const std::string& _id,
 		if (mesh->getName() == "body")
 		{
 			mesh->material.color = color;
+			mesh->material.shadingModel = model::Material::ShadingModel::COOK_TORRANCE;
+			mesh->material.roughness = 0.2f;
+			mesh->material.useBeckmann = true;
+			mesh->material.useGGX = false;
 		}
 		else if (mesh->getName() == "front_lights")
 		{
