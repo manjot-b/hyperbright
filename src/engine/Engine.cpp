@@ -111,10 +111,11 @@ void Engine::initEntities()
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai3));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
 
-	battery = std::make_shared<model::Model> ("rsc/models/cube.obj", "battery", shader, nullptr);
+	battery = std::make_shared<model::Model> ("rsc/models/cube.obj", "battery", shader, background);
 	battery->scale(glm::vec3(1.f, 3.f, 1.f));
 	battery->translate(glm::vec3(15.f, 1.5f, 5.f));
 	battery->update();
+	battery->getMeshes()[0]->material.color = glm::vec4(1.f, 0.f, 0.f, 1.f);
 	renderables.push_back(battery);
 
 	// Tempory pickup. Most likely want the pickup manager to handle creation and destruction.

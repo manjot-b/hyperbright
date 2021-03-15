@@ -70,16 +70,12 @@ void main()
 {
 	if (!isEmission)
 	{
-		vec4 vertexColor;
-		if (isInstanceColor)
-			vertexColor = instanceColor;
-		else if (hasTexture)
-			vertexColor = texture(tex, texCoord);
-		else
-			vertexColor = color;
-
+		vec4 fColor = isInstanceColor ? instanceColor : color;
 		
-		fragColor = phong() * vertexColor;
+		if (hasTexture)
+			fColor = mix(texture(tex, texCoord), fColor, 0.5f);
+
+		fragColor = phong() * fColor;
 	}
 	else
 	{
