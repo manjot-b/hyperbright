@@ -81,9 +81,14 @@ void Mesh::extractDataFromMesh(const aiScene* scene, const aiMesh* mesh)
 		mat->Get(AI_MATKEY_SHININESS, shininess);
 		material.shininess = shininess < 1.f ? 1.f : shininess;
 
+		material.shadingModel = Material::ShadingModel::PHONG;
 		material.diffuse = 1.f;
 		material.specular = 1.f;
 		material.isEmission = false;
+		material.roughness = 1.f;
+		material.fresnel = glm::vec3(1.f);
+		material.useBeckmann = false;
+		material.useGGX = false;
 	}
 }
 
