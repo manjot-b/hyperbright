@@ -22,7 +22,6 @@ PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena) :
 }
 
 PickupManager::~PickupManager() {
-
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -43,10 +42,10 @@ void PickupManager::initPickups() {
 
 /////////////////////////////////////////////////////////////////////////////
 //NEEDS A WAY TO DETERMINE PICKUP TYPES
-void PickupManager::setupPickups(int numberOfPickups, std::vector <glm::vec3> startingPositions) {
+void PickupManager::setupPickups(int numberOfPickups, std::vector <glm::vec3> startingPositions, const std::shared_ptr<openGLHelper::Shader>& shader) {
 	std::shared_ptr<Pickup> newPickup;
 	for (int i = 0; i < numberOfPickups; i++) {
-		newPickup = std::shared_ptr<Pickup>(new Pickup());//USE STARTING POSITIONS AND TYPES IN CONSTRUCTOR
+		newPickup = std::make_shared<Pickup>(shader);//USE STARTING POSITIONS AND TYPES IN CONSTRUCTOR
 		allPickups.push_back(newPickup);
 		activePickups.push_back(newPickup);
 	}

@@ -9,8 +9,14 @@ namespace entity {
 using namespace std;
 using namespace glm;
 
-Vehicle::Vehicle(const std::string& _id, engine::teamStats::Teams team, vec3 startPos, vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
-	: id(_id), team(team), color(engine::teamStats::colors.at(team)), position(startPos), direction(normalize(startDir)), startDirection(startDir)
+Vehicle::Vehicle(const std::string& _id,
+	engine::teamStats::Teams team,
+	const std::shared_ptr<openGLHelper::Shader>& shader,
+	vec3 startPos,
+	vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
+	:IRenderable(shader),
+	id(_id), team(team), color(engine::teamStats::colors.at(team)),
+	position(startPos), direction(normalize(startDir)), startDirection(startDir)
 {
 	string bodyIdSuffix = "body";
 	string wheelsFrontIdSuffix = "wheelsfront";
@@ -32,7 +38,7 @@ Vehicle::Vehicle(const std::string& _id, engine::teamStats::Teams team, vec3 sta
 		cout << "unknown vehicle name. see vehicle constructor" << endl;
 	}
 
-	body = std::make_unique<model::Model>("rsc/models/car_body.obj", id + bodyIdSuffix, nullptr);
+	body = std::make_unique<model::Model>("rsc/models/car_body.obj", id + bodyIdSuffix, _shader, nullptr);
 	
 	unsigned int index = 0;
 	for (auto& mesh : body->getMeshes())
@@ -40,7 +46,12 @@ Vehicle::Vehicle(const std::string& _id, engine::teamStats::Teams team, vec3 sta
 		// The name of the material is "body".
 		if (mesh->getName() == "body")
 		{
+			bodyIdx = index;
 			mesh->material.color = color;
+			mesh->material.shadingModel = model::Material::ShadingModel::COOK_TORRANCE;
+			mesh->material.roughness = 0.2f;
+			mesh->material.useBeckmann = true;
+			mesh->material.useGGX = false;
 		}
 		else if (mesh->getName() == "front_lights")
 		{
@@ -54,8 +65,8 @@ Vehicle::Vehicle(const std::string& _id, engine::teamStats::Teams team, vec3 sta
 		index++;
 	}
 
-	wheelsFront = std::make_unique<model::Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, nullptr);
-	wheelsRear = std::make_unique<model::Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, nullptr);
+	wheelsFront = std::make_unique<model::Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, _shader, nullptr);
+	wheelsRear = std::make_unique<model::Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, _shader, nullptr);
 }
 
 void Vehicle::updatePositionAndDirection() {
@@ -75,11 +86,11 @@ void Vehicle::reset() {
 
 }
 
-void Vehicle::render(const openGLHelper::Shader& shader) const
+void Vehicle::render() const
 {
-	body->render(shader);
-	wheelsFront->render(shader);
-	wheelsRear->render(shader);
+	body->render();
+	wheelsFront->render();
+	wheelsRear->render();
 }
 
 quat Vehicle::getOrientation() const
@@ -196,6 +207,16 @@ void Vehicle::setPosition(const glm::vec3& position)
 	body->setPosition(position);
 	wheelsFront->setPosition(position);
 	wheelsRear->setPosition(position);
+}
+
+void Vehicle::setBodyMaterial(const model::Material& material)
+{
+	body->getMeshes()[bodyIdx]->material = material;
+}
+
+const model::Material& Vehicle::getBodyMaterial() const
+{
+	return body->getMeshes()[bodyIdx]->material;
 }
 }	// namespace entity
 }	// namespace hyperbright

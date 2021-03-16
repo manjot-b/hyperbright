@@ -17,6 +17,7 @@
 #include "render/Renderer.h"
 #include "physics/Simulate.h"
 #include "opengl-helper/Texture.h"
+#include "opengl-helper/Shader.h"
 #include "entity/Vehicle.h"
 #include "entity/Pickup.h"
 #include "entity/PickupManager.h"
@@ -42,6 +43,7 @@ private:
 	std::vector<std::shared_ptr<entity::Vehicle>> vehicles;
 	std::vector<std::shared_ptr<physics::IPhysical>> physicsModels;
 	std::vector<std::shared_ptr<render::Renderer::IRenderable>> renderables;
+	std::shared_ptr<openGLHelper::Shader> shader;
 
 	std::shared_ptr<model::Model> battery;
 	std::shared_ptr<entity::Pickup> pickup;
@@ -52,9 +54,9 @@ private:
 	std::shared_ptr<openGLHelper::Texture> background;
 
 	std::shared_ptr<audio::AudioPlayer> audioPlayer;
-	//std::shared_ptr<entity::PickupManager> pickupManager;
-	//entity::PickupManager pickupManager;
+	std::unique_ptr<entity::PickupManager> pickupManager;
 
+	float fps;
 	float deltaSec;
 	float lastFrame;
 	float roundTimer;	// seconds.
@@ -65,6 +67,9 @@ private:
 	void loadTextures();
 	void initEntities();
 	void setupAudioPlayer();
+	void initDevUI();
+
+	void getDevUISettings();
 };
 }	// namespace engine
 }	// namespace hyperbright

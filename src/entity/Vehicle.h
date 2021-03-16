@@ -23,7 +23,11 @@ struct VehicleController {
 class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
 {
 public:
-	Vehicle(const std::string& id, engine::teamStats::Teams team, glm::vec3 startPos, glm::vec3 startDir);
+	Vehicle(const std::string& id,
+		engine::teamStats::Teams team,
+		const std::shared_ptr<openGLHelper::Shader>& shader,
+		glm::vec3 startPos,
+		glm::vec3 startDir);
 	~Vehicle();
 	void reset();
 
@@ -38,6 +42,9 @@ public:
 	glm::quat getOrientation() const;
 
 	engine::teamStats::Teams getTeam() const { return team; }
+
+	void setBodyMaterial(const model::Material& material);
+	const model::Material& getBodyMaterial() const;
 
 	void reduceEnergy();
 	void restoreEnergy();
@@ -70,7 +77,7 @@ public:
 	void stopLeft();
 	void stopRight();
 
-	void render(const openGLHelper::Shader& shader) const;
+	void render() const;
 private:
 
 	std::string id;
@@ -84,6 +91,7 @@ private:
 	std::unique_ptr<model::Model> body;
 	std::unique_ptr<model::Model> wheelsFront;
 	std::unique_ptr<model::Model> wheelsRear;
+	unsigned int bodyIdx;
 	unsigned int brakeLightsIdx;
 };
 }	// namespace entity

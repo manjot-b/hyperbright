@@ -17,6 +17,8 @@ enum class Teams
 	LAST	// Not an actual team. Used to iterator over enum.
 };
 
+constexpr unsigned int teamCount = 4;
+
 extern const std::unordered_map<Teams, glm::vec4> colors;
 
 extern std::unordered_map<Teams, unsigned int> scores;

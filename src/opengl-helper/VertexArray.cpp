@@ -16,6 +16,31 @@ VertexArray::VertexArray(const std::vector<model::Vertex>& vertices, const std::
 	setInstanceModelMatrices(modelMatrices);
 }
 
+VertexArray::VertexArray(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) :
+	vertexBufferId(0), elementBufferId(0), instanceModelBufferId(0), instanceColorBufferId(0)
+{
+	glGenBuffers(1, &vertexBufferId); // gen buffer and store id in VBO
+	glGenBuffers(1, &elementBufferId);
+	glGenVertexArrays(1, &id);
+
+	glBindVertexArray(id);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+	// set the vertex attribute pointer. only one in this case
+	// vertex Positions tightly packed
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	// unbind VAO, VBO, and EBO
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
 void VertexArray::initVertexArray(const std::vector<model::Vertex>& vertices, const std::vector<unsigned int>& indices)
 {
 	glGenBuffers(1, &vertexBufferId); // gen buffer and store id in VBO

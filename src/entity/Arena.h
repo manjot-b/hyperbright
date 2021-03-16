@@ -18,10 +18,10 @@ class Arena : public render::Renderer::IRenderable
 public:
 	using WallList = std::vector<std::unique_ptr<model::Model>>;
 
-	Arena(size_t length, size_t width);
+	Arena(size_t length, size_t width, const std::shared_ptr<openGLHelper::Shader>& shader);
 	~Arena();
 
-	void render(const openGLHelper::Shader& shader) const;
+	void render() const;
 	std::optional<glm::vec2> isOnTile(const glm::vec3& coords) const;
 	glm::vec3 getTilePos(const glm::vec2& coords) const;
 	std::optional<engine::teamStats::Teams> getTeamOnTile(const glm::vec2& coords) const;

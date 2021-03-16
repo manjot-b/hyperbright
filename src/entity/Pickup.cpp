@@ -9,7 +9,8 @@
 
 namespace hyperbright {
 namespace entity {
-Pickup::Pickup() : model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", nullptr)) {
+Pickup::Pickup(const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
+	model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr)) {
 	type = 0;//DEFAULT
 	active = false;
 	setArenaLocation(glm::vec3(0.f, 0.f, 3.f));
@@ -19,7 +20,8 @@ Pickup::~Pickup() {
 
 }
 
-Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan) : Pickup() {
+Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan, const std::shared_ptr<openGLHelper::Shader>& shader) : Pickup(shader) {
+
 	pickupManager = pickupMan;
 	type = pickupType;
 	active = false;
@@ -159,8 +161,8 @@ bool Pickup::timeRemaining() {
 		return false;
 }
 
-void Pickup::render(const openGLHelper::Shader& shader) const {
-	model->render(shader);
+void Pickup::render() const {
+	model->render();	// make sure we have set the models shader.
 }
 
 void Pickup::animate(float deltaSec) {

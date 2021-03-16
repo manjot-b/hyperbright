@@ -20,6 +20,7 @@ class Model : public render::Renderer::IRenderable
 	public:
 		Model(const std::string& objPath,
 			const std::string& id,
+			const std::shared_ptr<openGLHelper::Shader>& shader,
 			std::shared_ptr<openGLHelper::Texture> texture,
 			InstanceModelMatricesPtr instanceModelMatrices = nullptr,
 			InstanceColorsPtr instanceColors = nullptr,
@@ -27,7 +28,7 @@ class Model : public render::Renderer::IRenderable
 		Model(const Model& model) = delete;		// Multiple models may end up with same VAO.
 		~Model();
 
-		void render(const openGLHelper::Shader& shader) const;
+		void render() const;
 		void update();
 		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);
