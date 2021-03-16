@@ -126,8 +126,7 @@ void Engine::initEntities()
 	renderables.push_back(battery);
 
 	// Tempory pickup. Most likely want the pickup manager to handle creation and destruction.
-	pickup = std::make_shared<entity::Pickup>(shader);
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(pickup));
+	pickupManager->setupPickups(shader,renderables);
 }
 
 
@@ -214,7 +213,8 @@ void Engine::runGame() {
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
 
-			pickup->animate(fpsLimit);
+			pickupManager->animatePickups(fpsLimit);
+			//pickup->animate(fpsLimit);
 		}
 
 		devUI.update(deltaSec, roundTimer);
