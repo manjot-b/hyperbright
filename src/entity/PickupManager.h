@@ -14,7 +14,7 @@ public:
 	void setupPickups(int numberOfPickups, std::vector <glm::vec3> startingPositions, const std::shared_ptr<openGLHelper::Shader>& shader);
 	void checkActivePickups();
 	void tearDown();
-	void initPickups();
+	void initPickups(const std::shared_ptr<openGLHelper::Shader>& shader);
 
 	std::vector< std::shared_ptr<Pickup> > onArenaPickups;//pickups to render and search for collisions
 	std::queue< std::shared_ptr<Pickup> > toBeAddedPickups; // list of pickups to be added to arena this frame

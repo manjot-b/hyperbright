@@ -16,7 +16,7 @@ Engine::Engine() :
 	shader->link();
 	
 	render::Renderer::getInstance().initShaderUniforms(shader);
-	pickupManager = std::make_unique<entity::PickupManager>();
+	//pickupManager = std::make_unique<entity::PickupManager>();
 
 	// load textures into a shared pointer.
 	loadTextures();
@@ -174,7 +174,7 @@ void Engine::runMainMenu() {
 
 void Engine::runGame() {
 	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena);
-	pickupManager->initPickups();
+	pickupManager->initPickups(shader);
 
 	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager, renderables);
 	simulator.setAudioPlayer(audioPlayer);

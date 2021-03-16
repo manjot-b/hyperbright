@@ -33,7 +33,7 @@ Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan, const s
 		// station model not  yet made
 	}
 	else {
-		model = std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", nullptr);
+		model = std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr);
 	}
 }
 

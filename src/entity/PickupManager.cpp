@@ -26,14 +26,14 @@ PickupManager::~PickupManager() {
 
 /////////////////////////////////////////////////////////////////////////////
 
-void PickupManager::initPickups() {
+void PickupManager::initPickups(const std::shared_ptr<openGLHelper::Shader>& shader) {
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 3)) + glm::vec3(0.f, 1.f, 0.f));
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 3)) + glm::vec3(0.f, 1.f, 0.f));
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 36)) + glm::vec3(0.f, 1.f, 0.f));
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 36)) + glm::vec3(0.f, 1.f, 0.f));
 
 	for (auto& pickupLocation : onArenaPickupLocations) {
-		std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(0, nullptr);
+		std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(0, nullptr, shader);
 		pickup->setArenaLocation(pickupLocation);
 		onArenaPickups.push_back(pickup);
 		toBeAddedPickups.push(pickup);
