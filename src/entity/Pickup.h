@@ -39,6 +39,7 @@ public:
 	//Position
 	void render() const;
 	void animate(float deltaSec);
+	void setPosition(glm::vec3 position);
 private:
 	int type;
 	float pickupTime;

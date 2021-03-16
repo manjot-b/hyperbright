@@ -46,11 +46,6 @@ void Engine::loadTextures()
 	background = std::make_shared<openGLHelper::Texture>("rsc/images/background.jpg");
 }
 
-//STARTING POSITIONS
-glm::vec2 playerStartingPosition;
-glm::vec2 ai1StartingPosition;
-glm::vec2 ai2StartingPosition;
-glm::vec2 ai3StartingPosition;
 void Engine::buildArena1 () {
 	int arena_size = 40;
 	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
