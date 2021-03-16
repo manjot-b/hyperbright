@@ -47,11 +47,6 @@ void Engine::loadTextures()
 	background = std::make_shared<openGLHelper::Texture>("rsc/images/background.jpg");
 }
 
-//STARTING POSITIONS
-glm::vec2 playerStartingPosition;
-glm::vec2 ai1StartingPosition;
-glm::vec2 ai2StartingPosition;
-glm::vec2 ai3StartingPosition;
 void Engine::buildArena1 () {
 	int arena_size = 40;
 	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
@@ -127,8 +122,7 @@ void Engine::initEntities()
 	renderables.push_back(battery);
 
 	// Tempory pickup. Most likely want the pickup manager to handle creation and destruction.
-	pickup = std::make_shared<entity::Pickup>(shader);
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(pickup));
+	pickupManager->setupPickups(shader,renderables);
 }
 
 
@@ -217,6 +211,7 @@ void Engine::runGame() {
 
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
+
 
 			// check for pickups to be added to scene
 			while (pickupManager->toBeAddedPickups.size() > 0) {

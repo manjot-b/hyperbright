@@ -11,8 +11,9 @@ class PickupManager {
 public:
 	PickupManager(std::shared_ptr<entity::Arena> arena);
 	~PickupManager();
-	void setupPickups(int numberOfPickups, std::vector <glm::vec3> startingPositions, const std::shared_ptr<openGLHelper::Shader>& shader);
+	void setupPickups(const std::shared_ptr<openGLHelper::Shader>& shader, std::vector<std::shared_ptr<render::Renderer::IRenderable>> &renderables);
 	void checkActivePickups();
+	void animatePickups(float fpsLimit);
 	void tearDown();
 	void initPickups(const std::shared_ptr<openGLHelper::Shader>& shader);
 

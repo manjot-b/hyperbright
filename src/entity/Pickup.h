@@ -41,8 +41,12 @@ public:
 	//Position
 	void render() const;
 	void animate(float deltaSec);
+
+	void setPosition(glm::vec3 position);
+
 	void setArenaLocation(glm::vec3 arenaLocation);
 	glm::vec3 getArenaLocation() { return arenaLocation; }
+
 private:
 	int type;
 	float pickupTime;

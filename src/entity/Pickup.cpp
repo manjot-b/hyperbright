@@ -161,6 +161,11 @@ bool Pickup::timeRemaining() {
 		return false;
 }
 
+void Pickup::setPosition(glm::vec3 position) {
+	model->translate(position);
+	model->update();
+}
+
 void Pickup::render() const {
 	model->render();	// make sure we have set the models shader.
 }
