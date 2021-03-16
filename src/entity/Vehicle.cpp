@@ -105,7 +105,7 @@ quat Vehicle::getOrientation() const
 
 void Vehicle::reduceEnergy()
 {
-	if (energy > 0) energy -= 0.1f;
+	if (energy > 0) energy -= 0.04;
 }
 
 void Vehicle::restoreEnergy()

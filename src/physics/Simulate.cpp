@@ -1,6 +1,7 @@
 #include "Simulate.h"
 #include "engine/Controller.h"
 #include "entity/Vehicle.h"
+#include "entity/PickupManager.h"
 #include "ui/DevUI.h"
 #include "engine/TeamStats.h"
 
@@ -62,11 +63,17 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
 
 		for (physx::PxU32 i = 0; i < count; i++) {
-			std::cout << "PICKUP COLLISION \n";
 			audioPlayer->playPickupCollision();
 			if (strcmp(pairs[i].triggerActor->getName(), "battery") == 0) {
+				cout << "Station collision detected \n";
 				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
 				v->restoreEnergy();
+			}
+			else if (strcmp(pairs[i].triggerActor->getName(), "pickup") == 0) {
+				cout << "Pickup collision detected" << endl;
+				entity::PickupManager* pum = (entity::PickupManager*)pairs[i].triggerActor->userData;
+				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
+				pum->handlePickupOnCollision(v->getPosition());
 			}
 		}
 	}
@@ -75,8 +82,8 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 CollisionCallBack collisionCallBack;
 
 
-Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena) :
-	physicsModels(_physicsModels), vehicles(_vehicles)
+Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena, std::shared_ptr<entity::PickupManager>& _pickupManager, std::vector<std::shared_ptr<render::Renderer::IRenderable>>& _renderables) :
+	physicsModels(_physicsModels), vehicles(_vehicles), pickupManager(_pickupManager), renderables(_renderables)
 {
 	initPhysics();
 
@@ -391,6 +398,7 @@ void Simulate::initPhysics()
 	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	PxShape* batteryBox = gPhysics->createShape(PxBoxGeometry(0.5f, 1.5f, 0.5f), *gMaterial, false);
 	PxRigidStatic* battery = gPhysics->createRigidStatic(PxTransform(PxVec3(15.f, 1.5f, 5.f)));
+
 	batteryBox->setSimulationFilterData(obstFilterData);
 
 	batteryBox->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
@@ -488,8 +496,6 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 	{
 		std::vector<PxRigidActor*> actors(numActors);
 		gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
-		//std::cout << "number of actors: " << numActors << std::endl;
-
 
 		PxShape* shapes[128]; // max number of shapes per actor is 128
 		for (int i = 0; i < numActors; i++)
@@ -532,20 +538,19 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 		if (tileCoords)
 		{
 			std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
+
 			if (old && *old != vehicle->getTeam() && vehicle->enoughEnergy())
 			{
 				engine::teamStats::scores[*old]--;
 				engine::teamStats::scores[vehicle->getTeam()]++;
 				arena.setTileTeam(*tileCoords, vehicle->getTeam());
 				vehicle->reduceEnergy();
-				cout << vehicle->energy << endl;
 			}
 			else if (!old && vehicle->enoughEnergy())
 			{
 				engine::teamStats::scores[vehicle->getTeam()]++;
 				arena.setTileTeam(*tileCoords, vehicle->getTeam());
 				vehicle->reduceEnergy();
-				cout << vehicle->energy << endl;
 			}
 
 			vehicle->currentTile = *tileCoords;
@@ -651,6 +656,24 @@ void Simulate::cleanupPhysics()
 
 void Simulate::setAudioPlayer(std::shared_ptr<audio::AudioPlayer> player) {
 	audioPlayer = player;
+}
+void Simulate::addPickup(std::shared_ptr<entity::Pickup>& pickup) {
+	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	PxShape* pickupBox = gPhysics->createShape(PxBoxGeometry(0.5f, 1.5f, 0.5f), *gMaterial, false);
+	vec3 pickupLocation = pickup->getArenaLocation();
+	PxRigidStatic* pickupActor = gPhysics->createRigidStatic(PxTransform(pickupLocation.x, pickupLocation.y, pickupLocation.z));
+
+	pickupBox->setSimulationFilterData(obstFilterData);
+
+	pickupBox->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
+	pickupBox->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+	pickupActor->attachShape(*pickupBox);
+	pickupActor->userData = (void*)&pickupManager;
+	pickupActor->setName("pickup");
+	gScene->addActor(*pickupActor);
+
+	renderables.push_back(pickup);
 }
 }	// namespace physics
 }	// namespace hyperbright
