@@ -40,7 +40,9 @@ public:
 	glm::vec3 getDirection() const { return direction; }
 	const glm::vec3& getPosition() const { return position; }
 	glm::quat getOrientation() const;
+
 	engine::teamStats::Teams getTeam() const { return team; }
+
 	void setBodyMaterial(const model::Material& material);
 	const model::Material& getBodyMaterial() const;
 

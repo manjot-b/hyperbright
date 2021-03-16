@@ -16,7 +16,9 @@ glm::vec2 h = glm::vec2(20, 36);
 glm::vec2 i = glm::vec2(36, 36);
 namespace hyperbright {
 namespace entity {
-PickupManager::PickupManager() {
+PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena) : 
+	arena(_arena) {
+
 }
 
 PickupManager::~PickupManager() {
@@ -24,11 +26,18 @@ PickupManager::~PickupManager() {
 
 /////////////////////////////////////////////////////////////////////////////
 
-void PickupManager::setUp(const std::shared_ptr<entity::Arena>& arena) {
+void PickupManager::initPickups() {
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 3)) + glm::vec3(0.f, 1.f, 0.f));
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 3)) + glm::vec3(0.f, 1.f, 0.f));
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 36)) + glm::vec3(0.f, 1.f, 0.f));
 	onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 36)) + glm::vec3(0.f, 1.f, 0.f));
+
+	for (auto& pickupLocation : onArenaPickupLocations) {
+		std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(0, nullptr);
+		pickup->setArenaLocation(pickupLocation);
+		onArenaPickups.push_back(pickup);
+		toBeAddedPickups.push(pickup);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -84,6 +93,18 @@ void PickupManager::moveToActive(std::shared_ptr<Pickup> pickup) {
 
 void PickupManager::moveToArena(std::shared_ptr<Pickup> pickup) {
 	onArenaPickups.push_back(pickup);
+}
+
+void PickupManager::animate(float fps)
+{
+	for (auto& pickup : onArenaPickups) {
+		pickup->animate(fps);
+	}
+}
+
+void PickupManager::handlePickupOnCollision(glm::vec3 collisionPosition)
+{
+	std::cout << "Collision at: x " << collisionPosition.x << " y " << collisionPosition.y << " z " << collisionPosition.z << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////
