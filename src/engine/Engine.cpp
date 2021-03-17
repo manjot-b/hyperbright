@@ -218,9 +218,8 @@ void Engine::runGame() {
 				simulator.addPickup(pickupManager->toBeAddedPickups.front());
 				pickupManager->toBeAddedPickups.pop();
 			}
-
-			//pickup->animate(fpsLimit);
-			//pickupManager->animate(fpsLimit);
+			pickupManager->checkPickups();
+			pickupManager->animatePickups(fpsLimit);
 		}
 
 		devUI.update(deltaSec, roundTimer);

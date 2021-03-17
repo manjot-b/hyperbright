@@ -9,24 +9,27 @@
 
 namespace hyperbright {
 namespace entity {
-Pickup::Pickup(const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
+Pickup::Pickup( const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
 	model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr)) {
 	type = 0;//DEFAULT
 	active = false;
-	setArenaLocation(glm::vec3(0.f, 0.f, 3.f));
+	tile = glm::vec2(0,0);
+	//pickupNumber = puNum;
+	//setArenaLocation(glm::vec3(0.f, 0.f, 3.f));
 }
 
 Pickup::~Pickup() {
 
 }
 
-Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan, const std::shared_ptr<openGLHelper::Shader>& shader) : Pickup(shader) {
+Pickup::Pickup(int puNum, int pickupType, std::shared_ptr<PickupManager> pickupMan, const std::shared_ptr<openGLHelper::Shader>& shader) : Pickup(shader) {
 
 	pickupManager = pickupMan;
 	type = pickupType;
 	active = false;
-	//beingCarried = false;
+	beingCarried = false;
 	slowTrapActive = false;
+	pickupNumber = puNum;
 	pickupTime = 5.f;
 	//position
 	if (type == STATION) {
@@ -35,6 +38,10 @@ Pickup::Pickup(int pickupType, std::shared_ptr<PickupManager> pickupMan, const s
 	else {
 		model = std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr);
 	}
+}
+
+void Pickup::activate() {
+	pickUpStartTime = glfwGetTime();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -48,7 +55,7 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 	if (type == SPEED) {
 		//SET NEW VEHICLE MAX SPEED
 		//move to active
-		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+		//pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 
 		pickUpStartTime = glfwGetTime();
 	}
@@ -72,33 +79,46 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 	else if (type == HIGHVOLTAGE) {
 		//CHANGE COLOR LAYING AREA OF vehicles[indexOfActivator]
 		//move to active
-		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+		//pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == SLOWTRAP) {
 		//SET CURRENT POSITION TO BEHIND vehicles[indexOfActivator]
 		//move to onArena
-		pickupManager->moveToArena(std::shared_ptr<Pickup>(this));
+		//pickupManager->moveToArena(std::shared_ptr<Pickup>(this));
 		//beingCarried = false;
 		slowTrapActive = true;
 	}
 	else if (type == SUCKER) {
 		vehicles[indexOfActivator].suckerActive = true;
 		//move to active
-		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+		//pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == SYPHON) {
 		vehicles[indexOfActivator].syphonActive = true;
 		//move to active
-		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+		//pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 
 		pickUpStartTime = glfwGetTime();
 	}
 
 	return;
+}
+
+/////////////////////////////////////////////////////////////////////
+
+void Pickup::use() {
+	beingCarried = false;
+	active = true;
+}
+
+/////////////////////////////////////////////////////////////////////
+
+void Pickup::deactivate() {
+
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -123,8 +143,6 @@ void Pickup::deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFir
 	else if (type == SYPHON) {
 		vehicles[indexOfActivator].syphonActive = false;
 	}
-	pickupManager->removeFromActive(std::shared_ptr<Pickup>(this));
-	pickupManager->moveToInactive(std::shared_ptr<Pickup>(this));
 	return;
 }
 
@@ -182,9 +200,11 @@ void Pickup::animate(float deltaSec) {
 	model->setModelMatrix(modelMat);
 }
 
-void Pickup::setArenaLocation(glm::vec3 _arenaLocation)
+void Pickup::setArenaLocation(glm::vec3 _arenaLocation, std::optional<glm::vec2> tileLocation)
 {
 	arenaLocation = _arenaLocation;
+	tile = glm::vec2(tileLocation->x, tileLocation->y);
+	//std::cout << "pu made at: " << tile.x << " " << tile.y << "\n";
 	model->translate(_arenaLocation);
 	model->update();
 }
