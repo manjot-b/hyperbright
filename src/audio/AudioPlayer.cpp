@@ -8,10 +8,11 @@
 #define PICKUPCOLLISION 1
 #define CARIDLE 2
 #define STARTMENUMUSIC 3
+#define POWERSTATIONCOLLISION 4
 
-#define NUM_BUFFERS 4 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 4
-#define NUM_ENVIRONMENTS 4
+#define NUM_BUFFERS 5 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 5
+#define NUM_ENVIRONMENTS 5
 
 namespace hyperbright {
 namespace audio {
@@ -240,6 +241,13 @@ void AudioPlayer::init() {
     alSourcei(source[STARTMENUMUSIC], AL_BUFFER, buffer[STARTMENUMUSIC]);
     alSourcei(source[STARTMENUMUSIC], AL_LOOPING, AL_TRUE);
 
+    loadSound("rsc/sounds/powerstation_collision.wav");
+    alSourcef(source[POWERSTATIONCOLLISION], AL_PITCH, 1.0f);
+    alSourcef(source[POWERSTATIONCOLLISION], AL_GAIN, 1.0f);
+    alSourcefv(source[POWERSTATIONCOLLISION], AL_POSITION, source0Pos);
+    alSourcefv(source[POWERSTATIONCOLLISION], AL_VELOCITY, source0Vel);
+    alSourcei(source[POWERSTATIONCOLLISION], AL_BUFFER, buffer[POWERSTATIONCOLLISION]);
+
     return;
 }
 
@@ -312,6 +320,13 @@ void AudioPlayer::stopGameMusic() {
 void AudioPlayer::playPickupCollision() {
 
     alSourcePlay(source[PICKUPCOLLISION]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playPowerstationCollision() {
+
+    alSourcePlay(source[POWERSTATIONCOLLISION]);
 }
 
 //////////////////////////////////////////////////////////////////////////////

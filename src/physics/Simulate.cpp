@@ -64,13 +64,15 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
 
 		for (physx::PxU32 i = 0; i < count; i++) {
-			audioPlayer->playPickupCollision();
+			
 			if (strcmp(pairs[i].triggerActor->getName(), "battery") == 0) {
+				audioPlayer->playPowerstationCollision();
 				cout << "Station collision detected \n";
 				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
 				v->restoreEnergy();
 			}
 			else if (strcmp(pairs[i].triggerActor->getName(), "pickup") == 0) {
+				audioPlayer->playPickupCollision();
 				cout << "Pickup collision detected" << endl;
 				//entity::PickupManager* pum = (entity::PickupManager*)pairs[i].triggerActor->userData;
 				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;

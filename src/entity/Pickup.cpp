@@ -50,7 +50,7 @@ This function is called when the user activates the power up after
 they have picked it up. Makes changes to the appropriate entities
 based on which type of power up it is.
 */
-void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace) {
+void Pickup::activate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, int indexOfFirstPlace) {
 	std::cout << "ACTIVATED\n";
 	if (type == SPEED) {
 		//SET NEW VEHICLE MAX SPEED
@@ -60,21 +60,21 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == ZAP) {
-		zapOldColor = vehicles[indexOfFirstPlace].getColor();
-		vehicles[indexOfFirstPlace].setColor(vehicles[indexOfActivator].getColor());
+		//zapOldColor = vehicles[indexOfFirstPlace].getColor();
+		//vehicles[indexOfFirstPlace].setColor(vehicles[indexOfActivator].getColor());
 		//move to active
-		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
+		//pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == EMP) {
-		vehicles[0].energy = 0;
-		vehicles[1].energy = 0;
-		vehicles[2].energy = 0;
-		vehicles[3].energy = 0;
+		vehicles->at(0)->energy = 0;
+		vehicles->at(1)->energy = 0;
+		vehicles->at(2)->energy = 0;
+		vehicles->at(3)->energy = 0;
 		//TEAR DOWN
 		//move to inactive
-		pickupManager->moveToInactive(std::shared_ptr<Pickup>(this));
+		//pickupManager->moveToInactive(std::shared_ptr<Pickup>(this));
 	}
 	else if (type == HIGHVOLTAGE) {
 		//CHANGE COLOR LAYING AREA OF vehicles[indexOfActivator]
@@ -91,14 +91,14 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 		slowTrapActive = true;
 	}
 	else if (type == SUCKER) {
-		vehicles[indexOfActivator].suckerActive = true;
+		//vehicles[indexOfActivator].suckerActive = true;
 		//move to active
 		//pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == SYPHON) {
-		vehicles[indexOfActivator].syphonActive = true;
+		//vehicles[indexOfActivator].syphonActive = true;
 		//move to active
 		//pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 
