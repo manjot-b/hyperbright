@@ -110,9 +110,10 @@ void Pickup::activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirst
 
 /////////////////////////////////////////////////////////////////////
 
-void Pickup::use() {
+void Pickup::use(int indexOfUser) {
 	beingCarried = false;
 	active = true;
+	usedByIndex = indexOfUser;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -151,13 +152,7 @@ void Pickup::deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFir
 This function is called when given vehicle collides with this powerup.
 */
 void Pickup::initialCollision(std::shared_ptr<Vehicle> vehicle) {
-	if (type == BATTERY) {
-		vehicle->energy += 50;//BATTERY ACTIVATE
-		//move from onArena to inactive
-		pickupManager->removeFromArena(std::shared_ptr<Pickup>(this));
-		pickupManager->moveToInactive(std::shared_ptr<Pickup>(this));
-	}
-	else if (type == SLOWTRAP && slowTrapActive) {
+	 if (type == SLOWTRAP && slowTrapActive) {
 		//TO DO, IF YOU HIT THE ACTIVE SLOWTRAP
 		//move from onArena to active
 		pickupManager->removeFromArena(std::shared_ptr<Pickup>(this));

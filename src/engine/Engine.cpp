@@ -167,7 +167,10 @@ void Engine::runMainMenu() {
 //////////////////////////////////////////////////////////
 
 void Engine::runGame() {
-	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena);
+
+	//std::shared_ptr<std::vector<std::shared_ptr<entity::Vehicle>>> _vehicles = std::shared_ptr<std::vector<std::shared_ptr<entity::Vehicle>>>(&vehicles);
+
+	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena, &vehicles);
 	pickupManager->initPickups(shader);
 
 	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager, renderables);

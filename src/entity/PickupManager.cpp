@@ -16,8 +16,9 @@ glm::vec2 h = glm::vec2(20, 36);
 glm::vec2 i = glm::vec2(36, 36);
 namespace hyperbright {
 	namespace entity {
-		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena) :
+		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles) :
 			arena(_arena) {
+			vehicles = _vehicles;
 			pickupDownTime = 8.f;
 		}
 
@@ -37,6 +38,11 @@ namespace hyperbright {
 
 		void PickupManager::initPickups(const std::shared_ptr<openGLHelper::Shader>& _shader) {
 			shader = _shader;
+
+			//NEEDED FOR ACTIVATE FUNCTION
+			for (int i = 0; i < vehicles->size(); i++) {
+				vehicles->at(i)->index = i;
+			}
 
 			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 3)) + glm::vec3(0.f, 1.f, 0.f));
 			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 3)) + glm::vec3(0.f, 1.f, 0.f));

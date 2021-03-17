@@ -9,7 +9,7 @@ namespace hyperbright {
 namespace entity {
 class PickupManager {
 public:
-	PickupManager(std::shared_ptr<entity::Arena> arena);
+	PickupManager(std::shared_ptr<entity::Arena> arena, std::vector<std::shared_ptr<entity::Vehicle>> * _vehicles);
 	~PickupManager();
 	//void setupPickups(const std::shared_ptr<openGLHelper::Shader>& shader, std::vector<std::shared_ptr<render::Renderer::IRenderable>> &renderables);
 	void checkPickups();
@@ -31,6 +31,9 @@ public:
 	void moveToArena(std::shared_ptr<Pickup> pickup);
 	void handlePickupOnCollision(Vehicle* v);
 private: 
+
+	std::vector<std::shared_ptr<entity::Vehicle>>* vehicles;
+
 	int pickupIdCounter;
 	void checkCarriedPickups();
 	void checkActivePickups();

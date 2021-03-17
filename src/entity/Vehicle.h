@@ -76,7 +76,7 @@ public:
 	void stopReverse();
 	void stopLeft();
 	void stopRight();
-
+	int index;
 	void render() const;
 private:
 

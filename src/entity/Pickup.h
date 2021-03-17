@@ -43,13 +43,13 @@ public:
 	void render() const;
 	void animate(float deltaSec);
 
-	void use();//VEHICLES CALL THIS FUNCTION
+	void use(int indexOfUser);//VEHICLES CALL THIS FUNCTION
 
 	void setArenaLocation(glm::vec3 _arenaLocation, std::optional<glm::vec2> tileLocation);
 	glm::vec3 getArenaLocation() { return arenaLocation; }
 	glm::vec2 tile;
 	bool beingCarried;
-
+	int usedByIndex;
 private:
 	
 	int type;
