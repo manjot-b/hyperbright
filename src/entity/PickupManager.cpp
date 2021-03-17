@@ -41,14 +41,14 @@ void PickupManager::initPickups(const std::shared_ptr<openGLHelper::Shader>& sha
 }
 
 /////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<Pickup> p;
+//std::shared_ptr<Pickup> p;
 //NEEDS A WAY TO DETERMINE PICKUP TYPES
 void PickupManager::setupPickups(const std::shared_ptr<openGLHelper::Shader>& shader, std::vector<std::shared_ptr<render::Renderer::IRenderable>> &renderables) {
 
-	std::shared_ptr<Pickup> pickup = std::make_shared<entity::Pickup>(shader);
-	pickup->setPosition(onArenaPickupLocations.back());
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(pickup));
-	p = pickup;
+	//std::shared_ptr<Pickup> pickup = std::make_shared<entity::Pickup>(shader);
+	//pickup->setPosition(onArenaPickupLocations.back());
+	//renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(pickup));
+	//p = pickup;
 	//p->setPosition(onArenaPickupLocations.back());
 	/*
 	std::shared_ptr<Pickup> newPickup;
@@ -63,7 +63,7 @@ void PickupManager::setupPickups(const std::shared_ptr<openGLHelper::Shader>& sh
 /////////////////////////////////////////////////////////////////////////////
 
 void PickupManager::animatePickups(float fpsLimit) {
-	p->animate(fpsLimit);
+	//p->animate(fpsLimit);
 }
 
 /////////////////////////////////////////////////////////////////////////////

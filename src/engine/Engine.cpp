@@ -122,7 +122,7 @@ void Engine::initEntities()
 	renderables.push_back(battery);
 
 	// Tempory pickup. Most likely want the pickup manager to handle creation and destruction.
-	pickupManager->setupPickups(shader,renderables);
+	//pickupManager->setupPickups(shader,renderables);
 }
 
 
@@ -219,8 +219,8 @@ void Engine::runGame() {
 				pickupManager->toBeAddedPickups.pop();
 			}
 
-			pickup->animate(fpsLimit);
-			pickupManager->animate(fpsLimit);
+			//pickup->animate(fpsLimit);
+			//pickupManager->animate(fpsLimit);
 		}
 
 		devUI.update(deltaSec, roundTimer);

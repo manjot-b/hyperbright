@@ -19,6 +19,7 @@ public:
 
 	std::vector< std::shared_ptr<Pickup> > onArenaPickups;//pickups to render and search for collisions
 	std::queue< std::shared_ptr<Pickup> > toBeAddedPickups; // list of pickups to be added to arena this frame
+
 	void removeFromActive(std::shared_ptr<Pickup> pickup);
 	void removeFromArena(std::shared_ptr<Pickup> pickup);
 	void moveToInactive(std::shared_ptr<Pickup> pickup);

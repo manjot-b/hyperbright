@@ -161,11 +161,6 @@ bool Pickup::timeRemaining() {
 		return false;
 }
 
-void Pickup::setPosition(glm::vec3 position) {
-	model->translate(position);
-	model->update();
-}
-
 void Pickup::render() const {
 	model->render();	// make sure we have set the models shader.
 }
@@ -191,6 +186,7 @@ void Pickup::setArenaLocation(glm::vec3 _arenaLocation)
 {
 	arenaLocation = _arenaLocation;
 	model->translate(_arenaLocation);
+	model->update();
 }
 
 }	// namespace entity
