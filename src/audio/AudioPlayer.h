@@ -18,6 +18,7 @@ public:
 	void playPickupCollision();
 	void playCarIdle();
 	void stopCarIdle();
+	void playPowerstationCollision();
 private:
 	void init();
 	int curLoaded;
