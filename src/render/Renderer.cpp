@@ -12,6 +12,12 @@ Renderer::IRenderable::IRenderable() {}
 
 Renderer::IRenderable::IRenderable(const std::shared_ptr<openGLHelper::Shader>& shader) : _shader(shader) {}
 
+bool Renderer::IRenderable::operator==(const IRenderable* other)
+{
+	if (this == other) return true;
+	return false;
+}
+
 const std::shared_ptr<openGLHelper::Shader>& Renderer::IRenderable::getShader() const
 {
 	return _shader;

@@ -24,6 +24,7 @@ class Renderer
 		public:
 			IRenderable();
 			IRenderable(const std::shared_ptr<openGLHelper::Shader>& shader);
+			bool operator==(const IRenderable* other);
 			virtual void render() const = 0;
 			const std::shared_ptr<openGLHelper::Shader>& getShader() const;
 			void setShader(const std::shared_ptr<openGLHelper::Shader>& shader);

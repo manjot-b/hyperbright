@@ -16,7 +16,6 @@ Engine::Engine() :
 	shader->link();
 	
 	render::Renderer::getInstance().initShaderUniforms(shader);
-	//pickupManager = std::make_unique<entity::PickupManager>();
 
 	// load textures into a shared pointer.
 	loadTextures();
@@ -81,14 +80,12 @@ void Engine::buildArena1 () {
 	////////////////////////////////////////////
 }
 
-
 void Engine::initEntities()
 {	
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(skyBox));
 
 	buildArena1();//WE CAN HAVE DIFFERENT FUNCTIONS FOR DIFFERENT ARENA BUILDS
-	//pickupManager->setUp(arena);
 	renderables.push_back(arena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
@@ -120,9 +117,6 @@ void Engine::initEntities()
 	battery->update();
 	battery->getMeshes()[0]->material.color = glm::vec4(1.f, 0.f, 0.f, 1.f);
 	renderables.push_back(battery);
-
-	// Tempory pickup. Most likely want the pickup manager to handle creation and destruction.
-	//pickupManager->setupPickups(shader,renderables);
 }
 
 
@@ -167,14 +161,13 @@ void Engine::runMainMenu() {
 //////////////////////////////////////////////////////////
 
 void Engine::runGame() {
-	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena, &vehicles);
+	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena, &vehicles, renderables);
 	pickupManager->initPickups(shader);
 
-	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager, renderables);
+	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
 	ai::AiManager aiManager;
-	//aiManager.setArena(arena->getAiArenaRepresentation());
 	aiManager.setArena(arena);
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
 	aiManager.loadAiVehicle(vehicles.at(2));
@@ -214,10 +207,15 @@ void Engine::runGame() {
 
 			// check for pickups to be added to scene
 			while (pickupManager->toBeAddedPickups.size() > 0) {
-				simulator.addPickup(pickupManager->toBeAddedPickups.front());
+				physics::addPickup(pickupManager->toBeAddedPickups.front());	// adds physx actor
+				renderables.push_back(pickupManager->toBeAddedPickups.front());	// adds model to renderables
 				pickupManager->toBeAddedPickups.pop();
 			}
 
+			// check for pickups that have been removed from renderables and remove their physx actors
+			physics::removePickups();
+
+			// check state of all pickups
 			pickupManager->checkPickups();
 			pickupManager->animatePickups(fpsLimit);
 		}
