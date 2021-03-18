@@ -30,6 +30,7 @@ class Pickup : public render::Renderer::IRenderable
 public:
 	Pickup(const std::shared_ptr<openGLHelper::Shader>& shader);
 	~Pickup();
+
 	int pickupNumber;
 	Pickup(int puNum, int pickupType, std::shared_ptr<PickupManager> pickupManager, const std::shared_ptr<openGLHelper::Shader>& shader);
 	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, int indexOfFirstPlace);
@@ -50,6 +51,7 @@ public:
 	glm::vec2 tile;
 	bool beingCarried;
 	int usedByIndex;
+
 private:
 	
 	int type;

@@ -13,6 +13,7 @@ Pickup::Pickup( const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderab
 	model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr)) {
 	type = 0;//DEFAULT
 	active = false;
+
 	tile = glm::vec2(0,0);
 	//pickupNumber = puNum;
 	//setArenaLocation(glm::vec3(0.f, 0.f, 3.f));

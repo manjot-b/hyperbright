@@ -52,9 +52,10 @@ int const number_of_vehicles = 4;
 PxVehicleDrive4W* gVehicle4W[number_of_vehicles];
 
 
-bool					gIsVehicleInAir = true;
+bool gIsVehicleInAir[4] = { true, true, true, true };
 std::shared_ptr<audio::AudioPlayer> audioPlayer;
 std::shared_ptr<entity::PickupManager> pum;
+std::queue<std::shared_ptr<entity::Pickup>> toBeRemovedPickups;
 
 class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints);  PX_UNUSED(count); }
@@ -64,6 +65,9 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
 
 		for (physx::PxU32 i = 0; i < count; i++) {
+			if (pairs[i].flags & (PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER |
+				PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
+				continue;
 			
 			if (strcmp(pairs[i].triggerActor->getName(), "battery") == 0) {
 				audioPlayer->playPowerstationCollision();
@@ -74,10 +78,8 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 			else if (strcmp(pairs[i].triggerActor->getName(), "pickup") == 0) {
 				audioPlayer->playPickupCollision();
 				cout << "Pickup collision detected" << endl;
-				//entity::PickupManager* pum = (entity::PickupManager*)pairs[i].triggerActor->userData;
 				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
-				pum->handlePickupOnCollision(v);
-				
+				toBeRemovedPickups.push(pum->handlePickupOnCollision(v));
 			}
 		}
 	}
@@ -85,9 +87,46 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 };
 CollisionCallBack collisionCallBack;
 
+void addPickup(std::shared_ptr<entity::Pickup>& pickup) {
+	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	PxShape* pickupBox = gPhysics->createShape(PxBoxGeometry(0.5f, 1.5f, 0.5f), *gMaterial, false);
+	vec3 pickupLocation = pickup->getArenaLocation();
+	PxRigidStatic* pickupActor = gPhysics->createRigidStatic(PxTransform(pickupLocation.x, pickupLocation.y, pickupLocation.z));
 
-Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena, std::shared_ptr<entity::PickupManager>& _pickupManager, std::vector<std::shared_ptr<render::Renderer::IRenderable>>& _renderables) :
-	physicsModels(_physicsModels), vehicles(_vehicles), pickupManager(_pickupManager), renderables(_renderables)
+	pickupBox->setSimulationFilterData(obstFilterData);
+
+	pickupBox->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
+	pickupBox->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+	pickupActor->attachShape(*pickupBox);
+	pickupActor->userData = (void*)pickup->pickupNumber;
+	pickupActor->setName("pickup");
+	gScene->addActor(*pickupActor);
+}
+
+void removePickups() {
+	while (toBeRemovedPickups.size() > 0) {
+		std::shared_ptr<entity::Pickup>& pickup = toBeRemovedPickups.front();
+		PxU32 numActors = gScene->getNbActors(PxActorTypeFlag::eRIGID_STATIC);
+		if (numActors) {
+			std::vector<PxRigidActor*> actors(numActors);
+			gScene->getActors(PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
+
+			for (int i = 0; i < numActors; i++) {
+				if ((int)actors[i]->userData == pickup->pickupNumber) {
+					gScene->removeActor(*actors[i]);
+					actors[i]->release();
+					toBeRemovedPickups.pop();
+					break;
+				}
+			}
+		}
+	}
+}
+
+
+Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena, std::shared_ptr<entity::PickupManager>& _pickupManager) :
+	physicsModels(_physicsModels), vehicles(_vehicles)
 {
 	initPhysics();
 	pum = _pickupManager;
@@ -346,7 +385,6 @@ void Simulate::initPhysics()
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = VehicleFilterShader;
-	sceneDesc.simulationEventCallback = &collisionCallBack; // SET OUR COLLISION DETECTION
 	gScene = gPhysics->createScene(sceneDesc);
 	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
 	if (pvdClient)
@@ -473,7 +511,7 @@ void Simulate::stepPhysics(float frameRate)
 		PxVehicleUpdates(frameRate, grav, *gFrictionPairs, 1, pxVehicles, vehicleQueryResults);
 
 		//Work out if the vehicle is in the air.
-		gIsVehicleInAir = gVehicle4W[i]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
+		gIsVehicleInAir[i] = gVehicle4W[i]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
 
 	}
 
@@ -506,7 +544,7 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 		{
 			const PxU32 numShapes = actors[i]->getNbShapes();
 			actors[i]->getShapes(shapes, numShapes);
-
+			
 			if (actors[i]->userData != NULL) {
 				//const char* actorName = reinterpret_cast<const char*>(actors[i]->userData);
 				const char* actorName = actors[i]->getName();
@@ -631,10 +669,10 @@ void Simulate::cookMeshes(const model::Model& model, bool useModelMatrix)
 
 void Simulate::cleanupPhysics()
 {
-	gVehicle4W[0]->getRigidDynamicActor()->release();
-	gVehicle4W[0]->free();
-	gVehicle4W[1]->getRigidDynamicActor()->release();
-	gVehicle4W[1]->free();
+	for (auto& vehicle : gVehicle4W) {
+		vehicle->getRigidDynamicActor()->release();
+		vehicle->free();
+	}
 
 	PX_RELEASE(gGroundPlane);
 	PX_RELEASE(gBatchQuery);
@@ -661,23 +699,6 @@ void Simulate::cleanupPhysics()
 void Simulate::setAudioPlayer(std::shared_ptr<audio::AudioPlayer> player) {
 	audioPlayer = player;
 }
-void Simulate::addPickup(std::shared_ptr<entity::Pickup>& pickup) {
-	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-	PxShape* pickupBox = gPhysics->createShape(PxBoxGeometry(0.5f, 1.5f, 0.5f), *gMaterial, false);
-	vec3 pickupLocation = pickup->getArenaLocation();
-	PxRigidStatic* pickupActor = gPhysics->createRigidStatic(PxTransform(pickupLocation.x, pickupLocation.y, pickupLocation.z));
 
-	pickupBox->setSimulationFilterData(obstFilterData);
-
-	pickupBox->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
-	pickupBox->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
-
-	pickupActor->attachShape(*pickupBox);
-	pickupActor->userData = (void*)&pickupManager;
-	pickupActor->setName("pickup");
-	gScene->addActor(*pickupActor);
-
-	renderables.push_back(pickup);
-}
 }	// namespace physics
 }	// namespace hyperbright
