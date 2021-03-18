@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <FTGL/ftgl.h>
 
 namespace hyperbright {
@@ -32,6 +33,8 @@ private:
 	FTGLPixmapFont font;
 	State _state;
 	PauseSelection pauseSelection;
+	int width, height;
+	float defaultFontSize;
 
 	void renderMain();
 	void renderPause();

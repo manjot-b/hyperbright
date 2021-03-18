@@ -54,6 +54,7 @@ PxVehicleDrive4W* gVehicle4W[number_of_vehicles];
 
 bool					gIsVehicleInAir = true;
 std::shared_ptr<audio::AudioPlayer> audioPlayer;
+std::shared_ptr<entity::PickupManager> pum;
 
 class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints);  PX_UNUSED(count); }
@@ -63,17 +64,17 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
 
 		for (physx::PxU32 i = 0; i < count; i++) {
-			audioPlayer->playPickupCollision();
 			if (strcmp(pairs[i].triggerActor->getName(), "battery") == 0) {
+				audioPlayer->playPowerstationCollision();
 				cout << "Station collision detected \n";
 				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
 				v->restoreEnergy();
 			}
 			else if (strcmp(pairs[i].triggerActor->getName(), "pickup") == 0) {
+				audioPlayer->playPickupCollision();
 				cout << "Pickup collision detected" << endl;
-				entity::PickupManager* pum = (entity::PickupManager*)pairs[i].triggerActor->userData;
 				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
-				pum->handlePickupOnCollision(v->getPosition());
+				pum->handlePickupOnCollision(v);
 			}
 		}
 	}
@@ -86,7 +87,7 @@ Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_
 	physicsModels(_physicsModels), vehicles(_vehicles), pickupManager(_pickupManager), renderables(_renderables)
 {
 	initPhysics();
-
+	pum = _pickupManager;
 	for (const auto& wall : arena.getWalls())
 	{
 		cookMeshes(*wall, true);

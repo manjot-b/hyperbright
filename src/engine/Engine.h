@@ -34,6 +34,11 @@ public:
 private:
 	void buildArena1();
 
+	glm::vec2 playerStartingPosition;
+	glm::vec2 ai1StartingPosition;
+	glm::vec2 ai2StartingPosition;
+	glm::vec2 ai3StartingPosition;
+
 	render::Camera camera;
 	ui::Menu menu;
 	ui::DevUI devUI;

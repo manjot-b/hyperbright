@@ -31,19 +31,29 @@ public:
 	Pickup(const std::shared_ptr<openGLHelper::Shader>& shader);
 	~Pickup();
 
-	Pickup(int pickupType, std::shared_ptr<PickupManager> pickupManager, const std::shared_ptr<openGLHelper::Shader>& shader);
-	void activate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
+	int pickupNumber;
+	Pickup(int puNum, int pickupType, std::shared_ptr<PickupManager> pickupManager, const std::shared_ptr<openGLHelper::Shader>& shader);
+	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, int indexOfFirstPlace);
+	void activate();
 	void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
+	void deactivate();
 	void initialCollision(std::shared_ptr<Vehicle> vehicle);
 	bool active;
-	//bool beingCarried;
 	bool timeRemaining();
 	//Position
 	void render() const;
 	void animate(float deltaSec);
-	void setArenaLocation(glm::vec3 arenaLocation);
+
+	void use(int indexOfUser);//VEHICLES CALL THIS FUNCTION
+
+	void setArenaLocation(glm::vec3 _arenaLocation, std::optional<glm::vec2> tileLocation);
 	glm::vec3 getArenaLocation() { return arenaLocation; }
+	glm::vec2 tile;
+	bool beingCarried;
+	int usedByIndex;
+
 private:
+	
 	int type;
 	float pickupTime;
 	float pickUpStartTime;

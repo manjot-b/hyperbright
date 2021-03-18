@@ -60,6 +60,7 @@ namespace hyperbright {
 
 			//std::cout << "Size:"<< path.size() << std::endl;
 			//std::cout << "Current path:" << path.back().x << " " << path.back().y << std::endl;
+			vehicle->stopReverse();
 			if (path.size() > 0) {
 				if (vehicle->currentTile == path.back()) {
 					std::cout << vehicle->getId() << " NEXT TILE REACHED " << vehicle->currentTile.x << " " << vehicle->currentTile.y << std::endl;
