@@ -23,7 +23,7 @@ struct VehicleController {
 class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
 {
 public:
-	Vehicle(const std::string& id,
+	Vehicle(
 		engine::teamStats::Teams team,
 		const std::shared_ptr<openGLHelper::Shader>& shader,
 		glm::vec3 startPos,
@@ -33,7 +33,7 @@ public:
 
 	void updatePositionAndDirection();
 
-	const char* getId() const { return id.c_str(); }
+	const char* getId() const { return engine::teamStats::names[team].c_str(); }
 	VehicleController getController() { return ctrl; }
 	const glm::vec4& getColor() const { return color; }
 	glm::vec3 getForward() const { return position + direction; }

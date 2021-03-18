@@ -8,36 +8,40 @@ namespace entity {
 
 using namespace std;
 using namespace glm;
+using namespace engine;
 
-Vehicle::Vehicle(const std::string& _id,
-	engine::teamStats::Teams team,
+Vehicle::Vehicle(
+	teamStats::Teams team,
 	const std::shared_ptr<openGLHelper::Shader>& shader,
 	vec3 startPos,
 	vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
 	:IRenderable(shader),
-	id(_id), team(team), color(engine::teamStats::colors.at(team)),
+	team(team), color(teamStats::colors.at(team)),
 	position(startPos), direction(normalize(startDir)), startDirection(startDir)
 {
 	string bodyIdSuffix = "body";
 	string wheelsIdSuffix = "wheel";
 
-	if (id ==  "player") {
+	switch (team)
+	{
+	case teamStats::Teams::TEAM0:
 		ctrl.contrId = 0;
-	}
-	else if (id == "ai1") {
+		break;
+	case teamStats::Teams::TEAM1:
 		ctrl.contrId = 1;
-	}
-	else if (id == "ai2") {
+		break;
+	case teamStats::Teams::TEAM2:
 		ctrl.contrId = 2;
-	}
-	else if (id == "ai3") {
+		break;
+	case teamStats::Teams::TEAM3:
 		ctrl.contrId = 3;
-	}
-	else {
+		break;
+	default:
 		cout << "unknown vehicle name. see vehicle constructor" << endl;
+		break;
 	}
 
-	body = std::make_unique<model::Model>("rsc/models/car_body.obj", id + bodyIdSuffix, _shader, nullptr);
+	body = std::make_unique<model::Model>("rsc/models/car_body.obj", teamStats::names[team] + bodyIdSuffix, _shader, nullptr);
 	
 	unsigned int index = 0;
 	for (auto& mesh : body->getMeshes())
