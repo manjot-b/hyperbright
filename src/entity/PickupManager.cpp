@@ -141,18 +141,6 @@ namespace hyperbright {
 			inactivePickups.push_back(pickup);
 		}
 
-void PickupManager::animate(float fps)
-{
-	for (auto& pickup : onArenaPickups) {
-		pickup->animate(fps);
-	}
-}
-
-void PickupManager::handlePickupOnCollision(glm::vec3 collisionPosition)
-{
-	std::cout << "Collision at: x " << collisionPosition.x << " y " << collisionPosition.y << " z " << collisionPosition.z << std::endl;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 
 		void PickupManager::moveToCarried(std::shared_ptr<Pickup> pickup) {
