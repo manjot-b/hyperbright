@@ -10,7 +10,7 @@ namespace hyperbright {
 namespace engine {
 Engine::Engine() :
 	camera(), menu(), devUI(render::Renderer::getInstance().getWindow()),
-	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(600)
+	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(6), mainmenu(), pausemenu(), endmenu()
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
@@ -24,7 +24,7 @@ Engine::Engine() :
 	setupAudioPlayer();
 	initDevUI();
 
-	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], menu);
+	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], mainmenu, pausemenu, endmenu);
 }
 
 
@@ -128,9 +128,11 @@ void Engine::initEntities()
 
 void Engine::run()
 {
-	runMainMenu();
-	runGame();
-	endGame();
+	while (1) {
+		runMainMenu();
+		runGame();
+		endGame();
+	}
 }
 
 
@@ -139,7 +141,7 @@ This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
 	//audioPlayer->playStartMenuMusic();
-	while (menu.getState() == ui::Menu::State::MAIN) {
+	while (mainmenu.getState() == ui::mainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -157,7 +159,7 @@ void Engine::runMainMenu() {
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
 		// render only the menu for now.
-		render::Renderer::getInstance().render(renderables, devUI, menu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, mainmenu, camera);
 
 		getDevUISettings();
 		glfwPollEvents();
@@ -184,7 +186,7 @@ void Engine::runGame() {
 	//audioPlayer->playGameMusic();
 	//audioPlayer->playCarIdle();
 
-	while (!controller->isWindowClosed() && menu.getState() != ui::Menu::State::END) {
+	while (!controller->isWindowClosed() && endmenu.getState() != ui::endMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -205,10 +207,10 @@ void Engine::runGame() {
 		aiManager.makeMoves();
 
 		// Simulator
-		if (menu.getState() != ui::Menu::State::PAUSE) {
+		if (pausemenu.getState() != ui::pauseMenu::State::ON) {
 			roundTimer -= deltaSec;
 			if (roundTimer < 0.01f)
-				menu.setState(ui::Menu::State::END);
+				endmenu.setState(ui::endMenu::State::ON);
 
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
@@ -233,7 +235,7 @@ void Engine::runGame() {
 		}
 
 		// render the updated position of all models and ImGui
-		render::Renderer::getInstance().render(renderables, devUI, menu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, pausemenu, camera);
 
 		getDevUISettings();
 		glfwPollEvents();
@@ -246,7 +248,7 @@ void Engine::runGame() {
 //A loop for endgame
 void Engine::endGame()
 {
-	while (!controller->isWindowClosed()) {
+	while (!controller->isWindowClosed() && mainmenu.getState() != ui::mainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -264,7 +266,7 @@ void Engine::endGame()
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
 		// render only the menu for now.
-		render::Renderer::getInstance().render(renderables, devUI, menu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, endmenu, camera);
 		
 		getDevUISettings();
 		glfwPollEvents();

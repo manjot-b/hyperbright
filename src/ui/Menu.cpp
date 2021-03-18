@@ -8,31 +8,38 @@
 #include <iostream>
 namespace hyperbright {
 namespace ui {
-	Menu::Menu(State state, PauseSelection selection) :
-		font("rsc/fonts/neon_pixel-7.ttf"), _state(state), pauseSelection(selection), defaultFontSize(120.f)
+	Menu::Menu()
 {}
 
 void Menu::render()
 {
-	switch (_state)
-	{
-	case State::MAIN:
-		renderMain(); break;
-	case State::PAUSE:
-		renderPause(); break;
-	case State::END:
-		renderEnd();  break;
-	case State::NONE: break;
-	}
+	renderMenu();
 }
 
-void Menu::renderMain()
-{
+
+void Menu::renderMenu() {}
+
+//subclasses
+	mainMenu::mainMenu(State state) :
+		font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f), _state(state)
+{}
+
+	pauseMenu::pauseMenu(State state, PauseSelection selection) :
+		font("rsc/fonts/neon_pixel-7.ttf"), pauseSelection(selection),  defaultFontSize(120.f), _state(state)
+{}
+
+	endMenu::endMenu(State state) :
+		font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f), _state(state)
+{}
+
+
+//rendering mainmenu
+void mainMenu::renderMenu() {
 	GLFWwindow* window = glfwGetCurrentContext();
 	glfwGetWindowSize(window, &width, &height);
 	float scale = (width * 0.1f) / defaultFontSize;
 	float xCord = ((float)width / 2) - (5 * (50 * scale) / 2);
-	float yCord = ((float)height / 2) - ((50 * scale)/ 2);
+	float yCord = ((float)height / 2) - ((50 * scale) / 2);
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glPixelTransferf(GL_RED_BIAS, -0.28f);
@@ -43,49 +50,71 @@ void Menu::renderMain()
 	glPopAttrib();
 }
 
-void Menu::renderPause()
-{
-	GLFWwindow* window = glfwGetCurrentContext();
-	glfwGetWindowSize(window, &width, &height);
-	float scale = (width * 0.1f) / defaultFontSize;
-	float xCord, yCord, newScale;
-	
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glPixelTransferf(GL_RED_BIAS, -0.28f);
-	glPixelTransferf(GL_GREEN_BIAS, -0.89f);
-	glPixelTransferf(GL_BLUE_BIAS, -0.13f);
-	switch (pauseSelection)
-	{
-	case PauseSelection::RESUME:
-		font.FaceSize(1.2 * width * 0.1f);
-		newScale = (1.2 * width * 0.1f) / (defaultFontSize);
-		xCord = ((float)width / 2) - (6 * (50 * newScale) / 2);
-		yCord = ((float)height * 4 / 5);
-		font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
+mainMenu::State mainMenu::getState() const { return _state; }
 
-		font.FaceSize(width * 0.1f);
-		xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
-		yCord = ((float)height * 3 / 5);
-		font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
-		break;
-	case PauseSelection::QUIT:
-		font.FaceSize(width * 0.1f);
-		xCord = ((float)width / 2) - (6 * (50 * scale) / 2);
-		yCord = ((float)height * 4 / 5);
-		font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
-		
-		font.FaceSize(1.2 * width * 0.1f);
-		newScale = (1.2 * width * 0.1f) / (defaultFontSize);
-		xCord = ((float)width / 2) - (4 * (50 * newScale) / 2);
-		yCord = ((float)height * 3 / 5);
-		font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
-		break;
+void mainMenu::setState(State state) { _state = state; }
+
+
+
+
+//rendering pausemenu
+void pauseMenu::renderMenu() {
+	if (_state == State::ON) {
+		GLFWwindow* window = glfwGetCurrentContext();
+		glfwGetWindowSize(window, &width, &height);
+		float scale = (width * 0.1f) / defaultFontSize;
+		float xCord, yCord, newScale;
+
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
+		glPixelTransferf(GL_RED_BIAS, -0.28f);
+		glPixelTransferf(GL_GREEN_BIAS, -0.89f);
+		glPixelTransferf(GL_BLUE_BIAS, -0.13f);
+		switch (pauseSelection)
+		{
+		case PauseSelection::RESUME:
+			font.FaceSize(1.2 * width * 0.1f);
+			newScale = (1.2 * width * 0.1f) / (defaultFontSize);
+			xCord = ((float)width / 2) - (6 * (50 * newScale) / 2);
+			yCord = ((float)height * 4 / 5);
+			font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(width * 0.1f);
+			xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+			yCord = ((float)height * 3 / 5);
+			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
+			break;
+		case PauseSelection::QUIT:
+			font.FaceSize(width * 0.1f);
+			xCord = ((float)width / 2) - (6 * (50 * scale) / 2);
+			yCord = ((float)height * 4 / 5);
+			font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(1.2 * width * 0.1f);
+			newScale = (1.2 * width * 0.1f) / (defaultFontSize);
+			xCord = ((float)width / 2) - (4 * (50 * newScale) / 2);
+			yCord = ((float)height * 3 / 5);
+			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
+			break;
+		}
+		glPopAttrib();
 	}
-	glPopAttrib();
 }
 
-void Menu::renderEnd()
-{
+pauseMenu::PauseSelection pauseMenu::getPauseSelection() const { return pauseSelection; }
+
+void pauseMenu::setPauseSelection(PauseSelection selection) { pauseSelection = selection; }
+
+pauseMenu::State pauseMenu::getState() const { return _state; }
+
+void pauseMenu::setState(State state) { _state = state; }
+
+
+
+
+
+
+//rendering endmenu
+void endMenu::renderMenu() {
 	GLFWwindow* window = glfwGetCurrentContext();
 	glfwGetWindowSize(window, &width, &height);
 	float scale = (width * 0.1f) / defaultFontSize;
@@ -102,7 +131,7 @@ void Menu::renderEnd()
 	}
 	std::sort(sortedScores.begin(), sortedScores.end(), [](TeamScore a, TeamScore b) {
 		return std::get<1>(a) > std::get<1>(b);
-	});
+		});
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glPixelTransferf(GL_RED_BIAS, -0.28f);
@@ -126,12 +155,10 @@ void Menu::renderEnd()
 	glPopAttrib();
 }
 
-Menu::State Menu::getState() const { return _state; }
+endMenu::State endMenu::getState() const { return _state; }
 
-void Menu::setState(State state) { _state = state; }
+void endMenu::setState(State state) { _state = state; }
 
-Menu::PauseSelection Menu::getPauseSelection() const { return pauseSelection; }
 
-void Menu::setPauseSelection(PauseSelection selection) { pauseSelection = selection; }
 }	// namespace ui
 }	// namespace hyperbright

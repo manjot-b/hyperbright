@@ -41,6 +41,9 @@ private:
 
 	render::Camera camera;
 	ui::Menu menu;
+	ui::mainMenu mainmenu;
+	ui::pauseMenu pausemenu;
+	ui::endMenu endmenu;
 	ui::DevUI devUI;
 	std::shared_ptr<entity::Arena> arena;
 	std::unique_ptr<Controller> controller;
