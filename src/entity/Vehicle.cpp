@@ -1,7 +1,11 @@
 #include "Vehicle.h"
 
+#include <vehicle/PxVehicleDrive4W.h>
+#include <glm/gtx/euler_angles.hpp>
+
 #include <iostream>
 #include <algorithm>
+
 
 namespace hyperbright {
 namespace entity {
@@ -68,7 +72,10 @@ Vehicle::Vehicle(
 		index++;
 	}
 
-	wheel = std::make_unique<model::Model>("rsc/models/wheel.obj", id + wheelsIdSuffix, _shader, nullptr);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_LEFT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_fl", _shader, nullptr);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_RIGHT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_fr", _shader, nullptr);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_LEFT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_rl", _shader, nullptr);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_rr", _shader, nullptr);
 }
 
 void Vehicle::updatePositionAndDirection() {
@@ -91,7 +98,8 @@ void Vehicle::reset() {
 void Vehicle::render() const
 {
 	body->render();
-	wheel->render();
+	for (const auto& wheel : wheels)
+		wheel->render();
 }
 
 quat Vehicle::getOrientation() const
@@ -198,15 +206,29 @@ void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 	final_transform = glm::scale(modelMat, glm::vec3(scale));
 	final_transform = glm::translate(final_transform, translate);
 	body->setModelMatrix(final_transform);
+}
 
-	wheel->setModelMatrix(glm::translate(final_transform, glm::vec3(1.5f, 0.51f, 3.0f)));
+void Vehicle::setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& frontRight, const glm::mat4& rearRight, const glm::mat4& rearLeft)
+{
+	glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(1 / 3.f)); // this must match physX vehicle description in Simulate.cpp - initVehicleDesc()
+	glm::mat4 flTrans = glm::translate(glm::mat4(1.f), glm::vec3(-0.02f, -0.075f, 0.05f));
+	glm::mat4 frTrans = glm::translate(flTrans, glm::vec3(0.f, 0.f, -0.12f));
+	glm::mat4 rearTrans = glm::translate(glm::mat4(1.f), glm::vec3(0.12f, -0.075f, .0f));
+	glm::mat4 flipped = glm::eulerAngleY(glm::radians(180.f));
+
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_LEFT]->setModelMatrix(flTrans * frontLeft * scale);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_RIGHT]->setModelMatrix(frTrans * frontRight * scale * flipped);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_LEFT]->setModelMatrix(rearTrans * rearLeft * scale);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT]->setModelMatrix(rearTrans * rearRight * scale * flipped);
 }
 
 void Vehicle::setPosition(const glm::vec3& position)
 {
 	this->position = position;
 	body->setPosition(position);
-	wheel->setPosition(position);
+
+	for(auto& wheel : wheels)
+		wheel->setPosition(position);
 }
 
 void Vehicle::setBodyMaterial(const model::Material& material)

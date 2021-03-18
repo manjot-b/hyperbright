@@ -570,6 +570,28 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 					memcpy(&modelPos, &(boxPose.getPosition()), sizeof(PxVec3));
 					model->setPosition(modelPos);
 
+					// Check if this actor is a vehicle and if so, set its wheels pose.
+					for (const auto& name : engine::teamStats::names)
+					{
+						if (name.second.c_str() == actorName)
+						{
+							entity::Vehicle* vehicle = reinterpret_cast<entity::Vehicle*>(actors[i]->userData);
+
+							PxMat44 frontRight = (PxShapeExt::getGlobalPose(*shapes[0], *actors[i]));
+							PxMat44 frontLeft = (PxShapeExt::getGlobalPose(*shapes[1], *actors[i]));
+							PxMat44 rearRight = (PxShapeExt::getGlobalPose(*shapes[2], *actors[i]));
+							PxMat44 rearLeft = (PxShapeExt::getGlobalPose(*shapes[3], *actors[i]));
+
+							glm::mat4 fr, fl, rr, rl;
+							memcpy(&fr, &frontRight, sizeof(PxMat44));
+							memcpy(&fl, &frontLeft, sizeof(PxMat44));
+							memcpy(&rr, &rearRight, sizeof(PxMat44));
+							memcpy(&rl, &rearLeft, sizeof(PxMat44));
+
+							vehicle->setWheelsModelMatrix(fl, fr, rr, rl);
+							break;
+						}
+					}
 				}
 			}
 		}

@@ -51,6 +51,7 @@ public:
 	bool enoughEnergy();
 
 	void setModelMatrix(const glm::mat4& modelMat);
+	void setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& frontRight, const glm::mat4& rearRight, const glm::mat4& rearLeft);
 	void setPosition(const glm::vec3& position);
 	void setColor(const glm::vec4 _color) { color = _color; }
 
@@ -80,7 +81,6 @@ public:
 	void render() const;
 private:
 
-	std::string id;
 	engine::teamStats::Teams team;
 	glm::vec4 color;
 	glm::vec3 direction;
@@ -89,7 +89,8 @@ private:
 	VehicleController ctrl;
 
 	std::unique_ptr<model::Model> body;
-	std::unique_ptr<model::Model> wheel;
+	// Follow the order from physx. Front left, front right, rear left, rear right.
+	std::array<std::unique_ptr<model::Model>, 4> wheels;
 	unsigned int bodyIdx;
 	unsigned int brakeLightsIdx;
 };
