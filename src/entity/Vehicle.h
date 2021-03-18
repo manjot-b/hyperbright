@@ -89,8 +89,7 @@ private:
 	VehicleController ctrl;
 
 	std::unique_ptr<model::Model> body;
-	std::unique_ptr<model::Model> wheelsFront;
-	std::unique_ptr<model::Model> wheelsRear;
+	std::unique_ptr<model::Model> wheel;
 	unsigned int bodyIdx;
 	unsigned int brakeLightsIdx;
 };

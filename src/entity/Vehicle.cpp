@@ -19,8 +19,7 @@ Vehicle::Vehicle(const std::string& _id,
 	position(startPos), direction(normalize(startDir)), startDirection(startDir)
 {
 	string bodyIdSuffix = "body";
-	string wheelsFrontIdSuffix = "wheelsfront";
-	string wheelsRearIdSuffix = "wheelsRear";
+	string wheelsIdSuffix = "wheel";
 
 	if (id ==  "player") {
 		ctrl.contrId = 0;
@@ -65,8 +64,7 @@ Vehicle::Vehicle(const std::string& _id,
 		index++;
 	}
 
-	wheelsFront = std::make_unique<model::Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, _shader, nullptr);
-	wheelsRear = std::make_unique<model::Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, _shader, nullptr);
+	wheel = std::make_unique<model::Model>("rsc/models/wheel.obj", id + wheelsIdSuffix, _shader, nullptr);
 }
 
 void Vehicle::updatePositionAndDirection() {
@@ -89,8 +87,7 @@ void Vehicle::reset() {
 void Vehicle::render() const
 {
 	body->render();
-	wheelsFront->render();
-	wheelsRear->render();
+	wheel->render();
 }
 
 quat Vehicle::getOrientation() const
@@ -191,22 +188,21 @@ void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 {
 	// Probably a better way to do this, but this is fine for now.
 	float scale = 1 / 3.f; // this must match physX vehicle description in Simulate.cpp - initVehicleDesc()
-	glm::vec3 translate(0.f, -1.8f, 0.f);
+	glm::vec3 translate(0.f, -2.0f, 0.f);
 
 	glm::mat4 final_transform = modelMat;
 	final_transform = glm::scale(modelMat, glm::vec3(scale));
 	final_transform = glm::translate(final_transform, translate);
 	body->setModelMatrix(final_transform);
-	wheelsFront->setModelMatrix(final_transform);
-	wheelsRear->setModelMatrix(final_transform);
+
+	wheel->setModelMatrix(glm::translate(final_transform, glm::vec3(1.5f, 0.51f, 3.0f)));
 }
 
 void Vehicle::setPosition(const glm::vec3& position)
 {
 	this->position = position;
 	body->setPosition(position);
-	wheelsFront->setPosition(position);
-	wheelsRear->setPosition(position);
+	wheel->setPosition(position);
 }
 
 void Vehicle::setBodyMaterial(const model::Material& material)
