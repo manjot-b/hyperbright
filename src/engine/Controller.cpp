@@ -277,7 +277,9 @@ void Controller::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (!controller->isCursorShowing && controller->manualCamera)
+	if (!controller->isCursorShowing && controller->manualCamera &&
+		controller->pauseMenu.getState() == ui::PauseMenu::State::OFF &&
+		controller->endMenu.getState() == ui::EndMenu::State::OFF)
 	{
 		if (controller->firstMouse)
 		{
@@ -300,10 +302,15 @@ void Controller::scrollCallback(GLFWwindow* window, double xoffset, double yoffs
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (yoffset > 0)
-		controller->camera.processMouseScroll(render::Camera::Movement::FORWARD, yoffset);
-	if (yoffset < 0)
-		controller->camera.processMouseScroll(render::Camera::Movement::BACKWARD, -yoffset);
+	if (!controller->isCursorShowing && controller->manualCamera &&
+		controller->pauseMenu.getState() == ui::PauseMenu::State::OFF &&
+		controller->endMenu.getState() == ui::EndMenu::State::OFF)
+	{
+		if (yoffset > 0)
+			controller->camera.processMouseScroll(render::Camera::Movement::FORWARD, yoffset);
+		if (yoffset < 0)
+			controller->camera.processMouseScroll(render::Camera::Movement::BACKWARD, -yoffset);
+	}
 }
 
 void Controller::toggleCursor()
