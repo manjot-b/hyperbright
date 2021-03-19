@@ -9,36 +9,85 @@ namespace ui {
 class Menu
 {
 public:
+	Menu();
+	virtual void render() = 0;
+	
+protected:
+	FTGLPixmapFont font;
+	float defaultFontSize;
+	unsigned int width, height;
+
+	void updateWindowSize();
+};
+
+
+//subclasses
+class MainMenu : public Menu
+{
+public:
+
 	enum class State {
-		NONE,
-		MAIN,
-		PAUSE,
-		END
+		OFF,
+		ON
 	};
 
-	enum class PauseSelection {
+	MainMenu(State state = State::ON);
+	void render();
+	State getState() const;
+	void setState(State state);
+
+private:
+	State _state;
+};
+
+
+
+class PauseMenu : public Menu
+{
+public:
+
+	enum class Selection {
 		RESUME,
 		QUIT
 	};
 
-	Menu(State state = State::MAIN, PauseSelection selection = PauseSelection::RESUME);
+	enum class State {
+		OFF,
+		ON
+	};
+
+	PauseMenu(State state = State::OFF, Selection selection = Selection::RESUME);
 	void render();
 
+	Selection getSelection() const;
+	void setSelection(Selection selection);
 	State getState() const;
 	void setState(State state);
-	PauseSelection getPauseSelection() const;
-	void setPauseSelection(PauseSelection selection);
 
 private:
-	FTGLPixmapFont font;
+	Selection _selection;
 	State _state;
-	PauseSelection pauseSelection;
-	int width, height;
-	float defaultFontSize;
-
-	void renderMain();
-	void renderPause();
-	void renderEnd();
 };
+
+
+class EndMenu : public Menu
+{
+public:
+
+	enum class State {
+		OFF,
+		ON
+	};
+
+	EndMenu(State state = State::OFF);
+	void render();
+	State getState() const;
+	void setState(State state);
+
+private:
+	State _state;
+};
+
+
 }	// namespace ui
 }	// namespace hyperbright

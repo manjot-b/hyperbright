@@ -85,6 +85,7 @@ void Renderer::initWindow()
 			[](GLFWwindow* window, int newWidth, int newHeight) {
 		glViewport(0, 0, newWidth, newHeight);
 		Renderer::getInstance().perspective = glm::perspective(glm::radians(45.0f), float(newWidth)/newHeight, 0.1f, 1000.0f);
+		Renderer::getInstance().setWindowSize(newWidth, newHeight);
 	});
 
 	glEnable(GL_DEPTH_TEST);
@@ -92,6 +93,18 @@ void Renderer::initWindow()
 }
 
 GLFWwindow* Renderer::getWindow() { return window; }
+
+void Renderer::getWindowSize(unsigned int& width, unsigned int& height)
+{
+	width = Renderer::getInstance().width;
+	height = Renderer::getInstance().height;
+}
+
+void Renderer::setWindowSize(unsigned int width, unsigned int height)
+{
+	Renderer::getInstance().width = width;
+	Renderer::getInstance().height = height;
+}
 
 /*
  Initializes the shader uniforms that only need to be set once, not every frame.
