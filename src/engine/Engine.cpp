@@ -10,7 +10,7 @@ namespace hyperbright {
 namespace engine {
 Engine::Engine() :
 	camera(), mainMenu(), pauseMenu(), endMenu(), devUI(render::Renderer::getInstance().getWindow()),
-	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(10)
+	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(100)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
@@ -33,7 +33,7 @@ void Engine::resetAll()
 {
 	deltaSec = 0.f;
 	lastFrame = 0.f;
-	roundTimer = 10.f;
+	roundTimer = 100.f;
 	camera = render::Camera();
 	
 	vehicles.clear();
