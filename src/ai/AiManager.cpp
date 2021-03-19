@@ -44,7 +44,7 @@ void AiManager::setArena(std::vector<std::vector<bool>> a) {
 //GENERATE PATH FOR GIVEN AI
 void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 	ai->targetTile = generateTarget(ai->targetTile);
-	std::cout << "Goal Tile for "<< ai->vehicle->getId()<<" : " << ai->targetTile.x << " "<< ai->targetTile.y << std::endl;
+	//std::cout << "Goal Tile for "<< ai->vehicle->getId()<<" : " << ai->targetTile.x << " "<< ai->targetTile.y << std::endl;
 	//std::vector<glm::vec2> pathList;
 	//glm::vec2 currentTile = ai->vehicle->currentTile;
 	//glm::vec2 target = ai->targetTile;

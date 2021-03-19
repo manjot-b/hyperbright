@@ -50,14 +50,13 @@ namespace hyperbright {
 			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 36)) + glm::vec3(0.f, 1.f, 0.f));
 			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 20)) + glm::vec3(0.f, 1.f, 0.f));
 
-			pickupIdCounter = 0;
+			pickupIdCounter = 1;
 			for (auto& pickupLocation : onArenaPickupLocations) {
-				pickupIdCounter++;
-				std::cout << pickupIdCounter << "\n";
+				std::cout << "Pickup " << pickupIdCounter << " initialized.\n";
 				std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(pickupIdCounter, 0, nullptr, shader);
 				pickup->setArenaLocation(pickupLocation , arena->isOnTile(pickupLocation));
-				onArenaPickups.push_back(pickup);
 				addPickupToScene(pickup);	// encapsulated new pickup calls
+				pickupIdCounter++;
 			}
 		}
 
@@ -157,7 +156,6 @@ namespace hyperbright {
 			}
 
 			onArenaPickups.erase(std::remove(onArenaPickups.begin(), onArenaPickups.end(), pickup));
-			std::cout << onArenaPickups.size() << "\n";
 		}
 
 /////////////////////////////////////////////////////////////////////////////
@@ -206,9 +204,8 @@ namespace hyperbright {
 		{
 			glm::vec2 curTile = v->currentTile;
 			//std::cout << "COLLISION AT: \n" << curTile.x << " " << curTile.y<<"\n";
-			for (int pickupIdCounter = 0; pickupIdCounter < onArenaPickups.size(); pickupIdCounter++) {
-				// should avoid iterating through the list of pickups every time we need a pointer reference
-				std::shared_ptr<Pickup>& pu = onArenaPickups.at(pickupIdCounter);
+			for (int IdCounter = 0; IdCounter < onArenaPickups.size(); IdCounter++) {
+				std::shared_ptr<Pickup> pu = onArenaPickups.at(IdCounter);
 				if (pu->tile.x == curTile.x && pu->tile.y == curTile.y) {
 					std::cout<< v->getId() <<" HAS PICKUP : " << pu->pickupNumber << std::endl;
 
@@ -221,7 +218,11 @@ namespace hyperbright {
 					removeFromArena(pu);
 					return pu;
 				}
-			}		
+			}	
+			// ! ! ! Do not comment out this error msg ! ! !
+			std::cout << "! ! ! ERROR: Pickup not found ! ! !" << std::endl;
+			std::shared_ptr<Pickup>& pu = std::make_shared<Pickup>();	// if pickup not found, return unused pickup
+			return pu;
 		}
 
 /////////////////////////////////////////////////////////////////////////////

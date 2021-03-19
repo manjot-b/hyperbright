@@ -9,10 +9,14 @@
 
 namespace hyperbright {
 namespace entity {
+Pickup::Pickup() {
+	pickupNumber = 0;
+}
 Pickup::Pickup( const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
 	model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr)) {
 	type = 0;//DEFAULT
 	active = false;
+	pickupNumber = 0;
 
 	tile = glm::vec2(0,0);
 	//pickupNumber = puNum;

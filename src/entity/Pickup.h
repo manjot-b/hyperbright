@@ -28,6 +28,7 @@ namespace entity {
 class Pickup : public render::Renderer::IRenderable
 {
 public:
+	Pickup();
 	Pickup(const std::shared_ptr<openGLHelper::Shader>& shader);
 	~Pickup();
 

@@ -31,7 +31,7 @@ namespace hyperbright {
 		void Ai::aiInput() {
 			updateCurrentTile();
 			if (vehicle->currentTile == targetTile) {
-				std::cout << vehicle->getId() << " GOAL REACHED" << std::endl;
+				//std::cout << vehicle->getId() << " GOAL REACHED" << std::endl;
 				path.pop_back();
 				state = NOTARGET;
 				return;
@@ -52,7 +52,7 @@ namespace hyperbright {
 			if (glfwGetTime() - stuckTimer > stuckTimeout) {
 				stuckCheck = true;
 				backupTimerStart = glfwGetTime();
-				std::cout << vehicle->getId() << " STUCK!!\n";
+				//std::cout << vehicle->getId() << " STUCK!!\n";
 				return;
 			}
 
@@ -63,7 +63,7 @@ namespace hyperbright {
 			vehicle->stopReverse();
 			if (path.size() > 0) {
 				if (vehicle->currentTile == path.back()) {
-					std::cout << vehicle->getId() << " NEXT TILE REACHED " << vehicle->currentTile.x << " " << vehicle->currentTile.y << std::endl;
+					//std::cout << vehicle->getId() << " NEXT TILE REACHED " << vehicle->currentTile.x << " " << vehicle->currentTile.y << std::endl;
 					path.pop_back();
 				}
 				//std::cout << vehicle->currentTile.x<< " "<< vehicle->currentTile.y << std::endl;

@@ -63,7 +63,6 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors);  PX_UNUSED(count); }
 	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {}
 	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
-
 		for (physx::PxU32 i = 0; i < count; i++) {
 			if (pairs[i].flags & (PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER |
 				PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
@@ -79,7 +78,11 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 				audioPlayer->playPickupCollision();
 				cout << "Pickup collision detected" << endl;
 				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
-				toBeRemovedPickups.push(pum->handlePickupOnCollision(v));
+				std::shared_ptr<entity::Pickup> p = pum->handlePickupOnCollision(v);
+				if (p->pickupNumber != 0) {
+					toBeRemovedPickups.push(p);
+					//cout << "Pickup " << p->pickupNumber << " added for removal" << endl;
+				}
 			}
 		}
 	}
@@ -132,7 +135,7 @@ Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_
 	pum = _pickupManager;
 	for (const auto& wall : arena.getWalls())
 	{
-		cookMeshes(*wall, true);
+		cookMeshes(*wall, "wall", true);
 	}
 }
 
@@ -412,7 +415,7 @@ void Simulate::initPhysics()
 	//Create a plane to drive on.
 	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
 	gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
-	gGroundPlane->userData = NULL;
+	gGroundPlane->userData = (void*)"ground";
 	gScene->addActor(*gGroundPlane);
 
 	//Create Vehicle bodies
@@ -448,6 +451,7 @@ void Simulate::initPhysics()
 
 	//wallActor->setGlobalPose(PxTransform(PxVec3(0,0.7f,5)));
 	battery->attachShape(*batteryBox);
+	battery->userData = (void*)"battery";
 	battery->setName("battery");
 	gScene->addActor(*battery);
 
@@ -603,7 +607,7 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 	}
 }
 
-void Simulate::cookMeshes(const model::Model& model, bool useModelMatrix)
+void Simulate::cookMeshes(const model::Model& model, void* _userData, bool useModelMatrix)
 {
 	const std::vector<std::unique_ptr<model::Mesh>>& meshes = model.getMeshes();
 	for (auto& mesh : meshes)
@@ -656,6 +660,7 @@ void Simulate::cookMeshes(const model::Model& model, bool useModelMatrix)
 
 		shape->setSimulationFilterData(obstFilterData);
 		shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+		rigidStat->userData = _userData;
 		rigidStat->attachShape(*shape);
 		gScene->addActor(*rigidStat);
 
