@@ -14,8 +14,10 @@ public:
 	
 protected:
 	FTGLPixmapFont font;
-	int width, height;
 	float defaultFontSize;
+	unsigned int width, height;
+
+	void updateWindowSize();
 };
 
 

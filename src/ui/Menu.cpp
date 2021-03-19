@@ -3,23 +3,31 @@
 #include <algorithm>
 #include <array>
 #include <tuple>
+#include <iostream>
 
 #include "engine/TeamStats.h"
-#include <iostream>
+#include "render/Renderer.h"
+
 namespace hyperbright {
 namespace ui {
 
 /*
 The base Menu class. All other Menu must derive from this class.
 */
-Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f) {}
+Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f), width(0), height(0)
+{
+	render::Renderer::getInstance().getWindowSize(width, height);
+}
 
+void Menu::updateWindowSize()
+{
+	render::Renderer::getInstance().getWindowSize(width, height);
+}
 
 MainMenu::MainMenu(State state) : Menu(), _state(state) {}
 
 void MainMenu::render() {
-	GLFWwindow* window = glfwGetCurrentContext();
-	glfwGetWindowSize(window, &width, &height);
+	updateWindowSize();
 	float scale = (width * 0.1f) / defaultFontSize;
 	float xCord = ((float)width / 2) - (5 * (50 * scale) / 2);
 	float yCord = ((float)height / 2) - ((50 * scale) / 2);
@@ -42,8 +50,7 @@ PauseMenu::PauseMenu(State state, Selection selection) : _selection(selection), 
 
 void PauseMenu::render() {
 	if (_state == State::ON) {
-		GLFWwindow* window = glfwGetCurrentContext();
-		glfwGetWindowSize(window, &width, &height);
+		updateWindowSize();
 		float scale = (width * 0.1f) / defaultFontSize;
 		float xCord, yCord, newScale;
 
@@ -94,8 +101,7 @@ void PauseMenu::setState(State state) { _state = state; }
 EndMenu::EndMenu(State state) : _state(state) {}
 
 void EndMenu::render() {
-	GLFWwindow* window = glfwGetCurrentContext();
-	glfwGetWindowSize(window, &width, &height);
+	updateWindowSize();
 	float scale = (width * 0.1f) / defaultFontSize;
 	float xCord, yCord;
 

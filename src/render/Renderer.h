@@ -41,6 +41,8 @@ class Renderer
 		void operator=(const Renderer&) = delete;
 
 		GLFWwindow* getWindow();
+		void getWindowSize(unsigned int& width, unsigned int& height);
+		void setWindowSize(unsigned int width, unsigned int height);
 		void initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> shader);
 
 		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera);
@@ -49,8 +51,8 @@ class Renderer
 		GLFWwindow* window;
 
 		// 16:9 aspect ratio
-		const unsigned int height = 675;
-		const unsigned int width = 1200;
+		unsigned int height = 675;
+		unsigned int width = 1200;
 
 		glm::mat4 perspective;
 
