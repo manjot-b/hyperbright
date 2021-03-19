@@ -14,7 +14,7 @@ namespace ui {
 /*
 The base Menu class. All other Menu must derive from this class.
 */
-Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(100.f), width(0), height(0)
+Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(100.f), width(0), height(0), color(0.72f, 0.11f, 0.87f)
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
 }
@@ -34,9 +34,9 @@ void MainMenu::render() {
 	float yCord = ((float)height / 2) - ((50 * scale) / 2);
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glPixelTransferf(GL_RED_BIAS, -0.28f);
-	glPixelTransferf(GL_GREEN_BIAS, -0.89f);
-	glPixelTransferf(GL_BLUE_BIAS, -0.13f);
+	glPixelTransferf(GL_RED_BIAS, color.r - 1);
+	glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
+	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
 	font.FaceSize(width * 0.1f);
 	font.Render("START", -1, FTPoint(xCord, yCord, 0));
 	glPopAttrib();
@@ -56,9 +56,9 @@ void PauseMenu::render() {
 		float xCord, yCord, newScale;
 
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
-		glPixelTransferf(GL_RED_BIAS, -0.28f);
-		glPixelTransferf(GL_GREEN_BIAS, -0.89f);
-		glPixelTransferf(GL_BLUE_BIAS, -0.13f);
+		glPixelTransferf(GL_RED_BIAS, color.r - 1);
+		glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
+		glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
 		switch (_selection)
 		{
 		case Selection::RESUME:
@@ -121,9 +121,10 @@ void EndMenu::render() {
 		});
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glPixelTransferf(GL_RED_BIAS, -0.28f);
-	glPixelTransferf(GL_GREEN_BIAS, -0.89f);
-	glPixelTransferf(GL_BLUE_BIAS, -0.13f);
+
+	glPixelTransferf(GL_RED_BIAS, color.r - 1);
+	glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
+	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
 
 	font.FaceSize(width * 0.07f);
 	for (unsigned int i = 0; i < count; i++)

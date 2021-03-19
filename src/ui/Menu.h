@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <FTGL/ftgl.h>
 
 namespace hyperbright {
@@ -16,6 +16,7 @@ protected:
 	FTGLPixmapFont font;
 	float defaultFontSize;
 	unsigned int width, height;
+	glm::vec3 color;
 
 	void updateWindowAndFontSize();
 };
