@@ -53,7 +53,8 @@ void PauseMenu::render() {
 	if (_state == State::ON) {
 		updateWindowAndFontSize();
 		float scale = (width * 0.1f) / defaultFontSize;
-		float xCord, yCord, newScale;
+		float scaleBig = scale * 1.2f;
+		float xCord, yCord;
 
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		glPixelTransferf(GL_RED_BIAS, color.r - 1);
@@ -62,27 +63,51 @@ void PauseMenu::render() {
 		switch (_selection)
 		{
 		case Selection::RESUME:
-			font.FaceSize(1.2 * width * 0.1f);
-			newScale = (1.2 * width * 0.1f) / (defaultFontSize);
-			xCord = ((float)width / 2) - (6 * (50 * newScale) / 2);
+			font.FaceSize(scaleBig * defaultFontSize);
+			xCord = ((float)width / 2) - (6 * (50 * scaleBig) / 2);
 			yCord = ((float)height * 4 / 5);
 			font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
 
-			font.FaceSize(width * 0.1f);
-			xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (9 * (50 * scale) / 2);
 			yCord = ((float)height * 3 / 5);
+			font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+			yCord = ((float)height * 2 / 5);
 			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 			break;
-		case Selection::QUIT:
-			font.FaceSize(width * 0.1f);
+		case Selection::MAIN_MENU:
+			font.FaceSize(scale * defaultFontSize);
 			xCord = ((float)width / 2) - (6 * (50 * scale) / 2);
 			yCord = ((float)height * 4 / 5);
 			font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
 
-			font.FaceSize(1.2 * width * 0.1f);
-			newScale = (1.2 * width * 0.1f) / (defaultFontSize);
-			xCord = ((float)width / 2) - (4 * (50 * newScale) / 2);
+			font.FaceSize(scaleBig * defaultFontSize);
+			xCord = ((float)width / 2) - (9 * (50 * scaleBig) / 2);
 			yCord = ((float)height * 3 / 5);
+			font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+			yCord = ((float)height * 2 / 5);
+			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
+			break;
+		case Selection::QUIT:
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (6 * (50 * scale) / 2);
+			yCord = ((float)height * 4 / 5);
+			font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (9 * (50 * scale) / 2);
+			yCord = ((float)height * 3 / 5);
+			font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(scaleBig * defaultFontSize);
+			xCord = ((float)width / 2) - (4 * (50 * scaleBig) / 2);
+			yCord = ((float)height * 2 / 5);
 			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 			break;
 		}

@@ -141,9 +141,15 @@ void Engine::run()
 	{
 		runMainMenu();
 		runGame();
-		endGame();
 
-		if (!controller->isWindowClosed()) {
+		if (mainMenu.getState() != ui::MainMenu::State::ON) {
+			endGame();
+
+			if (!controller->isWindowClosed()) {	// user selected to go to main menu from end menu.
+				resetAll();
+			}
+		}
+		else {	// user selected to go to main menu from pause menu.
 			resetAll();
 		}
 	}
@@ -198,7 +204,7 @@ void Engine::runGame() {
 	//audioPlayer->playGameMusic();
 	//audioPlayer->playCarIdle();
 
-	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON) {
+	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;

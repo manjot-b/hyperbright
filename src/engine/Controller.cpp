@@ -188,19 +188,37 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 	{
 		switch (key) {
 		case GLFW_KEY_UP:
+		{
+			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
+			int count = static_cast<int>(ui::PauseMenu::Selection::LAST);
+			int nextIdx = static_cast<int>(selection) - 1;
+
+			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
+			nextIdx = (count + (nextIdx % count)) % count;
+			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
+
+			pauseMenu.setSelection(nextSelection);
+		}
+		break;
 		case GLFW_KEY_DOWN:
 		{
 			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
-			pauseMenu.setSelection(
-				selection == ui::PauseMenu::Selection::RESUME ? ui::PauseMenu::Selection::QUIT : ui::PauseMenu::Selection::RESUME);
+			unsigned int count = static_cast<unsigned int>(ui::PauseMenu::Selection::LAST);
+			unsigned int nextIdx = (static_cast<unsigned int>(selection) + 1) % count;
+			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
+
+			pauseMenu.setSelection(nextSelection);
 		}
 		break;
 
 		case GLFW_KEY_ENTER:
 			if (pauseMenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
 				setWindowShouldClose(true);
-				//controller->menu.setSelection(Menu::Selection::RESUME);
-				//controller->menu.setState(Menu::State::MAIN);
+			}
+			else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
+				pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
+				pauseMenu.setState(ui::PauseMenu::State::OFF);
+				mainMenu.setState(ui::MainMenu::State::ON);
 			}
 			else {
 				pauseMenu.setState(ui::PauseMenu::State::OFF);

@@ -48,8 +48,10 @@ class PauseMenu : public Menu
 public:
 
 	enum class Selection {
-		RESUME,
-		QUIT
+		RESUME = 0,
+		MAIN_MENU,
+		QUIT,
+		LAST	// Not an actual selction. Used to get the selection count
 	};
 
 	enum class State {
