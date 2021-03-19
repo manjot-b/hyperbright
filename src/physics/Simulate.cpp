@@ -479,11 +479,11 @@ void setDriveMode(entity::VehicleController ctrl)
 void smoothControlValues(int vNum, float frameRate) {
 	if (gMimicKeyInputs)
 	{
-		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData[vNum], frameRate, gIsVehicleInAir, *gVehicle4W[vNum]);
+		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData[vNum], frameRate, gIsVehicleInAir[vNum], *gVehicle4W[vNum]);
 	}
 	else
 	{
-		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData[vNum], frameRate, gIsVehicleInAir, *gVehicle4W[vNum]);
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData[vNum], frameRate, gIsVehicleInAir[vNum], *gVehicle4W[vNum]);
 	}
 }
 

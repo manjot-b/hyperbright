@@ -120,6 +120,8 @@ namespace hyperbright {
 			}
 		}
 
+/////////////////////////////////////////////////////////////////////////////
+
 		void PickupManager::addPickupToScene(std::shared_ptr<Pickup>& pickup) {
 			onArenaPickups.push_back(pickup);	// add to list of all pickups
 			toBeAddedPickups.push(pickup);		// add to list of physx actors needed
