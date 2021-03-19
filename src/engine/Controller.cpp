@@ -233,10 +233,23 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 	{
 		switch (key)
 		{
+		case GLFW_KEY_UP:
+		case GLFW_KEY_DOWN:
+		{
+			ui::EndMenu::Selection selection = endMenu.getSelection();
+			endMenu.setSelection(
+				selection == ui::EndMenu::Selection::MAIN_MENU ? ui::EndMenu::Selection::QUIT : ui::EndMenu::Selection::MAIN_MENU);
+			break;
+		}
 		case GLFW_KEY_ENTER:
-			//setWindowShouldClose(true);
-			endMenu.setState(ui::EndMenu::State::OFF);
-			mainMenu.setState(ui::MainMenu::State::ON);
+			if (endMenu.getSelection() == ui::EndMenu::Selection::MAIN_MENU) {
+				endMenu.setState(ui::EndMenu::State::OFF);
+				mainMenu.setState(ui::MainMenu::State::ON);
+			}
+			else {
+				setWindowShouldClose(true);
+			}
+			
 			break;
 		}
 	}

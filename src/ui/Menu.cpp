@@ -14,20 +14,21 @@ namespace ui {
 /*
 The base Menu class. All other Menu must derive from this class.
 */
-Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f), width(0), height(0)
+Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(100.f), width(0), height(0)
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
 }
 
-void Menu::updateWindowSize()
+void Menu::updateWindowAndFontSize()
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
+	//defaultFontSize = width * 0.05;
 }
 
 MainMenu::MainMenu(State state) : Menu(), _state(state) {}
 
 void MainMenu::render() {
-	updateWindowSize();
+	updateWindowAndFontSize();
 	float scale = (width * 0.1f) / defaultFontSize;
 	float xCord = ((float)width / 2) - (5 * (50 * scale) / 2);
 	float yCord = ((float)height / 2) - ((50 * scale) / 2);
@@ -50,7 +51,7 @@ PauseMenu::PauseMenu(State state, Selection selection) : _selection(selection), 
 
 void PauseMenu::render() {
 	if (_state == State::ON) {
-		updateWindowSize();
+		updateWindowAndFontSize();
 		float scale = (width * 0.1f) / defaultFontSize;
 		float xCord, yCord, newScale;
 
@@ -98,12 +99,13 @@ PauseMenu::State PauseMenu::getState() const { return _state; }
 void PauseMenu::setState(State state) { _state = state; }
 
 
-EndMenu::EndMenu(State state) : _state(state) {}
+EndMenu::EndMenu(State state, Selection selection) : _state(state), _selection(selection) {}
 
 void EndMenu::render() {
-	updateWindowSize();
-	float scale = (width * 0.1f) / defaultFontSize;
-	float xCord, yCord;
+	updateWindowAndFontSize();
+	float scale = (width * 0.07f) / defaultFontSize;
+	float xCord, yCord, newScale;
+	const unsigned int rows = 10;
 
 	using TeamScore = std::tuple<engine::teamStats::Teams, unsigned int>;
 	constexpr size_t count = static_cast<size_t>(engine::teamStats::Teams::LAST);
@@ -123,22 +125,50 @@ void EndMenu::render() {
 	glPixelTransferf(GL_GREEN_BIAS, -0.89f);
 	glPixelTransferf(GL_BLUE_BIAS, -0.13f);
 
-	font.FaceSize(width * 0.1f);
+	font.FaceSize(width * 0.07f);
 	for (unsigned int i = 0; i < count; i++)
 	{
 		engine::teamStats::Teams team = std::get<0>(sortedScores[i]);
 		std::string nameScore = engine::teamStats::names[team] + ": " + std::to_string(std::get<1>(sortedScores[i]));
 		xCord = ((float)width / 2) - (nameScore.length() * (50 * scale) / 2);
-		yCord = ((float)height * (4 - i) / 5);
+		yCord = ((float)height * ((rows - 2) - i) / rows);	// 1 row of padding at the top
 		font.Render(nameScore.c_str(), -1, FTPoint(xCord, yCord, 0));
 	}
-	font.FaceSize(width * 0.1f);
-	xCord = ((float)width / 2) - (19 * (50 * scale) / 2);
-	yCord = 0;
-	font.Render("Press ENTER to exit", -1, FTPoint(xCord, yCord, 0));
+
+	switch (_selection)
+	{
+	case Selection::MAIN_MENU:
+		font.FaceSize(1.1 * width * 0.07f);
+		newScale = (1.1 * width * 0.07f) / (defaultFontSize);
+		xCord = ((float)width / 2) - (9 * (50 * newScale) / 2);
+		yCord = ((float)height * 2 / rows);
+		font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+		font.FaceSize(width * 0.07f);
+		xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+		yCord = ((float)height * 1 / rows);
+		font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
+		break;
+	case Selection::QUIT:
+		font.FaceSize(width * 0.07f);
+		xCord = ((float)width / 2) - (9 * (50 * scale) / 2);
+		yCord = ((float)height * 2 / rows);
+		font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+		font.FaceSize(1.1 * width * 0.07f);
+		newScale = (1.1 * width * 0.07f) / (defaultFontSize);
+		xCord = ((float)width / 2) - (4 * (50 * newScale) / 2);
+		yCord = ((float)height * 1 / rows);
+		font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
+		break;
+	}
 
 	glPopAttrib();
 }
+
+EndMenu::Selection EndMenu::getSelection() const { return _selection; }
+
+void EndMenu::setSelection(Selection selection) { _selection = selection; }
 
 EndMenu::State EndMenu::getState() const { return _state; }
 

@@ -17,7 +17,7 @@ protected:
 	float defaultFontSize;
 	unsigned int width, height;
 
-	void updateWindowSize();
+	void updateWindowAndFontSize();
 };
 
 
@@ -79,13 +79,21 @@ public:
 		ON
 	};
 
-	EndMenu(State state = State::OFF);
+	enum class Selection {
+		MAIN_MENU,
+		QUIT
+	};
+
+	EndMenu(State state = State::OFF, Selection = Selection::MAIN_MENU);
 	void render();
+	Selection getSelection() const;
+	void setSelection(Selection selection);
 	State getState() const;
 	void setState(State state);
 
 private:
 	State _state;
+	Selection _selection;
 };
 
 
