@@ -37,7 +37,7 @@ void MainMenu::render() {
 	glPixelTransferf(GL_RED_BIAS, color.r - 1);
 	glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
 	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
-	font.FaceSize(width * 0.1f);
+	font.FaceSize(scale * defaultFontSize);
 	font.Render("START", -1, FTPoint(xCord, yCord, 0));
 	glPopAttrib();
 }
@@ -129,7 +129,8 @@ EndMenu::EndMenu(State state, Selection selection) : _state(state), _selection(s
 void EndMenu::render() {
 	updateWindowAndFontSize();
 	float scale = (width * 0.07f) / defaultFontSize;
-	float xCord, yCord, newScale;
+	float scaleBig = scale * 1.1f;
+	float xCord, yCord;
 	const unsigned int rows = 10;
 
 	using TeamScore = std::tuple<engine::teamStats::Teams, unsigned int>;
@@ -151,7 +152,7 @@ void EndMenu::render() {
 	glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
 	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
 
-	font.FaceSize(width * 0.07f);
+	font.FaceSize(scale * defaultFontSize);
 	for (unsigned int i = 0; i < count; i++)
 	{
 		engine::teamStats::Teams team = std::get<0>(sortedScores[i]);
@@ -164,26 +165,24 @@ void EndMenu::render() {
 	switch (_selection)
 	{
 	case Selection::MAIN_MENU:
-		font.FaceSize(1.1 * width * 0.07f);
-		newScale = (1.1 * width * 0.07f) / (defaultFontSize);
-		xCord = ((float)width / 2) - (9 * (50 * newScale) / 2);
+		font.FaceSize(scaleBig * defaultFontSize);
+		xCord = ((float)width / 2) - (9 * (50 * scaleBig) / 2);
 		yCord = ((float)height * 2 / rows);
 		font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
 
-		font.FaceSize(width * 0.07f);
+		font.FaceSize(scale * defaultFontSize);
 		xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
 		yCord = ((float)height * 1 / rows);
 		font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 		break;
 	case Selection::QUIT:
-		font.FaceSize(width * 0.07f);
+		font.FaceSize(scale * defaultFontSize);
 		xCord = ((float)width / 2) - (9 * (50 * scale) / 2);
 		yCord = ((float)height * 2 / rows);
 		font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
 
-		font.FaceSize(1.1 * width * 0.07f);
-		newScale = (1.1 * width * 0.07f) / (defaultFontSize);
-		xCord = ((float)width / 2) - (4 * (50 * newScale) / 2);
+		font.FaceSize(scaleBig * defaultFontSize);
+		xCord = ((float)width / 2) - (4 * (50 * scaleBig) / 2);
 		yCord = ((float)height * 1 / rows);
 		font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 		break;
