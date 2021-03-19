@@ -30,7 +30,7 @@ public:
 		NO_TURN
 	};
 
-	Controller(GLFWwindow* window, render::Camera& camera, std::shared_ptr<entity::Vehicle>& playerVehicle, ui::mainMenu& mainmenu, ui::pauseMenu& pausemenu, ui::endMenu& endmenu);
+	Controller(GLFWwindow* window, render::Camera& camera, std::shared_ptr<entity::Vehicle>& playerVehicle, ui::MainMenu& mainmenu, ui::PauseMenu& pausemenu, ui::EndMenu& endmenu);
 	~Controller();
 
 	////// toggle the window cursor on!!!
@@ -47,9 +47,9 @@ public:
 private:
 	GLFWwindow* window;
 	render::Camera& camera;
-	ui::mainMenu& mainmenu;
-	ui::pauseMenu& pausemenu;
-	ui::endMenu& endmenu;
+	ui::MainMenu& mainmenu;
+	ui::PauseMenu& pausemenu;
+	ui::EndMenu& endmenu;
 
 	std::shared_ptr<entity::Vehicle> playerVehicle;
 

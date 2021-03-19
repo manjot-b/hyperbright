@@ -8,33 +8,16 @@
 #include <iostream>
 namespace hyperbright {
 namespace ui {
-	Menu::Menu()
-{}
 
-void Menu::render()
-{
-	renderMenu();
-}
+/*
+The base Menu class. All other Menu must derive from this class.
+*/
+Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f) {}
 
 
-void Menu::renderMenu() {}
+MainMenu::MainMenu(State state) : Menu(), _state(state) {}
 
-//subclasses
-	mainMenu::mainMenu(State state) :
-		font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f), _state(state)
-{}
-
-	pauseMenu::pauseMenu(State state, PauseSelection selection) :
-		font("rsc/fonts/neon_pixel-7.ttf"), pauseSelection(selection),  defaultFontSize(120.f), _state(state)
-{}
-
-	endMenu::endMenu(State state) :
-		font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f), _state(state)
-{}
-
-
-//rendering mainmenu
-void mainMenu::renderMenu() {
+void MainMenu::render() {
 	GLFWwindow* window = glfwGetCurrentContext();
 	glfwGetWindowSize(window, &width, &height);
 	float scale = (width * 0.1f) / defaultFontSize;
@@ -50,15 +33,14 @@ void mainMenu::renderMenu() {
 	glPopAttrib();
 }
 
-mainMenu::State mainMenu::getState() const { return _state; }
+MainMenu::State MainMenu::getState() const { return _state; }
 
-void mainMenu::setState(State state) { _state = state; }
-
-
+void MainMenu::setState(State state) { _state = state; }
 
 
-//rendering pausemenu
-void pauseMenu::renderMenu() {
+PauseMenu::PauseMenu(State state, Selection selection) : _selection(selection), _state(state) {}
+
+void PauseMenu::render() {
 	if (_state == State::ON) {
 		GLFWwindow* window = glfwGetCurrentContext();
 		glfwGetWindowSize(window, &width, &height);
@@ -69,9 +51,9 @@ void pauseMenu::renderMenu() {
 		glPixelTransferf(GL_RED_BIAS, -0.28f);
 		glPixelTransferf(GL_GREEN_BIAS, -0.89f);
 		glPixelTransferf(GL_BLUE_BIAS, -0.13f);
-		switch (pauseSelection)
+		switch (_selection)
 		{
-		case PauseSelection::RESUME:
+		case Selection::RESUME:
 			font.FaceSize(1.2 * width * 0.1f);
 			newScale = (1.2 * width * 0.1f) / (defaultFontSize);
 			xCord = ((float)width / 2) - (6 * (50 * newScale) / 2);
@@ -83,7 +65,7 @@ void pauseMenu::renderMenu() {
 			yCord = ((float)height * 3 / 5);
 			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 			break;
-		case PauseSelection::QUIT:
+		case Selection::QUIT:
 			font.FaceSize(width * 0.1f);
 			xCord = ((float)width / 2) - (6 * (50 * scale) / 2);
 			yCord = ((float)height * 4 / 5);
@@ -100,21 +82,18 @@ void pauseMenu::renderMenu() {
 	}
 }
 
-pauseMenu::PauseSelection pauseMenu::getPauseSelection() const { return pauseSelection; }
+PauseMenu::Selection PauseMenu::getSelection() const { return _selection; }
 
-void pauseMenu::setPauseSelection(PauseSelection selection) { pauseSelection = selection; }
+void PauseMenu::setSelection(Selection selection) { _selection = selection; }
 
-pauseMenu::State pauseMenu::getState() const { return _state; }
+PauseMenu::State PauseMenu::getState() const { return _state; }
 
-void pauseMenu::setState(State state) { _state = state; }
-
-
+void PauseMenu::setState(State state) { _state = state; }
 
 
+EndMenu::EndMenu(State state) : _state(state) {}
 
-
-//rendering endmenu
-void endMenu::renderMenu() {
+void EndMenu::render() {
 	GLFWwindow* window = glfwGetCurrentContext();
 	glfwGetWindowSize(window, &width, &height);
 	float scale = (width * 0.1f) / defaultFontSize;
@@ -155,10 +134,9 @@ void endMenu::renderMenu() {
 	glPopAttrib();
 }
 
-endMenu::State endMenu::getState() const { return _state; }
+EndMenu::State EndMenu::getState() const { return _state; }
 
-void endMenu::setState(State state) { _state = state; }
-
+void EndMenu::setState(State state) { _state = state; }
 
 }	// namespace ui
 }	// namespace hyperbright

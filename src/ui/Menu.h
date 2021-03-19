@@ -10,15 +10,17 @@ class Menu
 {
 public:
 	Menu();
-	void render();
+	virtual void render() = 0;
 	
-private:
-	virtual void renderMenu();
+protected:
+	FTGLPixmapFont font;
+	int width, height;
+	float defaultFontSize;
 };
 
 
 //subclasses
-class mainMenu : public Menu
+class MainMenu : public Menu
 {
 public:
 
@@ -27,25 +29,22 @@ public:
 		ON
 	};
 
-	mainMenu(State state = State::ON);
-	virtual void renderMenu();
-	virtual State getState() const;
-	virtual void setState(State state);
+	MainMenu(State state = State::ON);
+	void render();
+	State getState() const;
+	void setState(State state);
 
 private:
-	FTGLPixmapFont font;
-	int width, height;
-	float defaultFontSize;
 	State _state;
 };
 
 
 
-class pauseMenu : public Menu
+class PauseMenu : public Menu
 {
 public:
 
-	enum class PauseSelection {
+	enum class Selection {
 		RESUME,
 		QUIT
 	};
@@ -55,26 +54,21 @@ public:
 		ON
 	};
 
-	pauseMenu(State state = State::OFF, PauseSelection selection = PauseSelection::RESUME);
-	virtual void renderMenu();
+	PauseMenu(State state = State::OFF, Selection selection = Selection::RESUME);
+	void render();
 
-	virtual PauseSelection getPauseSelection() const;
-	virtual void setPauseSelection(PauseSelection selection);
-	virtual State getState() const;
-	virtual void setState(State state);
+	Selection getSelection() const;
+	void setSelection(Selection selection);
+	State getState() const;
+	void setState(State state);
 
 private:
-	FTGLPixmapFont font;
-	int width, height;
-	float defaultFontSize;
-	PauseSelection pauseSelection;
+	Selection _selection;
 	State _state;
 };
 
 
-
-
-class endMenu : public Menu
+class EndMenu : public Menu
 {
 public:
 
@@ -83,15 +77,12 @@ public:
 		ON
 	};
 
-	endMenu(State state = State::OFF);
-	virtual void renderMenu();
-	virtual State getState() const;
-	virtual void setState(State state);
+	EndMenu(State state = State::OFF);
+	void render();
+	State getState() const;
+	void setState(State state);
 
 private:
-	FTGLPixmapFont font;
-	int width, height;
-	float defaultFontSize;
 	State _state;
 };
 

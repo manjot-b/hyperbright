@@ -9,8 +9,8 @@
 namespace hyperbright {
 namespace engine {
 Engine::Engine() :
-	camera(), menu(), devUI(render::Renderer::getInstance().getWindow()),
-	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(6), mainmenu(), pausemenu(), endmenu()
+	camera(), mainmenu(), pausemenu(), endmenu(), devUI(render::Renderer::getInstance().getWindow()),
+	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(6)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
@@ -128,11 +128,9 @@ void Engine::initEntities()
 
 void Engine::run()
 {
-	while (1) {
-		runMainMenu();
-		runGame();
-		endGame();
-	}
+	runMainMenu();
+	runGame();
+	endGame();
 }
 
 
@@ -141,7 +139,7 @@ This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
 	//audioPlayer->playStartMenuMusic();
-	while (mainmenu.getState() == ui::mainMenu::State::ON) {
+	while (mainmenu.getState() == ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -186,7 +184,7 @@ void Engine::runGame() {
 	//audioPlayer->playGameMusic();
 	//audioPlayer->playCarIdle();
 
-	while (!controller->isWindowClosed() && endmenu.getState() != ui::endMenu::State::ON) {
+	while (!controller->isWindowClosed() && endmenu.getState() != ui::EndMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -207,10 +205,10 @@ void Engine::runGame() {
 		aiManager.makeMoves();
 
 		// Simulator
-		if (pausemenu.getState() != ui::pauseMenu::State::ON) {
+		if (pausemenu.getState() != ui::PauseMenu::State::ON) {
 			roundTimer -= deltaSec;
 			if (roundTimer < 0.01f)
-				endmenu.setState(ui::endMenu::State::ON);
+				endmenu.setState(ui::EndMenu::State::ON);
 
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
@@ -248,7 +246,7 @@ void Engine::runGame() {
 //A loop for endgame
 void Engine::endGame()
 {
-	while (!controller->isWindowClosed() && mainmenu.getState() != ui::mainMenu::State::ON) {
+	while (!controller->isWindowClosed() && mainmenu.getState() != ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
