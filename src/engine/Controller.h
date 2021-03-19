@@ -47,9 +47,9 @@ public:
 private:
 	GLFWwindow* window;
 	render::Camera& camera;
-	ui::MainMenu& mainmenu;
-	ui::PauseMenu& pausemenu;
-	ui::EndMenu& endmenu;
+	ui::MainMenu& mainMenu;
+	ui::PauseMenu& pauseMenu;
+	ui::EndMenu& endMenu;
 
 	std::shared_ptr<entity::Vehicle> playerVehicle;
 

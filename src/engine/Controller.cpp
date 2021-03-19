@@ -5,7 +5,7 @@
 namespace hyperbright {
 namespace engine {
 Controller::Controller(GLFWwindow* _window, render::Camera& _camera, std::shared_ptr<entity::Vehicle>& _playerVehicle, ui::MainMenu& _mainmenu, ui::PauseMenu& _pausemenu, ui::EndMenu& _endmenu) :
-	window(_window), camera(_camera), playerVehicle(_playerVehicle), mainmenu(_mainmenu), pausemenu(_pausemenu), endmenu(_endmenu),
+	window(_window), camera(_camera), playerVehicle(_playerVehicle), mainMenu(_mainmenu), pauseMenu(_pausemenu), endMenu(_endmenu),
 	isCursorShowing(false), manualCamera(false)
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
@@ -31,7 +31,7 @@ bool rightPressed;
 
 void Controller::processInput(float deltaSec)
 {
-	if (mainmenu.getState() == ui::MainMenu::State::ON || pausemenu.getState() == ui::PauseMenu::State::ON || endmenu.getState() == ui::EndMenu::State::ON) {
+	if (mainMenu.getState() == ui::MainMenu::State::ON || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
 		return;
 	}
 
@@ -141,13 +141,13 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (controller->mainmenu.getState() == ui::MainMenu::State::ON) {
+	if (controller->mainMenu.getState() == ui::MainMenu::State::ON) {
 		controller->mainMenuKeyCallback(key, scancode, action, mods);
 	}
-	else if (controller->pausemenu.getState() == ui::PauseMenu::State::ON) {
+	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
 		controller->pauseMenuKeyCallback(key, scancode, action, mods);
 	}
-	else if (controller->endmenu.getState() == ui::EndMenu::State::ON) {
+	else if (controller->endMenu.getState() == ui::EndMenu::State::ON) {
 		controller->endMenuKeyCallback(key, scancode, action, mods);
 	}
 	else {
@@ -176,7 +176,7 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_ENTER:
-			mainmenu.setState(ui::MainMenu::State::OFF);
+			mainMenu.setState(ui::MainMenu::State::OFF);
 			break;
 		}
 	}
@@ -190,20 +190,20 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 		case GLFW_KEY_UP:
 		case GLFW_KEY_DOWN:
 		{
-			ui::PauseMenu::Selection selection = pausemenu.getSelection();
-			pausemenu.setSelection(
+			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
+			pauseMenu.setSelection(
 				selection == ui::PauseMenu::Selection::RESUME ? ui::PauseMenu::Selection::QUIT : ui::PauseMenu::Selection::RESUME);
 		}
 		break;
 
 		case GLFW_KEY_ENTER:
-			if (pausemenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
+			if (pauseMenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
 				setWindowShouldClose(true);
 				//controller->menu.setSelection(Menu::Selection::RESUME);
 				//controller->menu.setState(Menu::State::MAIN);
 			}
 			else {
-				pausemenu.setState(ui::PauseMenu::State::OFF);
+				pauseMenu.setState(ui::PauseMenu::State::OFF);
 			}
 			break;
 		}
@@ -221,7 +221,7 @@ void Controller::noMenuKeyCallback(int key, int scancode, int action, int mods)
 			break;
 
 		case GLFW_KEY_ESCAPE:
-			pausemenu.setState(ui::PauseMenu::State::ON);
+			pauseMenu.setState(ui::PauseMenu::State::ON);
 			break;
 		}
 	}
@@ -234,8 +234,9 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 		switch (key)
 		{
 		case GLFW_KEY_ENTER:
-			setWindowShouldClose(true);
-			//mainmenu.setState(ui::MainMenu::State::ON);
+			//setWindowShouldClose(true);
+			endMenu.setState(ui::EndMenu::State::OFF);
+			mainMenu.setState(ui::MainMenu::State::ON);
 			break;
 		}
 	}
