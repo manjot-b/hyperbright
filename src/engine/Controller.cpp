@@ -151,7 +151,7 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 		controller->endMenuKeyCallback(key, scancode, action, mods);
 	}
 	else {
-		controller->noMenuKeyCallback(key, scancode, action, mods);
+		controller->gameKeyCallback(key, scancode, action, mods);
 	}
 
 	// Be able to access the DevUI window from any menu
@@ -227,7 +227,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 		}
 	}
 }
-void Controller::noMenuKeyCallback(int key, int scancode, int action, int mods)
+void Controller::gameKeyCallback(int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
