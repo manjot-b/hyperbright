@@ -5,7 +5,7 @@
 namespace hyperbright {
 namespace engine {
 Controller::Controller(GLFWwindow* _window, render::Camera& _camera, std::shared_ptr<entity::Vehicle>& _playerVehicle, ui::MainMenu& _mainmenu, ui::PauseMenu& _pausemenu, ui::EndMenu& _endmenu) :
-	window(_window), camera(_camera), playerVehicle(_playerVehicle), mainmenu(_mainmenu), pausemenu(_pausemenu), endmenu(_endmenu),
+	window(_window), camera(_camera), playerVehicle(_playerVehicle), mainMenu(_mainmenu), pauseMenu(_pausemenu), endMenu(_endmenu),
 	isCursorShowing(false), manualCamera(false)
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
@@ -31,7 +31,7 @@ bool rightPressed;
 
 void Controller::processInput(float deltaSec)
 {
-	if (mainmenu.getState() == ui::MainMenu::State::ON || pausemenu.getState() == ui::PauseMenu::State::ON || endmenu.getState() == ui::EndMenu::State::ON) {
+	if (mainMenu.getState() == ui::MainMenu::State::ON || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
 		return;
 	}
 
@@ -141,17 +141,17 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (controller->mainmenu.getState() == ui::MainMenu::State::ON) {
+	if (controller->mainMenu.getState() == ui::MainMenu::State::ON) {
 		controller->mainMenuKeyCallback(key, scancode, action, mods);
 	}
-	else if (controller->pausemenu.getState() == ui::PauseMenu::State::ON) {
+	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
 		controller->pauseMenuKeyCallback(key, scancode, action, mods);
 	}
-	else if (controller->endmenu.getState() == ui::EndMenu::State::ON) {
+	else if (controller->endMenu.getState() == ui::EndMenu::State::ON) {
 		controller->endMenuKeyCallback(key, scancode, action, mods);
 	}
 	else {
-		controller->noMenuKeyCallback(key, scancode, action, mods);
+		controller->gameKeyCallback(key, scancode, action, mods);
 	}
 
 	// Be able to access the DevUI window from any menu
@@ -176,7 +176,7 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_ENTER:
-			mainmenu.setState(ui::MainMenu::State::OFF);
+			mainMenu.setState(ui::MainMenu::State::OFF);
 			break;
 		}
 	}
@@ -188,28 +188,46 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 	{
 		switch (key) {
 		case GLFW_KEY_UP:
+		{
+			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
+			int count = static_cast<int>(ui::PauseMenu::Selection::LAST);
+			int nextIdx = static_cast<int>(selection) - 1;
+
+			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
+			nextIdx = (count + (nextIdx % count)) % count;
+			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
+
+			pauseMenu.setSelection(nextSelection);
+		}
+		break;
 		case GLFW_KEY_DOWN:
 		{
-			ui::PauseMenu::Selection selection = pausemenu.getSelection();
-			pausemenu.setSelection(
-				selection == ui::PauseMenu::Selection::RESUME ? ui::PauseMenu::Selection::QUIT : ui::PauseMenu::Selection::RESUME);
+			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
+			unsigned int count = static_cast<unsigned int>(ui::PauseMenu::Selection::LAST);
+			unsigned int nextIdx = (static_cast<unsigned int>(selection) + 1) % count;
+			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
+
+			pauseMenu.setSelection(nextSelection);
 		}
 		break;
 
 		case GLFW_KEY_ENTER:
-			if (pausemenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
+			if (pauseMenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
 				setWindowShouldClose(true);
-				//controller->menu.setSelection(Menu::Selection::RESUME);
-				//controller->menu.setState(Menu::State::MAIN);
+			}
+			else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
+				pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
+				pauseMenu.setState(ui::PauseMenu::State::OFF);
+				mainMenu.setState(ui::MainMenu::State::ON);
 			}
 			else {
-				pausemenu.setState(ui::PauseMenu::State::OFF);
+				pauseMenu.setState(ui::PauseMenu::State::OFF);
 			}
 			break;
 		}
 	}
 }
-void Controller::noMenuKeyCallback(int key, int scancode, int action, int mods)
+void Controller::gameKeyCallback(int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
@@ -221,7 +239,7 @@ void Controller::noMenuKeyCallback(int key, int scancode, int action, int mods)
 			break;
 
 		case GLFW_KEY_ESCAPE:
-			pausemenu.setState(ui::PauseMenu::State::ON);
+			pauseMenu.setState(ui::PauseMenu::State::ON);
 			break;
 		}
 	}
@@ -233,9 +251,23 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 	{
 		switch (key)
 		{
+		case GLFW_KEY_UP:
+		case GLFW_KEY_DOWN:
+		{
+			ui::EndMenu::Selection selection = endMenu.getSelection();
+			endMenu.setSelection(
+				selection == ui::EndMenu::Selection::MAIN_MENU ? ui::EndMenu::Selection::QUIT : ui::EndMenu::Selection::MAIN_MENU);
+			break;
+		}
 		case GLFW_KEY_ENTER:
-			setWindowShouldClose(true);
-			//mainmenu.setState(ui::MainMenu::State::ON);
+			if (endMenu.getSelection() == ui::EndMenu::Selection::MAIN_MENU) {
+				endMenu.setState(ui::EndMenu::State::OFF);
+				mainMenu.setState(ui::MainMenu::State::ON);
+			}
+			else {
+				setWindowShouldClose(true);
+			}
+			
 			break;
 		}
 	}
@@ -245,7 +277,9 @@ void Controller::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (!controller->isCursorShowing && controller->manualCamera)
+	if (!controller->isCursorShowing && controller->manualCamera &&
+		controller->pauseMenu.getState() == ui::PauseMenu::State::OFF &&
+		controller->endMenu.getState() == ui::EndMenu::State::OFF)
 	{
 		if (controller->firstMouse)
 		{
@@ -268,10 +302,15 @@ void Controller::scrollCallback(GLFWwindow* window, double xoffset, double yoffs
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (yoffset > 0)
-		controller->camera.processMouseScroll(render::Camera::Movement::FORWARD, yoffset);
-	if (yoffset < 0)
-		controller->camera.processMouseScroll(render::Camera::Movement::BACKWARD, -yoffset);
+	if (!controller->isCursorShowing && controller->manualCamera &&
+		controller->pauseMenu.getState() == ui::PauseMenu::State::OFF &&
+		controller->endMenu.getState() == ui::EndMenu::State::OFF)
+	{
+		if (yoffset > 0)
+			controller->camera.processMouseScroll(render::Camera::Movement::FORWARD, yoffset);
+		if (yoffset < 0)
+			controller->camera.processMouseScroll(render::Camera::Movement::BACKWARD, -yoffset);
+	}
 }
 
 void Controller::toggleCursor()

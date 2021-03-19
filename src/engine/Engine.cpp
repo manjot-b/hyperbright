@@ -9,8 +9,8 @@
 namespace hyperbright {
 namespace engine {
 Engine::Engine() :
-	camera(), mainmenu(), pausemenu(), endmenu(), devUI(render::Renderer::getInstance().getWindow()),
-	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(600)
+	camera(), mainMenu(), pauseMenu(), endMenu(), devUI(render::Renderer::getInstance().getWindow()),
+	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(10)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
@@ -20,17 +20,32 @@ Engine::Engine() :
 	// load textures into a shared pointer.
 	loadTextures();
 	initEntities();
-	setupAudioPlayer();
 	initDevUI();
 
-	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], mainmenu, pausemenu, endmenu);
+	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], mainMenu, pauseMenu, endMenu);
+	audioPlayer = std::make_shared<audio::AudioPlayer>();
 }
 
 
 Engine::~Engine() {}
 
-void Engine::setupAudioPlayer() {
-	audioPlayer = std::shared_ptr<audio::AudioPlayer>(new audio::AudioPlayer);
+void Engine::resetAll()
+{
+	deltaSec = 0.f;
+	lastFrame = 0.f;
+	roundTimer = 10.f;
+	camera = render::Camera();
+	
+	vehicles.clear();
+	renderables.clear();
+	physicsModels.clear();
+
+	for (unsigned int i = 0; i < teamStats::teamCount; i++)
+		teamStats::scores[static_cast<teamStats::Teams>(i)] = 0;
+
+	initEntities();
+	initDevUI();
+	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], mainMenu, pauseMenu, endMenu);
 }
 
 void Engine::initDevUI()
@@ -122,9 +137,22 @@ void Engine::initEntities()
 
 void Engine::run()
 {
-	runMainMenu();
-	runGame();
-	endGame();
+	while (!controller->isWindowClosed())
+	{
+		runMainMenu();
+		runGame();
+
+		if (mainMenu.getState() != ui::MainMenu::State::ON) {
+			endGame();
+
+			if (!controller->isWindowClosed()) {	// user selected to go to main menu from end menu.
+				resetAll();
+			}
+		}
+		else {	// user selected to go to main menu from pause menu.
+			resetAll();
+		}
+	}
 }
 
 
@@ -132,8 +160,8 @@ void Engine::run()
 This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
-	//audioPlayer->playStartMenuMusic();
-	while (mainmenu.getState() == ui::MainMenu::State::ON) {
+	audioPlayer->playStartMenuMusic();
+	while (!controller->isWindowClosed() && mainMenu.getState() == ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -151,7 +179,7 @@ void Engine::runMainMenu() {
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
 		// render only the menu for now.
-		render::Renderer::getInstance().render(renderables, devUI, mainmenu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, mainMenu, camera);
 
 		getDevUISettings();
 		glfwPollEvents();
@@ -176,7 +204,7 @@ void Engine::runGame() {
 	//audioPlayer->playGameMusic();
 	//audioPlayer->playCarIdle();
 
-	while (!controller->isWindowClosed() && endmenu.getState() != ui::EndMenu::State::ON) {
+	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -190,17 +218,15 @@ void Engine::runGame() {
 		}
 		lastFrame = currentFrame;
 
-
 		controller->processInput(deltaSec);
 
 		//AI
 		aiManager.makeMoves();
 
-		// Simulator
-		if (pausemenu.getState() != ui::PauseMenu::State::ON) {
+		if (pauseMenu.getState() != ui::PauseMenu::State::ON) {
 			roundTimer -= deltaSec;
 			if (roundTimer < 0.01f)
-				endmenu.setState(ui::EndMenu::State::ON);
+				endMenu.setState(ui::EndMenu::State::ON);
 
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
@@ -218,32 +244,32 @@ void Engine::runGame() {
 			// check state of all pickups
 			pickupManager->checkPickups();
 			pickupManager->animatePickups(fpsLimit);
+
+			// set camera to player vehicles position
+			if (!controller->isCameraManual())
+			{
+				// grab position from player vehicle
+				camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getForward());
+			}
 		}
 
 		devUI.update(deltaSec, roundTimer);
 
-		// set camera to player vehicles position
-		if (!controller->isCameraManual())
-		{
-			// grab position from player vehicle
-			camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getForward());
-		}
-
 		// render the updated position of all models and ImGui
-		render::Renderer::getInstance().render(renderables, devUI, pausemenu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera);
 
 		getDevUISettings();
 		glfwPollEvents();
 	}
 	audioPlayer->stopGameMusic();
 	audioPlayer->stopCarIdle();
-	return;
+	simulator.cleanupPhysics();
 }
 
 //A loop for endgame
 void Engine::endGame()
 {
-	while (!controller->isWindowClosed() && mainmenu.getState() != ui::MainMenu::State::ON) {
+	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -261,7 +287,7 @@ void Engine::endGame()
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
 		// render only the menu for now.
-		render::Renderer::getInstance().render(renderables, devUI, endmenu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, endMenu, camera);
 		
 		getDevUISettings();
 		glfwPollEvents();

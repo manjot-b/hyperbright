@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <FTGL/ftgl.h>
 
 namespace hyperbright {
@@ -16,8 +16,9 @@ protected:
 	FTGLPixmapFont font;
 	float defaultFontSize;
 	unsigned int width, height;
+	glm::vec3 color;
 
-	void updateWindowSize();
+	void updateWindowAndFontSize();
 };
 
 
@@ -47,8 +48,10 @@ class PauseMenu : public Menu
 public:
 
 	enum class Selection {
-		RESUME,
-		QUIT
+		RESUME = 0,
+		MAIN_MENU,
+		QUIT,
+		LAST	// Not an actual selction. Used to get the selection count
 	};
 
 	enum class State {
@@ -79,13 +82,21 @@ public:
 		ON
 	};
 
-	EndMenu(State state = State::OFF);
+	enum class Selection {
+		MAIN_MENU,
+		QUIT
+	};
+
+	EndMenu(State state = State::OFF, Selection = Selection::MAIN_MENU);
 	void render();
+	Selection getSelection() const;
+	void setSelection(Selection selection);
 	State getState() const;
 	void setState(State state);
 
 private:
 	State _state;
+	Selection _selection;
 };
 
 

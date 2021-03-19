@@ -14,29 +14,30 @@ namespace ui {
 /*
 The base Menu class. All other Menu must derive from this class.
 */
-Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(120.f), width(0), height(0)
+Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(100.f), width(0), height(0), color(0.72f, 0.11f, 0.87f)
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
 }
 
-void Menu::updateWindowSize()
+void Menu::updateWindowAndFontSize()
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
+	//defaultFontSize = width * 0.05;
 }
 
 MainMenu::MainMenu(State state) : Menu(), _state(state) {}
 
 void MainMenu::render() {
-	updateWindowSize();
+	updateWindowAndFontSize();
 	float scale = (width * 0.1f) / defaultFontSize;
 	float xCord = ((float)width / 2) - (5 * (50 * scale) / 2);
 	float yCord = ((float)height / 2) - ((50 * scale) / 2);
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glPixelTransferf(GL_RED_BIAS, -0.28f);
-	glPixelTransferf(GL_GREEN_BIAS, -0.89f);
-	glPixelTransferf(GL_BLUE_BIAS, -0.13f);
-	font.FaceSize(width * 0.1f);
+	glPixelTransferf(GL_RED_BIAS, color.r - 1);
+	glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
+	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
+	font.FaceSize(scale * defaultFontSize);
 	font.Render("START", -1, FTPoint(xCord, yCord, 0));
 	glPopAttrib();
 }
@@ -50,38 +51,63 @@ PauseMenu::PauseMenu(State state, Selection selection) : _selection(selection), 
 
 void PauseMenu::render() {
 	if (_state == State::ON) {
-		updateWindowSize();
+		updateWindowAndFontSize();
 		float scale = (width * 0.1f) / defaultFontSize;
-		float xCord, yCord, newScale;
+		float scaleBig = scale * 1.2f;
+		float xCord, yCord;
 
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
-		glPixelTransferf(GL_RED_BIAS, -0.28f);
-		glPixelTransferf(GL_GREEN_BIAS, -0.89f);
-		glPixelTransferf(GL_BLUE_BIAS, -0.13f);
+		glPixelTransferf(GL_RED_BIAS, color.r - 1);
+		glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
+		glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
 		switch (_selection)
 		{
 		case Selection::RESUME:
-			font.FaceSize(1.2 * width * 0.1f);
-			newScale = (1.2 * width * 0.1f) / (defaultFontSize);
-			xCord = ((float)width / 2) - (6 * (50 * newScale) / 2);
+			font.FaceSize(scaleBig * defaultFontSize);
+			xCord = ((float)width / 2) - (6 * (50 * scaleBig) / 2);
 			yCord = ((float)height * 4 / 5);
 			font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
 
-			font.FaceSize(width * 0.1f);
-			xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (9 * (50 * scale) / 2);
 			yCord = ((float)height * 3 / 5);
+			font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+			yCord = ((float)height * 2 / 5);
 			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 			break;
-		case Selection::QUIT:
-			font.FaceSize(width * 0.1f);
+		case Selection::MAIN_MENU:
+			font.FaceSize(scale * defaultFontSize);
 			xCord = ((float)width / 2) - (6 * (50 * scale) / 2);
 			yCord = ((float)height * 4 / 5);
 			font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
 
-			font.FaceSize(1.2 * width * 0.1f);
-			newScale = (1.2 * width * 0.1f) / (defaultFontSize);
-			xCord = ((float)width / 2) - (4 * (50 * newScale) / 2);
+			font.FaceSize(scaleBig * defaultFontSize);
+			xCord = ((float)width / 2) - (9 * (50 * scaleBig) / 2);
 			yCord = ((float)height * 3 / 5);
+			font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+			yCord = ((float)height * 2 / 5);
+			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
+			break;
+		case Selection::QUIT:
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (6 * (50 * scale) / 2);
+			yCord = ((float)height * 4 / 5);
+			font.Render("Resume", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(scale * defaultFontSize);
+			xCord = ((float)width / 2) - (9 * (50 * scale) / 2);
+			yCord = ((float)height * 3 / 5);
+			font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+			font.FaceSize(scaleBig * defaultFontSize);
+			xCord = ((float)width / 2) - (4 * (50 * scaleBig) / 2);
+			yCord = ((float)height * 2 / 5);
 			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 			break;
 		}
@@ -98,12 +124,14 @@ PauseMenu::State PauseMenu::getState() const { return _state; }
 void PauseMenu::setState(State state) { _state = state; }
 
 
-EndMenu::EndMenu(State state) : _state(state) {}
+EndMenu::EndMenu(State state, Selection selection) : _state(state), _selection(selection) {}
 
 void EndMenu::render() {
-	updateWindowSize();
-	float scale = (width * 0.1f) / defaultFontSize;
+	updateWindowAndFontSize();
+	float scale = (width * 0.07f) / defaultFontSize;
+	float scaleBig = scale * 1.1f;
 	float xCord, yCord;
+	const unsigned int rows = 10;
 
 	using TeamScore = std::tuple<engine::teamStats::Teams, unsigned int>;
 	constexpr size_t count = static_cast<size_t>(engine::teamStats::Teams::LAST);
@@ -119,26 +147,53 @@ void EndMenu::render() {
 		});
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glPixelTransferf(GL_RED_BIAS, -0.28f);
-	glPixelTransferf(GL_GREEN_BIAS, -0.89f);
-	glPixelTransferf(GL_BLUE_BIAS, -0.13f);
 
-	font.FaceSize(width * 0.1f);
+	glPixelTransferf(GL_RED_BIAS, color.r - 1);
+	glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
+	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
+
+	font.FaceSize(scale * defaultFontSize);
 	for (unsigned int i = 0; i < count; i++)
 	{
 		engine::teamStats::Teams team = std::get<0>(sortedScores[i]);
 		std::string nameScore = engine::teamStats::names[team] + ": " + std::to_string(std::get<1>(sortedScores[i]));
 		xCord = ((float)width / 2) - (nameScore.length() * (50 * scale) / 2);
-		yCord = ((float)height * (4 - i) / 5);
+		yCord = ((float)height * ((rows - 2) - i) / rows);	// 1 row of padding at the top
 		font.Render(nameScore.c_str(), -1, FTPoint(xCord, yCord, 0));
 	}
-	font.FaceSize(width * 0.1f);
-	xCord = ((float)width / 2) - (19 * (50 * scale) / 2);
-	yCord = 0;
-	font.Render("Press ENTER to exit", -1, FTPoint(xCord, yCord, 0));
+
+	switch (_selection)
+	{
+	case Selection::MAIN_MENU:
+		font.FaceSize(scaleBig * defaultFontSize);
+		xCord = ((float)width / 2) - (9 * (50 * scaleBig) / 2);
+		yCord = ((float)height * 2 / rows);
+		font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+		font.FaceSize(scale * defaultFontSize);
+		xCord = ((float)width / 2) - (4 * (50 * scale) / 2);
+		yCord = ((float)height * 1 / rows);
+		font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
+		break;
+	case Selection::QUIT:
+		font.FaceSize(scale * defaultFontSize);
+		xCord = ((float)width / 2) - (9 * (50 * scale) / 2);
+		yCord = ((float)height * 2 / rows);
+		font.Render("Main Menu", -1, FTPoint(xCord, yCord, 0));
+
+		font.FaceSize(scaleBig * defaultFontSize);
+		xCord = ((float)width / 2) - (4 * (50 * scaleBig) / 2);
+		yCord = ((float)height * 1 / rows);
+		font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
+		break;
+	}
 
 	glPopAttrib();
 }
+
+EndMenu::Selection EndMenu::getSelection() const { return _selection; }
+
+void EndMenu::setSelection(Selection selection) { _selection = selection; }
 
 EndMenu::State EndMenu::getState() const { return _state; }
 

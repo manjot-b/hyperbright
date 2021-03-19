@@ -40,9 +40,9 @@ private:
 	glm::vec2 ai3StartingPosition;
 
 	render::Camera camera;
-	ui::MainMenu mainmenu;
-	ui::PauseMenu pausemenu;
-	ui::EndMenu endmenu;
+	ui::MainMenu mainMenu;
+	ui::PauseMenu pauseMenu;
+	ui::EndMenu endMenu;
 	ui::DevUI devUI;
 	std::shared_ptr<entity::Arena> arena;
 	std::unique_ptr<Controller> controller;
@@ -53,7 +53,6 @@ private:
 	std::shared_ptr<openGLHelper::Shader> shader;
 
 	std::shared_ptr<model::Model> battery;
-	std::shared_ptr<entity::Pickup> pickup;
 
 	// Rename/remove as required.
 	std::shared_ptr<openGLHelper::Texture> face;
@@ -73,8 +72,8 @@ private:
 	void runGame();
 	void loadTextures();
 	void initEntities();
-	void setupAudioPlayer();
 	void initDevUI();
+	void resetAll();
 
 	void getDevUISettings();
 };
