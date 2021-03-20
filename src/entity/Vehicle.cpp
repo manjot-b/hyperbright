@@ -200,7 +200,7 @@ void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 {
 	// Probably a better way to do this, but this is fine for now.
 	float scale = 1 / 3.f; // this must match physX vehicle description in Simulate.cpp - initVehicleDesc()
-	glm::vec3 translate(0.f, -2.0f, 0.f);
+	glm::vec3 translate(0.f, -1.7f, 0.f);
 
 	glm::mat4 final_transform = modelMat;
 	final_transform = glm::scale(modelMat, glm::vec3(scale));
@@ -211,15 +211,12 @@ void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 void Vehicle::setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& frontRight, const glm::mat4& rearRight, const glm::mat4& rearLeft)
 {
 	glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(1 / 3.f)); // this must match physX vehicle description in Simulate.cpp - initVehicleDesc()
-	glm::mat4 flTrans = glm::translate(glm::mat4(1.f), glm::vec3(-0.02f, -0.075f, 0.05f));
-	glm::mat4 frTrans = glm::translate(flTrans, glm::vec3(0.f, 0.f, -0.12f));
-	glm::mat4 rearTrans = glm::translate(glm::mat4(1.f), glm::vec3(0.12f, -0.075f, .0f));
 	glm::mat4 flipped = glm::eulerAngleY(glm::radians(180.f));
 
-	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_LEFT]->setModelMatrix(flTrans * frontLeft * scale);
-	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_RIGHT]->setModelMatrix(frTrans * frontRight * scale * flipped);
-	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_LEFT]->setModelMatrix(rearTrans * rearLeft * scale);
-	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT]->setModelMatrix(rearTrans * rearRight * scale * flipped);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_LEFT]->setModelMatrix(frontLeft * scale);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_RIGHT]->setModelMatrix(frontRight * scale * flipped);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_LEFT]->setModelMatrix(rearLeft * scale);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT]->setModelMatrix(rearRight * scale * flipped);
 }
 
 void Vehicle::setPosition(const glm::vec3& position)
