@@ -9,9 +9,10 @@ namespace hyperbright {
 			targetTile = glm::vec2(20, 20);
 			stuckCheck = false;
 			stuckTimer = glfwGetTime();
-			stuckTimeout = 7.f;
-			backupTime = 3.f;
+			stuckTimeout = 5.f;
+			backupTime = 2.f;
 			currentTile = glm::vec2(20, 20);
+			pastGoal = glm::vec2(1, 1);//ARBITRARY
 			//path =  std::vector<glm::vec2>();
 		}
 
@@ -31,7 +32,7 @@ namespace hyperbright {
 		void Ai::aiInput() {
 			updateCurrentTile();
 			if (vehicle->currentTile == targetTile) {
-				//std::cout << vehicle->getId() << " GOAL REACHED" << std::endl;
+				std::cout << vehicle->getId() << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
 				path.pop_back();
 				state = NOTARGET;
 				return;
