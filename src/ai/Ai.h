@@ -20,6 +20,7 @@ public:
 	glm::vec2 currentTile;
 	glm::vec2 targetTile;
 	glm::vec2 targetTilePosition;
+	glm::vec2 pastGoal;
 	std::shared_ptr<entity::Vehicle> vehicle;
 	std::shared_ptr<entity::Arena> arena;
 private:

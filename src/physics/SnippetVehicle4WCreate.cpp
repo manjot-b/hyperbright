@@ -252,10 +252,11 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 	//Set up the sim data for the wheels.
 	PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate(numWheels);
 	{
-		//Compute the wheel center offsets from the origin.
+		// Compute the wheel center offsets from the origin.
+		// Approximatly line up with obj models wheel wells.
 		PxVec3 wheelCenterActorOffsets[PX_MAX_NB_WHEELS];
-		const PxF32 frontZ = chassisDims.z*0.3f;
-		const PxF32 rearZ = -chassisDims.z*0.3f;
+		const PxF32 frontZ = chassisDims.z*0.295f;
+		const PxF32 rearZ = -chassisDims.z*0.265f;
 		fourwheel::computeWheelCenterActorOffsets4W(frontZ, rearZ, chassisDims, wheelWidth, wheelRadius, numWheels, wheelCenterActorOffsets);
 
 		//Set up the simulation data for all wheels.
