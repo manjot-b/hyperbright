@@ -34,13 +34,6 @@ namespace hyperbright {
 		}
 
 		//////////////////////////////////////////////////////////////////
-		/*
-		void AiManager::setArena(std::vector<std::vector<bool>> a) {
-			arenaRep = a;
-		}
-		*/
-
-		//////////////////////////////////////////////////////////////////
 		//GENERATE PATH FOR GIVEN AI
 		void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 			ai->targetTile = generateTarget(ai->targetTile, ai);

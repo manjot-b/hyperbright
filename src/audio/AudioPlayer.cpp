@@ -9,10 +9,12 @@
 #define CARIDLE 2
 #define STARTMENUMUSIC 3
 #define POWERSTATIONCOLLISION 4
+#define MENUSWITCH 5
+#define MENUENTER 6
 
-#define NUM_BUFFERS 5 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 5
-#define NUM_ENVIRONMENTS 5
+#define NUM_BUFFERS 7 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 7
+#define NUM_ENVIRONMENTS 7
 
 namespace hyperbright {
 namespace audio {
@@ -248,6 +250,20 @@ void AudioPlayer::init() {
     alSourcefv(source[POWERSTATIONCOLLISION], AL_VELOCITY, source0Vel);
     alSourcei(source[POWERSTATIONCOLLISION], AL_BUFFER, buffer[POWERSTATIONCOLLISION]);
 
+    loadSound("rsc/sounds/menu_switch.wav");
+    alSourcef(source[MENUSWITCH], AL_PITCH, 1.0f);
+    alSourcef(source[MENUSWITCH], AL_GAIN, 1.0f);
+    alSourcefv(source[MENUSWITCH], AL_POSITION, source0Pos);
+    alSourcefv(source[MENUSWITCH], AL_VELOCITY, source0Vel);
+    alSourcei(source[MENUSWITCH], AL_BUFFER, buffer[MENUSWITCH]);
+
+    loadSound("rsc/sounds/menu_enter.wav");
+    alSourcef(source[MENUENTER], AL_PITCH, 1.0f);
+    alSourcef(source[MENUENTER], AL_GAIN, 1.0f);
+    alSourcefv(source[MENUENTER], AL_POSITION, source0Pos);
+    alSourcefv(source[MENUENTER], AL_VELOCITY, source0Vel);
+    alSourcei(source[MENUENTER], AL_BUFFER, buffer[MENUENTER]);
+
     return;
 }
 
@@ -327,6 +343,20 @@ void AudioPlayer::playPickupCollision() {
 void AudioPlayer::playPowerstationCollision() {
 
     alSourcePlay(source[POWERSTATIONCOLLISION]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playMenuSwitchSound() {
+
+    alSourcePlay(source[MENUSWITCH]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playMenuEnterSound() {
+
+    alSourcePlay(source[MENUENTER]);
 }
 
 //////////////////////////////////////////////////////////////////////////////
