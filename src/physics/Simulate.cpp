@@ -532,6 +532,7 @@ void Simulate::stepPhysics(float frameRate)
 	// update the stats of each vehicle
 	for (auto& vehicle : vehicles) {
 		vehicle->updatePositionAndDirection();
+		vehicle->updateSpeedometer(frameRate);
 	}
 }
 

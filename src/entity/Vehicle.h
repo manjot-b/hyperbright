@@ -16,15 +16,15 @@
 namespace hyperbright {
 namespace entity {
 
+struct VehicleController {
+	int contrId;
+	int input[6] = { 0,0,0,0,0,0 };
+	// input controls { accelerate, reverse, turn right, turn left, hard turn, brake }
+};
+
 class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
 {
 public:
-	struct VehicleController {
-		int contrId;
-		int input[6] = { 0,0,0,0,0,0 };
-		// input controls { accelerate, reverse, turn right, turn left, hard turn, brake }
-		float speedometer;
-	};
 
 	Vehicle(const std::string& id,
 		engine::teamStats::Teams team,
@@ -83,6 +83,7 @@ public:
 	void stopRight();
 	void stopHardTurn();
 
+	float updateSpeedometer(float deltaTime);
 
 	int index;
 	void render() const;
@@ -94,6 +95,8 @@ private:
 	glm::vec3 direction;
 	const glm::vec3 startDirection;
 	glm::vec3 position;
+	glm::vec3 lastPosition;
+	float speedometer;
 	VehicleController ctrl;
 
 	std::unique_ptr<model::Model> body;

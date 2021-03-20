@@ -35,40 +35,20 @@ void Controller::processInput(float deltaSec)
 		return;
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		camera.processKeyboard(render::Camera::Movement::RIGHT, deltaSec);
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		camera.processKeyboard(render::Camera::Movement::LEFT, deltaSec);
-	}
-
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		camera.processKeyboard(render::Camera::Movement::UP, deltaSec);
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		camera.processKeyboard(render::Camera::Movement::DOWN, deltaSec);
-	}
-
-	//playerVehicle->resetControls();
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-	{
-		if (!upPressed)
-		{
+		if (manualCamera) {
+			camera.processKeyboard(render::Camera::Movement::UP, deltaSec);
+		} else if (!upPressed) {
 			//std::cout << "Up key PRESSED" << std::endl;
 			playerVehicle->accelerateForward();
 			upPressed = true;
 		}
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE)
 	{
-		if (upPressed)
+		if (upPressed && !manualCamera)
 		{
 			//std::cout << "Up key RELEASED" << std::endl;
 			playerVehicle->stopForward();
@@ -76,39 +56,20 @@ void Controller::processInput(float deltaSec)
 		}
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		if (!downPressed)
-		{
-			//std::cout << "Down key PRESSED" << std::endl;
-			playerVehicle->accelerateReverse();
-			downPressed = true;
-		}
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)
-	{
-		if (downPressed)
-		{
-			//std::cout << "Down key RELEASED" << std::endl;
-			playerVehicle->stopReverse();
-			downPressed = false;
-		}
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-	{
-		if (!leftPressed)
-		{
+		if (manualCamera) {
+			camera.processKeyboard(render::Camera::Movement::LEFT, deltaSec);
+		} else if (!leftPressed) {
 			//std::cout << "Left key PRESSED" << std::endl;
 			playerVehicle->turnLeft();
 			leftPressed = true;
 		}
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE)
 	{
-		if (leftPressed)
+		if (leftPressed && !manualCamera)
 		{
 			//std::cout << "Left key RELEASED" << std::endl;
 			playerVehicle->stopLeft();
@@ -116,19 +77,42 @@ void Controller::processInput(float deltaSec)
 		}
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		if (!rightPressed)
+		if (manualCamera) {
+			camera.processKeyboard(render::Camera::Movement::DOWN, deltaSec);
+		} else if (!downPressed) {
+			//std::cout << "Down key PRESSED" << std::endl;
+			playerVehicle->accelerateReverse();
+			downPressed = true;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE)
+	{
+		if (downPressed && !manualCamera)
 		{
+			//std::cout << "Down key RELEASED" << std::endl;
+			playerVehicle->stopReverse();
+			downPressed = false;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		if (manualCamera) {
+			camera.processKeyboard(render::Camera::Movement::RIGHT, deltaSec);
+		}
+		else if(!rightPressed) {
 			//std::cout << "Right key PRESSED" << std::endl;
 			playerVehicle->turnRight();
 			rightPressed = true;
 		}
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
 	{
-		if (rightPressed)
+		if (rightPressed && !manualCamera)
 		{
 			//std::cout << "Right key RELEASED" << std::endl;
 			playerVehicle->stopRight();

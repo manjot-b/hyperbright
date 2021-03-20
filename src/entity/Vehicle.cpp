@@ -16,7 +16,7 @@ Vehicle::Vehicle(const std::string& _id,
 	vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
 	:IRenderable(shader),
 	id(_id), team(team), color(engine::teamStats::colors.at(team)),
-	position(startPos), direction(normalize(startDir)), startDirection(startDir)
+	position(startPos), direction(normalize(startDir)), startDirection(startDir), lastPosition(startPos)
 {
 	string bodyIdSuffix = "body";
 	string wheelsFrontIdSuffix = "wheelsfront";
@@ -70,6 +70,7 @@ Vehicle::Vehicle(const std::string& _id,
 }
 
 void Vehicle::updatePositionAndDirection() {
+	lastPosition = position;
 	position = body->getPosition();
 	mat4 modelMatrix = body->getModelMatrix();
 	mat4 rotMatrix = { modelMatrix[0], modelMatrix[1], modelMatrix[2], vec4(0.f, 0.f, 0.f, 1.f) };
@@ -151,16 +152,9 @@ void Vehicle::turnRight()
 	ctrl.input[2] = 1;
 }
 
-void Vehicle::turnHardLeft()
+void Vehicle::hardTurn()
 {
 	ctrl.input[4] = 1;
-	turnLeft();
-}
-
-void Vehicle::turnHardRight()
-{
-	ctrl.input[4] = 1;
-	turnRight();
 }
 
 void Vehicle::resetControls()
@@ -181,6 +175,11 @@ void Vehicle::stopReverse()
 	body->getMeshes()[brakeLightsIdx]->material.isEmission = false;
 }
 
+void Vehicle::stopBrake() 
+{
+	ctrl.input[5] = 0;
+}
+
 void Vehicle::stopLeft()
 {
 	ctrl.input[3] = 0;
@@ -189,6 +188,19 @@ void Vehicle::stopLeft()
 void Vehicle::stopRight()
 {
 	ctrl.input[2] = 0;
+}
+
+void Vehicle::stopHardTurn() 
+{
+	ctrl.input[4] = 0;
+}
+
+float Vehicle::updateSpeedometer(float deltaTime)
+{
+	//std::cout << "Current Position: " << position.x << position.y << position.z << " Last Position: " << lastPosition.x << lastPosition.y << lastPosition.z << std::endl;
+	float s = glm::length(position - lastPosition) / deltaTime;
+	std::cout << "Speedommeter: " << s << std::endl;
+	return s;
 }
 
 void Vehicle::setModelMatrix(const glm::mat4& modelMat)

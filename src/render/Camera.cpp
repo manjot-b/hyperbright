@@ -15,7 +15,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 	pitch(pitch),
 	movementSpeed(6.f),
 	mouseSensitivity(0.2f),
-	scrollSensitivity(0.5f)
+	scrollSensitivity(3.f)
 {
 	updateCameraVectors();	
 }
