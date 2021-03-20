@@ -23,7 +23,7 @@ private:
 	std::shared_ptr<entity::Arena> arena;
 
 	void generatePath(std::shared_ptr<Ai> ai);
-	glm::vec2 generateTarget(glm::vec2 lastGoal);
+	glm::vec2 generateTarget(glm::vec2 lastGoal, std::shared_ptr<Ai> ai);
 	//bool nextStep(glm::vec2 target, glm::vec2 currentTile, std::vector<glm::vec2> &pathList);
 };
 }	// namespace ai

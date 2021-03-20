@@ -14,6 +14,8 @@ public:
 	void playGameMusic();
 	void stopGameMusic();
 	void playStartMenuMusic();
+	void playMenuSwitchSound();
+	void playMenuEnterSound();
 	void stopStartMenuMusic();
 	void playPickupCollision();
 	void playCarIdle();
