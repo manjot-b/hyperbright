@@ -15,14 +15,17 @@
 
 namespace hyperbright {
 namespace entity {
-struct VehicleController {
-	int contrId;
-	int input[6] = { 0,0,0,0,0,0 };
-};
 
 class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
 {
 public:
+	struct VehicleController {
+		int contrId;
+		int input[6] = { 0,0,0,0,0,0 };
+		// input controls { accelerate, reverse, turn right, turn left, hard turn, brake }
+		float speedometer;
+	};
+
 	Vehicle(const std::string& id,
 		engine::teamStats::Teams team,
 		const std::shared_ptr<openGLHelper::Shader>& shader,
@@ -50,6 +53,8 @@ public:
 	void restoreEnergy();
 	bool enoughEnergy();
 
+	void activatePickup();
+
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setPosition(const glm::vec3& position);
 	void setColor(const glm::vec4 _color) { color = _color; }
@@ -68,14 +73,17 @@ public:
 	void brake();		// not implemented
 	void turnLeft();
 	void turnRight();
-	void turnHardLeft();// not implemented
-	void turnHardRight();// not implemented
+	void hardTurn();// not implemented
 	void resetControls();
 
 	void stopForward();
 	void stopReverse();
+	void stopBrake();
 	void stopLeft();
 	void stopRight();
+	void stopHardTurn();
+
+
 	int index;
 	void render() const;
 private:

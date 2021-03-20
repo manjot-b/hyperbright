@@ -118,6 +118,10 @@ bool Vehicle::enoughEnergy()
 	return (energy > 0) ? true : false;
 }
 
+void Vehicle::activatePickup()
+{
+}
+
 void Vehicle::accelerateForward()
 {
 	ctrl.input[0] = 1;
