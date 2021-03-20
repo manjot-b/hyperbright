@@ -219,7 +219,7 @@ VehicleDesc initVehicleDesc()
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
 	const float vehScale = 1 / 3.f;
 	const PxF32 chassisMass = 1000.0f; // default 1500
-	const PxVec3 chassisDims(4.f * vehScale, 2.5f * vehScale, 10.1f * vehScale);
+	const PxVec3 chassisDims(3.7f * vehScale, 2.5f * vehScale, 10.1f * vehScale);
 	const PxVec3 chassisMOI
 	((chassisDims.y * chassisDims.y + chassisDims.z * chassisDims.z) * chassisMass / 12.0f,
 		(chassisDims.x * chassisDims.x + chassisDims.z * chassisDims.z) * 0.8f * chassisMass / 12.0f,
@@ -570,6 +570,28 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 					memcpy(&modelPos, &(boxPose.getPosition()), sizeof(PxVec3));
 					model->setPosition(modelPos);
 
+					// Check if this actor is a vehicle and if so, set its wheels pose.
+					for (const auto& name : engine::teamStats::names)
+					{
+						if (name.second.c_str() == actorName)
+						{
+							entity::Vehicle* vehicle = reinterpret_cast<entity::Vehicle*>(actors[i]->userData);
+
+							PxMat44 frontRight = (PxShapeExt::getGlobalPose(*shapes[0], *actors[i]));
+							PxMat44 frontLeft = (PxShapeExt::getGlobalPose(*shapes[1], *actors[i]));
+							PxMat44 rearRight = (PxShapeExt::getGlobalPose(*shapes[2], *actors[i]));
+							PxMat44 rearLeft = (PxShapeExt::getGlobalPose(*shapes[3], *actors[i]));
+
+							glm::mat4 fr, fl, rr, rl;
+							memcpy(&fr, &frontRight, sizeof(PxMat44));
+							memcpy(&fl, &frontLeft, sizeof(PxMat44));
+							memcpy(&rr, &rearRight, sizeof(PxMat44));
+							memcpy(&rl, &rearLeft, sizeof(PxMat44));
+
+							vehicle->setWheelsModelMatrix(fl, fr, rr, rl);
+							break;
+						}
+					}
 				}
 			}
 		}

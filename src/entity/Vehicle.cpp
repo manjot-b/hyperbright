@@ -1,44 +1,51 @@
 #include "Vehicle.h"
 
+#include <vehicle/PxVehicleDrive4W.h>
+#include <glm/gtx/euler_angles.hpp>
+
 #include <iostream>
 #include <algorithm>
+
 
 namespace hyperbright {
 namespace entity {
 
 using namespace std;
 using namespace glm;
+using namespace engine;
 
-Vehicle::Vehicle(const std::string& _id,
-	engine::teamStats::Teams team,
+Vehicle::Vehicle(
+	teamStats::Teams team,
 	const std::shared_ptr<openGLHelper::Shader>& shader,
 	vec3 startPos,
 	vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
 	:IRenderable(shader),
-	id(_id), team(team), color(engine::teamStats::colors.at(team)),
+	team(team), color(teamStats::colors.at(team)),
 	position(startPos), direction(normalize(startDir)), startDirection(startDir)
 {
 	string bodyIdSuffix = "body";
-	string wheelsFrontIdSuffix = "wheelsfront";
-	string wheelsRearIdSuffix = "wheelsRear";
+	string wheelsIdSuffix = "wheel";
 
-	if (id ==  "player") {
+	switch (team)
+	{
+	case teamStats::Teams::TEAM0:
 		ctrl.contrId = 0;
-	}
-	else if (id == "ai1") {
+		break;
+	case teamStats::Teams::TEAM1:
 		ctrl.contrId = 1;
-	}
-	else if (id == "ai2") {
+		break;
+	case teamStats::Teams::TEAM2:
 		ctrl.contrId = 2;
-	}
-	else if (id == "ai3") {
+		break;
+	case teamStats::Teams::TEAM3:
 		ctrl.contrId = 3;
-	}
-	else {
+		break;
+	default:
 		cout << "unknown vehicle name. see vehicle constructor" << endl;
+		break;
 	}
 
-	body = std::make_unique<model::Model>("rsc/models/car_body.obj", id + bodyIdSuffix, _shader, nullptr);
+	body = std::make_unique<model::Model>("rsc/models/car_body.obj", teamStats::names[team] + bodyIdSuffix, _shader, nullptr);
 	
 	unsigned int index = 0;
 	for (auto& mesh : body->getMeshes())
@@ -65,8 +72,10 @@ Vehicle::Vehicle(const std::string& _id,
 		index++;
 	}
 
-	wheelsFront = std::make_unique<model::Model>("rsc/models/wheels_front.obj", id + wheelsFrontIdSuffix, _shader, nullptr);
-	wheelsRear = std::make_unique<model::Model>("rsc/models/wheels_rear.obj", id + wheelsRearIdSuffix, _shader, nullptr);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_LEFT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_fl", _shader, nullptr);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_RIGHT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_fr", _shader, nullptr);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_LEFT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_rl", _shader, nullptr);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_rr", _shader, nullptr);
 }
 
 void Vehicle::updatePositionAndDirection() {
@@ -89,8 +98,8 @@ void Vehicle::reset() {
 void Vehicle::render() const
 {
 	body->render();
-	wheelsFront->render();
-	wheelsRear->render();
+	for (const auto& wheel : wheels)
+		wheel->render();
 }
 
 quat Vehicle::getOrientation() const
@@ -191,22 +200,32 @@ void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 {
 	// Probably a better way to do this, but this is fine for now.
 	float scale = 1 / 3.f; // this must match physX vehicle description in Simulate.cpp - initVehicleDesc()
-	glm::vec3 translate(0.f, -1.8f, 0.f);
+	glm::vec3 translate(0.f, -1.7f, 0.f);
 
 	glm::mat4 final_transform = modelMat;
 	final_transform = glm::scale(modelMat, glm::vec3(scale));
 	final_transform = glm::translate(final_transform, translate);
 	body->setModelMatrix(final_transform);
-	wheelsFront->setModelMatrix(final_transform);
-	wheelsRear->setModelMatrix(final_transform);
+}
+
+void Vehicle::setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& frontRight, const glm::mat4& rearRight, const glm::mat4& rearLeft)
+{
+	glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(1 / 3.f)); // this must match physX vehicle description in Simulate.cpp - initVehicleDesc()
+	glm::mat4 flipped = glm::eulerAngleY(glm::radians(180.f));
+
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_LEFT]->setModelMatrix(frontLeft * scale);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_RIGHT]->setModelMatrix(frontRight * scale * flipped);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_LEFT]->setModelMatrix(rearLeft * scale);
+	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT]->setModelMatrix(rearRight * scale * flipped);
 }
 
 void Vehicle::setPosition(const glm::vec3& position)
 {
 	this->position = position;
 	body->setPosition(position);
-	wheelsFront->setPosition(position);
-	wheelsRear->setPosition(position);
+
+	for(auto& wheel : wheels)
+		wheel->setPosition(position);
 }
 
 void Vehicle::setBodyMaterial(const model::Material& material)
