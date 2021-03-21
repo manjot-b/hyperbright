@@ -163,7 +163,7 @@ void Pickup::initialCollision(std::shared_ptr<Vehicle> vehicle) {
 		pickupManager->removeFromArena(std::shared_ptr<Pickup>(this));
 		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 	} else {
-		vehicle->pickupEquiped = std::shared_ptr<Pickup>(this);
+		vehicle->equipPickup(std::shared_ptr<Pickup>(this));
 		//remove from onArena
 		pickupManager->removeFromArena(std::shared_ptr<Pickup>(this));
 	}
