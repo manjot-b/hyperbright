@@ -309,6 +309,8 @@ void Engine::runGame() {
 			pickupManager->checkPickups();
 			pickupManager->animatePickups(fpsLimit);
 
+			arena->animateChargingStations(currentFrame);
+
 			// set camera to player vehicles position
 			if (!controller->isCameraManual())
 			{

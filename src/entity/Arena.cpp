@@ -199,6 +199,12 @@ void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation o
 	tileGrid[row][col]._hasChargingStation = true;
 }
 
+void Arena::animateChargingStations(float time)
+{
+	for (auto& station : chargingStations)
+		station->animate(time);
+}
+
 bool Arena::tileHasChargingStation(const glm::vec2& tileCoords)
 {
 	return tileGrid[tileCoords.x][tileCoords.y].hasChargingStation();

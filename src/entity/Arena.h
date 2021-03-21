@@ -45,6 +45,7 @@ public:
 
 	void addChargingStation(unsigned int col, unsigned int row, Orientation orientation);
 	bool tileHasChargingStation(const glm::vec2& tileCoords);
+	void animateChargingStations(float time);
 
 	std::vector<std::vector<bool>> getAiArenaRepresentation();
 private:
