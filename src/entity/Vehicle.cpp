@@ -26,6 +26,7 @@ Vehicle::Vehicle(
 	right(cross(direction, up)),
 	lastPosition(startPos)
 {
+	setTriggerTrype(physics::IPhysical::TriggerType::VEHICLE);
 	string bodyIdSuffix = "body";
 	string wheelsIdSuffix = "wheel";
 

@@ -6,30 +6,17 @@
 
 #include <memory>
 
-#include "entity/Arena.h"
-#include "entity/Pickup.h"
-#include "model/Model.h"
 #include "audio/AudioPlayer.h"
+#include "entity/Arena.h"
+#include "entity/ChargingStation.h"
+#include "entity/Pickup.h"
+#include "entity/PickupManager.h"
+#include "entity/Vehicle.h"
+#include "model/Model.h"
+#include "physics/Interface.h"
 
 namespace hyperbright {
-namespace entity {
-	class Vehicle;
-}	// namespace entity
-
 namespace physics {
-/*
-Objects of this type are dynamic objects that should be part of the PhysX engine.
-*/
-class IPhysical
-{
-public:
-	virtual void setModelMatrix(const glm::mat4& modelMat) = 0;
-	virtual void setPosition(const glm::vec3& position) = 0;
-
-	// TO-DO: Remove this method and have PhysX actors store pointers to whatever object
-	// they need.
-	virtual const char* getId() const = 0;
-};
 
 class Simulate
 {
@@ -56,6 +43,7 @@ private:
 
 	// A list of vehicles needed for initializing the vehicle actors and updating vehicle stats
 	std::vector<std::shared_ptr<entity::Vehicle>>& vehicles;
+	void addChargingStations(const entity::Arena::ChargingStationList& stations);
 };
 
 void addPickup(std::shared_ptr<entity::Pickup>& pickup);

@@ -9,11 +9,16 @@
 
 namespace hyperbright {
 namespace entity {
+
 Pickup::Pickup() {
 	pickupNumber = 0;
+	setTriggerTrype(physics::IPhysical::TriggerType::PICKUP);
 }
+
 Pickup::Pickup( const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
 	model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr)) {
+	setTriggerTrype(physics::IPhysical::TriggerType::PICKUP);
+
 	type = 0;//DEFAULT
 	active = false;
 	pickupNumber = 0;
@@ -208,6 +213,9 @@ void Pickup::setArenaLocation(glm::vec3 _arenaLocation, std::optional<glm::vec2>
 	model->translate(_arenaLocation);
 	model->update();
 }
+
+void Pickup::setModelMatrix(const glm::mat4& modelMat) { model->setModelMatrix(modelMat); }
+void Pickup::setPosition(const glm::vec3& position) { model->setPosition(position); }
 
 }	// namespace entity
 }	// namespace hyperbright

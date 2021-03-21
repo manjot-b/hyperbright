@@ -2,9 +2,12 @@
 
 namespace hyperbright {
 namespace entity {
-ChargingStation::ChargingStation(const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
+ChargingStation::ChargingStation(const std::shared_ptr<openGLHelper::Shader>& shader) :
+	IRenderable(shader),
 	model(std::make_unique<model::Model>("rsc/models/transformer.obj", "station", shader, nullptr))
 {
+	setTriggerTrype(physics::IPhysical::TriggerType::CHARGING_STATION);
+
 	for (unsigned int i = 0; i < model->getMeshes().size(); i++)
 	{
 		if (model->getMeshes()[i]->getName() == "shiny_metal")
@@ -40,7 +43,14 @@ void ChargingStation::animate(float time)
 	}
 }
 
+void ChargingStation::setModelMatrix(const glm::mat4& modelMat) { model->setModelMatrix(modelMat); }
+void ChargingStation::setPosition(const glm::vec3& position) { model->setPosition(position); }
+
 void ChargingStation::setTileCoords(const glm::vec2& tileCoords) { _tileCoords = tileCoords; }
 const glm::vec2& ChargingStation::getTileCoords() const { return _tileCoords; }
+
+void ChargingStation::setWorldCoords(const glm::vec3& worldCoords) { _worldCoords = worldCoords; }
+const glm::vec3& ChargingStation::getWorldCoords() const { return _worldCoords; }
+
 }	// namespace entity
 }	// namespace hyperbright

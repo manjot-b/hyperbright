@@ -195,6 +195,7 @@ void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation o
 	station->model->rotate(glm::vec3(.0f, rot, .0f));
 	station->model->update();
 	station->setTileCoords(glm::vec2(row, col));
+	station->setWorldCoords(trans);
 
 	tileGrid[row][col]._hasChargingStation = true;
 }
@@ -211,6 +212,7 @@ bool Arena::tileHasChargingStation(const glm::vec2& tileCoords)
 }
 
 const Arena::WallList& Arena::getWalls() const { return walls; }
+const Arena::ChargingStationList& Arena::getChargingStations() const { return chargingStations; }
 
 //MAY BE ADDING IN WRONG ORDER CHECK LATER
 std::vector<std::vector<bool>> Arena::getAiArenaRepresentation() {

@@ -10,7 +10,7 @@
 #include "model/Model.h"
 #include "entity/Pickup.h"
 #include "render/Renderer.h"
-#include "physics/Simulate.h"
+#include "physics/Interface.h"
 #include "engine/TeamStats.h"
 
 namespace hyperbright {

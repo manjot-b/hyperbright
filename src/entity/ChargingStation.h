@@ -6,13 +6,14 @@
 #include <vector>
 
 #include "model/Model.h"
+#include "physics/Interface.h"
 
 namespace hyperbright {
 namespace entity {
 
 class Arena;
 
-class ChargingStation : public render::Renderer::IRenderable
+class ChargingStation : public render::Renderer::IRenderable, public physics::IPhysical
 {
 	friend class Arena;
 public:
@@ -21,11 +22,21 @@ public:
 
 	void setTileCoords(const glm::vec2& tileCoords);
 	const glm::vec2& getTileCoords() const;
+	void setWorldCoords(const glm::vec3& worldCoords);
+	const glm::vec3& getWorldCoords() const;
+
+	void setModelMatrix(const glm::mat4& modelMat);
+	void setPosition(const glm::vec3& position);
+
+	//tmp function from IPhysical
+	const char* getId() const { return "station"; }
+
 	void animate(float time);
 
 private:
 	std::unique_ptr<model::Model> model;
 	glm::vec2 _tileCoords;
+	glm::vec3 _worldCoords;
 	std::array<glm::vec3, 2> animationColors;
 	std::vector<unsigned int> poleMeshIndices;
 };
