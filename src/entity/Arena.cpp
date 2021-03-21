@@ -5,7 +5,7 @@
 namespace hyperbright {
 namespace entity {
 Arena::Tile::Tile(glm::mat4& modelMatrix, glm::vec4& color) :
-	modelMatrix(modelMatrix), color(color), _hasWall(false), team(std::nullopt)
+	modelMatrix(modelMatrix), color(color), _hasWall(false), _hasChargingStation(false), team(std::nullopt)
 {}
 
 void Arena::Tile::translate(const glm::vec3& trans)
@@ -24,6 +24,8 @@ void Arena::Tile::setColor(const glm::vec4& color)
 }
 
 bool Arena::Tile::hasWall() const { return _hasWall; }
+
+bool Arena::Tile::hasChargingStation() const { return _hasChargingStation; }
 
 /*
  Construct an arena:
@@ -193,6 +195,13 @@ void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation o
 	station->model->rotate(glm::vec3(.0f, rot, .0f));
 	station->model->update();
 	station->setTileCoords(glm::vec2(row, col));
+
+	tileGrid[row][col]._hasChargingStation = true;
+}
+
+bool Arena::tileHasChargingStation(const glm::vec2& tileCoords)
+{
+	return tileGrid[tileCoords.x][tileCoords.y].hasChargingStation();
 }
 
 const Arena::WallList& Arena::getWalls() const { return walls; }

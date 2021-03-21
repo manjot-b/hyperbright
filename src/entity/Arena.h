@@ -44,6 +44,7 @@ public:
 	const WallList& getWalls() const;
 
 	void addChargingStation(unsigned int col, unsigned int row, Orientation orientation);
+	bool tileHasChargingStation(const glm::vec2& tileCoords);
 
 	std::vector<std::vector<bool>> getAiArenaRepresentation();
 private:
@@ -56,11 +57,13 @@ private:
 		void scale(float scale);
 		void setColor(const glm::vec4& color);
 		bool hasWall() const;
+		bool hasChargingStation() const;
 
 	private:
 		glm::mat4& modelMatrix;
 		glm::vec4& color;
 		bool _hasWall;
+		bool _hasChargingStation;
 		std::optional<engine::teamStats::Teams> team;	// tile may not have a team.
 	};
 

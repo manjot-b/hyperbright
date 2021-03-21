@@ -631,18 +631,18 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 	for (const auto& vehicle : vehicles)
 	{
 		std::optional<glm::vec2> tileCoords = arena.isOnTile(vehicle->getPosition());
-		if (tileCoords)
+		if (tileCoords && vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))
 		{
 			std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
 
-			if (old && *old != vehicle->getTeam() && vehicle->enoughEnergy())
+			if (old && *old != vehicle->getTeam())
 			{
 				engine::teamStats::scores[*old]--;
 				engine::teamStats::scores[vehicle->getTeam()]++;
 				arena.setTileTeam(*tileCoords, vehicle->getTeam());
 				vehicle->reduceEnergy();
 			}
-			else if (!old && vehicle->enoughEnergy())
+			else if (!old)
 			{
 				engine::teamStats::scores[vehicle->getTeam()]++;
 				arena.setTileTeam(*tileCoords, vehicle->getTeam());

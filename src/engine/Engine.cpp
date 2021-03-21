@@ -100,10 +100,11 @@ void Engine::buildArena1 () {
 	ai2StartingPosition = glm::vec2(24, 18);
 	ai3StartingPosition = glm::vec2(24, 24);
 	////////////////////////////////////////////
-	chargeStationPosition = glm::vec2(19,21);
 }
 
 void Engine::buildArena2() {
+	using namespace entity;
+
 	int arena_size = 20;
 	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
 
@@ -152,7 +153,7 @@ void Engine::buildArena2() {
 	ai2StartingPosition = glm::vec2(8, 11);
 	ai3StartingPosition = glm::vec2(11, 11);
 	////////////////////////////////////////////
-	chargeStationPosition = glm::vec2(10, 9);
+	arena->addChargingStation(10, 9, Arena::Orientation::NEG_Z);
 }
 
 
