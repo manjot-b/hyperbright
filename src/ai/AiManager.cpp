@@ -33,26 +33,6 @@ namespace hyperbright {
 		}
 
 		//////////////////////////////////////////////////////////////////
-		/*
-		glm::vec2 a;
-		glm::vec2 b;
-		glm::vec2 c;
-		glm::vec2 d;
-		glm::vec2 e;
-		glm::vec2 f;
-		glm::vec2 g;
-		glm::vec2 h;
-		glm::vec2 i;
-		glm::vec2 j;
-		glm::vec2 k;
-		glm::vec2 l;
-		glm::vec2 m;
-		glm::vec2 n;
-		glm::vec2 o;
-		glm::vec2 p;
-		glm::vec2 q;
-		*/
-		//////////////////////////////////////////////////////////////////
 
 		void AiManager::setArena(std::shared_ptr<entity::Arena> ar, int arenaSelection) {
 			arena = ar;

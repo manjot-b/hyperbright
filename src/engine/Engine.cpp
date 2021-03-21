@@ -130,23 +130,8 @@ void Engine::buildArena2() {
 	arena->addWall(1, 14, 1, 2);
 	arena->addWall(17, 5, 1, 2);
 	arena->addWall(17, 14, 1, 2);
-	/*
-	int wallLength = 12;
-	int wallWidth = 4;
-	arena->addWall(25, 5, wallLength, wallWidth);
-	arena->addWall(32, 5, wallLength, wallWidth);
 
-	arena->addWall(5, 5, wallWidth, wallLength);
-	arena->addWall(5, 12, wallWidth, wallLength);
-
-	arena->addWall(5, 24, wallLength, wallWidth);
-	arena->addWall(12, 24, wallLength, wallWidth);
-
-	arena->addWall(24, 25, wallWidth, wallLength);
-	arena->addWall(24, 32, wallWidth, wallLength);
-	*/
-
-
+	//WALLS AROUND ARENA
 	arena->addWall(0, 0, 1, arena_size); //top
 	arena->addWall(0, arena_size - 1, 1, arena_size);//bottom
 
