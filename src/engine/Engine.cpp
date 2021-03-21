@@ -93,14 +93,92 @@ void Engine::buildArena1 () {
 	ai2StartingPosition = glm::vec2(24, 18);
 	ai3StartingPosition = glm::vec2(24, 24);
 	////////////////////////////////////////////
+	chargeStationPosition = glm::vec2(19,21);
 }
+
+void Engine::buildArena2() {
+	int arena_size = 20;
+	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
+
+	// BUILD ARENA LAYOUT ///////////////////////
+
+	//CENTER
+	//4X1
+	arena->addWall(5, 8, 4, 1);
+	arena->addWall(14, 8, 4, 1);
+	//1x1s
+	arena->addWall(7,6 , 1, 1);
+	arena->addWall(6,7 , 1, 1);
+
+	arena->addWall(12,6 , 1, 1);
+	arena->addWall(13,7 , 1, 1);
+
+	arena->addWall(6,12 , 1, 1);
+	arena->addWall(7,13 , 1, 1);
+
+	arena->addWall(12,13 , 1, 1);
+	arena->addWall(13,12 , 1, 1);
+
+	//OUTSIDE WALLS
+	//2x1
+	arena->addWall(5, 1, 2, 1);
+	arena->addWall(14, 1, 2, 1);
+	arena->addWall(5, 17, 2, 1);
+	arena->addWall(14, 17, 2, 1);
+	//1x2
+	arena->addWall(1, 5, 1, 2);
+	arena->addWall(1, 14, 1, 2);
+	arena->addWall(17, 5, 1, 2);
+	arena->addWall(17, 14, 1, 2);
+	/*
+	int wallLength = 12;
+	int wallWidth = 4;
+	arena->addWall(25, 5, wallLength, wallWidth);
+	arena->addWall(32, 5, wallLength, wallWidth);
+
+	arena->addWall(5, 5, wallWidth, wallLength);
+	arena->addWall(5, 12, wallWidth, wallLength);
+
+	arena->addWall(5, 24, wallLength, wallWidth);
+	arena->addWall(12, 24, wallLength, wallWidth);
+
+	arena->addWall(24, 25, wallWidth, wallLength);
+	arena->addWall(24, 32, wallWidth, wallLength);
+	*/
+
+
+	arena->addWall(0, 0, 1, arena_size); //top
+	arena->addWall(0, arena_size - 1, 1, arena_size);//bottom
+
+	arena->addWall(0, 1, arena_size - 1, 1);//left
+	arena->addWall(arena_size - 1, 0, arena_size - 1, 1);//right
+	////////////////////////////////////////////
+
+	// Starting positions ////////////////////// 
+	playerStartingPosition = glm::vec2(8, 8);
+	ai1StartingPosition = glm::vec2(11, 8);
+	ai2StartingPosition = glm::vec2(8, 11);
+	ai3StartingPosition = glm::vec2(11, 11);
+	////////////////////////////////////////////
+	chargeStationPosition = glm::vec2(10, 9);
+}
+
+
+
 
 void Engine::initEntities()
 {	
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(skyBox));
 
-	buildArena1();//WE CAN HAVE DIFFERENT FUNCTIONS FOR DIFFERENT ARENA BUILDS
+	currentArena = 2;
+	if (currentArena == 1) {
+		buildArena1();
+	}
+	else if (currentArena == 2) {
+		buildArena2();
+	}
+
 	renderables.push_back(arena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
@@ -128,7 +206,7 @@ void Engine::initEntities()
 
 	battery = std::make_shared<model::Model> ("rsc/models/cube.obj", "battery", shader, background);
 	battery->scale(glm::vec3(1.f, 3.f, 1.f));
-	battery->translate(glm::vec3(15.f, 1.5f, 5.f));
+	battery->translate(arena->getTilePos(chargeStationPosition) + glm::vec3(0, 1.5f, 0));
 	battery->update();
 	battery->getMeshes()[0]->material.color = glm::vec4(1.f, 0.f, 0.f, 1.f);
 	renderables.push_back(battery);
@@ -190,13 +268,13 @@ void Engine::runMainMenu() {
 
 void Engine::runGame() {
 	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena, &vehicles, renderables);
-	pickupManager->initPickups(shader);
+	pickupManager->initPickups(shader, currentArena);
 
 	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
 	ai::AiManager aiManager;
-	aiManager.setArena(arena);
+	aiManager.setArena(arena, currentArena);//MUST DO BEFORE LOADING VEHICLE
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));

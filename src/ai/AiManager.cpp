@@ -8,7 +8,12 @@ namespace hyperbright {
 
 		//////////////////////////////////////////////////////////////////
 		void AiManager::loadAiVehicle(std::shared_ptr<entity::Vehicle> vehicle) {
-			loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena)));
+			if (currentArena == 1) {
+				loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena, e)));
+			}
+			else if (currentArena == 2) {
+				loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena, e)));
+			}
 		}
 
 		//////////////////////////////////////////////////////////////////
@@ -28,15 +33,85 @@ namespace hyperbright {
 		}
 
 		//////////////////////////////////////////////////////////////////
+		/*
+		glm::vec2 a;
+		glm::vec2 b;
+		glm::vec2 c;
+		glm::vec2 d;
+		glm::vec2 e;
+		glm::vec2 f;
+		glm::vec2 g;
+		glm::vec2 h;
+		glm::vec2 i;
+		glm::vec2 j;
+		glm::vec2 k;
+		glm::vec2 l;
+		glm::vec2 m;
+		glm::vec2 n;
+		glm::vec2 o;
+		glm::vec2 p;
+		glm::vec2 q;
+		*/
+		//////////////////////////////////////////////////////////////////
 
-		void AiManager::setArena(std::shared_ptr<entity::Arena> a) {
-			arena = a;
+		void AiManager::setArena(std::shared_ptr<entity::Arena> ar, int arenaSelection) {
+			arena = ar;
+			currentArena = arenaSelection;
+
+			if (arenaSelection == 1) {
+				/*
+				a b c
+				d e f
+				g h i
+				*/
+				 a = glm::vec2(3, 3);
+				 b = glm::vec2(20, 3);
+				 c = glm::vec2(36, 3);
+				 d = glm::vec2(3, 20);
+				 e = glm::vec2(20, 20);
+				 f = glm::vec2(36, 20);
+				 g = glm::vec2(3, 36);
+				 h = glm::vec2(20, 36);
+				 i = glm::vec2(36, 36);
+
+				 j = glm::vec2(3, 10);
+				 k = glm::vec2(20, 10);
+				 l = glm::vec2(30, 3);
+				 m = glm::vec2(10, 20);
+				 n = glm::vec2(30, 20);
+				 o = glm::vec2(10, 36);
+				 p = glm::vec2(20, 30);
+				 q = glm::vec2(36, 30);
+			}
+			else if (arenaSelection == 2) {
+				 a = glm::vec2(2, 2);//PU
+				 b = glm::vec2(17, 2);//PU
+				 c = glm::vec2(2, 17);//PU
+				 d = glm::vec2(17, 17);//PU
+
+				 e = glm::vec2(10, 9);//CHARGE
+
+				 f = glm::vec2(9, 3);
+				 g = glm::vec2(9, 16);
+				 h = glm::vec2(5, 5);
+				 i = glm::vec2(14, 5);
+				 j = glm::vec2(2, 10);
+				 k = glm::vec2(17, 10);
+				 l = glm::vec2(4, 14);
+				 m = glm::vec2(15, 14);
+			}
 		}
 
-		//////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////s/////////////////////////
 		//GENERATE PATH FOR GIVEN AI
 		void AiManager::generatePath(std::shared_ptr<Ai> ai) {
-			ai->targetTile = generateTarget(ai->targetTile, ai);
+
+			if (currentArena==1) {
+				ai->targetTile = generateTargetOne(ai->targetTile, ai);
+			}
+			else if (currentArena==2) {
+				ai->targetTile = generateTargetTwo(ai->targetTile, ai);
+			}
 			//std::cout << "Goal Tile for "<< ai->vehicle->getId()<<" : " << ai->targetTile.x << " "<< ai->targetTile.y << std::endl;
 			//std::vector<glm::vec2> pathList;
 			//glm::vec2 currentTile = ai->vehicle->currentTile;
@@ -48,34 +123,136 @@ namespace hyperbright {
 		}
 
 		//////////////////////////////////////////////////////////////////
-		/*
-		a b c
-		d e f
-		g h i
-		*/
-		glm::vec2 a = glm::vec2(3, 3);
-		glm::vec2 b = glm::vec2(20, 3);
-		glm::vec2 c = glm::vec2(36, 3);
-		glm::vec2 d = glm::vec2(3, 20);
-		glm::vec2 e = glm::vec2(20, 20);
-		glm::vec2 f = glm::vec2(36, 20);
-		glm::vec2 g = glm::vec2(3, 36);
-		glm::vec2 h = glm::vec2(20, 36);
-		glm::vec2 i = glm::vec2(36, 36);
 
-		glm::vec2 j = glm::vec2(3, 10);
-		glm::vec2 k = glm::vec2(20, 10);
-		glm::vec2 l = glm::vec2(30, 3);
-		glm::vec2 m = glm::vec2(10, 20);
-		glm::vec2 n = glm::vec2(30, 20);
-		glm::vec2 o = glm::vec2(10, 36);
-		glm::vec2 p = glm::vec2(20, 30);
-		glm::vec2 q = glm::vec2(36, 30);
+		glm::vec2 AiManager::generateTargetTwo(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
+			//int selector;
+			if (lastGoal == e) {
+				ai->pastGoal = e;
+				if (rand() % 2 == 1) {
+					return f;
+				}
+				else {
+					return g;
+				}
+			} else if(lastGoal == f){//NORTH OF CENTER
+				ai->pastGoal = f;
+				if (ai->vehicle->energy <= 0) {//EMERGY CHECK
+					return e;
+				}
+
+				if (rand() % 2 == 1) {
+					return h;
+				}
+				else {
+					return i;
+				}
+			}
+			else if (lastGoal == g) {//SOUTH OF CENTER
+				ai->pastGoal = g;
+				if (ai->vehicle->energy <= 0) {//ENERGY CHECK
+					return e;
+				}
+
+				if (rand() % 2 == 1) {
+					return l;
+				}
+				else {
+					return m;
+				}
+			}
+			else if (lastGoal == c) {//PU
+				ai->pastGoal = c;
+				return l;
+			}
+			else if (lastGoal == a) {//PU
+				ai->pastGoal = a;
+				return h;
+			}
+			else if (lastGoal == b) {//PU
+				ai->pastGoal = i;
+				return i;
+			}
+			else if (lastGoal == d) {//PU
+				ai->pastGoal = d;
+				return m;
+			}
+			else if (lastGoal == h) {//CORNER NW
+				ai->pastGoal = h;
+				if (ai->vehicle->pickupEquiped == nullptr) {//PU CHECK
+					return a;
+				}
+				if (rand() % 2 == 1) {
+					return f;
+				}
+				else {
+					return j;
+				}
+			}
+			else if (lastGoal==j) {//LEFT SIDE
+				if (ai->pastGoal!=l) {
+					ai->pastGoal = j;
+					return l;
+				}
+				else {
+					ai->pastGoal = j;
+					return h;
+				}
+			}
+			else if (lastGoal == k) {//RIGHT SIDE
+				if (ai->pastGoal != i) {
+					ai->pastGoal = k;
+					return i;
+				}
+				else {
+					ai->pastGoal = k;
+					return m;
+				}
+			}
+			else if (lastGoal == i) {//CORNER NE
+				ai->pastGoal = i;
+				if (ai->vehicle->pickupEquiped == nullptr) {//PU CHECK
+					return b;
+				}
+				if (rand() % 2 == 1) {
+					return f;
+				}
+				else {
+					return k;
+				}
+			}
+			else if (lastGoal == l) {//CORNER SW
+				ai->pastGoal = l;
+				if (ai->vehicle->pickupEquiped == nullptr) {//PU CHECK
+					return c;
+				}
+				if (rand() % 2 == 1) {
+					return g;
+				}
+				else {
+					return j;
+				}
+			}
+			else if (lastGoal == m) {//CORNER SE
+			ai->pastGoal = m;
+			if (ai->vehicle->pickupEquiped == nullptr) {//PU CHECK
+				return d;
+			}
+			if (rand() % 2 == 1) {
+				return g;
+			}
+			else {
+				return k;
+			}
+			}
+		}
+
+		//////////////////////////////////////////////////////////////////
+		
 
 		//DECIDE WHERE TO GO NEXT
 
 		//UPDATE PAST GOAL
-		glm::vec2 AiManager::generateTarget(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
+		glm::vec2 AiManager::generateTargetOne(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
 			int selector;	
 			
 			if (lastGoal == a) {

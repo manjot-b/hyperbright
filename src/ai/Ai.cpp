@@ -2,16 +2,16 @@
 
 namespace hyperbright {
 	namespace ai {
-		Ai::Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a) {
+		Ai::Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a , glm::vec2 startTile) {
 			vehicle = v;
 			arena = a;
 			state = NOTARGET;
-			targetTile = glm::vec2(20, 20);
+			targetTile = startTile;
 			stuckCheck = false;
 			stuckTimer = glfwGetTime();
 			stuckTimeout = 5.f;
 			backupTime = 2.f;
-			currentTile = glm::vec2(20, 20);
+			currentTile = startTile;
 			pastGoal = glm::vec2(1, 1);//ARBITRARY
 			//path =  std::vector<glm::vec2>();
 		}
@@ -32,7 +32,7 @@ namespace hyperbright {
 		void Ai::aiInput() {
 			updateCurrentTile();
 			if (vehicle->currentTile == targetTile) {
-				//std::cout << vehicle->getId() << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
+				std::cout << vehicle->getId() << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
 				path.pop_back();
 				state = NOTARGET;
 				return;

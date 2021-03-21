@@ -33,11 +33,14 @@ public:
 	
 private:
 	void buildArena1();
+	void buildArena2();
 
 	glm::vec2 playerStartingPosition;
 	glm::vec2 ai1StartingPosition;
 	glm::vec2 ai2StartingPosition;
 	glm::vec2 ai3StartingPosition;
+
+	glm::vec2 chargeStationPosition;
 
 	render::Camera camera;
 	ui::MainMenu mainMenu;
@@ -61,6 +64,7 @@ private:
 
 	std::shared_ptr<audio::AudioPlayer> audioPlayer;
 	std::unique_ptr<entity::PickupManager> pickupManager;
+	int currentArena;
 
 	float fps;
 	float deltaSec;
