@@ -12,7 +12,7 @@ namespace ai {
 class Ai
 {
 public:
-	Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a);
+	Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a, glm::vec2 startTile);
 	~Ai();
 	void aiInput();
 	int state;

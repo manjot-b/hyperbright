@@ -36,7 +36,7 @@ namespace hyperbright {
 
 /////////////////////////////////////////////////////////////////////////////
 
-		void PickupManager::initPickups(const std::shared_ptr<openGLHelper::Shader>& _shader) {
+		void PickupManager::initPickups(const std::shared_ptr<openGLHelper::Shader>& _shader, int arenaSelection) {
 			shader = _shader;
 
 			//NEEDED FOR ACTIVATE FUNCTION
@@ -44,11 +44,19 @@ namespace hyperbright {
 				vehicles->at(i)->index = i;
 			}
 
-			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 3)) + glm::vec3(0.f, 1.f, 0.f));
-			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 3)) + glm::vec3(0.f, 1.f, 0.f));
-			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 36)) + glm::vec3(0.f, 1.f, 0.f));
-			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 36)) + glm::vec3(0.f, 1.f, 0.f));
-			onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 20)) + glm::vec3(0.f, 1.f, 0.f));
+			if (arenaSelection==1) {
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 3)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 3)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 36)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 36)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 20)) + glm::vec3(0.f, 1.f, 0.f));
+			}
+			else if (arenaSelection == 2) {
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(2, 2)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(17, 2)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(2, 17)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(17, 17)) + glm::vec3(0.f, 1.f, 0.f));
+			}
 
 			pickupIdCounter = 1;
 			for (auto& pickupLocation : onArenaPickupLocations) {
