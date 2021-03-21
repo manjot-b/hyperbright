@@ -178,7 +178,7 @@ namespace hyperbright {
 			}
 			else if (lastGoal == h) {//CORNER NW
 				ai->pastGoal = h;
-				if (ai->vehicle->pickupEquiped == nullptr) {//PU CHECK
+				if (!ai->vehicle->hasPickup()) {//PU CHECK
 					return a;
 				}
 				if (rand() % 2 == 1) {
@@ -210,7 +210,7 @@ namespace hyperbright {
 			}
 			else if (lastGoal == i) {//CORNER NE
 				ai->pastGoal = i;
-				if (ai->vehicle->pickupEquiped == nullptr) {//PU CHECK
+				if (!ai->vehicle->hasPickup()) {//PU CHECK
 					return b;
 				}
 				if (rand() % 2 == 1) {
@@ -222,7 +222,7 @@ namespace hyperbright {
 			}
 			else if (lastGoal == l) {//CORNER SW
 				ai->pastGoal = l;
-				if (ai->vehicle->pickupEquiped == nullptr) {//PU CHECK
+				if (!ai->vehicle->hasPickup()) {//PU CHECK
 					return c;
 				}
 				if (rand() % 2 == 1) {
@@ -234,7 +234,7 @@ namespace hyperbright {
 			}
 			else if (lastGoal == m) {//CORNER SE
 			ai->pastGoal = m;
-			if (ai->vehicle->pickupEquiped == nullptr) {//PU CHECK
+			if (!ai->vehicle->hasPickup()) {//PU CHECK
 				return d;
 			}
 			if (rand() % 2 == 1) {
