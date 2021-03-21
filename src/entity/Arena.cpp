@@ -35,15 +35,14 @@ bool Arena::Tile::hasWall() const { return _hasWall; }
 */
 //bool AiArenaRepresentation;
 
-Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
+Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shader>& shader, float tileScale) : IRenderable(shader),
 	tileModelMatrices( std::make_shared<std::vector<glm::mat4>>( rows * cols, glm::mat4(1.f) )),
 	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, glm::vec4(.3f, .3f, .3f, 1.f)) ),
-	tileGrid(rows), tileCollisionRadius(0.5f)
+	tileGrid(rows), tileScale(tileScale), tileCollisionRadius(0.5f)
 {
 
 	instancedTile = std::make_shared<model::Model>("rsc/models/tile.obj", "tile", shader, nullptr);
 	instancedTileBorder = std::make_shared<model::Model>("rsc/models/tile_edge.obj", "tile", shader, nullptr);
-	const float scale = 5;
 
 	const model::BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
@@ -61,7 +60,7 @@ Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shade
 			trans.x = -(cols * .5f) * tileBox.width + (col * tileBox.width) + tileBox.width * .5f;
 
 			// Ordering matters.
-			tileGrid[row][col].scale(scale);
+			tileGrid[row][col].scale(tileScale);
 			tileGrid[row][col].translate(trans);
 		}
 	}
@@ -70,8 +69,8 @@ Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shade
 	instancedTile->setInstanceColors(tileColors);
 	instancedTileBorder->setInstanceModelMatrices(tileModelMatrices);
 
-	tileWidth = instancedTile->getBoundingBox().width * scale;
-	tileBorderWidth = (tileBox.width - instancedTile->getBoundingBox().width) * 0.5f * scale;	// width of only one edge.
+	tileWidth = instancedTile->getBoundingBox().width * tileScale;
+	tileBorderWidth = (tileBox.width - instancedTile->getBoundingBox().width) * 0.5f * tileScale;	// width of only one edge.
 }
 
 Arena::~Arena() {}
@@ -83,9 +82,10 @@ void Arena::render() const
 	instancedTileBorder->render();
 
 	for (const auto& wall : walls)
-	{
 		wall->render();
-	}
+
+	for (const auto& station : chargingStations)
+		station->render();
 }
 
 /*
@@ -168,6 +168,28 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 			tileGrid[r][c]._hasWall = true;
 		}
 	}
+}
+
+void Arena::addChargingStation(unsigned int row, unsigned int col)
+{
+	chargingStations.push_back(std::make_unique<entity::ChargingStation>(_shader));
+
+	auto& station = chargingStations.back();
+	auto& boundingBox = station->model->getBoundingBox();
+
+	unsigned int rows = tileGrid.size();
+	unsigned int cols = tileGrid[0].size();
+	float fullTileWidth = tileWidth + 2.f * tileBorderWidth;
+
+	glm::vec3 trans = glm::vec3(
+		-(cols * .5f) * fullTileWidth + (col * fullTileWidth) + fullTileWidth * .5f,
+		0.f,
+		(rows * .5f) * fullTileWidth - (row * fullTileWidth) - fullTileWidth * .5f
+	);
+
+	station->model->translate(trans);
+	station->model->update();
+	station->setTileCoords(glm::vec2(row, col));
 }
 
 const Arena::WallList& Arena::getWalls() const { return walls; }

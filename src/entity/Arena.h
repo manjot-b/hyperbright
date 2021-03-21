@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 
+#include "entity/ChargingStation.h"
 #include "model/Model.h"
 #include "render/Renderer.h"
 #include "opengl-helper/Shader.h"
@@ -17,8 +18,9 @@ class Arena : public render::Renderer::IRenderable
 {
 public:
 	using WallList = std::vector<std::unique_ptr<model::Model>>;
+	using ChargingStationList = std::vector<std::unique_ptr<entity::ChargingStation>>;
 
-	Arena(size_t length, size_t width, const std::shared_ptr<openGLHelper::Shader>& shader);
+	Arena(size_t length, size_t width, const std::shared_ptr<openGLHelper::Shader>& shader, float tileScale = 5);
 	~Arena();
 
 	void render() const;
@@ -29,6 +31,9 @@ public:
 	void setTileTeam(const glm::vec2& tileCoords, engine::teamStats::Teams team);
 	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
 	const WallList& getWalls() const;
+
+	void addChargingStation(unsigned int row, unsigned int col);
+
 	std::vector<std::vector<bool>> getAiArenaRepresentation();
 private:
 	class Tile {
@@ -58,9 +63,11 @@ private:
 	using TileGrid = std::vector<std::vector<Tile>>;
 	TileGrid tileGrid;
 	WallList walls;
+	ChargingStationList chargingStations;
 
 	float tileWidth;
 	float tileBorderWidth;	// This is the width of one edge of the border.
+	float tileScale;
 	float tileCollisionRadius;
 };
 }	// namespace entity

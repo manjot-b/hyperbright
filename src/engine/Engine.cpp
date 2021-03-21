@@ -87,6 +87,8 @@ void Engine::buildArena1 () {
 	arena->addWall(arena_size - 1, 0, arena_size - 1, 1);//right
 	////////////////////////////////////////////
 
+	arena->addChargingStation(20, 21);
+
 	// Starting positions ////////////////////// 
 	playerStartingPosition = glm::vec2(18, 18);
 	ai1StartingPosition = glm::vec2(18, 24);
@@ -188,9 +190,6 @@ void Engine::initEntities()
 	vehicles.push_back(ai3);
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai3));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
-
-	battery = std::make_shared<model::Model> ("rsc/models/transformer.obj", "battery", shader, nullptr);
-	renderables.push_back(battery);
 }
 
 
