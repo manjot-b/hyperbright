@@ -10,7 +10,7 @@ namespace engine {
 namespace teamStats {
 enum class Teams
 {
-	TEAM0,
+	TEAM0,	// player team
 	TEAM1,
 	TEAM2,
 	TEAM3,

@@ -212,14 +212,14 @@ namespace hyperbright {
 					pickupPositionQueue.push(arena->getTilePos(curTile) + glm::vec3(0.f, 1.f, 0.f));//ADD PICKUP LOCATION
 					pickupTimerQueue.push(glfwGetTime());//START PICKUP RESPAWN TIMER
 
-					if (v->pickupEquiped != nullptr) {
-						std::cout << v->getId() << " ALREADY HAS PICKUP: " << v->pickupEquiped->pickupNumber <<std::endl;
+					if (v->hasPickup()) {
+						std::cout << v->getId() << " ALREADY HAS PICKUP: " << v->getPickup()->pickupNumber <<std::endl;
 						removeFromArena(pu);
 						return pu;
 					}
 
 					pu->beingCarried = true;
-					v->pickupEquiped = pu;
+					v->equipPickup(pu);
 					
 					moveToCarried(pu);
 					removeFromArena(pu);

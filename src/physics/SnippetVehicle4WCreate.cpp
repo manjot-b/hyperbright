@@ -82,11 +82,11 @@ void setupWheelsSimulationData
 		}
 
 		//Enable the handbrake for the rear wheels only.
-		wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque=4000.0f;
-		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=4000.0f;
+		wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque=3000.0f;
+		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=3000.0f;
 		//Enable steering for the front wheels only.
-		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.3333f;
-		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.3333f;
+		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.3f;
+		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.3f;
 	}
 
 	//Set up the tires.
@@ -96,6 +96,13 @@ void setupWheelsSimulationData
 		for(PxU32 i = 0; i < numWheels; i++)
 		{
 			tires[i].mType = TIRE_TYPE_NORMAL;
+			tires[i].mFrictionVsSlipGraph[0][0] = 0.0f;
+			tires[i].mFrictionVsSlipGraph[0][1] = 1.0f;
+			tires[i].mFrictionVsSlipGraph[1][0] = 0.5f;
+			tires[i].mFrictionVsSlipGraph[1][1] = 1.0f;
+			tires[i].mFrictionVsSlipGraph[2][0] = 0.75f;
+			tires[i].mFrictionVsSlipGraph[2][1] = 0.60f;
+
 		}
 	}
 
@@ -185,12 +192,12 @@ void setupWheelsSimulationData
 	PxVehicleAntiRollBarData barFront;
 	barFront.mWheel0 = PxVehicleDrive4WWheelOrder::eFRONT_LEFT;
 	barFront.mWheel1 = PxVehicleDrive4WWheelOrder::eFRONT_RIGHT;
-	barFront.mStiffness = 15000.0f;
+	barFront.mStiffness = 50000.0f;
 	wheelsSimData->addAntiRollBarData(barFront);
 	PxVehicleAntiRollBarData barRear;
 	barRear.mWheel0 = PxVehicleDrive4WWheelOrder::eREAR_LEFT;
 	barRear.mWheel1 = PxVehicleDrive4WWheelOrder::eREAR_RIGHT;
-	barRear.mStiffness = 30000.0f;
+	barRear.mStiffness = 65000.0f;
 	wheelsSimData->addAntiRollBarData(barRear);
 }
 
@@ -277,9 +284,9 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 
 		//Engine
 		PxVehicleEngineData engine;
-		engine.mMOI = 1.0f;
-		engine.mPeakTorque=1000.0f;
-		engine.mMaxOmega=1000.0f;//approx 6000 rpm
+		engine.mMOI = 0.5f;
+		engine.mPeakTorque=4000.0f;
+		engine.mMaxOmega=1300.0f;//approx 6000 rpm
 		driveSimData.setEngineData(engine);
 
 		//Gears

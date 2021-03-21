@@ -160,7 +160,7 @@ void Engine::run()
 This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
-	audioPlayer->playStartMenuMusic();
+	//audioPlayer->playStartMenuMusic();
 	while (!controller->isWindowClosed() && mainMenu.getState() == ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();

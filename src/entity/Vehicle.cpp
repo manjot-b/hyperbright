@@ -21,7 +21,10 @@ Vehicle::Vehicle(
 	vec3 startDir = vec3(0.0f, 0.0f, -1.0f))
 	:IRenderable(shader),
 	team(team), color(teamStats::colors.at(team)),
-	position(startPos), direction(normalize(startDir)), startDirection(startDir), lastPosition(startPos)
+	direction(normalize(startDir)),
+	up(vec3(0.f, 1.f, 0.f)), // in order for 'up' to update properly, vehicle must start in upright position
+	right(cross(direction, up)),
+	lastPosition(startPos)
 {
 	string bodyIdSuffix = "body";
 	string wheelsIdSuffix = "wheel";
@@ -46,6 +49,8 @@ Vehicle::Vehicle(
 	}
 
 	body = std::make_unique<model::Model>("rsc/models/car_body.obj", teamStats::names[team] + bodyIdSuffix, _shader, nullptr);
+	body->setPosition(startPos);
+
 	
 	unsigned int index = 0;
 	for (auto& mesh : body->getMeshes())
@@ -66,8 +71,13 @@ Vehicle::Vehicle(
 		}
 		else if (mesh->getName() == "rear_lights")
 		{
+			brakeLightsColor = mesh->material.color;
 			brakeLightsIdx = index;
 		}
+
+		// brake lights color comes from car_model.obj
+		// set reverse lights color manually
+		reverseLightsColor = vec4(1.f, .75f, .9f, 1.f);
 
 		index++;
 	}
@@ -78,13 +88,15 @@ Vehicle::Vehicle(
 	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_rr", _shader, nullptr);
 }
 
-void Vehicle::updatePositionAndDirection() {
-	lastPosition = position;
-	position = body->getPosition();
+void Vehicle::updateOrientation() {
 	mat4 modelMatrix = body->getModelMatrix();
+	// zero out the translation
 	mat4 rotMatrix = { modelMatrix[0], modelMatrix[1], modelMatrix[2], vec4(0.f, 0.f, 0.f, 1.f) };
-	currentTile = glm::vec2(-1,-1);
-	direction = normalize(vec3(rotMatrix * vec4(0.f, 0.f, 1.f, 1.0f)));	
+	direction = normalize(vec3(rotMatrix * vec4(0.f, 0.f, 1.f, 1.f)));	
+	up = normalize(vec3(rotMatrix * vec4(0.f, 1.f, 0.f, 1.f)));
+	right = normalize(vec3(rotMatrix * vec4(1.f, 0.f, 0.f, 1.f)));
+
+	upright = (up.y > 0) ? true : false;
 }
 
 Vehicle::~Vehicle() {
@@ -105,12 +117,7 @@ void Vehicle::render() const
 
 quat Vehicle::getOrientation() const
 {
-	vec3 worldUp(0.f, 1.f, 0.f);
-	vec3 right = normalize(cross(direction, worldUp));
-	vec3 up = normalize(cross(right, direction));
-	mat4 m = lookAt(vec3(0.f), direction, up);
-
-	return quat_cast(m);
+	return quat_cast(lookAt(vec3(0.f), direction, up));
 }
 
 void Vehicle::reduceEnergy()
@@ -128,8 +135,23 @@ bool Vehicle::enoughEnergy()
 	return (energy > 0) ? true : false;
 }
 
+void Vehicle::equipPickup(std::shared_ptr<Pickup> _pickup)
+{
+	pickup = _pickup;
+	pickupEquiped = true;
+}
+
 void Vehicle::activatePickup()
 {
+	if (pickupEquiped) {
+		pickup->activate();
+		pickupEquiped = false;
+	}
+}
+
+void Vehicle::applyFlipImpulse()
+{
+	ctrl.flipImpulse = true;
 }
 
 void Vehicle::accelerateForward()
@@ -139,11 +161,15 @@ void Vehicle::accelerateForward()
 
 void Vehicle::accelerateReverse()
 {
-	ctrl.input[1] = 1;
-
-	// TO-DO: Implement this feature in braking instead. Currently the brake lights
-	// turn on even if the vehicle is reversing, not only braking.
 	body->getMeshes()[brakeLightsIdx]->material.isEmission = true;
+	if (speedometer > 2.f) {
+		brake();
+	}
+	else {
+		body->getMeshes()[brakeLightsIdx]->material.color = reverseLightsColor;
+		stopBrake();
+		ctrl.input[1] = 1;
+	}
 }
 
 void Vehicle::brake()
@@ -180,8 +206,10 @@ void Vehicle::stopForward()
 
 void Vehicle::stopReverse()
 {
+	ctrl.input[5] = 0;
 	ctrl.input[1] = 0;
 	body->getMeshes()[brakeLightsIdx]->material.isEmission = false;
+	body->getMeshes()[brakeLightsIdx]->material.color = brakeLightsColor;
 }
 
 void Vehicle::stopBrake() 
@@ -204,19 +232,23 @@ void Vehicle::stopHardTurn()
 	ctrl.input[4] = 0;
 }
 
-float Vehicle::updateSpeedometer(float deltaTime)
+void Vehicle::updateSpeedometer(float deltaTime)
 {
-	//std::cout << "Current Position: " << position.x << position.y << position.z << " Last Position: " << lastPosition.x << lastPosition.y << lastPosition.z << std::endl;
-	float s = glm::length(position - lastPosition) / deltaTime;
-	std::cout << "Speedommeter: " << s << std::endl;
-	return s;
+	vec3 travelled = body->getPosition() - lastPosition;
+	float projOnDirection = dot(travelled, direction);
+	if (projOnDirection >= 0) {
+		speedometer = length(travelled) / deltaTime;
+	}
+	else {
+		speedometer = -length(travelled) / deltaTime;
+	}
 }
 
 void Vehicle::setModelMatrix(const glm::mat4& modelMat)
 {
 	// Probably a better way to do this, but this is fine for now.
 	float scale = 1 / 3.f; // this must match physX vehicle description in Simulate.cpp - initVehicleDesc()
-	glm::vec3 translate(0.f, -1.7f, 0.f);
+	glm::vec3 translate(0.f, -1.7f, 0.f);	// do to the scaling down, we must translate the model down to rest on the ground plane
 
 	glm::mat4 final_transform = modelMat;
 	final_transform = glm::scale(modelMat, glm::vec3(scale));
@@ -235,13 +267,13 @@ void Vehicle::setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& 
 	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT]->setModelMatrix(rearRight * scale * flipped);
 }
 
-void Vehicle::setPosition(const glm::vec3& position)
+void Vehicle::setPosition(const glm::vec3& _position)
 {
-	this->position = position;
-	body->setPosition(position);
+	lastPosition = body->getPosition();
+	body->setPosition(_position);
 
 	for(auto& wheel : wheels)
-		wheel->setPosition(position);
+		wheel->setPosition(_position);
 }
 
 void Vehicle::setBodyMaterial(const model::Material& material)
