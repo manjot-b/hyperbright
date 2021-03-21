@@ -189,11 +189,7 @@ void Engine::initEntities()
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai3));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
 
-	battery = std::make_shared<model::Model> ("rsc/models/cube.obj", "battery", shader, background);
-	battery->scale(glm::vec3(1.f, 3.f, 1.f));
-	battery->translate(arena->getTilePos(chargeStationPosition) + glm::vec3(0, 1.5f, 0));
-	battery->update();
-	battery->getMeshes()[0]->material.color = glm::vec4(1.f, 0.f, 0.f, 1.f);
+	battery = std::make_shared<model::Model> ("rsc/models/transformer.obj", "battery", shader, nullptr);
 	renderables.push_back(battery);
 }
 
