@@ -40,7 +40,7 @@ public:
 	std::optional<engine::teamStats::Teams> getTeamOnTile(const glm::vec2& coords) const;
 
 	void setTileTeam(const glm::vec2& tileCoords, engine::teamStats::Teams team);
-	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
+	void addWall(unsigned int col, unsigned int row, unsigned int width, unsigned int length);
 	const WallList& getWalls() const;
 
 	void addChargingStation(unsigned int col, unsigned int row, Orientation orientation);

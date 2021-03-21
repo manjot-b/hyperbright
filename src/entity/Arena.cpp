@@ -130,7 +130,7 @@ std::optional<engine::teamStats::Teams> Arena::getTeamOnTile(const glm::vec2& co
 	return tileGrid[coords.x][coords.y].team;
 }
 
-void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
+void Arena::addWall(unsigned int col, unsigned int row, unsigned int width, unsigned int length)
 {
 	walls.push_back(std::make_unique<model::Model>("rsc/models/wall.obj", "wall" + walls.size(), _shader, nullptr));
 	auto& wall = walls.back();

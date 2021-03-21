@@ -70,23 +70,23 @@ void Engine::buildArena1 () {
 	// BUILD ARENA LAYOUT ///////////////////////
 	int wallLength = 12;
 	int wallWidth = 4;
-	arena->addWall(25, 5, wallLength, wallWidth);
-	arena->addWall(32, 5, wallLength, wallWidth);
+	arena->addWall(5, 25, wallLength, wallWidth);
+	arena->addWall(5, 32, wallLength, wallWidth);
 
 	arena->addWall(5, 5, wallWidth, wallLength);
-	arena->addWall(5, 12, wallWidth, wallLength);
+	arena->addWall(12, 5, wallWidth, wallLength);
 
-	arena->addWall(5, 24, wallLength, wallWidth);
-	arena->addWall(12, 24, wallLength, wallWidth);
+	arena->addWall(24, 5, wallLength, wallWidth);
+	arena->addWall(24, 12, wallLength, wallWidth);
 
-	arena->addWall(24, 25, wallWidth, wallLength);
-	arena->addWall(24, 32, wallWidth, wallLength);
+	arena->addWall(25, 24, wallWidth, wallLength);
+	arena->addWall(32, 24, wallWidth, wallLength);
 
-	arena->addWall(0, 0, 1, arena_size); //top
-	arena->addWall(0, arena_size - 1, 1, arena_size);//bottom
+	arena->addWall(0, 0, 1, arena_size); //left
+	arena->addWall(0, arena_size - 1, arena_size, 1);//top
 
-	arena->addWall(0, 1, arena_size - 1, 1);//left
-	arena->addWall(arena_size - 1, 0, arena_size - 1, 1);//right
+	arena->addWall(arena_size - 1, 0, 1, arena_size - 1);//right
+	arena->addWall(0, 0, arena_size - 1, 1);//bottom
 	////////////////////////////////////////////
 
 	arena->addChargingStation(20, 21, Arena::Orientation::NEG_Z);
@@ -111,39 +111,39 @@ void Engine::buildArena2() {
 
 	//CENTER
 	//4X1
-	arena->addWall(5, 8, 4, 1);
-	arena->addWall(14, 8, 4, 1);
+	arena->addWall(8, 5, 4, 1);
+	arena->addWall(8, 14, 4, 1);
 	//1x1s
-	arena->addWall(7,6 , 1, 1);
-	arena->addWall(6,7 , 1, 1);
+	arena->addWall(6, 7, 1, 1);
+	arena->addWall(7, 6 , 1, 1);
 
-	arena->addWall(12,6 , 1, 1);
-	arena->addWall(13,7 , 1, 1);
+	arena->addWall(6, 12, 1, 1);
+	arena->addWall(7, 13, 1, 1);
 
-	arena->addWall(6,12 , 1, 1);
-	arena->addWall(7,13 , 1, 1);
+	arena->addWall(12, 6 , 1, 1);
+	arena->addWall(13, 7, 1, 1);
 
-	arena->addWall(12,13 , 1, 1);
-	arena->addWall(13,12 , 1, 1);
+	arena->addWall(13, 12, 1, 1);
+	arena->addWall(12, 13, 1, 1);
 
 	//OUTSIDE WALLS
 	//2x1
-	arena->addWall(5, 1, 2, 1);
-	arena->addWall(14, 1, 2, 1);
-	arena->addWall(5, 17, 2, 1);
-	arena->addWall(14, 17, 2, 1);
+	arena->addWall(1, 5, 2, 1);
+	arena->addWall(1, 14, 2, 1);
+	arena->addWall(17, 5, 2, 1);
+	arena->addWall(17, 14, 2, 1);
 	//1x2
-	arena->addWall(1, 5, 1, 2);
-	arena->addWall(1, 14, 1, 2);
-	arena->addWall(17, 5, 1, 2);
-	arena->addWall(17, 14, 1, 2);
+	arena->addWall(5, 1, 1, 2);
+	arena->addWall(14, 1, 1, 2);
+	arena->addWall(5, 17, 1, 2);
+	arena->addWall(14, 17, 1, 2);
 
 	//WALLS AROUND ARENA
-	arena->addWall(0, 0, 1, arena_size); //top
-	arena->addWall(0, arena_size - 1, 1, arena_size);//bottom
+	arena->addWall(0, 0, 1, arena_size); //left
+	arena->addWall(0, arena_size - 1, arena_size, 1);//top
 
-	arena->addWall(0, 1, arena_size - 1, 1);//left
-	arena->addWall(arena_size - 1, 0, arena_size - 1, 1);//right
+	arena->addWall(arena_size - 1, 0, 1, arena_size - 1);//right
+	arena->addWall(0, 0, arena_size - 1, 1);//bottom
 	////////////////////////////////////////////
 
 	// Starting positions ////////////////////// 
