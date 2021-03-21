@@ -70,6 +70,7 @@ void startTurnHardRightMode(int v);
 void startHandbrakeTurnLeftMode(int v);
 void startHandbrakeTurnRightMode(int v);
 void releaseAllControls(int v);
+void applyVehicleFlipImpulse(int v);
 }	// namespace Driving
 }	// namespace physics
 }	// namespace hyperbright

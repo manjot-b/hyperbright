@@ -47,10 +47,8 @@ PxBatchQuery* gBatchQuery = NULL;
 
 PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
-PxRigidStatic* gGroundPlane = NULL;
 int const number_of_vehicles = 4;
 PxVehicleDrive4W* gVehicle4W[number_of_vehicles];
-
 
 bool gIsVehicleInAir[4] = { true, true, true, true };
 std::shared_ptr<audio::AudioPlayer> audioPlayer;
@@ -81,7 +79,6 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 				std::shared_ptr<entity::Pickup> p = pum->handlePickupOnCollision(v);
 				if (p->pickupNumber != 0) {
 					toBeRemovedPickups.push(p);
-					//cout << "Pickup " << p->pickupNumber << " added for removal" << endl;
 				}
 			}
 		}
@@ -146,9 +143,9 @@ Simulate::~Simulate() {
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
 	0.0f,		1.0f,
-	1.0f,		0.85f,
-	5.0f,		0.45f,
-	20.0f,		0.2f,
+	4.0f,		0.6f,
+	20.0f,		0.35f,
+	90.0f,		0.2f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
@@ -159,18 +156,18 @@ PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4)
 PxVehicleKeySmoothingData gKeySmoothingData =
 {
 	{
-		6.0f,	//rise rate eANALOG_INPUT_ACCEL
-		6.0f,	//rise rate eANALOG_INPUT_BRAKE		
-		6.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
-		1.f,	//rise rate eANALOG_INPUT_STEER_LEFT
-		1.f,	//rise rate eANALOG_INPUT_STEER_RIGHT
+		3.0f,	//rise rate eANALOG_INPUT_ACCEL
+		5.0f,	//rise rate eANALOG_INPUT_BRAKE		
+		10.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
+		0.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
+		0.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
 	},
 	{
-		10.0f,	//fall rate eANALOG_INPUT_ACCEL
-		10.0f,	//fall rate eANALOG_INPUT_BRAKE		
-		10.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-		2.f,	//fall rate eANALOG_INPUT_STEER_LEFT
-		2.f	//fall rate eANALOG_INPUT_STEER_RIGHT
+		4.0f,	//fall rate eANALOG_INPUT_ACCEL
+		5.0f,	//fall rate eANALOG_INPUT_BRAKE		
+		12.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
+		3.f,	//fall rate eANALOG_INPUT_STEER_LEFT
+		3.f	//fall rate eANALOG_INPUT_STEER_RIGHT
 	}
 };
 
@@ -249,7 +246,7 @@ VehicleDesc initVehicleDesc()
 	vehicleDesc.wheelMOI = wheelMOI;
 	vehicleDesc.numWheels = nbWheels;
 	vehicleDesc.wheelMaterial = gMaterial;
-	vehicleDesc.chassisSimFilterData = PxFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL_AGAINST, 0, 0);
+	vehicleDesc.wheelSimFilterData = PxFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL_AGAINST, 0, 0);
 
 	return vehicleDesc;
 }
@@ -364,7 +361,12 @@ namespace Driving {
 			gVehicleInputData[v].setAnalogHandbrake(0.0f);
 		}
 	}
-}
+
+	void applyVehicleFlipImpulse(int v)
+	{
+		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(-1000.f, -3500.f, 0.f), PxVec3(1.f, 0.f, 0.f), PxForceMode::eIMPULSE);
+	}
+}//namespace Driving
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void Simulate::initPhysics()
@@ -382,7 +384,7 @@ void Simulate::initPhysics()
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
 
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, -18.f, 0.0f);
 	sceneDesc.simulationEventCallback = &collisionCallBack;
 
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
@@ -414,7 +416,7 @@ void Simulate::initPhysics()
 
 	//Create a plane to drive on.
 	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
-	gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
+	PxRigidStatic* gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
 	gGroundPlane->userData = (void*)"ground";
 	gScene->addActor(*gGroundPlane);
 
@@ -427,7 +429,6 @@ void Simulate::initPhysics()
 
 		vec3 playerStartPos = vehicle->getPosition();
 		quat playerOrientation = vehicle->getOrientation();
-		std::cout << "car: " << vehicle->getId() << " initialized" << std::endl;
 		PxQuat playerPxOrientation(playerOrientation.x, playerOrientation.y, playerOrientation.z, playerOrientation.w);
 		PxTransform startTransform(PxVec3(playerStartPos.x, playerStartPos.y, playerStartPos.z), playerPxOrientation);
 		gVehicle4W[i]->getRigidDynamicActor()->setGlobalPose(startTransform);
@@ -437,6 +438,8 @@ void Simulate::initPhysics()
 		gVehicle4W[i]->getRigidDynamicActor()->userData = (void*)vehicle;
 		gVehicle4W[i]->getRigidDynamicActor()->setName(vehicle->getId());
 		gScene->addActor(*gVehicle4W[i]->getRigidDynamicActor());
+
+		std::cout << "car: " << vehicle->getId() << " initialized" << std::endl;
 	}
 
 	///////////////////////////////////// Battery
@@ -458,25 +461,43 @@ void Simulate::initPhysics()
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
-void setDriveMode(entity::VehicleController ctrl)
+void setDriveMode(entity::VehicleController* ctrl)
 {
-	int vNum = ctrl.contrId;
+	int vNum = ctrl->contrId;
+
+	if (ctrl->flipImpulse) {
+		Driving::applyVehicleFlipImpulse(vNum);
+		ctrl->flipImpulse = false;
+	}
 
 	Driving::releaseAllControls(vNum);
-	//FORWARD OR BACKWARD
-	if (ctrl.input[0]) {
+	//BRAKE OR FORWARD OR BACKWARD
+	if (ctrl->input[5]) {
+		Driving::startBrakeMode(vNum);
+	} 
+	else if (ctrl->input[0]) {
 		Driving::startAccelerateForwardsMode(vNum);
 	}
-	else if (ctrl.input[1]) {
+	else if (ctrl->input[1]) {
 		Driving::startAccelerateReverseMode(vNum);
 	}
 
 	//LEFT OR RIGHT
-	if (ctrl.input[2]) {
-		Driving::startTurnHardLeftMode(vNum);
+	if (ctrl->input[2]) {
+		if (ctrl->input[4]) {
+			Driving::startHandbrakeTurnLeftMode(vNum);
+		}
+		else {
+			Driving::startTurnHardLeftMode(vNum);
+		}
 	}
-	else if (ctrl.input[3]) {
-		Driving::startTurnHardRightMode(vNum);
+	else if (ctrl->input[3]) {
+		if (ctrl->input[4]) {
+			Driving::startHandbrakeTurnRightMode(vNum);
+		}
+		else {
+			Driving::startTurnHardRightMode(vNum);
+		}
 	}
 }
 
@@ -495,9 +516,9 @@ void Simulate::stepPhysics(float frameRate)
 {
 	//Cycle through the vehicles and set there driving mode
 	for (auto& vehicle : vehicles) {
-		entity::VehicleController& ctrl = vehicle->getController();
+		entity::VehicleController* ctrl = &vehicle->getController();
 		setDriveMode(ctrl);
-		smoothControlValues(ctrl.contrId, frameRate);
+		smoothControlValues(ctrl->contrId, frameRate);
 	}
 
 	// Vehicle wheel raycasts and state updating
@@ -516,7 +537,6 @@ void Simulate::stepPhysics(float frameRate)
 
 		//Work out if the vehicle is in the air.
 		gIsVehicleInAir[i] = gVehicle4W[i]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
-
 	}
 
 	//Scene update.
@@ -531,7 +551,12 @@ void Simulate::stepPhysics(float frameRate)
 
 	// update the stats of each vehicle
 	for (auto& vehicle : vehicles) {
-		vehicle->updatePositionAndDirection();
+		vehicle->updateOrientation();
+		vehicle->updateSpeedometer(frameRate);
+		if (vehicle->getTeam() == engine::teamStats::Teams::TEAM0) {
+			// print out aspects of the player vehicle per frame here
+
+		}
 	}
 }
 
@@ -557,7 +582,10 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 				if (actorName == modelName) {
 					PxMat44 boxPose;
 					if (numShapes > 0) {
-						boxPose = (PxShapeExt::getGlobalPose(*shapes[6], *actors[i]));
+						// as of now the only actors with more than 1 shape are the vehicles
+						// if more complex actors are created then we need another condition to
+						// update the correct model in the actor
+						boxPose = (PxShapeExt::getGlobalPose(*shapes[6], *actors[i])); // shapes[6] = vehicle chassis 
 					}
 					else {
 						boxPose = (PxShapeExt::getGlobalPose(*shapes[0], *actors[i]));
@@ -696,12 +724,20 @@ void Simulate::cookMeshes(const model::Model& model, void* _userData, bool useMo
 
 void Simulate::cleanupPhysics()
 {
+	PxU32 numActors = gScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
+	if (numActors)
+	{
+		std::vector<PxRigidActor*> actors(numActors);
+		gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
+		for (int i = 0; i < numActors; i++) {
+			actors[i]->release();
+		}
+	}
+
 	for (auto& vehicle : gVehicle4W) {
-		vehicle->getRigidDynamicActor()->release();
 		vehicle->free();
 	}
 
-	PX_RELEASE(gGroundPlane);
 	PX_RELEASE(gBatchQuery);
 	gVehicleSceneQueryData->free(gAllocator);
 	PX_RELEASE(gFrictionPairs);

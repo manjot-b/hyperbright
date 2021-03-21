@@ -15,9 +15,12 @@
 
 namespace hyperbright {
 namespace entity {
+
 struct VehicleController {
 	int contrId;
 	int input[6] = { 0,0,0,0,0,0 };
+	bool flipImpulse = false;
+	// input controls { accelerate, reverse, turn right, turn left, hard turn, brake }
 };
 
 class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
@@ -31,17 +34,18 @@ public:
 	~Vehicle();
 	void reset();
 
-	void updatePositionAndDirection();
+	const char* getId() const				{ return engine::teamStats::names[team].c_str(); }
+	VehicleController& getController()		{ return ctrl; }
+	const glm::vec4& getColor() const		{ return color; }
+	glm::vec3 getForward() const			{ return body->getPosition() + direction; }
+	glm::vec3 getDirection() const			{ return direction; }
+	glm::vec3 getUp() const					{ return up; }
+	const glm::vec3& getPosition() const	{ return body->getPosition(); }
+	float readSpeedometer()					{ return speedometer; }
+	engine::teamStats::Teams getTeam() const{ return team; }
 
-	const char* getId() const { return engine::teamStats::names[team].c_str(); }
-	VehicleController getController() { return ctrl; }
-	const glm::vec4& getColor() const { return color; }
-	glm::vec3 getForward() const { return position + direction; }
-	glm::vec3 getDirection() const { return direction; }
-	const glm::vec3& getPosition() const { return position; }
+	void updateOrientation();
 	glm::quat getOrientation() const;
-
-	engine::teamStats::Teams getTeam() const { return team; }
 
 	void setBodyMaterial(const model::Material& material);
 	const model::Material& getBodyMaterial() const;
@@ -49,43 +53,58 @@ public:
 	void reduceEnergy();
 	void restoreEnergy();
 	bool enoughEnergy();
+	bool isUpright()						{ return upright; }
+
+	bool hasPickup()						{ return pickupEquiped; }
+	std::shared_ptr<Pickup> getPickup()		{ return pickup; }
+	void equipPickup(std::shared_ptr<Pickup> pickup);
+	void activatePickup();
+	void applyFlipImpulse();
 
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& frontRight, const glm::mat4& rearRight, const glm::mat4& rearLeft);
 	void setPosition(const glm::vec3& position);
 	void setColor(const glm::vec4 _color) { color = _color; }
+	void updateSpeedometer(float deltaTime);
 
 	glm::vec2 currentTile;
 	float energy = 1.f;
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION
-
-	std::shared_ptr<Pickup> pickupEquiped;//set as null for default
 	
 	// driving movements act as a toggle. call the appropriate movement 
 	// function to start moving then call the cooresponding stop function 
 	void accelerateForward();
 	void accelerateReverse();
-	void brake();		// not implemented
+	void brake();		
 	void turnLeft();
 	void turnRight();
-	void turnHardLeft();// not implemented
-	void turnHardRight();// not implemented
+	void hardTurn();
 	void resetControls();
 
 	void stopForward();
 	void stopReverse();
+	void stopBrake();
 	void stopLeft();
 	void stopRight();
+	void stopHardTurn();
+
 	int index;
 	void render() const;
 private:
 
 	engine::teamStats::Teams team;
 	glm::vec4 color;
+	// orientation vectors
 	glm::vec3 direction;
-	const glm::vec3 startDirection;
-	glm::vec3 position;
+	glm::vec3 up;
+	glm::vec3 right;
+	bool upright;
+
+	glm::vec3 lastPosition;
+	float speedometer;
+	bool pickupEquiped = false;
+	std::shared_ptr<Pickup> pickup;
 	VehicleController ctrl;
 
 	std::unique_ptr<model::Model> body;
@@ -93,6 +112,8 @@ private:
 	std::array<std::unique_ptr<model::Model>, 4> wheels;
 	unsigned int bodyIdx;
 	unsigned int brakeLightsIdx;
+	glm::vec4 brakeLightsColor;
+	glm::vec4 reverseLightsColor;
 };
 }	// namespace entity
 }	// namespace hyperbright

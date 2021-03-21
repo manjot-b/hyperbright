@@ -5,10 +5,13 @@
 
 # Controls
  - Enter to start a game.(Currently there's only one option for startmenu)
- - W, A, S, D to pan the camera UP, LEFT, DOWN, and RIGHT respectively.
- - Arrow keys to control the vehicle.
+ - W, A, S, D to control the vehicle.
+ - Pressing Left-Shift while turning performs handbrake turning.
+ - Pressing Space while a pickup is equiped with activate the pickup.
+ - Pressing F if vehicle gets flipped over will attempt to flip the vehicle back over.
+ - Pressing C toggles between manual camera and driving camera.
+ - Arrow keys to control the manual camera.
  - Camera's point of interest (POI) follows the mouse automatically. 
  - Mouse Scroll to zoom in and out
  - CTRL + SPACE toggles the cursor so you may manage the UI
- - Camera initially follows the dynamic object. Press C to switch to manual control.
- - Escape to open an menu, use arrow keys and enter to select.
+ - Escape to open a menu, use arrow keys and enter to select.
