@@ -170,7 +170,7 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 	}
 }
 
-void Arena::addChargingStation(unsigned int row, unsigned int col)
+void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation orientation)
 {
 	chargingStations.push_back(std::make_unique<entity::ChargingStation>(_shader));
 
@@ -187,7 +187,10 @@ void Arena::addChargingStation(unsigned int row, unsigned int col)
 		(rows * .5f) * fullTileWidth - (row * fullTileWidth) - fullTileWidth * .5f
 	);
 
+	float rot = glm::radians(static_cast<int>(orientation) * 90.f);
+
 	station->model->translate(trans);
+	station->model->rotate(glm::vec3(.0f, rot, .0f));
 	station->model->update();
 	station->setTileCoords(glm::vec2(row, col));
 }

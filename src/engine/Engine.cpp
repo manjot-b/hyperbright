@@ -62,8 +62,10 @@ void Engine::loadTextures()
 }
 
 void Engine::buildArena1 () {
+	using namespace entity;
+
 	int arena_size = 40;
-	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
+	arena = std::make_shared<Arena>(arena_size, arena_size, shader);
 
 	// BUILD ARENA LAYOUT ///////////////////////
 	int wallLength = 12;
@@ -87,7 +89,10 @@ void Engine::buildArena1 () {
 	arena->addWall(arena_size - 1, 0, arena_size - 1, 1);//right
 	////////////////////////////////////////////
 
-	arena->addChargingStation(20, 21);
+	arena->addChargingStation(20, 21, Arena::Orientation::NEG_Z);
+	arena->addChargingStation(20, 24, Arena::Orientation::POS_Z);
+	arena->addChargingStation(23, 24, Arena::Orientation::NEG_X);
+	arena->addChargingStation(26, 22, Arena::Orientation::POS_X);
 
 	// Starting positions ////////////////////// 
 	playerStartingPosition = glm::vec2(18, 18);

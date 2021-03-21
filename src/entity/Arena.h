@@ -20,6 +20,17 @@ public:
 	using WallList = std::vector<std::unique_ptr<model::Model>>;
 	using ChargingStationList = std::vector<std::unique_ptr<entity::ChargingStation>>;
 
+	/*
+	 Orientation relative to world coords.
+	*/
+	enum class Orientation {
+		POS_X = 0,
+		NEG_Z,
+		NEG_X,
+		POS_Z,
+		
+	};
+
 	Arena(size_t length, size_t width, const std::shared_ptr<openGLHelper::Shader>& shader, float tileScale = 5);
 	~Arena();
 
@@ -32,7 +43,7 @@ public:
 	void addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length);
 	const WallList& getWalls() const;
 
-	void addChargingStation(unsigned int row, unsigned int col);
+	void addChargingStation(unsigned int col, unsigned int row, Orientation orientation);
 
 	std::vector<std::vector<bool>> getAiArenaRepresentation();
 private:
