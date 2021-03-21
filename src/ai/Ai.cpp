@@ -9,8 +9,8 @@ namespace hyperbright {
 			targetTile = startTile;
 			stuckCheck = false;
 			stuckTimer = glfwGetTime();
-			stuckTimeout = 5.f;
-			backupTime = 2.f;
+			stuckTimeout = 2.5f;
+			backupTime = 1.5f;
 			currentTile = startTile;
 			pastGoal = glm::vec2(1, 1);//ARBITRARY
 			//path =  std::vector<glm::vec2>();
