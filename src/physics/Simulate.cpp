@@ -607,11 +607,10 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 			actors[i]->getShapes(shapes, numShapes);
 			
 			if (actors[i]->userData != NULL) {
-				//const char* actorName = reinterpret_cast<const char*>(actors[i]->userData);
-				const char* actorName = actors[i]->getName();
-				const char* modelName = model->getId();
+				// Actor must have IPhysical in its userData
+				IPhysical* actorPtr = static_cast<IPhysical*>(actors[i]->userData);
 
-				if (actorName == modelName) {
+				if (actorPtr == model.get()) {
 					PxMat44 boxPose;
 					if (numShapes > 0) {
 						// as of now the only actors with more than 1 shape are the vehicles
@@ -631,26 +630,23 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 					model->setPosition(modelPos);
 
 					// Check if this actor is a vehicle and if so, set its wheels pose.
-					for (const auto& name : engine::teamStats::names)
+					entity::Vehicle* vehicle = dynamic_cast<entity::Vehicle*>(actorPtr);
+					
+					if (vehicle)
 					{
-						if (name.second.c_str() == actorName)
-						{
-							entity::Vehicle& vehicle = static_cast<entity::Vehicle&>(*model);
+						PxMat44 frontRight = (PxShapeExt::getGlobalPose(*shapes[0], *actors[i]));
+						PxMat44 frontLeft = (PxShapeExt::getGlobalPose(*shapes[1], *actors[i]));
+						PxMat44 rearRight = (PxShapeExt::getGlobalPose(*shapes[2], *actors[i]));
+						PxMat44 rearLeft = (PxShapeExt::getGlobalPose(*shapes[3], *actors[i]));
 
-							PxMat44 frontRight = (PxShapeExt::getGlobalPose(*shapes[0], *actors[i]));
-							PxMat44 frontLeft = (PxShapeExt::getGlobalPose(*shapes[1], *actors[i]));
-							PxMat44 rearRight = (PxShapeExt::getGlobalPose(*shapes[2], *actors[i]));
-							PxMat44 rearLeft = (PxShapeExt::getGlobalPose(*shapes[3], *actors[i]));
+						glm::mat4 fr, fl, rr, rl;
+						memcpy(&fr, &frontRight, sizeof(PxMat44));
+						memcpy(&fl, &frontLeft, sizeof(PxMat44));
+						memcpy(&rr, &rearRight, sizeof(PxMat44));
+						memcpy(&rl, &rearLeft, sizeof(PxMat44));
 
-							glm::mat4 fr, fl, rr, rl;
-							memcpy(&fr, &frontRight, sizeof(PxMat44));
-							memcpy(&fl, &frontLeft, sizeof(PxMat44));
-							memcpy(&rr, &rearRight, sizeof(PxMat44));
-							memcpy(&rl, &rearLeft, sizeof(PxMat44));
-
-							vehicle.setWheelsModelMatrix(fl, fr, rr, rl);
-							break;
-						}
+						vehicle->setWheelsModelMatrix(fl, fr, rr, rl);
+						break;
 					}
 				}
 			}
