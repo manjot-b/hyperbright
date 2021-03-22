@@ -52,6 +52,7 @@ public:
 	void reduceEnergy();
 	void restoreEnergy();
 	bool enoughEnergy();
+	bool fullEnergy();
 	bool isUpright()						{ return upright; }
 
 	bool hasPickup()						{ return pickupEquiped; }

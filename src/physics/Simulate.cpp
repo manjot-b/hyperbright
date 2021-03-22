@@ -72,10 +72,14 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 			IPhysical* second = static_cast<IPhysical*>(pairs[i].otherActor->userData);
 
 			if (first->getTriggerType() == IPhysical::TriggerType::CHARGING_STATION) {
-				audioPlayer->playPowerstationCollision();
 				cout << "Station collision detected \n";
 				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
-				v->restoreEnergy();
+				// This collision will repeat so only trigger it's effect if the 
+				// vehicle needs to be recharged.
+				if (!v->fullEnergy()) {
+					audioPlayer->playPowerstationCollision();
+					v->restoreEnergy();
+				}
 			}
 			else if (first->getTriggerType() == IPhysical::TriggerType::PICKUP) {
 				audioPlayer->playPickupCollision();
@@ -188,10 +192,10 @@ void Simulate::addChargingStations(const entity::Arena::ChargingStationList& sta
 
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
-	0.0f,		1.0f,
-	4.0f,		0.6f,
-	20.0f,		0.35f,
-	90.0f,		0.2f,
+	0.0f,		0.92f,
+	8.0f,		0.7f,
+	30.0f,		0.4f,
+	120.0f,		0.2f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,

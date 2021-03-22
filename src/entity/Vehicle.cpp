@@ -139,6 +139,11 @@ bool Vehicle::enoughEnergy()
 	return (energy > 0) ? true : false;
 }
 
+bool Vehicle::fullEnergy()
+{
+	return (energy >= 1.f) ? true : false;
+}
+
 void Vehicle::equipPickup(std::shared_ptr<Pickup> _pickup)
 {
 	pickup = _pickup;
