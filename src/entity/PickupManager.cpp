@@ -221,7 +221,8 @@ namespace hyperbright {
 
 					pu->beingCarried = true;
 					v->equipPickup(pu);
-					
+					v->pickupTime = glfwGetTime();
+
 					moveToCarried(pu);
 					removeFromArena(pu);
 					return pu;

@@ -154,6 +154,7 @@ void Vehicle::activatePickup()
 {
 	if (pickupEquiped) {
 		pickup->use(teamNum);
+		pickup = nullptr;
 		pickupEquiped = false;
 	}
 }
