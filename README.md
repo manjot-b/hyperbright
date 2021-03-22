@@ -4,10 +4,10 @@
 3. Build the project with the generated build system files. For example, on Linux ~~a Makefile will be created which can be invoked with `make -jN`~~ this does not compile due to PhysX. On Windows, a Visual Studio Solution file will be created, which can be opened and built with Visual Studio.
 
 # Controls
- - Enter to start a game.(Currently there's only one option for startmenu)
+ - Enter to start a game.(Currently there's only one option in start-up menu)
  - W, A, S, D to control the vehicle.
- - Pressing Left-Shift while turning performs handbrake turning.
- - Pressing Space while a pickup is equiped with activate the pickup.
+ - Pressing LEFT-SHIFT while turning performs handbrake turning.
+ - Pressing Space while a pickup is equiped will activate the pickup.
  - Pressing F if vehicle gets flipped over will attempt to flip the vehicle back over.
  - Pressing C toggles between manual camera and driving camera.
  - Arrow keys to control the manual camera.
