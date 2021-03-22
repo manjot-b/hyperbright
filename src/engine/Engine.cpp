@@ -22,8 +22,14 @@ Engine::Engine() :
 	initEntities();
 	initDevUI();
 
-	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], mainMenu, pauseMenu, endMenu);
 	audioPlayer = std::make_shared<audio::AudioPlayer>();
+	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
+		camera,
+		vehicles[0],
+		mainMenu,
+		pauseMenu,
+		endMenu,
+		*audioPlayer);
 }
 
 
@@ -45,7 +51,13 @@ void Engine::resetAll()
 
 	initEntities();
 	initDevUI();
-	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], mainMenu, pauseMenu, endMenu);
+	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
+		camera,
+		vehicles[0],
+		mainMenu,
+		pauseMenu,
+		endMenu,
+		*audioPlayer);
 }
 
 void Engine::initDevUI()

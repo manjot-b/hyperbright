@@ -4,9 +4,16 @@
 
 namespace hyperbright {
 namespace engine {
-Controller::Controller(GLFWwindow* _window, render::Camera& _camera, std::shared_ptr<entity::Vehicle>& _playerVehicle, ui::MainMenu& _mainmenu, ui::PauseMenu& _pausemenu, ui::EndMenu& _endmenu) :
-	window(_window), camera(_camera), playerVehicle(_playerVehicle), mainMenu(_mainmenu), pauseMenu(_pausemenu), endMenu(_endmenu),
-	isCursorShowing(false), manualCamera(false)
+Controller::Controller(GLFWwindow* _window,
+	render::Camera& _camera,
+	std::shared_ptr<entity::Vehicle>& _playerVehicle,
+	ui::MainMenu& _mainmenu,
+	ui::PauseMenu& _pausemenu,
+	ui::EndMenu& _endmenu,
+	audio::AudioPlayer& _audioPlayer) :
+	window(_window), camera(_camera), playerVehicle(_playerVehicle),
+	mainMenu(_mainmenu), pauseMenu(_pausemenu), endMenu(_endmenu),
+	audioPlayer(_audioPlayer), isCursorShowing(false), manualCamera(false)
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
 	glfwSetKeyCallback(window, keyCallback);
@@ -217,6 +224,7 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		{
 		case GLFW_KEY_ENTER:
 			mainMenu.setState(ui::MainMenu::State::OFF);
+			audioPlayer.playMenuEnterSound();
 			break;
 		}
 	}
@@ -238,6 +246,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
 
 			pauseMenu.setSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
 		}
 		break;
 		case GLFW_KEY_DOWN:
@@ -248,6 +257,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
 
 			pauseMenu.setSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
 		}
 		break;
 
@@ -263,6 +273,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 			else {
 				pauseMenu.setState(ui::PauseMenu::State::OFF);
 			}
+			audioPlayer.playMenuEnterSound();
 			break;
 		}
 	}
@@ -297,6 +308,7 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 			ui::EndMenu::Selection selection = endMenu.getSelection();
 			endMenu.setSelection(
 				selection == ui::EndMenu::Selection::MAIN_MENU ? ui::EndMenu::Selection::QUIT : ui::EndMenu::Selection::MAIN_MENU);
+			audioPlayer.playMenuSwitchSound();
 			break;
 		}
 		case GLFW_KEY_ENTER:
@@ -307,7 +319,7 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 			else {
 				setWindowShouldClose(true);
 			}
-			
+			audioPlayer.playMenuEnterSound();
 			break;
 		}
 	}

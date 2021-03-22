@@ -7,6 +7,7 @@
 #include <memory>
 #include <queue>
 
+#include "audio/AudioPlayer.h"
 #include "render/Camera.h"
 #include "ui/Menu.h"
 #include "entity/Vehicle.h"
@@ -30,7 +31,13 @@ public:
 		NO_TURN
 	};
 
-	Controller(GLFWwindow* window, render::Camera& camera, std::shared_ptr<entity::Vehicle>& playerVehicle, ui::MainMenu& mainmenu, ui::PauseMenu& pausemenu, ui::EndMenu& endmenu);
+	Controller(GLFWwindow* window,
+		render::Camera& camera,
+		std::shared_ptr<entity::Vehicle>& playerVehicle,
+		ui::MainMenu& mainmenu,
+		ui::PauseMenu& pausemenu,
+		ui::EndMenu& endmenu,
+		audio::AudioPlayer& audioPlayer);
 	~Controller();
 
 	////// toggle the window cursor on!!!
@@ -50,6 +57,7 @@ private:
 	ui::MainMenu& mainMenu;
 	ui::PauseMenu& pauseMenu;
 	ui::EndMenu& endMenu;
+	audio::AudioPlayer& audioPlayer;
 
 	std::shared_ptr<entity::Vehicle> playerVehicle;
 
