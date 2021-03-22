@@ -5,15 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <algorithm>
-glm::vec2 a = glm::vec2(3, 3);
-glm::vec2 b = glm::vec2(20, 3);
-glm::vec2 c = glm::vec2(36, 3);
-glm::vec2 d = glm::vec2(3, 20);
-glm::vec2 e = glm::vec2(20, 20);
-glm::vec2 f = glm::vec2(36, 20);
-glm::vec2 g = glm::vec2(3, 36);
-glm::vec2 h = glm::vec2(20, 36);
-glm::vec2 i = glm::vec2(36, 36);
+
 namespace hyperbright {
 	namespace entity {
 		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::Renderer::IRenderable>>& _renderables) :
@@ -61,7 +53,7 @@ namespace hyperbright {
 			pickupIdCounter = 1;
 			for (auto& pickupLocation : onArenaPickupLocations) {
 				std::cout << "Pickup " << pickupIdCounter << " initialized.\n";
-				std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(pickupIdCounter, 0, nullptr, shader);
+				std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(pickupIdCounter, EMP, nullptr, shader);
 				pickup->setArenaLocation(pickupLocation , arena->isOnTile(pickupLocation));
 				addPickupToScene(pickup);	// encapsulated new pickup calls
 				pickupIdCounter++;
@@ -75,7 +67,7 @@ namespace hyperbright {
 			for (int i = 0; i < carriedPickups.size(); i++) {
 				if (!carriedPickups.at(i)->beingCarried && carriedPickups.at(i)->active) {
 					//std::cout << "PU ACTIVATED: " << carriedPickups.at(i)->pickupNumber <<"\n";
-					carriedPickups.at(i)->activate();
+					carriedPickups.at(i)->activate(vehicles);
 					moveToActive(carriedPickups.at(i));
 					removeFromCarried(carriedPickups.at(i));
 				}
@@ -92,7 +84,7 @@ namespace hyperbright {
 					std::shared_ptr<Pickup> pickup = activePickups.at(i);
 					pickup->deactivate();
 					removeFromActive(pickup);
-					delete &pickup;
+					//delete pickup;
 				}
 			}
 		}
@@ -118,7 +110,7 @@ namespace hyperbright {
 						if (!idFound) break;
 					}
 					////////////////
-					std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(newPickupId, 0, nullptr, shader);		// This constructor was using an invalid pickupId
+					std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(newPickupId, EMP, nullptr, shader);		// This constructor was using an invalid pickupId
 					pickup->setArenaLocation(pickupPositionQueue.front(), arena->isOnTile(pickupPositionQueue.front()));
 					addPickupToScene(pickup);	// encapsulated new pickup calls
 					pickupPositionQueue.pop();
@@ -215,13 +207,14 @@ namespace hyperbright {
 			for (int IdCounter = 0; IdCounter < onArenaPickups.size(); IdCounter++) {
 				std::shared_ptr<Pickup> pu = onArenaPickups.at(IdCounter);
 				if (pu->tile.x == curTile.x && pu->tile.y == curTile.y) {
-					std::cout<< v->getId() <<" HIT PICKUP : " << pu->pickupNumber << std::endl;
+					const std::string& name = engine::teamStats::names[v->getTeam()];
+					std::cout<< name <<" HIT PICKUP : " << pu->pickupNumber << std::endl;
 
 					pickupPositionQueue.push(arena->getTilePos(curTile) + glm::vec3(0.f, 1.f, 0.f));//ADD PICKUP LOCATION
 					pickupTimerQueue.push(glfwGetTime());//START PICKUP RESPAWN TIMER
 
 					if (v->hasPickup()) {
-						std::cout << v->getId() << " ALREADY HAS PICKUP: " << v->getPickup()->pickupNumber <<std::endl;
+						std::cout << name << " ALREADY HAS PICKUP: " << v->getPickup()->pickupNumber <<std::endl;
 						removeFromArena(pu);
 						return pu;
 					}

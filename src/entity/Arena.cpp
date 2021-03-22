@@ -5,7 +5,7 @@
 namespace hyperbright {
 namespace entity {
 Arena::Tile::Tile(glm::mat4& modelMatrix, glm::vec4& color) :
-	modelMatrix(modelMatrix), color(color), _hasWall(false), team(std::nullopt)
+	modelMatrix(modelMatrix), color(color), _hasWall(false), _hasChargingStation(false), team(std::nullopt)
 {}
 
 void Arena::Tile::translate(const glm::vec3& trans)
@@ -25,6 +25,8 @@ void Arena::Tile::setColor(const glm::vec4& color)
 
 bool Arena::Tile::hasWall() const { return _hasWall; }
 
+bool Arena::Tile::hasChargingStation() const { return _hasChargingStation; }
+
 /*
  Construct an arena:
 
@@ -35,15 +37,14 @@ bool Arena::Tile::hasWall() const { return _hasWall; }
 */
 //bool AiArenaRepresentation;
 
-Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
+Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shader>& shader, float tileScale) : IRenderable(shader),
 	tileModelMatrices( std::make_shared<std::vector<glm::mat4>>( rows * cols, glm::mat4(1.f) )),
 	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, glm::vec4(.3f, .3f, .3f, 1.f)) ),
-	tileGrid(rows), tileCollisionRadius(0.5f)
+	tileGrid(rows), tileScale(tileScale), tileCollisionRadius(0.5f)
 {
 
 	instancedTile = std::make_shared<model::Model>("rsc/models/tile.obj", "tile", shader, nullptr);
 	instancedTileBorder = std::make_shared<model::Model>("rsc/models/tile_edge.obj", "tile", shader, nullptr);
-	const float scale = 5;
 
 	const model::BoundingBox& tileBox = instancedTileBorder->getBoundingBox();
 	glm::vec3 trans(0.f);
@@ -61,7 +62,7 @@ Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shade
 			trans.x = -(cols * .5f) * tileBox.width + (col * tileBox.width) + tileBox.width * .5f;
 
 			// Ordering matters.
-			tileGrid[row][col].scale(scale);
+			tileGrid[row][col].scale(tileScale);
 			tileGrid[row][col].translate(trans);
 		}
 	}
@@ -70,8 +71,8 @@ Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shade
 	instancedTile->setInstanceColors(tileColors);
 	instancedTileBorder->setInstanceModelMatrices(tileModelMatrices);
 
-	tileWidth = instancedTile->getBoundingBox().width * scale;
-	tileBorderWidth = (tileBox.width - instancedTile->getBoundingBox().width) * 0.5f * scale;	// width of only one edge.
+	tileWidth = instancedTile->getBoundingBox().width * tileScale;
+	tileBorderWidth = (tileBox.width - instancedTile->getBoundingBox().width) * 0.5f * tileScale;	// width of only one edge.
 }
 
 Arena::~Arena() {}
@@ -83,9 +84,10 @@ void Arena::render() const
 	instancedTileBorder->render();
 
 	for (const auto& wall : walls)
-	{
 		wall->render();
-	}
+
+	for (const auto& station : chargingStations)
+		station->render();
 }
 
 /*
@@ -130,7 +132,7 @@ std::optional<engine::teamStats::Teams> Arena::getTeamOnTile(const glm::vec2& co
 	return tileGrid[coords.x][coords.y].team;
 }
 
-void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsigned int length)
+void Arena::addWall(unsigned int col, unsigned int row, unsigned int width, unsigned int length)
 {
 	walls.push_back(std::make_unique<model::Model>("rsc/models/wall.obj", "wall" + walls.size(), _shader, nullptr));
 	auto& wall = walls.back();
@@ -170,7 +172,59 @@ void Arena::addWall(unsigned int row, unsigned int col, unsigned int width, unsi
 	}
 }
 
+void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation orientation)
+{
+	chargingStations.push_back(std::make_unique<entity::ChargingStation>(_shader));
+
+	auto& station = chargingStations.back();
+	auto& boundingBox = station->model->getBoundingBox();
+
+	unsigned int rows = tileGrid.size();
+	unsigned int cols = tileGrid[0].size();
+	float fullTileWidth = tileWidth + 2.f * tileBorderWidth;
+
+	glm::vec3 trans = glm::vec3(
+		-(cols * .5f) * fullTileWidth + (col * fullTileWidth) + fullTileWidth * .5f,
+		0.f,
+		(rows * .5f) * fullTileWidth - (row * fullTileWidth) - fullTileWidth * .5f
+	);
+
+	float rot = glm::radians(static_cast<int>(orientation) * 90.f);
+
+	station->model->translate(trans);
+	station->model->rotate(glm::vec3(.0f, rot, .0f));
+	station->model->update();
+	station->setTileCoords(glm::vec2(row, col));
+	station->setWorldCoords(trans);
+
+	switch (orientation)
+	{
+	case Orientation::NEG_X:
+	case Orientation::POS_X:
+		station->dimensions = glm::vec3(boundingBox.width, boundingBox.height, boundingBox.depth);
+		break;
+	case Orientation::NEG_Z:
+	case Orientation::POS_Z:
+		station->dimensions = glm::vec3(boundingBox.depth, boundingBox.height, boundingBox.width);
+		break;
+	}
+
+	tileGrid[row][col]._hasChargingStation = true;
+}
+
+void Arena::animateChargingStations(float time)
+{
+	for (auto& station : chargingStations)
+		station->animate(time);
+}
+
+bool Arena::tileHasChargingStation(const glm::vec2& tileCoords)
+{
+	return tileGrid[tileCoords.x][tileCoords.y].hasChargingStation();
+}
+
 const Arena::WallList& Arena::getWalls() const { return walls; }
+const Arena::ChargingStationList& Arena::getChargingStations() const { return chargingStations; }
 
 //MAY BE ADDING IN WRONG ORDER CHECK LATER
 std::vector<std::vector<bool>> Arena::getAiArenaRepresentation() {

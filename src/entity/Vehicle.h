@@ -10,7 +10,7 @@
 #include "model/Model.h"
 #include "entity/Pickup.h"
 #include "render/Renderer.h"
-#include "physics/Simulate.h"
+#include "physics/Interface.h"
 #include "engine/TeamStats.h"
 
 namespace hyperbright {
@@ -34,7 +34,6 @@ public:
 	~Vehicle();
 	void reset();
 
-	const char* getId() const				{ return engine::teamStats::names[team].c_str(); }
 	VehicleController& getController()		{ return ctrl; }
 	const glm::vec4& getColor() const		{ return color; }
 	glm::vec3 getForward() const			{ return body->getPosition() + direction; }
@@ -67,6 +66,7 @@ public:
 	void setColor(const glm::vec4 _color) { color = _color; }
 	void updateSpeedometer(float deltaTime);
 
+	float pickupTime;
 	glm::vec2 currentTile;
 	float energy = 1.f;
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
@@ -94,6 +94,7 @@ public:
 private:
 
 	engine::teamStats::Teams team;
+	int teamNum;
 	glm::vec4 color;
 	// orientation vectors
 	glm::vec3 direction;

@@ -22,8 +22,14 @@ Engine::Engine() :
 	initEntities();
 	initDevUI();
 
-	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], mainMenu, pauseMenu, endMenu);
 	audioPlayer = std::make_shared<audio::AudioPlayer>();
+	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
+		camera,
+		vehicles[0],
+		mainMenu,
+		pauseMenu,
+		endMenu,
+		*audioPlayer);
 }
 
 
@@ -45,7 +51,13 @@ void Engine::resetAll()
 
 	initEntities();
 	initDevUI();
-	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(), camera, vehicles[0], mainMenu, pauseMenu, endMenu);
+	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
+		camera,
+		vehicles[0],
+		mainMenu,
+		pauseMenu,
+		endMenu,
+		*audioPlayer);
 }
 
 void Engine::initDevUI()
@@ -62,30 +74,38 @@ void Engine::loadTextures()
 }
 
 void Engine::buildArena1 () {
+	using namespace entity;
+
 	int arena_size = 40;
-	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
+	arena = std::make_shared<Arena>(arena_size, arena_size, shader);
 
 	// BUILD ARENA LAYOUT ///////////////////////
 	int wallLength = 12;
 	int wallWidth = 4;
-	arena->addWall(25, 5, wallLength, wallWidth);
-	arena->addWall(32, 5, wallLength, wallWidth);
+	arena->addWall(5, 25, wallLength, wallWidth);
+	arena->addWall(5, 32, wallLength, wallWidth);
 
 	arena->addWall(5, 5, wallWidth, wallLength);
-	arena->addWall(5, 12, wallWidth, wallLength);
+	arena->addWall(12, 5, wallWidth, wallLength);
 
-	arena->addWall(5, 24, wallLength, wallWidth);
-	arena->addWall(12, 24, wallLength, wallWidth);
+	arena->addWall(24, 5, wallLength, wallWidth);
+	arena->addWall(24, 12, wallLength, wallWidth);
 
-	arena->addWall(24, 25, wallWidth, wallLength);
-	arena->addWall(24, 32, wallWidth, wallLength);
+	arena->addWall(25, 24, wallWidth, wallLength);
+	arena->addWall(32, 24, wallWidth, wallLength);
 
-	arena->addWall(0, 0, 1, arena_size); //top
-	arena->addWall(0, arena_size - 1, 1, arena_size);//bottom
+	arena->addWall(0, 0, 1, arena_size); //left
+	arena->addWall(0, arena_size - 1, arena_size, 1);//top
 
-	arena->addWall(0, 1, arena_size - 1, 1);//left
-	arena->addWall(arena_size - 1, 0, arena_size - 1, 1);//right
+	arena->addWall(arena_size - 1, 0, 1, arena_size - 1);//right
+	arena->addWall(0, 0, arena_size - 1, 1);//bottom
 	////////////////////////////////////////////
+
+	arena->addChargingStation(20, 20, Arena::Orientation::NEG_Z);
+	arena->addChargingStation(3, 20, Arena::Orientation::POS_Z);
+	arena->addChargingStation(36, 20, Arena::Orientation::NEG_X);
+	arena->addChargingStation(20, 3, Arena::Orientation::POS_X);
+	arena->addChargingStation(20, 36, Arena::Orientation::NEG_Z);
 
 	// Starting positions ////////////////////// 
 	playerStartingPosition = glm::vec2(18, 18);
@@ -93,10 +113,11 @@ void Engine::buildArena1 () {
 	ai2StartingPosition = glm::vec2(24, 18);
 	ai3StartingPosition = glm::vec2(24, 24);
 	////////////////////////////////////////////
-	chargeStationPosition = glm::vec2(19,21);
 }
 
 void Engine::buildArena2() {
+	using namespace entity;
+
 	int arena_size = 20;
 	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
 
@@ -104,39 +125,39 @@ void Engine::buildArena2() {
 
 	//CENTER
 	//4X1
-	arena->addWall(5, 8, 4, 1);
-	arena->addWall(14, 8, 4, 1);
+	arena->addWall(8, 5, 4, 1);
+	arena->addWall(8, 14, 4, 1);
 	//1x1s
-	arena->addWall(7,6 , 1, 1);
-	arena->addWall(6,7 , 1, 1);
+	arena->addWall(6, 7, 1, 1);
+	arena->addWall(7, 6 , 1, 1);
 
-	arena->addWall(12,6 , 1, 1);
-	arena->addWall(13,7 , 1, 1);
+	arena->addWall(6, 12, 1, 1);
+	arena->addWall(7, 13, 1, 1);
 
-	arena->addWall(6,12 , 1, 1);
-	arena->addWall(7,13 , 1, 1);
+	arena->addWall(12, 6 , 1, 1);
+	arena->addWall(13, 7, 1, 1);
 
-	arena->addWall(12,13 , 1, 1);
-	arena->addWall(13,12 , 1, 1);
+	arena->addWall(13, 12, 1, 1);
+	arena->addWall(12, 13, 1, 1);
 
 	//OUTSIDE WALLS
 	//2x1
-	arena->addWall(5, 1, 2, 1);
-	arena->addWall(14, 1, 2, 1);
-	arena->addWall(5, 17, 2, 1);
-	arena->addWall(14, 17, 2, 1);
+	arena->addWall(1, 5, 2, 1);
+	arena->addWall(1, 14, 2, 1);
+	arena->addWall(17, 5, 2, 1);
+	arena->addWall(17, 14, 2, 1);
 	//1x2
-	arena->addWall(1, 5, 1, 2);
-	arena->addWall(1, 14, 1, 2);
-	arena->addWall(17, 5, 1, 2);
-	arena->addWall(17, 14, 1, 2);
+	arena->addWall(5, 1, 1, 2);
+	arena->addWall(14, 1, 1, 2);
+	arena->addWall(5, 17, 1, 2);
+	arena->addWall(14, 17, 1, 2);
 
 	//WALLS AROUND ARENA
-	arena->addWall(0, 0, 1, arena_size); //top
-	arena->addWall(0, arena_size - 1, 1, arena_size);//bottom
+	arena->addWall(0, 0, 1, arena_size); //left
+	arena->addWall(0, arena_size - 1, arena_size, 1);//top
 
-	arena->addWall(0, 1, arena_size - 1, 1);//left
-	arena->addWall(arena_size - 1, 0, arena_size - 1, 1);//right
+	arena->addWall(arena_size - 1, 0, 1, arena_size - 1);//right
+	arena->addWall(0, 0, arena_size - 1, 1);//bottom
 	////////////////////////////////////////////
 
 	// Starting positions ////////////////////// 
@@ -145,7 +166,8 @@ void Engine::buildArena2() {
 	ai2StartingPosition = glm::vec2(8, 11);
 	ai3StartingPosition = glm::vec2(11, 11);
 	////////////////////////////////////////////
-	chargeStationPosition = glm::vec2(10, 9);
+	arena->addChargingStation(9, 10, Arena::Orientation::NEG_Z);
+	arena->addChargingStation(4, 4, Arena::Orientation::POS_X);
 }
 
 
@@ -188,13 +210,6 @@ void Engine::initEntities()
 	vehicles.push_back(ai3);
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai3));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
-
-	battery = std::make_shared<model::Model> ("rsc/models/cube.obj", "battery", shader, background);
-	battery->scale(glm::vec3(1.f, 3.f, 1.f));
-	battery->translate(arena->getTilePos(chargeStationPosition) + glm::vec3(0, 1.5f, 0));
-	battery->update();
-	battery->getMeshes()[0]->material.color = glm::vec4(1.f, 0.f, 0.f, 1.f);
-	renderables.push_back(battery);
 }
 
 
@@ -307,6 +322,8 @@ void Engine::runGame() {
 			// check state of all pickups
 			pickupManager->checkPickups();
 			pickupManager->animatePickups(fpsLimit);
+
+			arena->animateChargingStations(currentFrame);
 
 			// set camera to player vehicles position
 			if (!controller->isCameraManual())

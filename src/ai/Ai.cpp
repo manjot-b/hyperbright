@@ -1,5 +1,7 @@
 #include "Ai.h"
 
+#include "engine/TeamStats.h"
+
 namespace hyperbright {
 	namespace ai {
 		Ai::Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a , glm::vec2 startTile) {
@@ -9,10 +11,13 @@ namespace hyperbright {
 			targetTile = startTile;
 			stuckCheck = false;
 			stuckTimer = glfwGetTime();
+			rollTimer = glfwGetTime();
+			rollstuckTimeout = 4.f;
 			stuckTimeout = 2.5f;
 			backupTime = 1.5f;
 			currentTile = startTile;
 			pastGoal = glm::vec2(1, 1);//ARBITRARY
+			pickupUseTime = rand() % 10;
 			//path =  std::vector<glm::vec2>();
 		}
 
@@ -32,10 +37,16 @@ namespace hyperbright {
 		void Ai::aiInput() {
 			updateCurrentTile();
 			if (vehicle->currentTile == targetTile) {
-				std::cout << vehicle->getId() << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
+				const std::string& name = engine::teamStats::names[vehicle->getTeam()];
+				std::cout << name << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
 				path.pop_back();
 				state = NOTARGET;
 				return;
+			}
+			//Flip check
+			if (!vehicle->isUpright() && glfwGetTime() - rollTimer > rollstuckTimeout) {
+				vehicle->applyFlipImpulse();
+				rollTimer = glfwGetTime();
 			}
 			//CRASH RECOVERY
 			if (stuckCheck) {
@@ -56,6 +67,15 @@ namespace hyperbright {
 				//std::cout << vehicle->getId() << " STUCK!!\n";
 				return;
 			}
+
+			//USE PICKUP CHECK
+			if (vehicle->hasPickup()) {
+				if (glfwGetTime() - pickupUseTime > vehicle->pickupTime) {
+					std::cout << engine::teamStats::names[vehicle->getTeam()] << " USED PICKUP \n";
+					vehicle->activatePickup();
+				}
+			}
+
 
 			//std::cout << "Size:"<< path.size() << std::endl;
 			//std::cout << "Current path:" << path.back().x << " " << path.back().y << std::endl;

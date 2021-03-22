@@ -2,7 +2,9 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
+
 #include "entity/Vehicle.h"
+#include "entity/Arena.h"
 
 #define NOTARGET 0
 #define HASTARGET 1
@@ -29,6 +31,9 @@ private:
 	float stuckTimeout;
 	float backupTimerStart;
 	float backupTime;
+	float pickupUseTime;
+	float rollTimer;
+	float rollstuckTimeout;
 	//Might change to indicate which direction to turn
 	float lookingAtTarget();//Retruns true if pointing in the direction of the targetTile
 	void updateCurrentTile();

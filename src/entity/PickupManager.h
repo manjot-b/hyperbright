@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <queue>
+
+#include "entity/Arena.h"
 #include "entity/Pickup.h"
 #include "entity/Vehicle.h"
 

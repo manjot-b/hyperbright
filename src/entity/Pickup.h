@@ -7,6 +7,7 @@
 
 #include "model/Model.h"
 #include "render/Renderer.h"
+#include "physics/Interface.h"
 
 #define BATTERY 0
 #define SPEED 1
@@ -25,7 +26,7 @@ namespace entity {
 }	// namespace entity
 
 namespace entity {
-class Pickup : public render::Renderer::IRenderable
+class Pickup : public render::Renderer::IRenderable, public physics::IPhysical
 {
 public:
 	Pickup();
@@ -35,7 +36,7 @@ public:
 	int pickupNumber;
 	Pickup(int puNum, int pickupType, std::shared_ptr<PickupManager> pickupManager, const std::shared_ptr<openGLHelper::Shader>& shader);
 	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, int indexOfFirstPlace);
-	void activate();
+	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles);
 	void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void deactivate();
 	void initialCollision(std::shared_ptr<Vehicle> vehicle);
@@ -46,6 +47,9 @@ public:
 	void animate(float deltaSec);
 
 	void use(int indexOfUser);//VEHICLES CALL THIS FUNCTION
+
+	void setModelMatrix(const glm::mat4& modelMat);
+	void setPosition(const glm::vec3& position);
 
 	void setArenaLocation(glm::vec3 _arenaLocation, std::optional<glm::vec2> tileLocation);
 	glm::vec3 getArenaLocation() { return arenaLocation; }
