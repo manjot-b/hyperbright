@@ -23,10 +23,6 @@ public:
 	virtual void setModelMatrix(const glm::mat4& modelMat) = 0;
 	virtual void setPosition(const glm::vec3& position) = 0;
 
-	// TO-DO: Remove this method and have PhysX actors store pointers to whatever object
-	// they need.
-	virtual const char* getId() const = 0;
-
 	virtual TriggerType getTriggerType() const { return triggerType; }
 	virtual void setTriggerType(TriggerType type) { triggerType = type; }
 

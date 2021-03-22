@@ -50,8 +50,6 @@ public:
 
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setPosition(const glm::vec3& position);
-	//tmp function from IPhysical
-	const char* getId() const { return "station"; }
 
 	void setArenaLocation(glm::vec3 _arenaLocation, std::optional<glm::vec2> tileLocation);
 	glm::vec3 getArenaLocation() { return arenaLocation; }

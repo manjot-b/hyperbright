@@ -34,7 +34,6 @@ public:
 	~Vehicle();
 	void reset();
 
-	const char* getId() const				{ return engine::teamStats::names[team].c_str(); }
 	VehicleController& getController()		{ return ctrl; }
 	const glm::vec4& getColor() const		{ return color; }
 	glm::vec3 getForward() const			{ return body->getPosition() + direction; }

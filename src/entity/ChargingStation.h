@@ -28,9 +28,6 @@ public:
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setPosition(const glm::vec3& position);
 
-	//tmp function from IPhysical
-	const char* getId() const { return "station"; }
-
 	void animate(float time);
 	const glm::vec3& getDimensions() const;
 

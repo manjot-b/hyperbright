@@ -1,5 +1,7 @@
 #include "Ai.h"
 
+#include "engine/TeamStats.h"
+
 namespace hyperbright {
 	namespace ai {
 		Ai::Ai(std::shared_ptr<entity::Vehicle> v, std::shared_ptr<entity::Arena> a , glm::vec2 startTile) {
@@ -32,7 +34,8 @@ namespace hyperbright {
 		void Ai::aiInput() {
 			updateCurrentTile();
 			if (vehicle->currentTile == targetTile) {
-				std::cout << vehicle->getId() << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
+				const std::string& name = engine::teamStats::names[vehicle->getTeam()];
+				std::cout << name << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
 				path.pop_back();
 				state = NOTARGET;
 				return;

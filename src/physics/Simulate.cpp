@@ -485,10 +485,11 @@ void Simulate::initPhysics()
 
 		// Convert the Vehicle to its base type for easy conversion.
 		gVehicle4W[i]->getRigidDynamicActor()->userData = static_cast<IPhysical*>(vehicle);
-		gVehicle4W[i]->getRigidDynamicActor()->setName(vehicle->getId());
+		const std::string& name = engine::teamStats::names[vehicle->getTeam()];
+		gVehicle4W[i]->getRigidDynamicActor()->setName(name.c_str());
 		gScene->addActor(*gVehicle4W[i]->getRigidDynamicActor());
 
-		std::cout << "car: " << vehicle->getId() << " initialized" << std::endl;
+		std::cout << "car: " << name << " initialized" << std::endl;
 	}
 	std::cout << "PhysX Initialized" << std::endl;
 }
@@ -646,8 +647,8 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 						memcpy(&rl, &rearLeft, sizeof(PxMat44));
 
 						vehicle->setWheelsModelMatrix(fl, fr, rr, rl);
-						break;
 					}
+					break;
 				}
 			}
 		}
