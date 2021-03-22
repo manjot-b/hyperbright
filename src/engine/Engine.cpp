@@ -101,10 +101,11 @@ void Engine::buildArena1 () {
 	arena->addWall(0, 0, arena_size - 1, 1);//bottom
 	////////////////////////////////////////////
 
-	arena->addChargingStation(20, 21, Arena::Orientation::NEG_Z);
-	arena->addChargingStation(20, 24, Arena::Orientation::POS_Z);
-	arena->addChargingStation(23, 24, Arena::Orientation::NEG_X);
-	arena->addChargingStation(26, 22, Arena::Orientation::POS_X);
+	arena->addChargingStation(20, 20, Arena::Orientation::NEG_Z);
+	arena->addChargingStation(3, 20, Arena::Orientation::POS_Z);
+	arena->addChargingStation(36, 20, Arena::Orientation::NEG_X);
+	arena->addChargingStation(20, 3, Arena::Orientation::POS_X);
+	arena->addChargingStation(20, 36, Arena::Orientation::NEG_Z);
 
 	// Starting positions ////////////////////// 
 	playerStartingPosition = glm::vec2(18, 18);
@@ -177,7 +178,7 @@ void Engine::initEntities()
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(skyBox));
 
-	currentArena = 2;
+	currentArena = 1;
 	if (currentArena == 1) {
 		buildArena1();
 	}

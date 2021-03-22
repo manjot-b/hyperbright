@@ -5,15 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <algorithm>
-glm::vec2 a = glm::vec2(3, 3);
-glm::vec2 b = glm::vec2(20, 3);
-glm::vec2 c = glm::vec2(36, 3);
-glm::vec2 d = glm::vec2(3, 20);
-glm::vec2 e = glm::vec2(20, 20);
-glm::vec2 f = glm::vec2(36, 20);
-glm::vec2 g = glm::vec2(3, 36);
-glm::vec2 h = glm::vec2(20, 36);
-glm::vec2 i = glm::vec2(36, 36);
+
 namespace hyperbright {
 	namespace entity {
 		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::Renderer::IRenderable>>& _renderables) :
