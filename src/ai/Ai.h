@@ -31,6 +31,8 @@ private:
 	float stuckTimeout;
 	float backupTimerStart;
 	float backupTime;
+	float rollTimer;
+	float rollstuckTimeout;
 	//Might change to indicate which direction to turn
 	float lookingAtTarget();//Retruns true if pointing in the direction of the targetTile
 	void updateCurrentTile();

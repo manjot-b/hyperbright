@@ -11,6 +11,8 @@ namespace hyperbright {
 			targetTile = startTile;
 			stuckCheck = false;
 			stuckTimer = glfwGetTime();
+			rollTimer = glfwGetTime();
+			rollstuckTimeout = 4.f;
 			stuckTimeout = 2.5f;
 			backupTime = 1.5f;
 			currentTile = startTile;
@@ -41,8 +43,9 @@ namespace hyperbright {
 				return;
 			}
 			//Flip check
-			if (!vehicle->isUpright()) {
+			if (!vehicle->isUpright() && glfwGetTime() - rollTimer > rollstuckTimeout) {
 				vehicle->applyFlipImpulse();
+				rollTimer = glfwGetTime();
 			}
 			//CRASH RECOVERY
 			if (stuckCheck) {
