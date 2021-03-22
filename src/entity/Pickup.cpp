@@ -50,8 +50,16 @@ Pickup::Pickup(int puNum, int pickupType, std::shared_ptr<PickupManager> pickupM
 	}
 }
 
-void Pickup::activate() {
+void Pickup::activate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles) {
+	std::cout << "ACTIVATED\n";
 	pickUpStartTime = glfwGetTime();
+	if (type == EMP) {
+		std::cout << "EMP!! \n";
+		_vehicles->at(0)->energy = 0;
+		_vehicles->at(1)->energy = 0;
+		_vehicles->at(2)->energy = 0;
+		_vehicles->at(3)->energy = 0;
+	}
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -78,6 +86,7 @@ void Pickup::activate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, i
 		pickUpStartTime = glfwGetTime();
 	}
 	else if (type == EMP) {
+		std::cout << "EMP!! \n";
 		vehicles->at(0)->energy = 0;
 		vehicles->at(1)->energy = 0;
 		vehicles->at(2)->energy = 0;
@@ -129,7 +138,7 @@ void Pickup::use(int indexOfUser) {
 /////////////////////////////////////////////////////////////////////
 
 void Pickup::deactivate() {
-
+	std::cout << "DEACTIVATED\n";
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -143,7 +152,7 @@ void Pickup::deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFir
 		//SET OLD VEHICLE MAX SPEED
 	}
 	else if (type == ZAP) {
-		vehicles[indexOfFirstPlace].setColor(zapOldColor);
+		//vehicles[indexOfFirstPlace].setColor(zapOldColor);
 	}
 	else if (type == HIGHVOLTAGE) {
 		//CHANGE COLOR LAYING AREA OF vehicles[indexOfActivator] TO ORIGINAL
@@ -169,6 +178,7 @@ void Pickup::initialCollision(std::shared_ptr<Vehicle> vehicle) {
 		pickupManager->moveToActive(std::shared_ptr<Pickup>(this));
 	} else {
 		vehicle->equipPickup(std::shared_ptr<Pickup>(this));
+		vehicle->pickupTime = glfwGetTime();
 		//remove from onArena
 		pickupManager->removeFromArena(std::shared_ptr<Pickup>(this));
 	}
@@ -179,9 +189,9 @@ void Pickup::initialCollision(std::shared_ptr<Vehicle> vehicle) {
 
 bool Pickup::timeRemaining() {
 	if (glfwGetTime() - pickUpStartTime > pickupTime) {
-		return true;
-	}
 		return false;
+	}
+		return true;
 }
 
 void Pickup::render() const {

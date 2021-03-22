@@ -36,7 +36,7 @@ public:
 	int pickupNumber;
 	Pickup(int puNum, int pickupType, std::shared_ptr<PickupManager> pickupManager, const std::shared_ptr<openGLHelper::Shader>& shader);
 	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, int indexOfFirstPlace);
-	void activate();
+	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles);
 	void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void deactivate();
 	void initialCollision(std::shared_ptr<Vehicle> vehicle);

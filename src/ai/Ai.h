@@ -31,6 +31,7 @@ private:
 	float stuckTimeout;
 	float backupTimerStart;
 	float backupTime;
+	float pickupUseTime;
 	float rollTimer;
 	float rollstuckTimeout;
 	//Might change to indicate which direction to turn

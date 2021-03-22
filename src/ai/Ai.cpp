@@ -17,6 +17,7 @@ namespace hyperbright {
 			backupTime = 1.5f;
 			currentTile = startTile;
 			pastGoal = glm::vec2(1, 1);//ARBITRARY
+			pickupUseTime = rand() % 10;
 			//path =  std::vector<glm::vec2>();
 		}
 
@@ -66,6 +67,15 @@ namespace hyperbright {
 				//std::cout << vehicle->getId() << " STUCK!!\n";
 				return;
 			}
+
+			//USE PICKUP CHECK
+			if (vehicle->hasPickup()) {
+				if (glfwGetTime() - pickupUseTime > vehicle->pickupTime) {
+					std::cout << engine::teamStats::names[vehicle->getTeam()] << " USED PICKUP \n";
+					vehicle->activatePickup();
+				}
+			}
+
 
 			//std::cout << "Size:"<< path.size() << std::endl;
 			//std::cout << "Current path:" << path.back().x << " " << path.back().y << std::endl;

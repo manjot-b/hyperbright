@@ -36,12 +36,15 @@ Vehicle::Vehicle(
 		ctrl.contrId = 0;
 		break;
 	case teamStats::Teams::TEAM1:
+		teamNum = 1;
 		ctrl.contrId = 1;
 		break;
 	case teamStats::Teams::TEAM2:
+		teamNum = 2;
 		ctrl.contrId = 2;
 		break;
 	case teamStats::Teams::TEAM3:
+		teamNum = 3;
 		ctrl.contrId = 3;
 		break;
 	default:
@@ -145,7 +148,7 @@ void Vehicle::equipPickup(std::shared_ptr<Pickup> _pickup)
 void Vehicle::activatePickup()
 {
 	if (pickupEquiped) {
-		pickup->activate();
+		pickup->use(teamNum);
 		pickupEquiped = false;
 	}
 }

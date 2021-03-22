@@ -66,6 +66,7 @@ public:
 	void setColor(const glm::vec4 _color) { color = _color; }
 	void updateSpeedometer(float deltaTime);
 
+	float pickupTime;
 	glm::vec2 currentTile;
 	float energy = 1.f;
 	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
@@ -93,6 +94,7 @@ public:
 private:
 
 	engine::teamStats::Teams team;
+	int teamNum;
 	glm::vec4 color;
 	// orientation vectors
 	glm::vec3 direction;
