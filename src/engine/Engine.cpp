@@ -154,6 +154,7 @@ void Engine::buildArena2() {
 	ai3StartingPosition = glm::vec2(11, 11);
 	////////////////////////////////////////////
 	arena->addChargingStation(10, 9, Arena::Orientation::NEG_Z);
+	arena->addChargingStation(4, 4, Arena::Orientation::POS_X);
 }
 
 

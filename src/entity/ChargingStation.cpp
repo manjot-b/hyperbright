@@ -43,6 +43,8 @@ void ChargingStation::animate(float time)
 	}
 }
 
+const glm::vec3& ChargingStation::getDimensions() const { return dimensions; }
+
 void ChargingStation::setModelMatrix(const glm::mat4& modelMat) { model->setModelMatrix(modelMat); }
 void ChargingStation::setPosition(const glm::vec3& position) { model->setPosition(position); }
 

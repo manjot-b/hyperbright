@@ -197,6 +197,18 @@ void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation o
 	station->setTileCoords(glm::vec2(row, col));
 	station->setWorldCoords(trans);
 
+	switch (orientation)
+	{
+	case Orientation::NEG_X:
+	case Orientation::POS_X:
+		station->dimensions = glm::vec3(boundingBox.width, boundingBox.height, boundingBox.depth);
+		break;
+	case Orientation::NEG_Z:
+	case Orientation::POS_Z:
+		station->dimensions = glm::vec3(boundingBox.depth, boundingBox.height, boundingBox.width);
+		break;
+	}
+
 	tileGrid[row][col]._hasChargingStation = true;
 }
 

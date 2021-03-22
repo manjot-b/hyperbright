@@ -167,8 +167,10 @@ void Simulate::addChargingStations(const entity::Arena::ChargingStationList& sta
 	{
 		const glm::vec3& worldCoords = station->getWorldCoords();
 
+		glm::vec3 dim = station->getDimensions();
+		PxBoxGeometry dimensions = PxBoxGeometry(dim.x * .5f, dim.y * .5f, dim.z * .5f);
 
-		PxShape* shape = gPhysics->createShape(PxBoxGeometry(0.5f, 1.5f, 0.5f), *gMaterial, false);
+		PxShape* shape = gPhysics->createShape(dimensions, *gMaterial, false);
 		PxRigidStatic* actor = gPhysics->createRigidStatic(PxTransform(PxVec3(worldCoords.x, 1.5f, worldCoords.z)));
 
 		shape->setSimulationFilterData(obstFilterData);

@@ -32,6 +32,7 @@ public:
 	const char* getId() const { return "station"; }
 
 	void animate(float time);
+	const glm::vec3& getDimensions() const;
 
 private:
 	std::unique_ptr<model::Model> model;
@@ -39,6 +40,7 @@ private:
 	glm::vec3 _worldCoords;
 	std::array<glm::vec3, 2> animationColors;
 	std::vector<unsigned int> poleMeshIndices;
+	glm::vec3 dimensions;
 };
 }	// namespace entity
 }	// namespace hyperbright
