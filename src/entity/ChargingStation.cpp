@@ -6,7 +6,7 @@ ChargingStation::ChargingStation(const std::shared_ptr<openGLHelper::Shader>& sh
 	IRenderable(shader),
 	model(std::make_unique<model::Model>("rsc/models/transformer.obj", "station", shader, nullptr))
 {
-	setTriggerTrype(physics::IPhysical::TriggerType::CHARGING_STATION);
+	setTriggerType(physics::IPhysical::TriggerType::CHARGING_STATION);
 
 	for (unsigned int i = 0; i < model->getMeshes().size(); i++)
 	{

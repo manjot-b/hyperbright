@@ -12,12 +12,12 @@ namespace entity {
 
 Pickup::Pickup() {
 	pickupNumber = 0;
-	setTriggerTrype(physics::IPhysical::TriggerType::PICKUP);
+	setTriggerType(physics::IPhysical::TriggerType::PICKUP);
 }
 
 Pickup::Pickup( const std::shared_ptr<openGLHelper::Shader>& shader) : IRenderable(shader),
 	model(std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr)) {
-	setTriggerTrype(physics::IPhysical::TriggerType::PICKUP);
+	setTriggerType(physics::IPhysical::TriggerType::PICKUP);
 
 	type = 0;//DEFAULT
 	active = false;

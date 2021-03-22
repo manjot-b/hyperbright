@@ -28,7 +28,7 @@ public:
 	virtual const char* getId() const = 0;
 
 	virtual TriggerType getTriggerType() const { return triggerType; }
-	virtual void setTriggerTrype(TriggerType type) { triggerType = type; }
+	virtual void setTriggerType(TriggerType type) { triggerType = type; }
 
 protected:
 	virtual ~IPhysical() {}
