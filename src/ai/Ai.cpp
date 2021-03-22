@@ -40,6 +40,10 @@ namespace hyperbright {
 				state = NOTARGET;
 				return;
 			}
+			//Flip check
+			if (!vehicle->isUpright()) {
+				vehicle->applyFlipImpulse();
+			}
 			//CRASH RECOVERY
 			if (stuckCheck) {
 				vehicle->stopForward();

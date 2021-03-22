@@ -166,7 +166,7 @@ void Engine::buildArena2() {
 	ai2StartingPosition = glm::vec2(8, 11);
 	ai3StartingPosition = glm::vec2(11, 11);
 	////////////////////////////////////////////
-	arena->addChargingStation(10, 9, Arena::Orientation::NEG_Z);
+	arena->addChargingStation(9, 10, Arena::Orientation::NEG_Z);
 	arena->addChargingStation(4, 4, Arena::Orientation::POS_X);
 }
 
@@ -178,7 +178,7 @@ void Engine::initEntities()
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(skyBox));
 
-	currentArena = 1;
+	currentArena = 2;
 	if (currentArena == 1) {
 		buildArena1();
 	}
