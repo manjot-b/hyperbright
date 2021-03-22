@@ -10,7 +10,7 @@
 #include "model/Model.h"
 #include "entity/Pickup.h"
 #include "render/Renderer.h"
-#include "physics/Simulate.h"
+#include "physics/Interface.h"
 #include "engine/TeamStats.h"
 
 namespace hyperbright {
@@ -34,7 +34,6 @@ public:
 	~Vehicle();
 	void reset();
 
-	const char* getId() const				{ return engine::teamStats::names[team].c_str(); }
 	VehicleController& getController()		{ return ctrl; }
 	const glm::vec4& getColor() const		{ return color; }
 	glm::vec3 getForward() const			{ return body->getPosition() + direction; }

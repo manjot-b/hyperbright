@@ -66,16 +66,21 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 				PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
 				continue;
 			
-			if (strcmp(pairs[i].triggerActor->getName(), "battery") == 0) {
+			// Make sure actors that partake in collisions have their userData field set
+			// to an IPhysical.
+			IPhysical* first = static_cast<IPhysical*>(pairs[i].triggerActor->userData);
+			IPhysical* second = static_cast<IPhysical*>(pairs[i].otherActor->userData);
+
+			if (first->getTriggerType() == IPhysical::TriggerType::CHARGING_STATION) {
 				audioPlayer->playPowerstationCollision();
 				cout << "Station collision detected \n";
-				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
+				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
 				v->restoreEnergy();
 			}
-			else if (strcmp(pairs[i].triggerActor->getName(), "pickup") == 0) {
+			else if (first->getTriggerType() == IPhysical::TriggerType::PICKUP) {
 				audioPlayer->playPickupCollision();
 				cout << "Pickup collision detected" << endl;
-				entity::Vehicle* v = (entity::Vehicle*)pairs[i].otherActor->userData;
+				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
 				std::shared_ptr<entity::Pickup> p = pum->handlePickupOnCollision(v);
 				if (p->pickupNumber != 0) {
 					toBeRemovedPickups.push(p);
@@ -99,7 +104,7 @@ void addPickup(std::shared_ptr<entity::Pickup>& pickup) {
 	pickupBox->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
 
 	pickupActor->attachShape(*pickupBox);
-	pickupActor->userData = (void*)pickup->pickupNumber;
+	pickupActor->userData = static_cast<IPhysical*>(pickup.get());
 	pickupActor->setName("pickup");
 	gScene->addActor(*pickupActor);
 }
@@ -112,12 +117,21 @@ void removePickups() {
 			std::vector<PxRigidActor*> actors(numActors);
 			gScene->getActors(PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
 
-			for (int i = 0; i < numActors; i++) {
-				if ((int)actors[i]->userData == pickup->pickupNumber) {
-					gScene->removeActor(*actors[i]);
-					actors[i]->release();
-					toBeRemovedPickups.pop();
-					break;
+			for (int i = 0; i < numActors; i++)
+			{
+				if (actors[i]->userData) {
+					IPhysical* pu = static_cast<IPhysical*>(actors[i]->userData);
+					if (pu->getTriggerType() == IPhysical::TriggerType::PICKUP) {
+
+						entity::Pickup* pickupPtr = dynamic_cast<entity::Pickup*>(pu);
+
+						if (pickupPtr->pickupNumber == pickup->pickupNumber) {
+							gScene->removeActor(*actors[i]);
+							actors[i]->release();
+							toBeRemovedPickups.pop();
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -132,12 +146,44 @@ Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_
 	pum = _pickupManager;
 	for (const auto& wall : arena.getWalls())
 	{
-		cookMeshes(*wall, "wall", true);
+		// Store nullptr for the userData because we don't ever do anything with the walls.
+		// If we do eventually need to perform some logic on the walls when a collision happens,
+		// then the walls will need to extend IPhysical and set the TriggerType to the appropriate value.
+		cookMeshes(*wall, nullptr, true);
 	}
+	addChargingStations(arena.getChargingStations());
 }
 
 Simulate::~Simulate() {
 
+}
+
+void Simulate::addChargingStations(const entity::Arena::ChargingStationList& stations)
+{
+
+	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+
+	for (const auto& station : stations)
+	{
+		const glm::vec3& worldCoords = station->getWorldCoords();
+
+		glm::vec3 dim = station->getDimensions();
+		PxBoxGeometry dimensions = PxBoxGeometry(dim.x * .5f, dim.y * .5f, dim.z * .5f);
+
+		PxShape* shape = gPhysics->createShape(dimensions, *gMaterial, false);
+		PxRigidStatic* actor = gPhysics->createRigidStatic(PxTransform(PxVec3(worldCoords.x, 1.5f, worldCoords.z)));
+
+		shape->setSimulationFilterData(obstFilterData);
+
+		shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
+		shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+		actor->attachShape(*shape);
+		physics::IPhysical* stationPtr = station.get();
+		actor->userData = (void*)stationPtr;
+		actor->setName("station");
+		gScene->addActor(*actor);
+	}
 }
 
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
@@ -417,7 +463,11 @@ void Simulate::initPhysics()
 	//Create a plane to drive on.
 	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
 	PxRigidStatic* gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
-	gGroundPlane->userData = (void*)"ground";
+	
+	// Store nullptr for the userData because we don't ever do anything with the ground.
+	// If we do eventually need to perform some logic on the walls when a collision happens,
+	// then we need to create a Ground class that extends IPhysical and sets the TriggerType to the appropriate value.
+	gGroundPlane->userData = nullptr;
 	gScene->addActor(*gGroundPlane);
 
 	//Create Vehicle bodies
@@ -433,31 +483,14 @@ void Simulate::initPhysics()
 		PxTransform startTransform(PxVec3(playerStartPos.x, playerStartPos.y, playerStartPos.z), playerPxOrientation);
 		gVehicle4W[i]->getRigidDynamicActor()->setGlobalPose(startTransform);
 
-		// TO-DO: Rather than storing a string id for each vehicle, see if we can store the pointer
-		// to the vehicle itself.
-		gVehicle4W[i]->getRigidDynamicActor()->userData = (void*)vehicle;
-		gVehicle4W[i]->getRigidDynamicActor()->setName(vehicle->getId());
+		// Convert the Vehicle to its base type for easy conversion.
+		gVehicle4W[i]->getRigidDynamicActor()->userData = static_cast<IPhysical*>(vehicle);
+		const std::string& name = engine::teamStats::names[vehicle->getTeam()];
+		gVehicle4W[i]->getRigidDynamicActor()->setName(name.c_str());
 		gScene->addActor(*gVehicle4W[i]->getRigidDynamicActor());
 
-		std::cout << "car: " << vehicle->getId() << " initialized" << std::endl;
+		std::cout << "car: " << name << " initialized" << std::endl;
 	}
-
-	///////////////////////////////////// Battery
-	PxFilterData obstFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-	PxShape* batteryBox = gPhysics->createShape(PxBoxGeometry(0.5f, 1.5f, 0.5f), *gMaterial, false);
-	PxRigidStatic* battery = gPhysics->createRigidStatic(PxTransform(PxVec3(15.f, 1.5f, 5.f)));
-
-	batteryBox->setSimulationFilterData(obstFilterData);
-
-	batteryBox->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);//FLAGS TO SET AS TRIGGER VOLUME
-	batteryBox->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
-
-	//wallActor->setGlobalPose(PxTransform(PxVec3(0,0.7f,5)));
-	battery->attachShape(*batteryBox);
-	battery->userData = (void*)"battery";
-	battery->setName("battery");
-	gScene->addActor(*battery);
-
 	std::cout << "PhysX Initialized" << std::endl;
 }
 
@@ -575,11 +608,10 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 			actors[i]->getShapes(shapes, numShapes);
 			
 			if (actors[i]->userData != NULL) {
-				//const char* actorName = reinterpret_cast<const char*>(actors[i]->userData);
-				const char* actorName = actors[i]->getName();
-				const char* modelName = model->getId();
+				// Actor must have IPhysical in its userData
+				IPhysical* actorPtr = static_cast<IPhysical*>(actors[i]->userData);
 
-				if (actorName == modelName) {
+				if (actorPtr == model.get()) {
 					PxMat44 boxPose;
 					if (numShapes > 0) {
 						// as of now the only actors with more than 1 shape are the vehicles
@@ -599,27 +631,24 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 					model->setPosition(modelPos);
 
 					// Check if this actor is a vehicle and if so, set its wheels pose.
-					for (const auto& name : engine::teamStats::names)
+					entity::Vehicle* vehicle = dynamic_cast<entity::Vehicle*>(actorPtr);
+					
+					if (vehicle)
 					{
-						if (name.second.c_str() == actorName)
-						{
-							entity::Vehicle* vehicle = reinterpret_cast<entity::Vehicle*>(actors[i]->userData);
+						PxMat44 frontRight = (PxShapeExt::getGlobalPose(*shapes[0], *actors[i]));
+						PxMat44 frontLeft = (PxShapeExt::getGlobalPose(*shapes[1], *actors[i]));
+						PxMat44 rearRight = (PxShapeExt::getGlobalPose(*shapes[2], *actors[i]));
+						PxMat44 rearLeft = (PxShapeExt::getGlobalPose(*shapes[3], *actors[i]));
 
-							PxMat44 frontRight = (PxShapeExt::getGlobalPose(*shapes[0], *actors[i]));
-							PxMat44 frontLeft = (PxShapeExt::getGlobalPose(*shapes[1], *actors[i]));
-							PxMat44 rearRight = (PxShapeExt::getGlobalPose(*shapes[2], *actors[i]));
-							PxMat44 rearLeft = (PxShapeExt::getGlobalPose(*shapes[3], *actors[i]));
+						glm::mat4 fr, fl, rr, rl;
+						memcpy(&fr, &frontRight, sizeof(PxMat44));
+						memcpy(&fl, &frontLeft, sizeof(PxMat44));
+						memcpy(&rr, &rearRight, sizeof(PxMat44));
+						memcpy(&rl, &rearLeft, sizeof(PxMat44));
 
-							glm::mat4 fr, fl, rr, rl;
-							memcpy(&fr, &frontRight, sizeof(PxMat44));
-							memcpy(&fl, &frontLeft, sizeof(PxMat44));
-							memcpy(&rr, &rearRight, sizeof(PxMat44));
-							memcpy(&rl, &rearLeft, sizeof(PxMat44));
-
-							vehicle->setWheelsModelMatrix(fl, fr, rr, rl);
-							break;
-						}
+						vehicle->setWheelsModelMatrix(fl, fr, rr, rl);
 					}
+					break;
 				}
 			}
 		}
@@ -633,26 +662,26 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 		std::optional<glm::vec2> tileCoords = arena.isOnTile(vehicle->getPosition());
 		if (tileCoords)
 		{
-			std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
-
-			if (old && *old != vehicle->getTeam() && vehicle->enoughEnergy())
-			{
-				engine::teamStats::scores[*old]--;
-				engine::teamStats::scores[vehicle->getTeam()]++;
-				arena.setTileTeam(*tileCoords, vehicle->getTeam());
-				vehicle->reduceEnergy();
-			}
-			else if (!old && vehicle->enoughEnergy())
-			{
-				engine::teamStats::scores[vehicle->getTeam()]++;
-				arena.setTileTeam(*tileCoords, vehicle->getTeam());
-				vehicle->reduceEnergy();
-			}
-
 			vehicle->currentTile = *tileCoords;
 
+			if (vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))
+			{
+				std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
 
-			glm::vec3 worldCoords = arena.getTilePos(*tileCoords);
+				if (old && *old != vehicle->getTeam())
+				{
+					engine::teamStats::scores[*old]--;
+					engine::teamStats::scores[vehicle->getTeam()]++;
+					arena.setTileTeam(*tileCoords, vehicle->getTeam());
+					vehicle->reduceEnergy();
+				}
+				else if (!old)
+				{
+					engine::teamStats::scores[vehicle->getTeam()]++;
+					arena.setTileTeam(*tileCoords, vehicle->getTeam());
+					vehicle->reduceEnergy();
+				}
+			}
 		}
 	}
 }

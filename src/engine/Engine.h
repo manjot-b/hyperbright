@@ -40,8 +40,6 @@ private:
 	glm::vec2 ai2StartingPosition;
 	glm::vec2 ai3StartingPosition;
 
-	glm::vec2 chargeStationPosition;
-
 	render::Camera camera;
 	ui::MainMenu mainMenu;
 	ui::PauseMenu pauseMenu;

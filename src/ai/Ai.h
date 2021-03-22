@@ -2,7 +2,9 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
+
 #include "entity/Vehicle.h"
+#include "entity/Arena.h"
 
 #define NOTARGET 0
 #define HASTARGET 1
