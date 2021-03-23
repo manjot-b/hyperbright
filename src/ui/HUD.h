@@ -12,6 +12,7 @@ class HUD
 public:
 	HUD(float s, float e);
 	void drawHUD();
+	void updateTime(float time);
 
 private:
 	FTGLPixmapFont font;
@@ -19,6 +20,7 @@ private:
 	unsigned int width, height;
 	float speed;
 	float energy;
+	float roundTimer;
 
 	void updateWindowAndFontSize();
 };

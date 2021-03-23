@@ -337,6 +337,7 @@ void Engine::runGame() {
 
 		//HUD
 		ui::HUD playerHUD(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
+		playerHUD.updateTime(roundTimer);
 
 		// render the updated position of all models and ImGui
 		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, playerHUD);
