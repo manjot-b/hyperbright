@@ -335,8 +335,11 @@ void Engine::runGame() {
 
 		devUI.update(deltaSec, roundTimer);
 
+		//HUD
+		ui::HUD playerHUD(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
+
 		// render the updated position of all models and ImGui
-		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, playerHUD);
 
 		getDevUISettings();
 		glfwPollEvents();

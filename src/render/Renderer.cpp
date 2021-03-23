@@ -170,5 +170,26 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 
 	glfwSwapBuffers(window);
 }
+
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD& hud)
+{
+	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	for (const auto& renderable : renderables)
+	{
+		renderable->getShader()->use();
+		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition());
+		renderable->render();
+	}
+
+	glUseProgram(0);
+
+	menu.render();
+	hud.drawHUD();
+	devUI.render();
+
+	glfwSwapBuffers(window);
+}
 }   // namespace render
 }   // namespace hyperbright

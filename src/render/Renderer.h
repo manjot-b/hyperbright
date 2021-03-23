@@ -11,6 +11,7 @@
 #include "Light.h"
 #include "ui/DevUI.h"
 #include "ui/Menu.h"
+#include "ui/HUD.h"
 #include "opengl-helper/Shader.h"
 #include "opengl-helper/Texture.h"
 
@@ -46,6 +47,7 @@ class Renderer
 		void setWindowSize(unsigned int width, unsigned int height);
 		void initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> shader);
 
+		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD& hud);
 		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera);
 
 	private:

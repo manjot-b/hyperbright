@@ -14,6 +14,7 @@
 #include "model/Model.h"
 #include "ui/Menu.h"
 #include "ui/DevUI.h"
+#include "ui/HUD.h"
 #include "render/Renderer.h"
 #include "physics/Simulate.h"
 #include "opengl-helper/Texture.h"
