@@ -151,7 +151,7 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 *	menu: The menu object.
 */
 
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD* hud = nullptr)
 {
 	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -166,27 +166,9 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	glUseProgram(0);
 
 	menu.render();
-	devUI.render();
-
-	glfwSwapBuffers(window);
-}
-
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD& hud)
-{
-	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	for (const auto& renderable : renderables)
-	{
-		renderable->getShader()->use();
-		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition());
-		renderable->render();
+	if (hud != nullptr) {
+		hud->drawHUD();
 	}
-
-	glUseProgram(0);
-
-	menu.render();
-	hud.drawHUD();
 	devUI.render();
 
 	glfwSwapBuffers(window);

@@ -13,6 +13,7 @@ public:
 	HUD(float s, float e);
 	void drawHUD();
 	void updateTime(float time);
+	void update(float s, float e);
 
 private:
 	FTGLPixmapFont font;

@@ -109,10 +109,16 @@ void HUD::drawHUD() {
 	glEnd();
 }
 
+//update roundTimer
 void HUD::updateTime(float time) {
 	roundTimer = time;
 }
 
+//update vehicle speed and energy
+void HUD::update(float s, float e) {
+	speed = s;
+	energy = e;
+}
 
 }	// namespace ui
 }	// namespace hyperbright

@@ -46,6 +46,7 @@ private:
 	ui::PauseMenu pauseMenu;
 	ui::EndMenu endMenu;
 	ui::DevUI devUI;
+	ui::HUD playerHUD;
 	std::shared_ptr<entity::Arena> arena;
 	std::unique_ptr<Controller> controller;
 
