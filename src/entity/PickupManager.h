@@ -11,7 +11,7 @@ namespace hyperbright {
 namespace entity {
 class PickupManager {
 public:
-	PickupManager(std::shared_ptr<entity::Arena> arena, std::vector<std::shared_ptr<entity::Vehicle>> * _vehicles, std::vector<std::shared_ptr<render::Renderer::IRenderable>>& renderables);
+	PickupManager(std::shared_ptr<entity::Arena> arena, std::vector<std::shared_ptr<entity::Vehicle>> * _vehicles, std::vector<std::shared_ptr<render::IRenderable>>& renderables);
 	~PickupManager();
 
 	void checkPickups();
@@ -45,7 +45,7 @@ private:
 	*/
 	struct PickupRenderables {
 		PickupRenderables(std::shared_ptr<Pickup> pickup);
-		std::shared_ptr<render::Renderer::IRenderable> puRenderable;
+		std::shared_ptr<render::IRenderable> puRenderable;
 		int pickupId;
 	};
 	std::vector<std::shared_ptr<entity::Vehicle>>* vehicles;
@@ -73,7 +73,7 @@ private:
 	/* Reference to the games entire list of renderables.
 	*  Used to find an remove pickups upon collision.
 	*/
-	std::vector<std::shared_ptr<render::Renderer::IRenderable>>& renderables;
+	std::vector<std::shared_ptr<render::IRenderable>>& renderables;
 };
 }	// namespace entity
 }	// namespace hyperbright

@@ -8,34 +8,6 @@
 
 namespace hyperbright {
 namespace render {
-Renderer::IRenderable::IRenderable() {}
-
-Renderer::IRenderable::IRenderable(const std::shared_ptr<openGLHelper::Shader>& shader) : _shader(shader) {}
-
-bool Renderer::IRenderable::operator==(const IRenderable* other)
-{
-	if (this == other) return true;
-	return false;
-}
-
-const std::shared_ptr<openGLHelper::Shader>& Renderer::IRenderable::getShader() const
-{
-	return _shader;
-};
-void Renderer::IRenderable::setShader(const std::shared_ptr<openGLHelper::Shader>& shader)
-{
-	_shader = shader;
-}
-
-/*
- The default shader accepts these. This function can be overriden if an IRenderable uses a custom shader.
-*/
-void Renderer::IRenderable::sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos) const
-{
-	_shader->setUniformMatrix4fv("perspective", projection);
-	_shader->setUniformMatrix4fv("view", view);
-	_shader->setUniform3fv("cameraPos", cameraPos);
-}
 
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will

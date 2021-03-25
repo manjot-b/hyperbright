@@ -8,13 +8,13 @@
 
 #include "entity/ChargingStation.h"
 #include "model/Model.h"
-#include "render/Renderer.h"
+#include "render/IRenderable.h"
 #include "opengl-helper/Shader.h"
 #include "engine/TeamStats.h"
 
 namespace hyperbright {
 namespace entity {
-class Arena : public render::Renderer::IRenderable
+class Arena : public render::IRenderable
 {
 public:
 	using WallList = std::vector<std::unique_ptr<model::Model>>;

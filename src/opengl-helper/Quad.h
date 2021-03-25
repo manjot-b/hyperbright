@@ -4,12 +4,13 @@
 #include <glm/glm.hpp>
 
 #include "VertexArray.h"
-#include "render/Renderer.h"
+#include "opengl-helper/Texture.h"
+#include "render/IRenderable.h"
 
 namespace hyperbright {
 namespace openGLHelper {
 
-class Quad : public render::Renderer::IRenderable
+class Quad : public render::IRenderable
 {
 public:
 	Quad(const std::shared_ptr<Shader>& shader, std::shared_ptr<Texture> texture = nullptr);
@@ -18,7 +19,7 @@ public:
 
 	void setModelMatrix(glm::mat4& mat);
 	const glm::mat4& getModelMatrix() const;
-	void normalizeToViewport();
+	void normalizeToViewport(unsigned int width, unsigned int height);
 
 private:
 	unsigned int indicesCount;

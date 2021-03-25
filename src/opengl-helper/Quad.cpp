@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "model/MeshUtils.h"
-#include "render/Renderer.h"
 
 namespace hyperbright {
 namespace openGLHelper {
@@ -59,10 +58,8 @@ const glm::mat4& Quad::getModelMatrix() const { return modelMat; }
  Normalizes the length and width of the quad based on the viewport dimensions
  so that a square is rendered.
 */
-void Quad::normalizeToViewport()
+void Quad::normalizeToViewport(unsigned int width, unsigned int height)
 {
-	unsigned int width, height;
-	render::Renderer::getInstance().getWindowSize(width, height);
 	float yScale = ((float)width) / height;
 	modelMat = glm::scale(glm::mat4(1.f), glm::vec3(1.f, yScale, 1.f));
 }

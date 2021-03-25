@@ -7,7 +7,7 @@
 
 #include "model/Model.h"
 #include "entity/Arena.h"
-#include "render/Renderer.h"
+#include "render/IRenderable.h"
 #include "physics/Interface.h"
 #include "engine/TeamStats.h"
 
@@ -27,7 +27,7 @@ namespace entity {
 }	// namespace entity
 
 namespace entity {
-class Pickup : public render::Renderer::IRenderable, public physics::IPhysical
+class Pickup : public render::IRenderable, public physics::IPhysical
 {
 public:
 	Pickup();

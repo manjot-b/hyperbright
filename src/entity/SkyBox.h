@@ -2,11 +2,11 @@
 
 #include "opengl-helper/CubeMap.h"
 #include "opengl-helper/VertexArray.h"
-#include "render/Renderer.h"
+#include "render/IRenderable.h"
 
 namespace hyperbright {
 namespace entity {
-class SkyBox : public render::Renderer::IRenderable
+class SkyBox : public render::IRenderable
 {
 public:
 	SkyBox();
