@@ -99,9 +99,9 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	Light directional = { false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f) };
 
 	// TO-DO: Use actual arena size to contruct light's orthgraphic and view matrices.
-	lightProjection = glm::ortho(-40.f, 40.f, -40.f, 40.f, .1f, 100.f);
+	lightProjection = glm::ortho(-160.f, 160.f, -160.f, 160.f, .1f, 200.f);
 	lightView = glm::lookAt(
-		-directional.position * 60.f,	// tmp hardcoded position
+		-directional.position * 80.f,	// tmp hardcoded position
 		glm::vec3(0.f, 0.f, 0.f),
 		glm::vec3(0.f, 1.f, 0.f)
 	);
@@ -130,6 +130,7 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	}
 
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
+	shader->setUniform1i("shadowMap", 1);
 
 	glUseProgram(0);	// unbind shader
 }
@@ -162,6 +163,8 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, width, height);
 
+	shadowMap->bind(GL_TEXTURE1);
+
 	// Render regular scene
 	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -169,13 +172,15 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	for (const auto& renderable : renderables)
 	{
 		renderable->getShader()->use();
-		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition());
+		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition(), lightProjection * lightView);
 		renderable->render();
 	}
 
+	/*
 	quadShader->use();
 	texturedQuad->normalizeToViewport(width, height);
 	texturedQuad->render();
+	*/
 
 	glUseProgram(0);
 

@@ -16,7 +16,7 @@ public:
 	virtual void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const = 0;
 	const std::shared_ptr<openGLHelper::Shader>& getShader() const;
 	void setShader(const std::shared_ptr<openGLHelper::Shader>& shader);
-	virtual void sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos) const;
+	virtual void sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos, const glm::mat4& lightSpace) const;
 protected:
 	std::shared_ptr<openGLHelper::Shader> _shader;
 };

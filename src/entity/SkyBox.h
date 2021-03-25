@@ -18,7 +18,7 @@ private:
 	std::unique_ptr<openGLHelper::VertexArray> vertexArray;
 
 	openGLHelper::CubeMap cubeMap;
-	void sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3&) const;
+	void sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3&, const glm::mat4&) const;
 };
 }   // namespace render
 }   // namespace hyperbright

@@ -46,7 +46,7 @@ void Quad::render() const
 /*
  A 2d quad does not need any of these uniforms to be set.
 */
-void Quad::sendSharedShaderUniforms(const glm::mat4&, const glm::mat4&, const glm::vec3&) const
+void Quad::sendSharedShaderUniforms(const glm::mat4&, const glm::mat4&, const glm::vec3&, const glm::mat4&) const
 {
 }
 

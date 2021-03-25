@@ -16,7 +16,7 @@ public:
 	Quad(const std::shared_ptr<Shader>& shader, std::shared_ptr<Texture> texture = nullptr);
 	void render() const;
 	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const {}	// not used in shadow rendering.
-	void sendSharedShaderUniforms(const glm::mat4&, const glm::mat4&, const glm::vec3&) const;
+	void sendSharedShaderUniforms(const glm::mat4&, const glm::mat4&, const glm::vec3&, const glm::mat4&) const;
 
 	void setModelMatrix(glm::mat4& mat);
 	const glm::mat4& getModelMatrix() const;
