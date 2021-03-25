@@ -74,10 +74,10 @@ float shadowCalc(float dotNormalLight)
 	projCoords = projCoords * .5f + .5f;
 	
 	float closestDepth = texture(shadowMap, projCoords.xy).r;
-	float currentDepth = projCoords.z;
+	float currentDepth = min(projCoords.z, 1.f);
 
 	float bias = max(.01f * (1.f - dotNormalLight), 0.005f);	// moves fragments up slightly to fix shadow acne
-	float shadow = currentDepth - bias> closestDepth ? 1.f : 0.f;
+	float shadow = currentDepth - bias > closestDepth ? 1.f : 0.f;
 
 	return shadow;
 }
