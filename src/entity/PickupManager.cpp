@@ -53,7 +53,7 @@ namespace hyperbright {
 			pickupIdCounter = 1;
 			for (auto& pickupLocation : onArenaPickupLocations) {
 				std::cout << "Pickup " << pickupIdCounter << " initialized.\n";
-				std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(pickupIdCounter, EMP, nullptr, shader);
+				std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(pickupIdCounter, rand()%5, nullptr, shader);
 				pickup->setArenaLocation(pickupLocation , arena->isOnTile(pickupLocation));
 				addPickupToScene(pickup);	// encapsulated new pickup calls
 				pickupIdCounter++;
@@ -67,7 +67,7 @@ namespace hyperbright {
 			for (int i = 0; i < carriedPickups.size(); i++) {
 				if (!carriedPickups.at(i)->beingCarried && carriedPickups.at(i)->active) {
 					//std::cout << "PU ACTIVATED: " << carriedPickups.at(i)->pickupNumber <<"\n";
-					carriedPickups.at(i)->activate(vehicles);
+					carriedPickups.at(i)->activate(vehicles, arena);
 					moveToActive(carriedPickups.at(i));
 					removeFromCarried(carriedPickups.at(i));
 				}
@@ -82,7 +82,7 @@ namespace hyperbright {
 			for (int i = 0; i < activePickups.size(); i++) {
 				if (!activePickups.at(i)->timeRemaining()) {
 					std::shared_ptr<Pickup> pickup = activePickups.at(i);
-					pickup->deactivate();
+					pickup->deactivate(vehicles);
 					removeFromActive(pickup);
 					//delete pickup;
 				}
@@ -110,7 +110,7 @@ namespace hyperbright {
 						if (!idFound) break;
 					}
 					////////////////
-					std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(newPickupId, EMP, nullptr, shader);		// This constructor was using an invalid pickupId
+					std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(newPickupId, rand() % 5, nullptr, shader);		// This constructor was using an invalid pickupId
 					pickup->setArenaLocation(pickupPositionQueue.front(), arena->isOnTile(pickupPositionQueue.front()));
 					addPickupToScene(pickup);	// encapsulated new pickup calls
 					pickupPositionQueue.pop();

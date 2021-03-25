@@ -29,7 +29,7 @@ Vehicle::Vehicle(
 	setTriggerType(physics::IPhysical::TriggerType::VEHICLE);
 	string bodyIdSuffix = "body";
 	string wheelsIdSuffix = "wheel";
-
+	syphonActive = false;
 	switch (team)
 	{
 	case teamStats::Teams::TEAM0:
@@ -131,7 +131,7 @@ void Vehicle::reduceEnergy()
 
 void Vehicle::restoreEnergy()
 {
-	energy = 1.f;
+	energy = 1.f;////////////////
 }
 
 bool Vehicle::enoughEnergy()
@@ -153,7 +153,7 @@ void Vehicle::equipPickup(std::shared_ptr<Pickup> _pickup)
 void Vehicle::activatePickup()
 {
 	if (pickupEquiped) {
-		pickup->use(teamNum);
+		pickup->use(team);
 		pickup = nullptr;
 		pickupEquiped = false;
 	}
@@ -168,6 +168,8 @@ void Vehicle::accelerateForward()
 {
 	ctrl.input[0] = 1;
 }
+
+//void engine::teamStats::Teams setTeam(engine::teamStats::Teams t) { team = t; return; }
 
 void Vehicle::accelerateReverse()
 {

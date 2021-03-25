@@ -42,6 +42,8 @@ public:
 	const glm::vec3& getPosition() const	{ return body->getPosition(); }
 	float readSpeedometer()					{ return speedometer; }
 	engine::teamStats::Teams getTeam() const{ return team; }
+	void setTeam(engine::teamStats::Teams t){ team = t; }
+
 
 	void updateOrientation();
 	glm::quat getOrientation() const;
