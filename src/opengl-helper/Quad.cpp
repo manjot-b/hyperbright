@@ -1,8 +1,11 @@
 #include "Quad.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <vector>
 
 #include "model/MeshUtils.h"
+#include "render/Renderer.h"
 
 namespace hyperbright {
 namespace openGLHelper {
@@ -51,6 +54,18 @@ void Quad::sendSharedShaderUniforms(const glm::mat4&, const glm::mat4&, const gl
 
 void Quad::setModelMatrix(glm::mat4& mat) { modelMat = mat; }
 const glm::mat4& Quad::getModelMatrix() const { return modelMat; }
+
+/*
+ Normalizes the length and width of the quad based on the viewport dimensions
+ so that a square is rendered.
+*/
+void Quad::normalizeToViewport()
+{
+	unsigned int width, height;
+	render::Renderer::getInstance().getWindowSize(width, height);
+	float yScale = ((float)width) / height;
+	modelMat = glm::scale(glm::mat4(1.f), glm::vec3(1.f, yScale, 1.f));
+}
 
 }	// namespace openGLHelper
 }	// namespace hyperbright

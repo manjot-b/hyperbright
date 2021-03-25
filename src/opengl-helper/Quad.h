@@ -18,6 +18,7 @@ public:
 
 	void setModelMatrix(glm::mat4& mat);
 	const glm::mat4& getModelMatrix() const;
+	void normalizeToViewport();
 
 private:
 	unsigned int indicesCount;

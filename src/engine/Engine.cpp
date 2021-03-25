@@ -210,15 +210,7 @@ void Engine::initEntities()
 	std::shared_ptr<entity::Vehicle> ai3 = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM3, shader, arena->getTilePos(ai3StartingPosition) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai3);
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai3));
-	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
-
-	// quad render test
-	
-	auto quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
-	quadShader->link();
-	auto quad = std::make_shared<openGLHelper::Quad>(quadShader, tree);
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(quad));
-	
+	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));	
 }
 
 
@@ -291,6 +283,12 @@ void Engine::runGame() {
 	//audioPlayer->playGameMusic();
 	//audioPlayer->playCarIdle();
 
+	// quad render test
+	auto quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
+	quadShader->link();
+	auto quad = std::make_shared<openGLHelper::Quad>(quadShader, tree);
+	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(quad));
+
 	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
@@ -341,6 +339,8 @@ void Engine::runGame() {
 				camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getForward());
 			}
 		}
+
+		quad->normalizeToViewport();
 
 		devUI.update(deltaSec, roundTimer);
 
