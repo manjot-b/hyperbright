@@ -68,7 +68,7 @@ vec4 lightDirection(int idx)
 }
 
 
-float shadowCalc()
+float shadowCalc(float dotNormalLight)
 {
 	vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;	// unesseccary for orthographic projection
 	projCoords = projCoords * .5f + .5f;
@@ -76,7 +76,8 @@ float shadowCalc()
 	float closestDepth = texture(shadowMap, projCoords.xy).r;
 	float currentDepth = projCoords.z;
 
-	float shadow = currentDepth > closestDepth ? 1.f : 0.f;
+	float bias = max(.01f * (1.f - dotNormalLight), 0.005f);	// moves fragments up slightly to fix shadow acne
+	float shadow = currentDepth - bias> closestDepth ? 1.f : 0.f;
 
 	return shadow;
 }
@@ -106,8 +107,8 @@ vec4 phong()
 		reflect = normalize(reflect);
 		specular += pow(max(dot(reflect, viewDir), 0.0), shininess) * specularCoeff * lights[i].color * attenuation;
 	}
-
-	float shadow = shadowCalc();
+	float normalLightDot = dot(vec3(lightDirection(0)), unitNormal);	// assume first light is the directional light
+	float shadow = shadowCalc(normalLightDot);
 
 	return vec4(ambient + (1.f - shadow) * (diffuse + specular), 1.f);
 }
@@ -158,7 +159,8 @@ vec3 cookTorrance(vec3 surfaceColor)
 	vec3 viewDir = normalize(cameraPos - vertexPos);
 	vec3 unitNormal = normalize(normal);
 
-	float shadow = shadowCalc();
+	float normalLightDot = dot(vec3(lightDirection(0)), unitNormal);	// assume first light is the directional light
+	float shadow = shadowCalc(normalLightDot);
 
 	// Iterate over every light and calculate diffuse and specular
 	// components of final color.

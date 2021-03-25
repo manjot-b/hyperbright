@@ -99,9 +99,9 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	Light directional = { false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f) };
 
 	// TO-DO: Use actual arena size to contruct light's orthgraphic and view matrices.
-	lightProjection = glm::ortho(-160.f, 160.f, -160.f, 160.f, .1f, 200.f);
+	lightProjection = glm::ortho(-140.f, 140.f, -140.f, 140.f, .1f, 300.f);
 	lightView = glm::lookAt(
-		-directional.position * 80.f,	// tmp hardcoded position
+		-directional.position * 70.f,	// tmp hardcoded position
 		glm::vec3(0.f, 0.f, 0.f),
 		glm::vec3(0.f, 1.f, 0.f)
 	);
