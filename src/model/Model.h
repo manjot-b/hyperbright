@@ -29,6 +29,7 @@ class Model : public render::IRenderable
 		~Model();
 
 		void render() const;
+		void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 		void update();
 		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);

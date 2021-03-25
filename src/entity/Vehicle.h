@@ -104,6 +104,7 @@ public:
 
 	int index;
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 private:
 
 	engine::teamStats::Teams team;

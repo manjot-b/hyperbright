@@ -35,6 +35,7 @@ public:
 	~Arena();
 
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 	std::optional<glm::vec2> isOnTile(const glm::vec3& coords) const;
 	glm::vec3 getTilePos(const glm::vec2& coords) const;
 	std::optional<engine::teamStats::Teams> getTeamOnTile(const glm::vec2& coords) const;

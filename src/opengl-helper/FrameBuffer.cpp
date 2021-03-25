@@ -1,5 +1,7 @@
 #include "FrameBuffer.h"
 
+#include <glad/glad.h>
+
 
 namespace hyperbright {
 namespace openGLHelper {
@@ -21,6 +23,11 @@ FrameBuffer::FrameBuffer(std::shared_ptr<Texture>& depthTexture) :
 void FrameBuffer::bind() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, id);
+}
+
+const std::shared_ptr<Texture>& FrameBuffer::getTexture() const
+{
+	return texture;
 }
 
 }	// namespace openGLHelper

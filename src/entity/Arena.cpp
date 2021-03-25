@@ -91,6 +91,18 @@ void Arena::render() const
 		station->render();
 }
 
+void Arena::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const
+{
+	instancedTile->renderShadow(shadowShader);
+	instancedTileBorder->renderShadow(shadowShader);
+
+	for (const auto& wall : walls)
+		wall->renderShadow(shadowShader);
+
+	for (const auto& station : chargingStations)
+		station->renderShadow(shadowShader);
+}
+
 /*
  * Returns the coordinates of the tile, if any, that the given coordinates are over.
  * Does not check the y-axis, only x and z. This function also uses the predefined radius

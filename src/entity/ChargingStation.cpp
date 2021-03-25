@@ -24,6 +24,10 @@ void ChargingStation::render() const
 	model->render();
 }
 
+void ChargingStation::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const
+{
+	model->renderShadow(shadowShader);
+}
 
 void ChargingStation::animate(float time)
 {

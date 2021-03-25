@@ -17,7 +17,17 @@ Renderer::Renderer()
 {
 	initWindow();
 
+	shadowShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/shadow_vertex.glsl", "rsc/shaders/shadow_fragment.glsl");
+	shadowShader->link();
+	shadowMap = std::make_shared<openGLHelper::Texture>(1024, 1024, true);
+	shadowBuffer = std::make_unique<openGLHelper::FrameBuffer>(shadowMap);
+
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 1000.0f);
+
+	// quad render test
+	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
+	quadShader->link();
+	texturedQuad = std::make_unique<openGLHelper::Quad>(quadShader, shadowMap);
 }
 
 Renderer::~Renderer() {}
@@ -86,8 +96,18 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 
+	Light directional = { false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f) };
+
+	// TO-DO: Use actual arena size to contruct light's orthgraphic and view matrices.
+	lightProjection = glm::ortho(-40.f, 40.f, -40.f, 40.f, .1f, 100.f);
+	lightView = glm::lookAt(
+		-directional.position * 60.f,	// tmp hardcoded position
+		glm::vec3(0.f, 0.f, 0.f),
+		glm::vec3(0.f, 1.f, 0.f)
+	);
+
 	std::vector<Light> lights = {
-		{false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f)},
+		directional,
 		{true, glm::vec3(-40.f, 10.f, -30.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f},
 		{true, glm::vec3(0.f, 10.f, 0.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f}
 	};
@@ -125,6 +145,24 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 
 void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera)
 {
+	// Render to the shadow map first.
+	shadowShader->use();
+	shadowShader->setUniformMatrix4fv("projection", lightProjection);
+	shadowShader->setUniformMatrix4fv("view", lightView);
+
+	glViewport(0, 0, shadowMap->getWidth(), shadowMap->getHeight());
+	shadowBuffer->bind();
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	for (const auto& renderable : renderables)
+	{
+		renderable->renderShadow(shadowShader);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, width, height);
+
+	// Render regular scene
 	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -135,8 +173,13 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 		renderable->render();
 	}
 
+	quadShader->use();
+	texturedQuad->normalizeToViewport(width, height);
+	texturedQuad->render();
+
 	glUseProgram(0);
 
+	// Render UI elements
 	menu.render();
 	devUI.render();
 

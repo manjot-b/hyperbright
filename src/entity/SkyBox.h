@@ -11,6 +11,7 @@ class SkyBox : public render::IRenderable
 public:
 	SkyBox();
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>&) const {}	// not included in shadow
 
 private:
 	unsigned int indicesCount;

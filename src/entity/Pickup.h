@@ -45,6 +45,7 @@ public:
 	bool timeRemaining();
 	//Position
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 	void animate(float deltaSec);
 
 	void use(engine::teamStats::Teams team);//VEHICLES CALL THIS FUNCTION

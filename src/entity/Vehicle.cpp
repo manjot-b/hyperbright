@@ -119,6 +119,13 @@ void Vehicle::render() const
 		wheel->render();
 }
 
+void Vehicle::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const
+{
+	body->renderShadow(shadowShader);
+	for (const auto& wheel : wheels)
+		wheel->renderShadow(shadowShader);
+}
+
 // 0 => do nothing, 1 => left correction, 2 => right correction
 void Vehicle::straighten(int dir)
 {

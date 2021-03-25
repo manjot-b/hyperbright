@@ -43,7 +43,6 @@ void Quad::render() const
 	glBindVertexArray(0);
 }
 
-
 /*
  A 2d quad does not need any of these uniforms to be set.
 */

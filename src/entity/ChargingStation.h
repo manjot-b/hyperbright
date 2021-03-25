@@ -19,6 +19,7 @@ class ChargingStation : public render::IRenderable, public physics::IPhysical
 public:
 	ChargingStation(const std::shared_ptr<openGLHelper::Shader>& shader);
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 
 	void setTileCoords(const glm::vec2& tileCoords);
 	const glm::vec2& getTileCoords() const;
