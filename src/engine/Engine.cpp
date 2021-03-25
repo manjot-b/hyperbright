@@ -5,6 +5,7 @@
 #include "ai/AiManager.h"
 #include "entity/SkyBox.h"
 #include "TeamStats.h"
+#include "opengl-helper/Quad.h"
 
 namespace hyperbright {
 namespace engine {
@@ -210,6 +211,14 @@ void Engine::initEntities()
 	vehicles.push_back(ai3);
 	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai3));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
+
+	// quad render test
+	
+	auto quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
+	quadShader->link();
+	auto quad = std::make_shared<openGLHelper::Quad>(quadShader, tree);
+	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(quad));
+	
 }
 
 
