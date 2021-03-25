@@ -18,9 +18,13 @@ namespace entity {
 
 struct VehicleController {
 	int contrId;
+	/*input[6] = { forward, reverse, right, left, handbrake, brake }*/
 	int input[6] = { 0,0,0,0,0,0 };
 	bool flipImpulse = false;
-	// input controls { accelerate, reverse, turn right, turn left, hard turn, brake }
+	std::pair<int, bool> boost = std::make_pair(0, false);
+	bool trapped = false;
+	// straighten: 0 => do nothing, 1 => left correction, 2 => right correction
+	int straighten = 0;
 };
 
 class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
@@ -60,6 +64,12 @@ public:
 	void equipPickup(std::shared_ptr<Pickup> pickup);
 	void activatePickup();
 	void applyFlipImpulse();
+
+	void applyBoost(int duration);
+	void releaseBoost();
+
+	void applyTrap();
+	void releaseTrap();
 
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& frontRight, const glm::mat4& rearRight, const glm::mat4& rearLeft);
@@ -116,6 +126,7 @@ private:
 	unsigned int brakeLightsIdx;
 	glm::vec4 brakeLightsColor;
 	glm::vec4 reverseLightsColor;
+	void straighten(int dir);
 };
 }	// namespace entity
 }	// namespace hyperbright

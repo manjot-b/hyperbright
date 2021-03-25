@@ -119,6 +119,12 @@ void Vehicle::render() const
 		wheel->render();
 }
 
+// 0 => do nothing, 1 => left correction, 2 => right correction
+void Vehicle::straighten(int dir)
+{
+	ctrl.straighten = dir;
+}
+
 quat Vehicle::getOrientation() const
 {
 	return quat_cast(lookAt(vec3(0.f), direction, up));
@@ -161,6 +167,27 @@ void Vehicle::activatePickup()
 void Vehicle::applyFlipImpulse()
 {
 	ctrl.flipImpulse = true;
+}
+
+void Vehicle::applyBoost(int duration)
+{
+	ctrl.boost.first = duration;
+	ctrl.boost.second = true;
+}
+
+void Vehicle::releaseBoost()
+{
+	ctrl.boost.second = false;
+}
+
+void Vehicle::applyTrap()
+{
+	ctrl.trapped = true;
+}
+
+void Vehicle::releaseTrap()
+{
+	ctrl.trapped = false;
 }
 
 void Vehicle::accelerateForward()
@@ -229,11 +256,13 @@ void Vehicle::stopBrake()
 void Vehicle::stopLeft()
 {
 	ctrl.input[3] = 0;
+	straighten(2);
 }
 
 void Vehicle::stopRight()
 {
 	ctrl.input[2] = 0;
+	straighten(1);
 }
 
 void Vehicle::stopHardTurn() 
