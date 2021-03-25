@@ -57,8 +57,11 @@ void startTurnHardLeftMode(int v);
 void startTurnHardRightMode(int v);
 void startHandbrakeTurnLeftMode(int v);
 void startHandbrakeTurnRightMode(int v);
+void releaseTurn(int dir, int v);
 void releaseAllControls(int v);
 void applyVehicleFlipImpulse(int v);
+void applyVehicleBoost(int v);
+void applyVehicleTrap(int v);
 }	// namespace Driving
 }	// namespace physics
 }	// namespace hyperbright
