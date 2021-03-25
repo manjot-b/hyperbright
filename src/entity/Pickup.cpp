@@ -10,7 +10,7 @@
 
 namespace hyperbright {
 	namespace entity {
-
+		
 		Pickup::Pickup() {
 			pickupNumber = 0;
 			setTriggerType(physics::IPhysical::TriggerType::PICKUP);
@@ -28,6 +28,7 @@ namespace hyperbright {
 			//pickupNumber = puNum;
 			//setArenaLocation(glm::vec3(0.f, 0.f, 3.f));
 		}
+		
 
 		Pickup::~Pickup() {
 
@@ -52,7 +53,7 @@ namespace hyperbright {
 
 		/////////////////////////////////////////////////////////////////////
 
-		void Pickup::activate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::shared_ptr<entity::Arena> arena) {
+		void Pickup::activate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles) {
 			//std::cout << "ACTIVATED:  ";
 			pickUpStartTime = glfwGetTime();
 			if (type == EMP) {
@@ -145,7 +146,18 @@ namespace hyperbright {
 			}
 			else if (type == SLOWTRAP) {
 				std::cout << engine::teamStats::names.at(usedByTeam) << " LAYED A TRAP!! \n";
-				//arena->insertSlowTrap();
+				if (usedByTeam == _vehicles->at(0)->getTeam()) {
+					trapTile = _vehicles->at(0)->currentTile;
+				}
+				else if (usedByTeam == _vehicles->at(1)->getTeam()) {
+					trapTile = _vehicles->at(1)->currentTile;
+				}
+				else if (usedByTeam == _vehicles->at(2)->getTeam()) {
+					trapTile = _vehicles->at(2)->currentTile;
+				}
+				else if (usedByTeam == _vehicles->at(3)->getTeam()) {
+					trapTile = _vehicles->at(3)->currentTile;
+				}
 			}
 			else if (type == SYPHON) {
 				std::cout << engine::teamStats::names.at(usedByTeam) << " USED SYPHON!! \n";
@@ -175,7 +187,7 @@ namespace hyperbright {
 
 		/////////////////////////////////////////////////////////////////////
 
-		void Pickup::deactivate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles) {
+		void Pickup::deactivate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::shared_ptr<entity::Arena> arena) {
 			if (type == ZAP) {
 				if (whoWasZapped == 0) {
 					_vehicles->at(0)->setTeam(zapOldTeam);
@@ -203,6 +215,9 @@ namespace hyperbright {
 				else if (usedByTeam == _vehicles->at(3)->getTeam()) {
 					_vehicles->at(3)->syphonActive = false;
 				}
+			}
+			else if (SLOWTRAP) {
+				arena->placeTrap(trapTile);
 			}
 			std::cout << "DEACTIVATED\n";
 		}

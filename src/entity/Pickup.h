@@ -37,9 +37,9 @@ public:
 	int pickupNumber;
 	Pickup(int puNum, int pickupType, std::shared_ptr<PickupManager> pickupManager, const std::shared_ptr<openGLHelper::Shader>& shader);
 	//void activate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, int indexOfFirstPlace);
-	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::shared_ptr<entity::Arena> arena);
+	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles);
 	//void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
-	void deactivate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles);
+	void deactivate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, std::shared_ptr<entity::Arena> arena);
 	void initialCollision(std::shared_ptr<Vehicle> vehicle);
 	bool active;
 	bool timeRemaining();
@@ -55,6 +55,7 @@ public:
 	void setArenaLocation(glm::vec3 _arenaLocation, std::optional<glm::vec2> tileLocation);
 	glm::vec3 getArenaLocation() { return arenaLocation; }
 	glm::vec2 tile;
+	glm::vec2 trapTile;
 	bool beingCarried;
 	//int usedByIndex;
 

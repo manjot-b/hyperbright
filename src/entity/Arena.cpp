@@ -64,6 +64,7 @@ Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shade
 			// Ordering matters.
 			tileGrid[row][col].scale(tileScale);
 			tileGrid[row][col].translate(trans);
+			tileGrid[row][col].isTrap = false;
 		}
 	}
 
@@ -210,6 +211,18 @@ void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation o
 	}
 
 	tileGrid[row][col]._hasChargingStation = true;
+}
+
+void Arena::placeTrap(glm::vec2 tileCoords) {
+	tileGrid[tileCoords.x][tileCoords.y].setTrap();
+}
+
+bool Arena::isTrap(glm::vec2 tileCoords) {
+	return tileGrid[tileCoords.x][tileCoords.y].isTrap;
+}
+
+void Arena::removeTrap(glm::vec2 tileCoords) {
+	tileGrid[tileCoords.x][tileCoords.y].removeTrap();
 }
 
 void Arena::animateChargingStations(float time)
