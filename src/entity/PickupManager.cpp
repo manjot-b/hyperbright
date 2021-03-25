@@ -67,7 +67,7 @@ namespace hyperbright {
 			for (int i = 0; i < carriedPickups.size(); i++) {
 				if (!carriedPickups.at(i)->beingCarried && carriedPickups.at(i)->active) {
 					//std::cout << "PU ACTIVATED: " << carriedPickups.at(i)->pickupNumber <<"\n";
-					carriedPickups.at(i)->activate(vehicles, arena);
+					carriedPickups.at(i)->activate(vehicles);
 					moveToActive(carriedPickups.at(i));
 					removeFromCarried(carriedPickups.at(i));
 				}
@@ -82,7 +82,7 @@ namespace hyperbright {
 			for (int i = 0; i < activePickups.size(); i++) {
 				if (!activePickups.at(i)->timeRemaining()) {
 					std::shared_ptr<Pickup> pickup = activePickups.at(i);
-					pickup->deactivate(vehicles);
+					pickup->deactivate(vehicles, arena);
 					removeFromActive(pickup);
 					//delete pickup;
 				}

@@ -667,12 +667,12 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 		if (tileCoords)
 		{
 			vehicle->currentTile = *tileCoords;
-			/*
+			
 			if (arena.isTrap(vehicle->currentTile)) {
 			//vehicle->hitTrap()
-			arena.removeTrap()
-			} else */ 
-			if(vehicle->syphonActive){
+				std::cout << "TRAP TRIGGERED\n";
+				arena.removeTrap(vehicle->currentTile);
+			} else if(vehicle->syphonActive){
 			//CHANGE TILE COLOR TO ORIGINAL TILE COLOR
 			//BUMP UP CUR VEHICLE EMERGY
 			} else if (vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))

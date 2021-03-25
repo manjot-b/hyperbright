@@ -48,6 +48,9 @@ public:
 	void animateChargingStations(float time);
 	const ChargingStationList& getChargingStations() const;
 
+	bool isTrap(glm::vec2 location);
+	void placeTrap(glm::vec2 location);
+	void removeTrap(glm::vec2 location);
 	std::vector<std::vector<bool>> getAiArenaRepresentation();
 private:
 	class Tile {
@@ -60,7 +63,9 @@ private:
 		void setColor(const glm::vec4& color);
 		bool hasWall() const;
 		bool hasChargingStation() const;
-
+		void setTrap() { isTrap = true; }
+		void removeTrap() { isTrap = false; }
+		bool isTrap;
 	private:
 		glm::mat4& modelMatrix;
 		glm::vec4& color;
