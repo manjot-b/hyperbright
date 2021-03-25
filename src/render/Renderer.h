@@ -52,6 +52,7 @@ class Renderer
 		std::shared_ptr<openGLHelper::Shader> shadowShader;
 		std::shared_ptr<openGLHelper::Texture> shadowMap;
 		std::unique_ptr<openGLHelper::FrameBuffer> shadowBuffer;
+		Light directionalLight;
 
 		std::shared_ptr<openGLHelper::Shader> quadShader;
 		std::unique_ptr<openGLHelper::Quad> texturedQuad;

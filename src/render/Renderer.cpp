@@ -19,7 +19,7 @@ Renderer::Renderer()
 
 	shadowShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/shadow_vertex.glsl", "rsc/shaders/shadow_fragment.glsl");
 	shadowShader->link();
-	shadowMap = std::make_shared<openGLHelper::Texture>(1024, 1024, true);
+	shadowMap = std::make_shared<openGLHelper::Texture>(2048, 2048, true);
 	shadowBuffer = std::make_unique<openGLHelper::FrameBuffer>(shadowMap);
 
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 1000.0f);
@@ -96,18 +96,19 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 
-	Light directional = { false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f) };
+	directionalLight = { false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f) };
 
 	// TO-DO: Use actual arena size to contruct light's orthgraphic and view matrices.
-	lightProjection = glm::ortho(-30.f, 30.f, -30.f, 30.f, .1f, 100.f);
+	float orthoSize = 60.f;
+	lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, .1f, 100.f);
 	lightView = glm::lookAt(
-		-directional.position * 40.f,	// tmp hardcoded position
+		-directionalLight.position * 40.f,	// tmp hardcoded position
 		glm::vec3(0.f, 0.f, 0.f),
 		glm::vec3(0.f, 1.f, 0.f)
 	);
 
 	std::vector<Light> lights = {
-		directional,
+		directionalLight,
 		{true, glm::vec3(-40.f, 10.f, -30.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f},
 		{true, glm::vec3(0.f, 10.f, 0.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f}
 	};
@@ -147,6 +148,11 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera)
 {
 	// Render to the shadow map first.
+	lightView = glm::lookAt(
+		camera.getPosition() + -directionalLight.position * 40.f,	// move with the camera position
+		camera.getPosition(),
+		glm::vec3(0.f, 1.f, 0.f)
+	);
 	shadowShader->use();
 	shadowShader->setUniformMatrix4fv("projection", lightProjection);
 	shadowShader->setUniformMatrix4fv("view", lightView);
