@@ -38,7 +38,6 @@ void HUD::drawHUD() {
 	font.Render(speedStr, -1, FTPoint(xCord, yCord, 0));
 	font.FaceSize(scale * defaultFontSize / 3);
 	font.Render("KPH", -1, FTPoint(width - (3 * 21 * scale), 10* scale, 0));
-	glPopAttrib();
 
 	/*
 	float max = M_PI - (speed / 29) * (M_PI / 2);
@@ -77,7 +76,6 @@ void HUD::drawHUD() {
 
 
 	//Timer
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glPixelTransferf(GL_RED_BIAS, 0);
 	glPixelTransferf(GL_GREEN_BIAS, 0);
 	glPixelTransferf(GL_BLUE_BIAS, 0);
@@ -94,7 +92,6 @@ void HUD::drawHUD() {
 	}
 	font.FaceSize(scale * defaultFontSize / 2);
 	font.Render(timerStr, -1, FTPoint(scale * 50, (height - scale * 50), 0));
-	glPopAttrib();
 
 	//a quad to be textured
 	float timerHeight = 0.15;
@@ -105,8 +102,8 @@ void HUD::drawHUD() {
 	glVertex2f(-1 + timerWidth, 1);
 	glVertex2f(-1 + timerWidth, 1 - timerHeight);
 	glVertex2f(-1, 1- timerHeight);
-	glDisable(GL_TEXTURE_2D);
 	glEnd();
+	glPopAttrib();
 }
 
 //update roundTimer
