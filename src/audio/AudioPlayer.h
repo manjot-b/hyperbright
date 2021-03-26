@@ -22,6 +22,10 @@ public:
 	void adjustCarIdlePitch(float speed);
 	void stopCarIdle();
 	void playPowerstationCollision();
+	void playUsePowerupSound();
+	void playEmpSound();
+	void playSpeedSound();
+	void playTrapHitSound();
 private:
 	void init();
 	int curLoaded;

@@ -34,7 +34,7 @@ public:
 	Pickup();
 	Pickup(const std::shared_ptr<openGLHelper::Shader>& shader);
 	~Pickup();
-
+	//int getType() { return type; }
 	int pickupNumber;
 	Pickup(int puNum, int pickupType, std::shared_ptr<PickupManager> pickupManager, const std::shared_ptr<openGLHelper::Shader>& shader);
 	//void activate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, int indexOfFirstPlace);
@@ -60,12 +60,12 @@ public:
 	glm::vec2 trapTile;
 	bool beingCarried;
 	//int usedByIndex;
-
+	int type;
 private:
 	int whoWasZapped;
 	engine::teamStats::Teams zapOldTeam;
 	engine::teamStats::Teams usedByTeam;
-	int type;
+	//int type;
 	float pickupTime;
 	float pickUpStartTime;
 	//glm::vec4 zapOldColor;//CHANGE TYPE LATER
