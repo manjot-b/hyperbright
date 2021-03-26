@@ -41,7 +41,7 @@ namespace hyperbright {
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 3)) + glm::vec3(0.f, 1.f, 0.f));
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 36)) + glm::vec3(0.f, 1.f, 0.f));
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 36)) + glm::vec3(0.f, 1.f, 0.f));
-				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 20)) + glm::vec3(0.f, 1.f, 0.f));
+				//onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 20)) + glm::vec3(0.f, 1.f, 0.f));
 			}
 			else if (arenaSelection == 2) {
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(2, 2)) + glm::vec3(0.f, 1.f, 0.f));

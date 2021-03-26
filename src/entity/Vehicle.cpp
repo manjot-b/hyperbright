@@ -142,6 +142,11 @@ void Vehicle::reduceEnergy()
 	if (energy > 0) energy -= 0.04;
 }
 
+void Vehicle::increaseEnergy()
+{
+	energy += 0.02;
+}
+
 void Vehicle::restoreEnergy()
 {
 	energy = 1.f;////////////////
