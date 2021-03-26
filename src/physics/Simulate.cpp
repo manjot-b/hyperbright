@@ -54,7 +54,7 @@ bool gIsVehicleInAir[4] = { true, true, true, true };
 std::shared_ptr<audio::AudioPlayer> audioPlayer;
 std::shared_ptr<entity::PickupManager> pum;
 std::queue<std::shared_ptr<entity::Pickup>> toBeRemovedPickups;
-
+vector<shared_ptr<entity::Vehicle>>* vehs = NULL;
 class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints);  PX_UNUSED(count); }
 	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors);  PX_UNUSED(count); }
@@ -77,15 +77,23 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 				// This collision will repeat so only trigger it's effect if the 
 				// vehicle needs to be recharged.
 				if (!v->fullEnergy()) {
-					audioPlayer->playPowerstationCollision();
+
+					if (v->getTeam() == vehs->at(0)->getTeam()) {
+						audioPlayer->playPowerstationCollision();
+					}
 					v->restoreEnergy();
 				}
 			}
 			else if (first->getTriggerType() == IPhysical::TriggerType::PICKUP) {
-				audioPlayer->playPickupCollision();
+				
 				//cout << "Pickup collision detected" << endl;
 				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
 				std::shared_ptr<entity::Pickup> p = pum->handlePickupOnCollision(v);
+
+				if (v->getTeam() == vehs->at(0)->getTeam()) {
+					audioPlayer->playPickupCollision();
+				}
+
 				if (p->pickupNumber != 0) {
 					toBeRemovedPickups.push(p);
 				}
@@ -142,10 +150,10 @@ void removePickups() {
 	}
 }
 
-
 Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena, std::shared_ptr<entity::PickupManager>& _pickupManager) :
 	physicsModels(_physicsModels), vehicles(_vehicles)
 {
+	vehs = &_vehicles;
 	initPhysics();
 	pum = _pickupManager;
 	for (const auto& wall : arena.getWalls())
