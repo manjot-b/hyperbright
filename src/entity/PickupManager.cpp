@@ -8,7 +8,7 @@
 
 namespace hyperbright {
 	namespace entity {
-		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::Renderer::IRenderable>>& _renderables) :
+		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::IRenderable>>& _renderables) :
 			arena(_arena), renderables(_renderables) {
 			vehicles = _vehicles;
 			pickupDownTime = 8.f;
@@ -143,7 +143,7 @@ namespace hyperbright {
 			std::vector<std::shared_ptr<PickupRenderables>>::iterator it_pum;
 			for (it_pum = renderedPickups.begin(); it_pum != renderedPickups.end(); it_pum++) {
 				if (it_pum->get()->pickupId == pickup->pickupNumber) {
-					std::vector<std::shared_ptr<render::Renderer::IRenderable>>::iterator it_ren;
+					std::vector<std::shared_ptr<render::IRenderable>>::iterator it_ren;
 					for (it_ren = renderables.begin(); it_ren != renderables.end(); it_ren++) {
 						if (*it_pum->get()->puRenderable == it_ren->get()) {
 							renderables.erase(it_ren);

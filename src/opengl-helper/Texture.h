@@ -12,6 +12,7 @@ class Texture
 {
 	public:
 		Texture(const char* filename);
+		Texture(unsigned int width, unsigned int height, bool isDepth = false);
 		unsigned int getId() const;
 		int getWidth() const;
 		int getHeight() const;

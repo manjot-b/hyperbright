@@ -45,7 +45,23 @@ Texture::Texture(const char* filename)
 
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
-	glBindTexture(GL_TEXTURE_2D, 0);	
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Texture::Texture(unsigned int width, unsigned int height, bool isDepth) : width(width), height(height)
+{
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, isDepth ? GL_DEPTH_COMPONENT : GL_RGB,
+        width, height, 0, isDepth ? GL_DEPTH_COMPONENT : GL_RGB, isDepth ? GL_FLOAT : GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, isDepth ? GL_CLAMP_TO_BORDER : GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, isDepth ? GL_CLAMP_TO_BORDER : GL_REPEAT);
+    float borderColor[] = { 1.f, 1.f, 1.f, 1.f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, isDepth ? GL_NEAREST : GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, isDepth ? GL_NEAREST : GL_REPEAT);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 unsigned int Texture::getId() const

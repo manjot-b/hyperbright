@@ -8,13 +8,13 @@
 
 #include "entity/ChargingStation.h"
 #include "model/Model.h"
-#include "render/Renderer.h"
+#include "render/IRenderable.h"
 #include "opengl-helper/Shader.h"
 #include "engine/TeamStats.h"
 
 namespace hyperbright {
 namespace entity {
-class Arena : public render::Renderer::IRenderable
+class Arena : public render::IRenderable
 {
 public:
 	using WallList = std::vector<std::unique_ptr<model::Model>>;
@@ -35,6 +35,7 @@ public:
 	~Arena();
 
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 	std::optional<glm::vec2> isOnTile(const glm::vec3& coords) const;
 	glm::vec3 getTilePos(const glm::vec2& coords) const;
 	std::optional<engine::teamStats::Teams> getTeamOnTile(const glm::vec2& coords) const;

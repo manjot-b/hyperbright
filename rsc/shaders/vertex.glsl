@@ -11,11 +11,13 @@ uniform bool isInstance;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 perspective;
+uniform mat4 lightSpace;
 
 out vec2 texCoord;
 out vec3 normal;
 out vec3 vertexPos;
 out vec4 instanceColor;
+out vec4 lightSpacePos;
 
 void main()
 {
@@ -39,5 +41,7 @@ void main()
 	texCoord = inTexCoord;
 
 	vertexPos = worldPos.xyz;
+	lightSpacePos = lightSpace * vec4(vertexPos, 1.f);
+
 	instanceColor = inInstanceColor;
 }
