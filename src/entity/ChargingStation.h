@@ -1,6 +1,6 @@
 #pragma once
 
-#include "render/Renderer.h"
+#include "render/IRenderable.h"
 
 #include <array>
 #include <vector>
@@ -13,12 +13,13 @@ namespace entity {
 
 class Arena;
 
-class ChargingStation : public render::Renderer::IRenderable, public physics::IPhysical
+class ChargingStation : public render::IRenderable, public physics::IPhysical
 {
 	friend class Arena;
 public:
 	ChargingStation(const std::shared_ptr<openGLHelper::Shader>& shader);
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 
 	void setTileCoords(const glm::vec2& tileCoords);
 	const glm::vec2& getTileCoords() const;

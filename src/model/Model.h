@@ -9,13 +9,13 @@
 #include "Mesh.h"
 #include "opengl-helper/Shader.h"
 #include "opengl-helper/Texture.h"
-#include "render/Renderer.h"
+#include "render/IRenderable.h"
 
 namespace hyperbright {
 namespace model {
 using InstanceColorsPtr = std::shared_ptr<std::vector<glm::vec4>>;
 
-class Model : public render::Renderer::IRenderable
+class Model : public render::IRenderable
 {
 	public:
 		Model(const std::string& objPath,
@@ -29,6 +29,7 @@ class Model : public render::Renderer::IRenderable
 		~Model();
 
 		void render() const;
+		void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 		void update();
 		void translate(const glm::vec3& translate);
 		void rotate(const glm::vec3 &rotate);

@@ -1,5 +1,7 @@
 #include "Ai.h"
 
+#include <GLFW/glfw3.h>
+
 #include "engine/TeamStats.h"
 
 namespace hyperbright {
