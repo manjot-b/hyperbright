@@ -145,7 +145,7 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 *	menu: The menu object.
 */
 
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD* hud = nullptr)
 {
 	// Render to the shadow map first.
 	lightView = glm::lookAt(
@@ -194,6 +194,9 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 
 	// Render UI elements
 	menu.render();
+	if (hud != nullptr) {
+		hud->drawHUD();
+	}
 	devUI.render();
 
 	glfwSwapBuffers(window);

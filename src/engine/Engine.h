@@ -14,6 +14,7 @@
 #include "model/Model.h"
 #include "ui/Menu.h"
 #include "ui/DevUI.h"
+#include "ui/HUD.h"
 #include "render/IRenderable.h"
 #include "render/Renderer.h"
 #include "physics/Simulate.h"
@@ -46,6 +47,7 @@ private:
 	ui::PauseMenu pauseMenu;
 	ui::EndMenu endMenu;
 	ui::DevUI devUI;
+	ui::HUD playerHUD;
 	std::shared_ptr<entity::Arena> arena;
 	std::unique_ptr<Controller> controller;
 

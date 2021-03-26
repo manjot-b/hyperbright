@@ -9,7 +9,7 @@
 namespace hyperbright {
 namespace engine {
 Engine::Engine() :
-	camera(), mainMenu(), pauseMenu(), endMenu(), devUI(render::Renderer::getInstance().getWindow()),
+	camera(), mainMenu(), pauseMenu(), endMenu(), playerHUD(0, 0), devUI(render::Renderer::getInstance().getWindow()),
 	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(100)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -51,6 +51,7 @@ void Engine::resetAll()
 
 	initEntities();
 	initDevUI();
+	playerHUD.update(0, 0);
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
 		camera,
 		vehicles[0],
@@ -259,7 +260,7 @@ void Engine::runMainMenu() {
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
 		// render only the menu for now.
-		render::Renderer::getInstance().render(renderables, devUI, mainMenu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, mainMenu, camera, nullptr);
 
 		getDevUISettings();
 		glfwPollEvents();
@@ -339,8 +340,12 @@ void Engine::runGame() {
 
 		devUI.update(deltaSec, roundTimer);
 
+		//HUD
+		playerHUD.update(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
+		playerHUD.updateTime(roundTimer);
+
 		// render the updated position of all models and ImGui
-		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, &playerHUD);
 
 		getDevUISettings();
 		glfwPollEvents();
@@ -371,7 +376,7 @@ void Engine::endGame()
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
 		// render only the menu for now.
-		render::Renderer::getInstance().render(renderables, devUI, endMenu, camera);
+		render::Renderer::getInstance().render(renderables, devUI, endMenu, camera, nullptr);
 		
 		getDevUISettings();
 		glfwPollEvents();
