@@ -72,7 +72,7 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 			IPhysical* second = static_cast<IPhysical*>(pairs[i].otherActor->userData);
 
 			if (first->getTriggerType() == IPhysical::TriggerType::CHARGING_STATION) {
-				cout << "Station collision detected \n";
+				//cout << "Station collision detected \n";
 				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
 				// This collision will repeat so only trigger it's effect if the 
 				// vehicle needs to be recharged.
@@ -83,7 +83,7 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 			}
 			else if (first->getTriggerType() == IPhysical::TriggerType::PICKUP) {
 				audioPlayer->playPickupCollision();
-				cout << "Pickup collision detected" << endl;
+				//cout << "Pickup collision detected" << endl;
 				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
 				std::shared_ptr<entity::Pickup> p = pum->handlePickupOnCollision(v);
 				if (p->pickupNumber != 0) {
@@ -712,8 +712,15 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 		if (tileCoords)
 		{
 			vehicle->currentTile = *tileCoords;
-
-			if (vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))
+			/*
+			if (arena.isTrap(vehicle->currentTile)) {
+			//vehicle->hitTrap()
+			arena.removeTrap()
+			} else */ 
+			if(vehicle->syphonActive){
+			//CHANGE TILE COLOR TO ORIGINAL TILE COLOR
+			//BUMP UP CUR VEHICLE EMERGY
+			} else if (vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))
 			{
 				std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
 
@@ -730,7 +737,7 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 					arena.setTileTeam(*tileCoords, vehicle->getTeam());
 					vehicle->reduceEnergy();
 				}
-			}
+			} // INSERT CODE FOR TRAP
 		}
 	}
 }
