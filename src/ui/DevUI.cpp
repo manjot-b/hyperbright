@@ -20,7 +20,7 @@ DevUI::DevUI(GLFWwindow* window) : showDemo(false)
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
-
+    settings.musicVolume = 1.f;
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -70,7 +70,7 @@ void DevUI::render()
     ImGui::ColorEdit3("Fresnel", (float*)&settings.vehicleBodyMaterial.fresnel);
     ImGui::Checkbox("Beckmann NDF", &settings.vehicleBodyMaterial.useBeckmann);
     ImGui::Checkbox("GGX NDF", &settings.vehicleBodyMaterial.useGGX);
-    
+    ImGui::SliderFloat("Music Volume", &settings.musicVolume, 0.f, 1.f);
 
     ImGui::End();
 

@@ -380,7 +380,7 @@ void Engine::endGame()
 
 void Engine::getDevUISettings() {
 	fps = devUI.settings.fps;
-
+	audioPlayer->setMusicVolume(devUI.settings.musicVolume);
 	for (unsigned int i = 0; i < vehicles.size(); i++)
 	{
 		// We don't want all the vehicles to have the same color.

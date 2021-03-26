@@ -218,7 +218,7 @@ void AudioPlayer::init() {
 
     loadSound("rsc/sounds/game_music.wav");
     alSourcef(source[GAMEMUSIC], AL_PITCH, 1.0f);
-    alSourcef(source[GAMEMUSIC], AL_GAIN, 2.0f);
+    alSourcef(source[GAMEMUSIC], AL_GAIN, 1.0f);
     alSourcefv(source[GAMEMUSIC], AL_POSITION, source0Pos);
     alSourcefv(source[GAMEMUSIC], AL_VELOCITY, source0Vel);
     alSourcei(source[GAMEMUSIC], AL_BUFFER, buffer[GAMEMUSIC]);
@@ -440,6 +440,13 @@ void AudioPlayer::playCarIdle() {
 
 void AudioPlayer::stopCarIdle() {
     alSourceStop(source[CARIDLE]);
+}
+
+void AudioPlayer::setMusicVolume(float volume) {
+    if (volume < 0.f)volume = 0.f;
+
+    alSourcef(source[GAMEMUSIC], AL_GAIN, volume);
+    alSourcef(source[STARTMENUMUSIC], AL_GAIN, volume);
 }
 
 //////////////////////////////////////////////////////////////////////////////
