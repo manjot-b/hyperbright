@@ -39,7 +39,8 @@ bool Arena::Tile::hasChargingStation() const { return _hasChargingStation; }
 
 Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shader>& shader, float tileScale) : IRenderable(shader),
 	tileModelMatrices( std::make_shared<std::vector<glm::mat4>>( rows * cols, glm::mat4(1.f) )),
-	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, glm::vec4(.3f, .3f, .3f, 1.f)) ),
+	tileBaseColor(.3f, .3f, .3f, 1.f),
+	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, tileBaseColor) ),
 	tileGrid(rows), tileScale(tileScale), tileCollisionRadius(0.5f)
 {
 
@@ -129,9 +130,10 @@ std::optional<glm::vec2> Arena::isOnTile(const glm::vec3& coords) const
 	return glm::vec2(row, col);
 }
 
-void Arena::setTileTeam(const glm::vec2& tileCoords, engine::teamStats::Teams team)
+void Arena::setTileTeam(const glm::vec2& tileCoords, std::optional<engine::teamStats::Teams> team)
 {
-	tileGrid[tileCoords.x][tileCoords.y].setColor(engine::teamStats::colors.at(team));
+	glm::vec4 color = team ? engine::teamStats::colors.at(*team) : tileBaseColor;
+	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
 	tileGrid[tileCoords.x][tileCoords.y].team = team;
 }
 

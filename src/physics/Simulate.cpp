@@ -718,8 +718,16 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 				std::cout << "TRAP TRIGGERED\n";
 				arena.removeTrap(vehicle->currentTile);
 			} else if(vehicle->syphonActive){
-			//CHANGE TILE COLOR TO ORIGINAL TILE COLOR
-			//BUMP UP CUR VEHICLE EMERGY
+				std::optional<engine::teamStats::Teams> team = arena.getTeamOnTile(*tileCoords);
+			
+				if (team) {
+					// Decrement the teams score if not the current vehicle colors and remove the team
+					//arena.setTileTeam(*tileCoords, nullopt);
+					//engine::teamStats::scores[*team]--
+				}
+			
+				//CHANGE TILE COLOR TO ORIGINAL TILE COLOR
+				//BUMP UP CUR VEHICLE EMERGY
 			} else if (vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))
 			{
 				std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);

@@ -40,7 +40,7 @@ public:
 	glm::vec3 getTilePos(const glm::vec2& coords) const;
 	std::optional<engine::teamStats::Teams> getTeamOnTile(const glm::vec2& coords) const;
 
-	void setTileTeam(const glm::vec2& tileCoords, engine::teamStats::Teams team);
+	void setTileTeam(const glm::vec2& tileCoords, std::optional<engine::teamStats::Teams> team);
 	void addWall(unsigned int col, unsigned int row, unsigned int width, unsigned int length);
 	const WallList& getWalls() const;
 
@@ -78,6 +78,7 @@ private:
 	std::shared_ptr<model::Model> instancedTile;
 	std::shared_ptr<model::Model> instancedTileBorder;
 
+	glm::vec4 tileBaseColor;
 	// Each tile/tile border is instanced, so we need to store all model matrices in one array.
 	model::InstanceModelMatricesPtr tileModelMatrices;
 	model::InstanceColorsPtr tileColors;
