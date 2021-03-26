@@ -238,6 +238,10 @@ namespace hyperbright {
 			model->render();	// make sure we have set the models shader.
 		}
 
+		void Pickup::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const {
+			model->renderShadow(shadowShader);
+		}
+
 		void Pickup::animate(float deltaSec) {
 			const float rotSpeed = glm::radians(180.f) * deltaSec;
 			model->rotate(glm::vec3(0, rotSpeed, 0));
