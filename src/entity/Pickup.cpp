@@ -10,7 +10,7 @@
 
 namespace hyperbright {
 	namespace entity {
-		
+
 		Pickup::Pickup() {
 			pickupNumber = 0;
 			setTriggerType(physics::IPhysical::TriggerType::PICKUP);
@@ -28,7 +28,7 @@ namespace hyperbright {
 			//pickupNumber = puNum;
 			//setArenaLocation(glm::vec3(0.f, 0.f, 3.f));
 		}
-		
+
 
 		Pickup::~Pickup() {
 
@@ -130,17 +130,18 @@ namespace hyperbright {
 			}
 			else if (type == SPEED) {//NEED IMPULSE FUNCTION
 				std::cout << engine::teamStats::names.at(usedByTeam) << " USED SPEED!! \n";
+				float speedTime = 4.f;
 				if (usedByTeam == _vehicles->at(0)->getTeam()) {
-					//_vehicles->at(0)->
+					_vehicles->at(0)->applyBoost(speedTime);
 				}
 				else if (usedByTeam == _vehicles->at(1)->getTeam()) {
-					//_vehicles->at(1)->
+					_vehicles->at(1)->applyBoost(speedTime);
 				}
 				else if (usedByTeam == _vehicles->at(2)->getTeam()) {
-					//_vehicles->at(2)->
+					_vehicles->at(2)->applyBoost(speedTime);
 				}
 				else if (usedByTeam == _vehicles->at(3)->getTeam()) {
-					//_vehicles->at(3)->
+					_vehicles->at(3)->applyBoost(speedTime);
 				}
 
 			}
@@ -217,7 +218,9 @@ namespace hyperbright {
 				}
 			}
 			else if (SLOWTRAP) {
-				arena->placeTrap(trapTile);
+				if (trapTile.x >= 0 && trapTile.y >= 0) {
+					arena->placeTrap(trapTile);
+				}
 			}
 			std::cout << "DEACTIVATED\n";
 		}
