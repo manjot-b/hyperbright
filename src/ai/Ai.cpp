@@ -40,7 +40,7 @@ namespace hyperbright {
 			updateCurrentTile();
 			if (vehicle->currentTile == targetTile) {
 				const std::string& name = engine::teamStats::names[vehicle->getTeam()];
-				std::cout << name << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
+				//std::cout << name << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
 				path.pop_back();
 				state = NOTARGET;
 				return;
@@ -73,7 +73,7 @@ namespace hyperbright {
 			//USE PICKUP CHECK
 			if (vehicle->hasPickup()) {
 				if (glfwGetTime() - pickupUseTime > vehicle->pickupTime) {
-					std::cout << engine::teamStats::names[vehicle->getTeam()] << " USED PICKUP \n";
+					//std::cout << engine::teamStats::names[vehicle->getTeam()] << " USED PICKUP \n";
 					vehicle->activatePickup();
 				}
 			}

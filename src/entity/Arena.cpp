@@ -226,7 +226,7 @@ void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation o
 }
 
 void Arena::placeTrap(glm::vec2 tileCoords) {
-	tileGrid[tileCoords.x][tileCoords.y].setTrap();
+	tileGrid[tileCoords.x][tileCoords.y].setTrap();//CHANGE COLOR HERE
 }
 
 bool Arena::isTrap(glm::vec2 tileCoords) {
@@ -235,7 +235,7 @@ bool Arena::isTrap(glm::vec2 tileCoords) {
 }
 
 void Arena::removeTrap(glm::vec2 tileCoords) {
-	tileGrid[tileCoords.x][tileCoords.y].removeTrap();
+	tileGrid[tileCoords.x][tileCoords.y].removeTrap();//CHANGE TO NORMAL COLOR
 }
 
 void Arena::animateChargingStations(float time)

@@ -52,7 +52,7 @@ PxFilterFlags VehicleFilterShader
 	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
 	{
 		pairFlags = PxPairFlag::eTRIGGER_DEFAULT; 
-		std::cout << "COLLIDING WITH TRIGGER VOLUME\n";
+		//std::cout << "COLLIDING WITH TRIGGER VOLUME\n";
 
 		return PxFilterFlag::eDEFAULT;
 		//return PxFilterFlags();
