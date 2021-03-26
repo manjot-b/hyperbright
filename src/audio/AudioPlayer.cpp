@@ -11,10 +11,14 @@
 #define POWERSTATIONCOLLISION 4
 #define MENUSWITCH 5
 #define MENUENTER 6
+#define USEPOWERUP 7
+#define EMP 8
+#define SPEED 9
+#define TRAPHIT 10
 
-#define NUM_BUFFERS 7 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 7
-#define NUM_ENVIRONMENTS 7
+#define NUM_BUFFERS 11 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 11
+#define NUM_ENVIRONMENTS 11
 
 namespace hyperbright {
 namespace audio {
@@ -222,14 +226,14 @@ void AudioPlayer::init() {
 
     loadSound("rsc/sounds/pickup_collision.wav");
     alSourcef(source[PICKUPCOLLISION], AL_PITCH, 1.0f);
-    alSourcef(source[PICKUPCOLLISION], AL_GAIN, 1.0f);
+    alSourcef(source[PICKUPCOLLISION], AL_GAIN, 0.20f);
     alSourcefv(source[PICKUPCOLLISION], AL_POSITION, source0Pos);
     alSourcefv(source[PICKUPCOLLISION], AL_VELOCITY, source0Vel);
     alSourcei(source[PICKUPCOLLISION], AL_BUFFER, buffer[PICKUPCOLLISION]);
 
     loadSound("rsc/sounds/car_idle_loop.wav");
     alSourcef(source[CARIDLE], AL_PITCH, 1.0f);
-    alSourcef(source[CARIDLE], AL_GAIN, 0.25f);
+    alSourcef(source[CARIDLE], AL_GAIN, 0.32f);
     alSourcefv(source[CARIDLE], AL_POSITION, source0Pos);
     alSourcefv(source[CARIDLE], AL_VELOCITY, source0Vel);
     alSourcei(source[CARIDLE], AL_BUFFER, buffer[CARIDLE]);
@@ -263,6 +267,34 @@ void AudioPlayer::init() {
     alSourcefv(source[MENUENTER], AL_POSITION, source0Pos);
     alSourcefv(source[MENUENTER], AL_VELOCITY, source0Vel);
     alSourcei(source[MENUENTER], AL_BUFFER, buffer[MENUENTER]);
+
+    loadSound("rsc/sounds/use_powerup.wav");
+    alSourcef(source[USEPOWERUP], AL_PITCH, 1.0f);
+    alSourcef(source[USEPOWERUP], AL_GAIN, 1.0f);
+    alSourcefv(source[USEPOWERUP], AL_POSITION, source0Pos);
+    alSourcefv(source[USEPOWERUP], AL_VELOCITY, source0Vel);
+    alSourcei(source[USEPOWERUP], AL_BUFFER, buffer[USEPOWERUP]);
+
+    loadSound("rsc/sounds/emp.wav");
+    alSourcef(source[EMP], AL_PITCH, 1.0f);
+    alSourcef(source[EMP], AL_GAIN, 1.0f);
+    alSourcefv(source[EMP], AL_POSITION, source0Pos);
+    alSourcefv(source[EMP], AL_VELOCITY, source0Vel);
+    alSourcei(source[EMP], AL_BUFFER, buffer[EMP]);
+
+    loadSound("rsc/sounds/speed.wav");
+    alSourcef(source[SPEED], AL_PITCH, 1.0f);
+    alSourcef(source[SPEED], AL_GAIN, 1.0f);
+    alSourcefv(source[SPEED], AL_POSITION, source0Pos);
+    alSourcefv(source[SPEED], AL_VELOCITY, source0Vel);
+    alSourcei(source[SPEED], AL_BUFFER, buffer[SPEED]);
+
+    loadSound("rsc/sounds/trap_hit.wav");
+    alSourcef(source[TRAPHIT], AL_PITCH, 1.0f);
+    alSourcef(source[TRAPHIT], AL_GAIN, 1.0f);
+    alSourcefv(source[TRAPHIT], AL_POSITION, source0Pos);
+    alSourcefv(source[TRAPHIT], AL_VELOCITY, source0Vel);
+    alSourcei(source[TRAPHIT], AL_BUFFER, buffer[TRAPHIT]);
 
     return;
 }
@@ -357,6 +389,34 @@ void AudioPlayer::playMenuSwitchSound() {
 void AudioPlayer::playMenuEnterSound() {
 
     alSourcePlay(source[MENUENTER]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playUsePowerupSound() {
+
+    alSourcePlay(source[USEPOWERUP]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playEmpSound() {
+
+    alSourcePlay(source[EMP]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+
+void AudioPlayer::playTrapHitSound() {
+    alSourcePlay(source[TRAPHIT]);
+
+}
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playSpeedSound() {
+
+    alSourcePlay(source[SPEED]);
 }
 
 //////////////////////////////////////////////////////////////////////////////

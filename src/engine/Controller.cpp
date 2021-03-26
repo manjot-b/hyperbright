@@ -194,7 +194,19 @@ void Controller::processInput(float deltaSec)
 	/////////////// VEHICLE PICKUP ACTIVATE CONTROLS
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		if (playerVehicle->hasPickup()) playerVehicle->activatePickup();
+		if (playerVehicle->hasPickup()) {
+			int type = playerVehicle->getPickup()->type;
+			if (type == EMP) {
+				audioPlayer.playEmpSound();
+			}
+			else if (type == SPEED) {
+				audioPlayer.playSpeedSound();
+			}
+			else {
+				audioPlayer.playUsePowerupSound();
+			}
+			playerVehicle->activatePickup();		
+		}
 	}
 
 	////////////////////////////////////////// MANUAL CAMERA CONTROLS

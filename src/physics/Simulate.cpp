@@ -716,6 +716,10 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 			vehicle->currentTile = *tileCoords;
 			
 			if (arena.isTrap(vehicle->currentTile)) {
+				
+				if (vehicle->getTeam() == vehicles.at(0)->getTeam()) {
+					audioPlayer->playTrapHitSound();
+				}
 				vehicle->applyTrap(300.f);
 				std::cout << "TRAP TRIGGERED\n";
 				arena.removeTrap(vehicle->currentTile);
