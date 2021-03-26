@@ -228,19 +228,24 @@ void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation o
 }
 
 void Arena::placeTrap(glm::vec2 tileCoords) {
+
 	tileGrid[tileCoords.x][tileCoords.y].setTrap();
 
 	// make the color slightly darker
 	glm::vec4 color = tileGrid[tileCoords.x][tileCoords.y].color;
 	color = glm::vec4(glm::vec3(color) * 0.9f, 1.f);
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
+=======
+
 }
 
 bool Arena::isTrap(glm::vec2 tileCoords) {
 	return tileGrid[tileCoords.x][tileCoords.y].isTrap;
+	//piss titties
 }
 
 void Arena::removeTrap(glm::vec2 tileCoords) {
+
 	tileGrid[tileCoords.x][tileCoords.y].removeTrap();
 	
 	// set the color back to the original color.
@@ -248,6 +253,7 @@ void Arena::removeTrap(glm::vec2 tileCoords) {
 	glm::vec4 color = team ? engine::teamStats::colors.at(*team) : tileBaseColor;
 
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
+
 
 }
 

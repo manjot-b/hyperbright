@@ -73,12 +73,12 @@ namespace hyperbright {
 
 				 f = glm::vec2(9, 3);
 				 g = glm::vec2(9, 16);
-				 h = glm::vec2(5, 5);
+				 h = glm::vec2(5, 5);//CHARGE
 				 i = glm::vec2(14, 5);
 				 j = glm::vec2(2, 10);
 				 k = glm::vec2(17, 10);
-				 l = glm::vec2(4, 14);
-				 m = glm::vec2(15, 14);
+				 l = glm::vec2(5, 14);
+				 m = glm::vec2(14, 14);//CHARGE
 			}
 		}
 

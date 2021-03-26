@@ -69,7 +69,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (!trap) {
 			//std::cout << "Up key PRESSED" << std::endl;
-			playerVehicle->applyTrap();
+			playerVehicle->applyTrap(200);
 			trap = true;
 		}
 	}
@@ -78,7 +78,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (trap) {
 			//std::cout << "Up key PRESSED" << std::endl;
-			playerVehicle->releaseTrap();
+			//playerVehicle->releaseTrap();
 			trap = false;
 		}
 	}
