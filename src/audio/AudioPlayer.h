@@ -26,6 +26,7 @@ public:
 	void playEmpSound();
 	void playSpeedSound();
 	void playTrapHitSound();
+	void setMusicVolume(float volume);
 private:
 	void init();
 	int curLoaded;

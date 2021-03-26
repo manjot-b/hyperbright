@@ -48,7 +48,7 @@ public:
 	engine::teamStats::Teams getTeam() const{ return team; }
 	void setTeam(engine::teamStats::Teams t){ team = t; }
 
-
+	void increaseEnergy();
 	void updateOrientation();
 	glm::quat getOrientation() const;
 

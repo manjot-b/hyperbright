@@ -14,6 +14,7 @@ public:
 	struct Settings {
 		int fps;
 		model::Material vehicleBodyMaterial;
+		float musicVolume;
 	} settings;
 
 	DevUI(GLFWwindow* window);

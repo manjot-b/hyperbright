@@ -251,8 +251,6 @@ void Arena::removeTrap(glm::vec2 tileCoords) {
 	glm::vec4 color = team ? engine::teamStats::colors.at(*team) : tileBaseColor;
 
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
-
-
 }
 
 void Arena::animateChargingStations(float time)

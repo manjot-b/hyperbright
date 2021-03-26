@@ -728,8 +728,9 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 			
 				if (team) {
 					// Decrement the teams score if not the current vehicle colors and remove the team
-					//arena.setTileTeam(*tileCoords, nullopt);
-					//engine::teamStats::scores[*team]--
+					arena.setTileTeam(*tileCoords, nullopt);
+					engine::teamStats::scores[*team]--;
+					vehicle->increaseEnergy();
 				}
 			
 				//CHANGE TILE COLOR TO ORIGINAL TILE COLOR
