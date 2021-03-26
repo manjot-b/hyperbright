@@ -160,14 +160,14 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	glViewport(0, 0, shadowMap->getWidth(), shadowMap->getHeight());
 	shadowBuffer->bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
-	//glCullFace(GL_FRONT);
+	glCullFace(GL_FRONT);
 
 	for (const auto& renderable : renderables)
 	{
 		renderable->renderShadow(shadowShader);
 	}
 
-	//glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, width, height);
 

@@ -77,9 +77,9 @@ float shadowCalc(float dotNormalLight)
 	projCoords = projCoords * .5f + .5f;
 	
 	float currentDepth = min(projCoords.z, 1.f);
-	float bias = max(.01f * (1.f - dotNormalLight), 0.005f);	// moves fragments up slightly to fix shadow acne
+	float bias = max(.005f * (1.f - dotNormalLight), 0.003f);	// moves fragments up slightly to fix shadow acne
 
-	int pcfStart = -2;
+	int pcfStart = -4;
 	for(int x = pcfStart; x <= -pcfStart; x++) {
 		for(int y = pcfStart; y <= -pcfStart; y++) {
 			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
