@@ -70,14 +70,31 @@ vec4 lightDirection(int idx)
 
 float shadowCalc(float dotNormalLight)
 {
+	float shadow = 0;
+	vec2 texelSize = 1.f / textureSize(shadowMap, 0);
+
 	vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;	// unesseccary for orthographic projection
 	projCoords = projCoords * .5f + .5f;
 	
-	float closestDepth = texture(shadowMap, projCoords.xy).r;
 	float currentDepth = min(projCoords.z, 1.f);
+	float bias = max(.005f * (1.f - dotNormalLight), 0.003f);	// moves fragments up slightly to fix shadow acne
 
-	float bias = max(.01f * (1.f - dotNormalLight), 0.005f);	// moves fragments up slightly to fix shadow acne
-	float shadow = currentDepth - bias > closestDepth ? 1.f : 0.f;
+	int pcfStart = -4;
+	for(int x = pcfStart; x <= -pcfStart; x++) {
+		for(int y = pcfStart; y <= -pcfStart; y++) {
+			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+			shadow += currentDepth - bias > pcfDepth ? 1.f : 0.f;
+		}
+	}
+
+	int pcfCount = -pcfStart - pcfStart + 1;
+	pcfCount *= pcfCount;
+	shadow /= pcfCount;
+
+	/*
+	float depth = texture(shadowMap, projCoords.xy).r;
+	shadow += currentDepth - bias > depth ? 1.f : 0.f;
+	*/
 
 	return shadow;
 }
@@ -100,17 +117,21 @@ vec4 phong()
 		vec4 lightDirAndAtten = lightDirection(i);
 		vec3 lightDir = vec3(lightDirAndAtten);
 		float attenuation = lightDirAndAtten.a;
-		
-			
-		diffuse += max(dot(lightDir, unitNormal), 0.0) * diffuseCoeff * lights[i].color * attenuation;
-		vec3 reflect = 2 * dot(lightDir, unitNormal) * unitNormal - lightDir;
-		reflect = normalize(reflect);
-		specular += pow(max(dot(reflect, viewDir), 0.0), shininess) * specularCoeff * lights[i].color * attenuation;
-	}
-	float normalLightDot = dot(vec3(lightDirection(0)), unitNormal);	// assume first light is the directional light
-	float shadow = shadowCalc(normalLightDot);
+		float normalLightDot = dot(lightDir, unitNormal);
 
-	return vec4(ambient + (1.f - shadow) * (diffuse + specular), 1.f);
+		float shadow = 0;
+		if (!lights[i].isPoint) { // only perform shadow calc for directional light
+			shadow = shadowCalc(normalLightDot);
+		}
+			
+		diffuse += max(normalLightDot, 0.0) * diffuseCoeff * lights[i].color * attenuation * (1.f - shadow);
+		vec3 reflect = 2 * normalLightDot * unitNormal - lightDir;
+		reflect = normalize(reflect);
+		specular += pow(max(dot(reflect, viewDir), 0.0), shininess) * specularCoeff * lights[i].color * attenuation * (1.f - shadow);
+	}
+	
+
+	return vec4(ambient + (diffuse + specular), 1.f);
 }
 
 float beckmannNDF(vec3 unitNormal, vec3 midLightCamera)
@@ -159,9 +180,6 @@ vec3 cookTorrance(vec3 surfaceColor)
 	vec3 viewDir = normalize(cameraPos - vertexPos);
 	vec3 unitNormal = normalize(normal);
 
-	float normalLightDot = dot(vec3(lightDirection(0)), unitNormal);	// assume first light is the directional light
-	float shadow = shadowCalc(normalLightDot);
-
 	// Iterate over every light and calculate diffuse and specular
 	// components of final color.
 	for (int i = 0; i < lightCount; i++)
@@ -172,9 +190,14 @@ vec3 cookTorrance(vec3 surfaceColor)
 		vec4 lightDirAndAtten = lightDirection(i);
 		vec3 lightDir = vec3(lightDirAndAtten);
 		float attenuation = lightDirAndAtten.a;
+		float normalLightDot = max(dot(lightDir, unitNormal), 0);
 
-		float angleNormalLight = max(dot(unitNormal, lightDir), 0);
-		vec3 lightEnergy = lights[i].color * angleNormalLight * attenuation;
+		float shadow = 0;
+		if (!lights[i].isPoint) { // only perform shadow calc for directional light	
+			shadow = shadowCalc(normalLightDot);
+		}
+
+		vec3 lightEnergy = lights[i].color * normalLightDot * attenuation;
 		
 		diffuse += diffuseCoeff * surfaceColor/ PI;
 

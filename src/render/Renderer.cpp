@@ -19,7 +19,7 @@ Renderer::Renderer()
 
 	shadowShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/shadow_vertex.glsl", "rsc/shaders/shadow_fragment.glsl");
 	shadowShader->link();
-	shadowMap = std::make_shared<openGLHelper::Texture>(2048, 2048, true);
+	shadowMap = std::make_shared<openGLHelper::Texture>(4096, 4096, true);
 	shadowBuffer = std::make_unique<openGLHelper::FrameBuffer>(shadowMap);
 
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 1000.0f);
@@ -160,14 +160,14 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	glViewport(0, 0, shadowMap->getWidth(), shadowMap->getHeight());
 	shadowBuffer->bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
-	//glCullFace(GL_FRONT);
+	glCullFace(GL_FRONT);
 
 	for (const auto& renderable : renderables)
 	{
 		renderable->renderShadow(shadowShader);
 	}
 
-	//glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, width, height);
 
