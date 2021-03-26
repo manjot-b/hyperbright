@@ -361,6 +361,16 @@ void AudioPlayer::playMenuEnterSound() {
 
 //////////////////////////////////////////////////////////////////////////////
 
+void AudioPlayer::adjustCarIdlePitch(float speed) {
+
+    if (speed < 0) {
+        speed = 0.f;
+    }
+    alSourcef(source[CARIDLE], AL_PITCH, 1.0f + (speed/30.f));
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
 void AudioPlayer::playCarIdle() {
 
     alSourcePlay(source[CARIDLE]);

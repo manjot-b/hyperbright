@@ -19,6 +19,7 @@ public:
 	void stopStartMenuMusic();
 	void playPickupCollision();
 	void playCarIdle();
+	void adjustCarIdlePitch(float speed);
 	void stopCarIdle();
 	void playPowerstationCollision();
 private:
