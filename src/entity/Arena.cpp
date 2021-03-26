@@ -233,10 +233,8 @@ void Arena::placeTrap(glm::vec2 tileCoords) {
 
 	// make the color slightly darker
 	glm::vec4 color = tileGrid[tileCoords.x][tileCoords.y].color;
-	color = glm::vec4(glm::vec3(color) * 0.9f, 1.f);
+	color = glm::vec4(glm::vec3(color) * 0.5f, 1.f);
 	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
-=======
-
 }
 
 bool Arena::isTrap(glm::vec2 tileCoords) {
