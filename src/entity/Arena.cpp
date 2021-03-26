@@ -219,6 +219,7 @@ void Arena::placeTrap(glm::vec2 tileCoords) {
 
 bool Arena::isTrap(glm::vec2 tileCoords) {
 	return tileGrid[tileCoords.x][tileCoords.y].isTrap;
+	//piss titties
 }
 
 void Arena::removeTrap(glm::vec2 tileCoords) {
