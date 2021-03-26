@@ -145,7 +145,7 @@ namespace hyperbright {
 			}
 			else if (type == SPEED) {//NEED IMPULSE FUNCTION
 				std::cout << engine::teamStats::names.at(usedByTeam) << " USED SPEED!! \n";
-				float speedTime = 300.f;//IN FRAMES!!
+				float speedTime = 250.f;//IN FRAMES!!
 				if (usedByTeam == _vehicles->at(0)->getTeam()) {
 					_vehicles->at(0)->applyBoost(speedTime);
 				}

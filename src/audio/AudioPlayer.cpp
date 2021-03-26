@@ -229,7 +229,7 @@ void AudioPlayer::init() {
 
     loadSound("rsc/sounds/car_idle_loop.wav");
     alSourcef(source[CARIDLE], AL_PITCH, 1.0f);
-    alSourcef(source[CARIDLE], AL_GAIN, 0.1f);
+    alSourcef(source[CARIDLE], AL_GAIN, 0.25f);
     alSourcefv(source[CARIDLE], AL_POSITION, source0Pos);
     alSourcefv(source[CARIDLE], AL_VELOCITY, source0Vel);
     alSourcei(source[CARIDLE], AL_BUFFER, buffer[CARIDLE]);
@@ -357,6 +357,16 @@ void AudioPlayer::playMenuSwitchSound() {
 void AudioPlayer::playMenuEnterSound() {
 
     alSourcePlay(source[MENUENTER]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::adjustCarIdlePitch(float speed) {
+
+    if (speed < 0) {
+        speed = 0.f;
+    }
+    alSourcef(source[CARIDLE], AL_PITCH, 1.0f + (speed/30.f));
 }
 
 //////////////////////////////////////////////////////////////////////////////
