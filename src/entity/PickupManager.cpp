@@ -208,7 +208,7 @@ namespace hyperbright {
 				std::shared_ptr<Pickup> pu = onArenaPickups.at(IdCounter);
 				if (pu->tile.x == curTile.x && pu->tile.y == curTile.y) {
 					const std::string& name = engine::teamStats::names[v->getTeam()];
-					std::cout<< name <<" HIT PICKUP : " << pu->pickupNumber << std::endl;
+					//std::cout<< name <<" HIT PICKUP : " << pu->pickupNumber << std::endl;
 
 					pickupPositionQueue.push(arena->getTilePos(curTile) + glm::vec3(0.f, 1.f, 0.f));//ADD PICKUP LOCATION
 					pickupTimerQueue.push(glfwGetTime());//START PICKUP RESPAWN TIMER

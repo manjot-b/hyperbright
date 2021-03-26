@@ -45,6 +45,21 @@ namespace hyperbright {
 			slowTrapActive = false;
 			pickupNumber = puNum;
 			pickupTime = 5.f;
+			//TIMES FOR EACH TYPE
+			if (type == EMP) {
+				pickupTime = 2.f;
+			}
+			else if (ZAP) {
+				pickupTime = 5.f;
+			} else if (type == SPEED) {
+				pickupTime = 3.f;
+			}
+			else if (type == SYPHON) {
+				pickupTime = 8.f;
+			}
+			else if (type == SLOWTRAP) {
+				pickupTime = 3.f;
+			}
 			//position
 
 			model = std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr);
@@ -130,7 +145,7 @@ namespace hyperbright {
 			}
 			else if (type == SPEED) {//NEED IMPULSE FUNCTION
 				std::cout << engine::teamStats::names.at(usedByTeam) << " USED SPEED!! \n";
-				float speedTime = 4.f;
+				float speedTime = 300.f;//IN FRAMES!!
 				if (usedByTeam == _vehicles->at(0)->getTeam()) {
 					_vehicles->at(0)->applyBoost(speedTime);
 				}

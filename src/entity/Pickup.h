@@ -41,7 +41,7 @@ public:
 	void activate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles);
 	//void deactivate(Vehicle vehicles[], int indexOfActivator, int indexOfFirstPlace);
 	void deactivate(std::vector<std::shared_ptr<entity::Vehicle>>* vehicles, std::shared_ptr<entity::Arena> arena);
-	void initialCollision(std::shared_ptr<Vehicle> vehicle);
+	//void initialCollision(std::shared_ptr<Vehicle> vehicle);
 	bool active;
 	bool timeRemaining();
 	//Position
