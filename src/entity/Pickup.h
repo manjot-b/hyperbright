@@ -8,6 +8,7 @@
 #include "model/Model.h"
 #include "entity/Arena.h"
 #include "render/IRenderable.h"
+#include "opengl-helper/Shader.h"
 #include "physics/Interface.h"
 #include "engine/TeamStats.h"
 
