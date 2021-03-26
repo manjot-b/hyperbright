@@ -60,7 +60,7 @@ void Controller::processInput(float deltaSec)
 	{
 		if (boost) {
 			//std::cout << "Up key PRESSED" << std::endl;
-			//playerVehicle->releaseBoost();
+			playerVehicle->releaseBoost();
 			boost = false;
 		}
 	}
