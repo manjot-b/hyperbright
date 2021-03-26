@@ -236,10 +236,11 @@ void Engine::run()
 
 
 /*
+* 
 This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
-	//audioPlayer->playStartMenuMusic();
+	audioPlayer->playStartMenuMusic();
 	while (!controller->isWindowClosed() && mainMenu.getState() == ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
@@ -280,7 +281,7 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
-	//audioPlayer->playGameMusic();
+	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();
 
 	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::ON) {
