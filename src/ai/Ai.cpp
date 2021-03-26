@@ -17,7 +17,7 @@ namespace hyperbright {
 			backupTime = 1.5f;
 			currentTile = startTile;
 			pastGoal = glm::vec2(1, 1);//ARBITRARY
-			pickupUseTime = rand() % 10;
+			pickupUseTime = (rand() % 10) + 5;
 			//path =  std::vector<glm::vec2>();
 		}
 
