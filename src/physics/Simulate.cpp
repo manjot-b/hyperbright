@@ -534,8 +534,10 @@ void setDriveMode(entity::VehicleController* ctrl)
 		ctrl->flipImpulse = false;
 	}
 
-	if (ctrl->trapped) {
+	if (ctrl->trap.second) {
 		Driving::applyVehicleTrap(vNum);
+		ctrl->trap.first -= 1;
+		if (ctrl->trap.first <= 0) ctrl->trap.second = false;
 	}
 
 	if (ctrl->boost.second) {
