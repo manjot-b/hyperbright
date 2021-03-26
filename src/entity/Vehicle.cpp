@@ -188,14 +188,15 @@ void Vehicle::releaseBoost()
 	ctrl.boost.second = false;
 }
 
-void Vehicle::applyTrap()
+void Vehicle::applyTrap(int duration)
 {
-	ctrl.trapped = true;
+	ctrl.trap.first = duration;
+	ctrl.trap.second = true;
 }
 
 void Vehicle::releaseTrap()
 {
-	ctrl.trapped = false;
+	ctrl.trap.second = false;
 }
 
 void Vehicle::accelerateForward()
