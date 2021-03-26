@@ -66,12 +66,12 @@ private:
 		bool hasChargingStation() const;
 		void setTrap() { isTrap = true; }
 		void removeTrap() { isTrap = false; }
-		bool isTrap;
 	private:
 		glm::mat4& modelMatrix;
 		glm::vec4& color;
 		bool _hasWall;
 		bool _hasChargingStation;
+		bool isTrap;
 		std::optional<engine::teamStats::Teams> team;	// tile may not have a team.
 	};
 

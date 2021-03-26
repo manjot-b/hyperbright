@@ -5,7 +5,7 @@
 namespace hyperbright {
 namespace entity {
 Arena::Tile::Tile(glm::mat4& modelMatrix, glm::vec4& color) :
-	modelMatrix(modelMatrix), color(color), _hasWall(false), _hasChargingStation(false), team(std::nullopt)
+	modelMatrix(modelMatrix), color(color), _hasWall(false), _hasChargingStation(false), isTrap(false), team(std::nullopt)
 {}
 
 void Arena::Tile::translate(const glm::vec3& trans)
@@ -229,6 +229,11 @@ void Arena::addChargingStation(unsigned int col, unsigned int row, Orientation o
 
 void Arena::placeTrap(glm::vec2 tileCoords) {
 	tileGrid[tileCoords.x][tileCoords.y].setTrap();
+
+	// make the color slightly darker
+	glm::vec4 color = tileGrid[tileCoords.x][tileCoords.y].color;
+	color = glm::vec4(glm::vec3(color) * 0.9f, 1.f);
+	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
 }
 
 bool Arena::isTrap(glm::vec2 tileCoords) {
@@ -237,6 +242,13 @@ bool Arena::isTrap(glm::vec2 tileCoords) {
 
 void Arena::removeTrap(glm::vec2 tileCoords) {
 	tileGrid[tileCoords.x][tileCoords.y].removeTrap();
+	
+	// set the color back to the original color.
+	std::optional<engine::teamStats::Teams> team = tileGrid[tileCoords.x][tileCoords.y].team;
+	glm::vec4 color = team ? engine::teamStats::colors.at(*team) : tileBaseColor;
+
+	tileGrid[tileCoords.x][tileCoords.y].setColor(color);
+
 }
 
 void Arena::animateChargingStations(float time)
