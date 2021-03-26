@@ -9,7 +9,7 @@
 
 #include "model/Model.h"
 #include "entity/Pickup.h"
-#include "render/Renderer.h"
+#include "render/IRenderable.h"
 #include "physics/Interface.h"
 #include "engine/TeamStats.h"
 
@@ -27,7 +27,7 @@ struct VehicleController {
 	int straighten = 0;
 };
 
-class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
+class Vehicle : public render::IRenderable, public physics::IPhysical
 {
 public:
 	Vehicle(
@@ -104,6 +104,7 @@ public:
 
 	int index;
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 private:
 
 	engine::teamStats::Teams team;

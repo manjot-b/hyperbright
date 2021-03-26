@@ -8,7 +8,7 @@
 
 namespace hyperbright {
 	namespace entity {
-		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::Renderer::IRenderable>>& _renderables) :
+		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::IRenderable>>& _renderables) :
 			arena(_arena), renderables(_renderables) {
 			vehicles = _vehicles;
 			pickupDownTime = 8.f;
@@ -67,7 +67,7 @@ namespace hyperbright {
 			for (int i = 0; i < carriedPickups.size(); i++) {
 				if (!carriedPickups.at(i)->beingCarried && carriedPickups.at(i)->active) {
 					//std::cout << "PU ACTIVATED: " << carriedPickups.at(i)->pickupNumber <<"\n";
-					carriedPickups.at(i)->activate(vehicles, arena);
+					carriedPickups.at(i)->activate(vehicles);
 					moveToActive(carriedPickups.at(i));
 					removeFromCarried(carriedPickups.at(i));
 				}
@@ -82,7 +82,7 @@ namespace hyperbright {
 			for (int i = 0; i < activePickups.size(); i++) {
 				if (!activePickups.at(i)->timeRemaining()) {
 					std::shared_ptr<Pickup> pickup = activePickups.at(i);
-					pickup->deactivate(vehicles);
+					pickup->deactivate(vehicles, arena);
 					removeFromActive(pickup);
 					//delete pickup;
 				}
@@ -143,7 +143,7 @@ namespace hyperbright {
 			std::vector<std::shared_ptr<PickupRenderables>>::iterator it_pum;
 			for (it_pum = renderedPickups.begin(); it_pum != renderedPickups.end(); it_pum++) {
 				if (it_pum->get()->pickupId == pickup->pickupNumber) {
-					std::vector<std::shared_ptr<render::Renderer::IRenderable>>::iterator it_ren;
+					std::vector<std::shared_ptr<render::IRenderable>>::iterator it_ren;
 					for (it_ren = renderables.begin(); it_ren != renderables.end(); it_ren++) {
 						if (*it_pum->get()->puRenderable == it_ren->get()) {
 							renderables.erase(it_ren);
