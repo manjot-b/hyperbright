@@ -37,12 +37,52 @@ bool aPressed;
 bool dPressed;
 bool shiftPressed;
 float flipTimer = glfwGetTime();
+bool boost;
+bool trap;
 
 void Controller::processInput(float deltaSec)
 {
 	if (mainMenu.getState() == ui::MainMenu::State::ON || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
 		return;
 	}
+
+	/// temp testing
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+	{
+		if (!boost) {
+			//std::cout << "Up key PRESSED" << std::endl;
+			playerVehicle->applyBoost(200);
+			boost = true;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE)
+	{
+		if (boost) {
+			//std::cout << "Up key PRESSED" << std::endl;
+			playerVehicle->releaseBoost();
+			boost = false;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+	{
+		if (!trap) {
+			//std::cout << "Up key PRESSED" << std::endl;
+			playerVehicle->applyTrap(200);
+			trap = true;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE)
+	{
+		if (trap) {
+			//std::cout << "Up key PRESSED" << std::endl;
+			//playerVehicle->releaseTrap();
+			trap = false;
+		}
+	}
+
 
 	////////////////////////////////////////// PLAYER VEHICLE CONTROLS
 
@@ -154,7 +194,19 @@ void Controller::processInput(float deltaSec)
 	/////////////// VEHICLE PICKUP ACTIVATE CONTROLS
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		if (playerVehicle->hasPickup()) playerVehicle->activatePickup();
+		if (playerVehicle->hasPickup()) {
+			int type = playerVehicle->getPickup()->type;
+			if (type == EMP) {
+				audioPlayer.playEmpSound();
+			}
+			else if (type == SPEED) {
+				audioPlayer.playSpeedSound();
+			}
+			else {
+				audioPlayer.playUsePowerupSound();
+			}
+			playerVehicle->activatePickup();		
+		}
 	}
 
 	////////////////////////////////////////// MANUAL CAMERA CONTROLS

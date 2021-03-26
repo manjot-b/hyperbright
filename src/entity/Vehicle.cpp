@@ -29,7 +29,7 @@ Vehicle::Vehicle(
 	setTriggerType(physics::IPhysical::TriggerType::VEHICLE);
 	string bodyIdSuffix = "body";
 	string wheelsIdSuffix = "wheel";
-
+	syphonActive = false;
 	switch (team)
 	{
 	case teamStats::Teams::TEAM0:
@@ -119,6 +119,19 @@ void Vehicle::render() const
 		wheel->render();
 }
 
+void Vehicle::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const
+{
+	body->renderShadow(shadowShader);
+	for (const auto& wheel : wheels)
+		wheel->renderShadow(shadowShader);
+}
+
+// 0 => do nothing, 1 => left correction, 2 => right correction
+void Vehicle::straighten(int dir)
+{
+	ctrl.straighten = dir;
+}
+
 quat Vehicle::getOrientation() const
 {
 	return quat_cast(lookAt(vec3(0.f), direction, up));
@@ -129,9 +142,14 @@ void Vehicle::reduceEnergy()
 	if (energy > 0) energy -= 0.04;
 }
 
+void Vehicle::increaseEnergy()
+{
+	energy += 0.02;
+}
+
 void Vehicle::restoreEnergy()
 {
-	energy = 1.f;
+	energy = 1.f;////////////////
 }
 
 bool Vehicle::enoughEnergy()
@@ -153,7 +171,8 @@ void Vehicle::equipPickup(std::shared_ptr<Pickup> _pickup)
 void Vehicle::activatePickup()
 {
 	if (pickupEquiped) {
-		pickup->use(teamNum);
+		pickup->use(team);
+		pickup = nullptr;
 		pickupEquiped = false;
 	}
 }
@@ -163,10 +182,34 @@ void Vehicle::applyFlipImpulse()
 	ctrl.flipImpulse = true;
 }
 
+void Vehicle::applyBoost(int duration)
+{
+	ctrl.boost.first = duration;
+	ctrl.boost.second = true;
+}
+
+void Vehicle::releaseBoost()
+{
+	ctrl.boost.second = false;
+}
+
+void Vehicle::applyTrap(int duration)
+{
+	ctrl.trap.first = duration;
+	ctrl.trap.second = true;
+}
+
+void Vehicle::releaseTrap()
+{
+	ctrl.trap.second = false;
+}
+
 void Vehicle::accelerateForward()
 {
 	ctrl.input[0] = 1;
 }
+
+//void engine::teamStats::Teams setTeam(engine::teamStats::Teams t) { team = t; return; }
 
 void Vehicle::accelerateReverse()
 {
@@ -229,11 +272,13 @@ void Vehicle::stopBrake()
 void Vehicle::stopLeft()
 {
 	ctrl.input[3] = 0;
+	straighten(2);
 }
 
 void Vehicle::stopRight()
 {
 	ctrl.input[2] = 0;
+	straighten(1);
 }
 
 void Vehicle::stopHardTurn() 

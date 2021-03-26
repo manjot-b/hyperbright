@@ -8,7 +8,7 @@
 
 namespace hyperbright {
 	namespace entity {
-		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::Renderer::IRenderable>>& _renderables) :
+		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::IRenderable>>& _renderables) :
 			arena(_arena), renderables(_renderables) {
 			vehicles = _vehicles;
 			pickupDownTime = 8.f;
@@ -41,7 +41,7 @@ namespace hyperbright {
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 3)) + glm::vec3(0.f, 1.f, 0.f));
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 36)) + glm::vec3(0.f, 1.f, 0.f));
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(36, 36)) + glm::vec3(0.f, 1.f, 0.f));
-				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 20)) + glm::vec3(0.f, 1.f, 0.f));
+				//onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 20)) + glm::vec3(0.f, 1.f, 0.f));
 			}
 			else if (arenaSelection == 2) {
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(2, 2)) + glm::vec3(0.f, 1.f, 0.f));
@@ -53,7 +53,7 @@ namespace hyperbright {
 			pickupIdCounter = 1;
 			for (auto& pickupLocation : onArenaPickupLocations) {
 				std::cout << "Pickup " << pickupIdCounter << " initialized.\n";
-				std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(pickupIdCounter, EMP, nullptr, shader);
+				std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(pickupIdCounter, rand()%5, nullptr, shader);
 				pickup->setArenaLocation(pickupLocation , arena->isOnTile(pickupLocation));
 				addPickupToScene(pickup);	// encapsulated new pickup calls
 				pickupIdCounter++;
@@ -82,7 +82,7 @@ namespace hyperbright {
 			for (int i = 0; i < activePickups.size(); i++) {
 				if (!activePickups.at(i)->timeRemaining()) {
 					std::shared_ptr<Pickup> pickup = activePickups.at(i);
-					pickup->deactivate();
+					pickup->deactivate(vehicles, arena);
 					removeFromActive(pickup);
 					//delete pickup;
 				}
@@ -110,7 +110,7 @@ namespace hyperbright {
 						if (!idFound) break;
 					}
 					////////////////
-					std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(newPickupId, EMP, nullptr, shader);		// This constructor was using an invalid pickupId
+					std::shared_ptr<Pickup> pickup = std::make_shared<Pickup>(newPickupId, rand() % 5, nullptr, shader);		// This constructor was using an invalid pickupId
 					pickup->setArenaLocation(pickupPositionQueue.front(), arena->isOnTile(pickupPositionQueue.front()));
 					addPickupToScene(pickup);	// encapsulated new pickup calls
 					pickupPositionQueue.pop();
@@ -143,7 +143,7 @@ namespace hyperbright {
 			std::vector<std::shared_ptr<PickupRenderables>>::iterator it_pum;
 			for (it_pum = renderedPickups.begin(); it_pum != renderedPickups.end(); it_pum++) {
 				if (it_pum->get()->pickupId == pickup->pickupNumber) {
-					std::vector<std::shared_ptr<render::Renderer::IRenderable>>::iterator it_ren;
+					std::vector<std::shared_ptr<render::IRenderable>>::iterator it_ren;
 					for (it_ren = renderables.begin(); it_ren != renderables.end(); it_ren++) {
 						if (*it_pum->get()->puRenderable == it_ren->get()) {
 							renderables.erase(it_ren);
@@ -208,7 +208,7 @@ namespace hyperbright {
 				std::shared_ptr<Pickup> pu = onArenaPickups.at(IdCounter);
 				if (pu->tile.x == curTile.x && pu->tile.y == curTile.y) {
 					const std::string& name = engine::teamStats::names[v->getTeam()];
-					std::cout<< name <<" HIT PICKUP : " << pu->pickupNumber << std::endl;
+					//std::cout<< name <<" HIT PICKUP : " << pu->pickupNumber << std::endl;
 
 					pickupPositionQueue.push(arena->getTilePos(curTile) + glm::vec3(0.f, 1.f, 0.f));//ADD PICKUP LOCATION
 					pickupTimerQueue.push(glfwGetTime());//START PICKUP RESPAWN TIMER
@@ -221,7 +221,8 @@ namespace hyperbright {
 
 					pu->beingCarried = true;
 					v->equipPickup(pu);
-					
+					v->pickupTime = glfwGetTime();
+
 					moveToCarried(pu);
 					removeFromArena(pu);
 					return pu;

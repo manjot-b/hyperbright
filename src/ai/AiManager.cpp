@@ -16,6 +16,7 @@ namespace hyperbright {
 			}
 		}
 
+
 		//////////////////////////////////////////////////////////////////
 
 		void AiManager::makeMoves() {
@@ -73,12 +74,12 @@ namespace hyperbright {
 
 				 f = glm::vec2(9, 3);
 				 g = glm::vec2(9, 16);
-				 h = glm::vec2(5, 5);
+				 h = glm::vec2(5, 5);//CHARGE
 				 i = glm::vec2(14, 5);
 				 j = glm::vec2(2, 10);
 				 k = glm::vec2(17, 10);
-				 l = glm::vec2(4, 14);
-				 m = glm::vec2(15, 14);
+				 l = glm::vec2(5, 14);
+				 m = glm::vec2(14, 14);//CHARGE
 			}
 		}
 
@@ -157,10 +158,12 @@ namespace hyperbright {
 				return m;
 			}
 			else if (lastGoal == h) {//CORNER NW
-				ai->pastGoal = h;
-				if (!ai->vehicle->hasPickup()) {//PU CHECK
+				//ai->pastGoal = h;
+				if (!ai->vehicle->hasPickup() && ai->pastGoal != a) {//PU CHECK
+					ai->pastGoal = h;
 					return a;
 				}
+				ai->pastGoal = h;
 				if (rand() % 2 == 1) {
 					return f;
 				}
@@ -189,10 +192,12 @@ namespace hyperbright {
 				}
 			}
 			else if (lastGoal == i) {//CORNER NE
-				ai->pastGoal = i;
-				if (!ai->vehicle->hasPickup()) {//PU CHECK
+				//ai->pastGoal = i;
+				if (!ai->vehicle->hasPickup() && ai->pastGoal != b) {//PU CHECK
+					ai->pastGoal = i;
 					return b;
 				}
+				ai->pastGoal = i;
 				if (rand() % 2 == 1) {
 					return f;
 				}
@@ -201,10 +206,12 @@ namespace hyperbright {
 				}
 			}
 			else if (lastGoal == l) {//CORNER SW
-				ai->pastGoal = l;
-				if (!ai->vehicle->hasPickup()) {//PU CHECK
+				//ai->pastGoal = l;
+				if (!ai->vehicle->hasPickup() && ai->pastGoal != c) {//PU CHECK
+					ai->pastGoal = l;
 					return c;
 				}
+				ai->pastGoal = l;
 				if (rand() % 2 == 1) {
 					return g;
 				}
@@ -213,10 +220,12 @@ namespace hyperbright {
 				}
 			}
 			else if (lastGoal == m) {//CORNER SE
-			ai->pastGoal = m;
-			if (!ai->vehicle->hasPickup()) {//PU CHECK
+			//ai->pastGoal = m;
+			if (!ai->vehicle->hasPickup() && ai->pastGoal != d) {//PU CHECK
+				ai->pastGoal = m;
 				return d;
 			}
+			ai->pastGoal = m;
 			if (rand() % 2 == 1) {
 				return g;
 			}

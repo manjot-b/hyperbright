@@ -8,10 +8,14 @@
 #include <memory>
 
 #include "Camera.h"
+#include "IRenderable.h"
 #include "Light.h"
 #include "ui/DevUI.h"
 #include "ui/Menu.h"
+
 #include "ui/HUD.h"
+#include "opengl-helper/FrameBuffer.h"
+#include "opengl-helper/Quad.h"
 #include "opengl-helper/Shader.h"
 #include "opengl-helper/Texture.h"
 
@@ -20,20 +24,6 @@ namespace render {
 class Renderer
 {
 	public:
-		class IRenderable
-		{
-		public:
-			IRenderable();
-			IRenderable(const std::shared_ptr<openGLHelper::Shader>& shader);
-			bool operator==(const IRenderable* other);
-			virtual void render() const = 0;
-			const std::shared_ptr<openGLHelper::Shader>& getShader() const;
-			void setShader(const std::shared_ptr<openGLHelper::Shader>& shader);
-			virtual void sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos) const;
-		protected:
-			std::shared_ptr<openGLHelper::Shader> _shader;
-		};
-
 		Renderer();
 		~Renderer();
 		static Renderer& getInstance();
@@ -57,6 +47,17 @@ class Renderer
 		unsigned int width = 1200;
 
 		glm::mat4 perspective;
+
+		// matrices for the direction light shadow view.
+		glm::mat4 lightProjection;
+		glm::mat4 lightView;
+		std::shared_ptr<openGLHelper::Shader> shadowShader;
+		std::shared_ptr<openGLHelper::Texture> shadowMap;
+		std::unique_ptr<openGLHelper::FrameBuffer> shadowBuffer;
+		Light directionalLight;
+
+		std::shared_ptr<openGLHelper::Shader> quadShader;
+		std::unique_ptr<openGLHelper::Quad> texturedQuad;
 
 		void initWindow();
 };

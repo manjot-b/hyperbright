@@ -1,5 +1,7 @@
 #include "Ai.h"
 
+#include <GLFW/glfw3.h>
+
 #include "engine/TeamStats.h"
 
 namespace hyperbright {
@@ -17,7 +19,7 @@ namespace hyperbright {
 			backupTime = 1.5f;
 			currentTile = startTile;
 			pastGoal = glm::vec2(1, 1);//ARBITRARY
-			pickupUseTime = rand() % 10;
+			pickupUseTime = (rand() % 10) + 5;
 			//path =  std::vector<glm::vec2>();
 		}
 
@@ -38,7 +40,7 @@ namespace hyperbright {
 			updateCurrentTile();
 			if (vehicle->currentTile == targetTile) {
 				const std::string& name = engine::teamStats::names[vehicle->getTeam()];
-				std::cout << name << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
+				//std::cout << name << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
 				path.pop_back();
 				state = NOTARGET;
 				return;
@@ -71,7 +73,7 @@ namespace hyperbright {
 			//USE PICKUP CHECK
 			if (vehicle->hasPickup()) {
 				if (glfwGetTime() - pickupUseTime > vehicle->pickupTime) {
-					std::cout << engine::teamStats::names[vehicle->getTeam()] << " USED PICKUP \n";
+					//std::cout << engine::teamStats::names[vehicle->getTeam()] << " USED PICKUP \n";
 					vehicle->activatePickup();
 				}
 			}

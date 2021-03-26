@@ -53,7 +53,7 @@ namespace entity {
 	/*
 	 Override IRenderable function because we don't need the camera position for anything and we need to alter the view matrix.
 	*/
-	void SkyBox::sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3&) const
+	void SkyBox::sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3&, const glm::mat4&) const
 	{
 		glm::mat4 noTransView = glm::mat4(glm::mat3(view));
 

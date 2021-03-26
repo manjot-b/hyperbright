@@ -8,34 +8,6 @@
 
 namespace hyperbright {
 namespace render {
-Renderer::IRenderable::IRenderable() {}
-
-Renderer::IRenderable::IRenderable(const std::shared_ptr<openGLHelper::Shader>& shader) : _shader(shader) {}
-
-bool Renderer::IRenderable::operator==(const IRenderable* other)
-{
-	if (this == other) return true;
-	return false;
-}
-
-const std::shared_ptr<openGLHelper::Shader>& Renderer::IRenderable::getShader() const
-{
-	return _shader;
-};
-void Renderer::IRenderable::setShader(const std::shared_ptr<openGLHelper::Shader>& shader)
-{
-	_shader = shader;
-}
-
-/*
- The default shader accepts these. This function can be overriden if an IRenderable uses a custom shader.
-*/
-void Renderer::IRenderable::sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos) const
-{
-	_shader->setUniformMatrix4fv("perspective", projection);
-	_shader->setUniformMatrix4fv("view", view);
-	_shader->setUniform3fv("cameraPos", cameraPos);
-}
 
 /*
 * Constructs a renderer and initializes GLFW and GLAD. Note that OpenGL functions will
@@ -45,7 +17,17 @@ Renderer::Renderer()
 {
 	initWindow();
 
+	shadowShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/shadow_vertex.glsl", "rsc/shaders/shadow_fragment.glsl");
+	shadowShader->link();
+	shadowMap = std::make_shared<openGLHelper::Texture>(2048, 2048, true);
+	shadowBuffer = std::make_unique<openGLHelper::FrameBuffer>(shadowMap);
+
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 1000.0f);
+
+	// quad render test
+	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
+	quadShader->link();
+	texturedQuad = std::make_unique<openGLHelper::Quad>(quadShader, shadowMap);
 }
 
 Renderer::~Renderer() {}
@@ -114,8 +96,19 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 
+	directionalLight = { false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f) };
+
+	// TO-DO: Use actual arena size to contruct light's orthgraphic and view matrices.
+	float orthoSize = 60.f;
+	lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, .1f, 100.f);
+	lightView = glm::lookAt(
+		-directionalLight.position * 40.f,	// tmp hardcoded position
+		glm::vec3(0.f, 0.f, 0.f),
+		glm::vec3(0.f, 1.f, 0.f)
+	);
+
 	std::vector<Light> lights = {
-		{false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f)},
+		directionalLight,
 		{true, glm::vec3(-40.f, 10.f, -30.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f},
 		{true, glm::vec3(0.f, 10.f, 0.f), glm::vec3(.7f, .7f, .1f), 1.f, .014f, 0.0007f}
 	};
@@ -138,6 +131,7 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	}
 
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
+	shader->setUniform1i("shadowMap", 1);
 
 	glUseProgram(0);	// unbind shader
 }
@@ -153,18 +147,52 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 
 void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD* hud = nullptr)
 {
+	// Render to the shadow map first.
+	lightView = glm::lookAt(
+		camera.getPosition() + -directionalLight.position * 40.f,	// move with the camera position
+		camera.getPosition(),
+		glm::vec3(0.f, 1.f, 0.f)
+	);
+	shadowShader->use();
+	shadowShader->setUniformMatrix4fv("projection", lightProjection);
+	shadowShader->setUniformMatrix4fv("view", lightView);
+
+	glViewport(0, 0, shadowMap->getWidth(), shadowMap->getHeight());
+	shadowBuffer->bind();
+	glClear(GL_DEPTH_BUFFER_BIT);
+	//glCullFace(GL_FRONT);
+
+	for (const auto& renderable : renderables)
+	{
+		renderable->renderShadow(shadowShader);
+	}
+
+	//glCullFace(GL_BACK);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, width, height);
+
+	shadowMap->bind(GL_TEXTURE1);
+
+	// Render regular scene
 	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (const auto& renderable : renderables)
 	{
 		renderable->getShader()->use();
-		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition());
+		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition(), lightProjection * lightView);
 		renderable->render();
 	}
 
+	/*
+	quadShader->use();
+	texturedQuad->normalizeToViewport(width, height);
+	texturedQuad->render();
+	*/
+
 	glUseProgram(0);
 
+	// Render UI elements
 	menu.render();
 	if (hud != nullptr) {
 		hud->drawHUD();

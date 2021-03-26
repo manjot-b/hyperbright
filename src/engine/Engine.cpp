@@ -168,7 +168,8 @@ void Engine::buildArena2() {
 	ai3StartingPosition = glm::vec2(11, 11);
 	////////////////////////////////////////////
 	arena->addChargingStation(9, 10, Arena::Orientation::NEG_Z);
-	arena->addChargingStation(4, 4, Arena::Orientation::POS_X);
+	arena->addChargingStation(5, 5, Arena::Orientation::POS_X);
+	arena->addChargingStation(14, 14, Arena::Orientation::POS_X);
 }
 
 
@@ -177,7 +178,7 @@ void Engine::buildArena2() {
 void Engine::initEntities()
 {	
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(skyBox));
+	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
 	currentArena = 2;
 	if (currentArena == 1) {
@@ -192,25 +193,25 @@ void Engine::initEntities()
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
 	std::shared_ptr<entity::Vehicle> player = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM0, shader, arena->getTilePos(playerStartingPosition) + glm::vec3(0, 1.f ,0), glm::vec3(1.f, 0.f, 0.f));
 	vehicles.push_back(player);
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(player));
+	renderables.push_back(std::static_pointer_cast<render::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(player));
 	
 	// Create the 4 ai vehicles, setting their starting position, direction, and team (which includes the color of the vehicle/tiles)
 	
 	std::shared_ptr<entity::Vehicle> ai1 = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM1, shader, arena->getTilePos(ai1StartingPosition) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai1);
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai1));
+	renderables.push_back(std::static_pointer_cast<render::IRenderable>(ai1));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai1));
 
 	std::shared_ptr<entity::Vehicle> ai2 = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM2, shader, arena->getTilePos(ai2StartingPosition) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai2);
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai2));
+	renderables.push_back(std::static_pointer_cast<render::IRenderable>(ai2));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai2));
 
 	std::shared_ptr<entity::Vehicle> ai3 = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM3, shader, arena->getTilePos(ai3StartingPosition) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai3);
-	renderables.push_back(std::static_pointer_cast<render::Renderer::IRenderable>(ai3));
-	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
+	renderables.push_back(std::static_pointer_cast<render::IRenderable>(ai3));
+	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));	
 }
 
 
@@ -236,10 +237,11 @@ void Engine::run()
 
 
 /*
+* 
 This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
-	//audioPlayer->playStartMenuMusic();
+	audioPlayer->playStartMenuMusic();
 	while (!controller->isWindowClosed() && mainMenu.getState() == ui::MainMenu::State::ON) {
 		// update global time
 		float currentFrame = glfwGetTime();
@@ -280,8 +282,8 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
-	//audioPlayer->playGameMusic();
-	//audioPlayer->playCarIdle();
+	audioPlayer->playGameMusic();
+	audioPlayer->playCarIdle();
 
 	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::ON) {
 		// update global time
@@ -306,6 +308,8 @@ void Engine::runGame() {
 			roundTimer -= deltaSec;
 			if (roundTimer < 0.01f)
 				endMenu.setState(ui::EndMenu::State::ON);
+
+			audioPlayer->adjustCarIdlePitch(vehicles.at(0)->readSpeedometer());
 
 			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*arena, vehicles);
@@ -381,7 +385,7 @@ void Engine::endGame()
 
 void Engine::getDevUISettings() {
 	fps = devUI.settings.fps;
-
+	audioPlayer->setMusicVolume(devUI.settings.musicVolume);
 	for (unsigned int i = 0; i < vehicles.size(); i++)
 	{
 		// We don't want all the vehicles to have the same color.

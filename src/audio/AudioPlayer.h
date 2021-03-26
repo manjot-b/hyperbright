@@ -19,8 +19,14 @@ public:
 	void stopStartMenuMusic();
 	void playPickupCollision();
 	void playCarIdle();
+	void adjustCarIdlePitch(float speed);
 	void stopCarIdle();
 	void playPowerstationCollision();
+	void playUsePowerupSound();
+	void playEmpSound();
+	void playSpeedSound();
+	void playTrapHitSound();
+	void setMusicVolume(float volume);
 private:
 	void init();
 	int curLoaded;

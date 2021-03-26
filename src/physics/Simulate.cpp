@@ -54,7 +54,7 @@ bool gIsVehicleInAir[4] = { true, true, true, true };
 std::shared_ptr<audio::AudioPlayer> audioPlayer;
 std::shared_ptr<entity::PickupManager> pum;
 std::queue<std::shared_ptr<entity::Pickup>> toBeRemovedPickups;
-
+vector<shared_ptr<entity::Vehicle>>* vehs = NULL;
 class CollisionCallBack : public physx::PxSimulationEventCallback {
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints);  PX_UNUSED(count); }
 	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors);  PX_UNUSED(count); }
@@ -72,20 +72,28 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 			IPhysical* second = static_cast<IPhysical*>(pairs[i].otherActor->userData);
 
 			if (first->getTriggerType() == IPhysical::TriggerType::CHARGING_STATION) {
-				cout << "Station collision detected \n";
+				//cout << "Station collision detected \n";
 				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
 				// This collision will repeat so only trigger it's effect if the 
 				// vehicle needs to be recharged.
 				if (!v->fullEnergy()) {
-					audioPlayer->playPowerstationCollision();
+
+					if (v->getTeam() == vehs->at(0)->getTeam()) {
+						audioPlayer->playPowerstationCollision();
+					}
 					v->restoreEnergy();
 				}
 			}
 			else if (first->getTriggerType() == IPhysical::TriggerType::PICKUP) {
-				audioPlayer->playPickupCollision();
-				cout << "Pickup collision detected" << endl;
+				
+				//cout << "Pickup collision detected" << endl;
 				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
 				std::shared_ptr<entity::Pickup> p = pum->handlePickupOnCollision(v);
+
+				if (v->getTeam() == vehs->at(0)->getTeam()) {
+					audioPlayer->playPickupCollision();
+				}
+
 				if (p->pickupNumber != 0) {
 					toBeRemovedPickups.push(p);
 				}
@@ -142,10 +150,10 @@ void removePickups() {
 	}
 }
 
-
 Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena, std::shared_ptr<entity::PickupManager>& _pickupManager) :
 	physicsModels(_physicsModels), vehicles(_vehicles)
 {
+	vehs = &_vehicles;
 	initPhysics();
 	pum = _pickupManager;
 	for (const auto& wall : arena.getWalls())
@@ -192,10 +200,10 @@ void Simulate::addChargingStations(const entity::Arena::ChargingStationList& sta
 
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
-	0.0f,		0.92f,
-	8.0f,		0.7f,
-	30.0f,		0.4f,
-	120.0f,		0.2f,
+	0.0f,		0.8f,
+	10.0f,		0.4f,
+	20.0f,		0.3f,
+	60.0f,		0.2f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
@@ -206,7 +214,7 @@ PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4)
 PxVehicleKeySmoothingData gKeySmoothingData =
 {
 	{
-		3.0f,	//rise rate eANALOG_INPUT_ACCEL
+		2.0f,	//rise rate eANALOG_INPUT_ACCEL
 		5.0f,	//rise rate eANALOG_INPUT_BRAKE		
 		10.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
 		0.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
@@ -216,8 +224,8 @@ PxVehicleKeySmoothingData gKeySmoothingData =
 		4.0f,	//fall rate eANALOG_INPUT_ACCEL
 		5.0f,	//fall rate eANALOG_INPUT_BRAKE		
 		12.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-		3.f,	//fall rate eANALOG_INPUT_STEER_LEFT
-		3.f	//fall rate eANALOG_INPUT_STEER_RIGHT
+		9.f,	//fall rate eANALOG_INPUT_STEER_LEFT
+		9.f	//fall rate eANALOG_INPUT_STEER_RIGHT
 	}
 };
 
@@ -253,11 +261,14 @@ enum DriveMode
 	eDRIVE_MODE_NONE
 };
 
-PxF32					gVehicleModeLifetime = 4.0f;
-PxF32					gVehicleModeTimer = 0.0f;
-PxU32					gVehicleOrderProgress = 0;
-bool					gVehicleOrderComplete = false;
-bool					gMimicKeyInputs = true;
+PxF32		gVehicleModeLifetime = 4.0f;
+PxF32		gVehicleModeTimer = 0.0f;
+PxU32		gVehicleOrderProgress = 0;
+bool		gVehicleOrderComplete = false;
+bool		gMimicKeyInputs = true;
+const PxF32 normalChassisMass = 1400.0f;
+const PxF32 slowChassisMass = 3000.0f;
+const PxF32 fastChassisMass = 600.0f;
 
 VehicleDesc initVehicleDesc()
 {
@@ -265,7 +276,7 @@ VehicleDesc initVehicleDesc()
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
 	const float vehScale = 1 / 3.f;
-	const PxF32 chassisMass = 1000.0f; // default 1500
+	const PxF32 chassisMass = normalChassisMass; 
 	const PxVec3 chassisDims(3.7f * vehScale, 2.5f * vehScale, 10.1f * vehScale);
 	const PxVec3 chassisMOI
 	((chassisDims.y * chassisDims.y + chassisDims.z * chassisDims.z) * chassisMass / 12.0f,
@@ -393,6 +404,16 @@ namespace Driving {
 		}
 	}
 
+	void releaseTurn(int dir, int v)
+	{
+		if (dir == 1) {
+			startTurnHardLeftMode(v);
+		}
+		else {
+			startTurnHardRightMode(v);
+		}
+	}
+
 	void releaseAllControls(int v)
 	{
 		if (gMimicKeyInputs)
@@ -414,7 +435,20 @@ namespace Driving {
 
 	void applyVehicleFlipImpulse(int v)
 	{
-		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(-1000.f, -3500.f, 0.f), PxVec3(1.f, 0.f, 0.f), PxForceMode::eIMPULSE);
+		PxF32 mass = gVehicle4W[v]->getRigidDynamicActor()->getMass();
+		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(-mass, -3.5f * mass, 0.f), PxVec3(1.f, 0.f, 0.f), PxForceMode::eIMPULSE);
+	}
+	void applyVehicleBoost(int v)
+	{
+		PxF32 mass = gVehicle4W[v]->getRigidDynamicActor()->getMass();
+		if (gVehicle4W[v]->computeForwardSpeed() < 40) 
+			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, mass * 0.5f), PxVec3(0.f, 0.f, 0.f), PxForceMode::eIMPULSE);
+	}
+	void applyVehicleTrap(int v)
+	{
+		PxF32 mass = gVehicle4W[v]->getRigidDynamicActor()->getMass();
+		if (gVehicle4W[v]->computeForwardSpeed() > 5)
+			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 1.5f), PxVec3(0.f, 0.f, 0.f), PxForceMode::eIMPULSE);
 	}
 }//namespace Driving
 
@@ -502,24 +536,39 @@ void setDriveMode(entity::VehicleController* ctrl)
 {
 	int vNum = ctrl->contrId;
 
+	//APPLY FLIP PULSE
 	if (ctrl->flipImpulse) {
 		Driving::applyVehicleFlipImpulse(vNum);
 		ctrl->flipImpulse = false;
 	}
 
+	if (ctrl->trap.second) {
+		Driving::applyVehicleTrap(vNum);
+		ctrl->trap.first -= 1;
+		if (ctrl->trap.first <= 0) ctrl->trap.second = false;
+	}
+
+	if (ctrl->boost.second) {
+		Driving::applyVehicleBoost(vNum);
+		ctrl->boost.first -= 1;
+		if (ctrl->boost.first <= 0) ctrl->boost.second = false;
+	}
+
 	Driving::releaseAllControls(vNum);
-	//BRAKE OR FORWARD OR BACKWARD
+	//BRAKE
 	if (ctrl->input[5]) {
 		Driving::startBrakeMode(vNum);
 	} 
+	//FORWARD
 	else if (ctrl->input[0]) {
 		Driving::startAccelerateForwardsMode(vNum);
 	}
+	//REVERSE
 	else if (ctrl->input[1]) {
 		Driving::startAccelerateReverseMode(vNum);
 	}
 
-	//LEFT OR RIGHT
+	//LEFT
 	if (ctrl->input[2]) {
 		if (ctrl->input[4]) {
 			Driving::startHandbrakeTurnLeftMode(vNum);
@@ -528,6 +577,7 @@ void setDriveMode(entity::VehicleController* ctrl)
 			Driving::startTurnHardLeftMode(vNum);
 		}
 	}
+	//RIGHT
 	else if (ctrl->input[3]) {
 		if (ctrl->input[4]) {
 			Driving::startHandbrakeTurnRightMode(vNum);
@@ -535,6 +585,11 @@ void setDriveMode(entity::VehicleController* ctrl)
 		else {
 			Driving::startTurnHardRightMode(vNum);
 		}
+	}
+	//STRAIGHTEN
+	else if (ctrl->straighten != 0){
+		Driving::releaseTurn(ctrl->straighten, vNum);
+		ctrl->straighten = 0;
 	}
 }
 
@@ -592,7 +647,7 @@ void Simulate::stepPhysics(float frameRate)
 		vehicle->updateSpeedometer(frameRate);
 		if (vehicle->getTeam() == engine::teamStats::Teams::TEAM0) {
 			// print out aspects of the player vehicle per frame here
-
+			
 		}
 	}
 }
@@ -667,8 +722,28 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 		if (tileCoords)
 		{
 			vehicle->currentTile = *tileCoords;
-
-			if (vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))
+			
+			if (arena.isTrap(vehicle->currentTile)) {
+				
+				if (vehicle->getTeam() == vehicles.at(0)->getTeam()) {
+					audioPlayer->playTrapHitSound();
+				}
+				vehicle->applyTrap(300.f);
+				std::cout << "TRAP TRIGGERED\n";
+				arena.removeTrap(vehicle->currentTile);
+			} else if(vehicle->syphonActive){
+				std::optional<engine::teamStats::Teams> team = arena.getTeamOnTile(*tileCoords);
+			
+				if (team) {
+					// Decrement the teams score if not the current vehicle colors and remove the team
+					arena.setTileTeam(*tileCoords, nullopt);
+					engine::teamStats::scores[*team]--;
+					vehicle->increaseEnergy();
+				}
+			
+				//CHANGE TILE COLOR TO ORIGINAL TILE COLOR
+				//BUMP UP CUR VEHICLE EMERGY
+			} else if (vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))
 			{
 				std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
 
@@ -685,7 +760,7 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 					arena.setTileTeam(*tileCoords, vehicle->getTeam());
 					vehicle->reduceEnergy();
 				}
-			}
+			} // INSERT CODE FOR TRAP
 		}
 	}
 }

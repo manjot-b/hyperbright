@@ -112,6 +112,20 @@ void Model::render() const
 	}
 }
 
+void Model::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const
+{
+	bool isInstance = m_instanceModelMatrices != nullptr;
+
+	shadowShader->setUniform1i("isInstance", isInstance);
+	shadowShader->setUniformMatrix4fv("model", modelMatrix);
+
+	for (auto& mesh : meshes)
+	{
+		unsigned int count = m_instanceModelMatrices ? m_instanceModelMatrices->size() : 0;
+		mesh->render(count);
+	}
+}
+
 /**
  * Updates the model matrix and position. Should be called before draw().
  */

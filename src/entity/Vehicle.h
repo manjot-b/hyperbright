@@ -9,7 +9,7 @@
 
 #include "model/Model.h"
 #include "entity/Pickup.h"
-#include "render/Renderer.h"
+#include "render/IRenderable.h"
 #include "physics/Interface.h"
 #include "engine/TeamStats.h"
 
@@ -18,12 +18,16 @@ namespace entity {
 
 struct VehicleController {
 	int contrId;
+	/*input[6] = { forward, reverse, right, left, handbrake, brake }*/
 	int input[6] = { 0,0,0,0,0,0 };
 	bool flipImpulse = false;
-	// input controls { accelerate, reverse, turn right, turn left, hard turn, brake }
+	std::pair<int, bool> boost = std::make_pair(0, false);
+	std::pair<int, bool> trap = std::make_pair(0, false);
+	// straighten: 0 => do nothing, 1 => left correction, 2 => right correction
+	int straighten = 0;
 };
 
-class Vehicle : public render::Renderer::IRenderable, public physics::IPhysical
+class Vehicle : public render::IRenderable, public physics::IPhysical
 {
 public:
 	Vehicle(
@@ -42,7 +46,9 @@ public:
 	const glm::vec3& getPosition() const	{ return body->getPosition(); }
 	float readSpeedometer()					{ return speedometer; }
 	engine::teamStats::Teams getTeam() const{ return team; }
+	void setTeam(engine::teamStats::Teams t){ team = t; }
 
+	void increaseEnergy();
 	void updateOrientation();
 	glm::quat getOrientation() const;
 
@@ -60,6 +66,12 @@ public:
 	void equipPickup(std::shared_ptr<Pickup> pickup);
 	void activatePickup();
 	void applyFlipImpulse();
+
+	void applyBoost(int duration);
+	void releaseBoost();
+
+	void applyTrap(int duration);
+	void releaseTrap();
 
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& frontRight, const glm::mat4& rearRight, const glm::mat4& rearLeft);
@@ -92,6 +104,7 @@ public:
 
 	int index;
 	void render() const;
+	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 private:
 
 	engine::teamStats::Teams team;
@@ -116,6 +129,7 @@ private:
 	unsigned int brakeLightsIdx;
 	glm::vec4 brakeLightsColor;
 	glm::vec4 reverseLightsColor;
+	void straighten(int dir);
 };
 }	// namespace entity
 }	// namespace hyperbright

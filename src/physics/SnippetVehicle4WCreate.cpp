@@ -85,8 +85,8 @@ void setupWheelsSimulationData
 		wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque=3000.0f;
 		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=3000.0f;
 		//Enable steering for the front wheels only.
-		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.3f;
-		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.3f;
+		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.24f;
+		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.24f;
 	}
 
 	//Set up the tires.
@@ -120,7 +120,7 @@ void setupWheelsSimulationData
 		{
 			suspensions[i].mMaxCompression = 0.3f;
 			suspensions[i].mMaxDroop = 0.1f;
-			suspensions[i].mSpringStrength = 35000.0f;	
+			suspensions[i].mSpringStrength = 65000.0f;	
 			suspensions[i].mSpringDamperRate = 4500.0f;
 			suspensions[i].mSprungMass = suspSprungMasses[i];
 		}
@@ -192,12 +192,12 @@ void setupWheelsSimulationData
 	PxVehicleAntiRollBarData barFront;
 	barFront.mWheel0 = PxVehicleDrive4WWheelOrder::eFRONT_LEFT;
 	barFront.mWheel1 = PxVehicleDrive4WWheelOrder::eFRONT_RIGHT;
-	barFront.mStiffness = 50000.0f;
+	barFront.mStiffness = 70000.0f;
 	wheelsSimData->addAntiRollBarData(barFront);
 	PxVehicleAntiRollBarData barRear;
 	barRear.mWheel0 = PxVehicleDrive4WWheelOrder::eREAR_LEFT;
 	barRear.mWheel1 = PxVehicleDrive4WWheelOrder::eREAR_RIGHT;
-	barRear.mStiffness = 65000.0f;
+	barRear.mStiffness = 75000.0f;
 	wheelsSimData->addAntiRollBarData(barRear);
 }
 

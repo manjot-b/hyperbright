@@ -15,6 +15,7 @@
 #include "ui/Menu.h"
 #include "ui/DevUI.h"
 #include "ui/HUD.h"
+#include "render/IRenderable.h"
 #include "render/Renderer.h"
 #include "physics/Simulate.h"
 #include "opengl-helper/Texture.h"
@@ -52,7 +53,7 @@ private:
 
 	std::vector<std::shared_ptr<entity::Vehicle>> vehicles;
 	std::vector<std::shared_ptr<physics::IPhysical>> physicsModels;
-	std::vector<std::shared_ptr<render::Renderer::IRenderable>> renderables;
+	std::vector<std::shared_ptr<render::IRenderable>> renderables;
 	std::shared_ptr<openGLHelper::Shader> shader;
 
 	std::shared_ptr<model::Model> battery;
