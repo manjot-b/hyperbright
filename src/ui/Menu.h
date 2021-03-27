@@ -29,10 +29,10 @@ public:
 
 	enum class State {
 		OFF,
-		ON
+		WELCOME
 	};
 
-	MainMenu(State state = State::ON);
+	MainMenu(State state = State::WELCOME);
 	void render();
 	State getState() const;
 	void setState(State state);

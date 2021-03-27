@@ -42,7 +42,7 @@ bool trap;
 
 void Controller::processInput(float deltaSec)
 {
-	if (mainMenu.getState() == ui::MainMenu::State::ON || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
+	if (mainMenu.getState() != ui::MainMenu::State::OFF || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
 		return;
 	}
 
@@ -240,7 +240,7 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (controller->mainMenu.getState() == ui::MainMenu::State::ON) {
+	if (controller->mainMenu.getState() != ui::MainMenu::State::OFF) {
 		controller->mainMenuKeyCallback(key, scancode, action, mods);
 	}
 	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
@@ -320,7 +320,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 			else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
 				pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
 				pauseMenu.setState(ui::PauseMenu::State::OFF);
-				mainMenu.setState(ui::MainMenu::State::ON);
+				mainMenu.setState(ui::MainMenu::State::WELCOME);
 			}
 			else {
 				pauseMenu.setState(ui::PauseMenu::State::OFF);
@@ -366,7 +366,7 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 		case GLFW_KEY_ENTER:
 			if (endMenu.getSelection() == ui::EndMenu::Selection::MAIN_MENU) {
 				endMenu.setState(ui::EndMenu::State::OFF);
-				mainMenu.setState(ui::MainMenu::State::ON);
+				mainMenu.setState(ui::MainMenu::State::WELCOME);
 			}
 			else {
 				setWindowShouldClose(true);

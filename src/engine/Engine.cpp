@@ -224,7 +224,7 @@ void Engine::run()
 		runMainMenu();
 		runGame();
 
-		if (mainMenu.getState() != ui::MainMenu::State::ON) {
+		if (mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 			endGame();
 
 			if (!controller->isWindowClosed()) {	// user selected to go to main menu from end menu.
@@ -244,7 +244,7 @@ This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
 	audioPlayer->playStartMenuMusic();
-	while (!controller->isWindowClosed() && mainMenu.getState() == ui::MainMenu::State::ON) {
+	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::OFF) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -287,7 +287,7 @@ void Engine::runGame() {
 	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();
 
-	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::ON) {
+	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -360,7 +360,7 @@ void Engine::runGame() {
 //A loop for endgame
 void Engine::endGame()
 {
-	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::ON) {
+	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
