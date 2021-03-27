@@ -16,7 +16,7 @@ namespace ui {
 HUD::HUD(float s, float e, const entity::Arena& arena) :
 	font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(150.f), speed(s), energy(e), miniMapPos(0.f, 50.f, 0.1f)
 {
-	miniMapTexture = std::make_shared<openGLHelper::Texture>(512, 512, false);
+	miniMapTexture = std::make_shared<openGLHelper::Texture>(256, 256, false);
 	miniMapBuffer = std::make_unique<openGLHelper::FrameBuffer>(miniMapTexture, false);
 	
 	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
@@ -50,6 +50,8 @@ void HUD::drawHUD() {
 	// down below. Otherwise those quads don't render.
 	quad->getShader()->use();
 	quad->normalizeToViewport(width, height);
+	quad->translate(glm::vec2(.8f, .3f));
+	quad->scale(.35f);
 	quad->render();
 	glUseProgram(0);
 

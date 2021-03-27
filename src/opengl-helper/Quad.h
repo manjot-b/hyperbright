@@ -21,6 +21,8 @@ public:
 	void setModelMatrix(glm::mat4& mat);
 	const glm::mat4& getModelMatrix() const;
 	void normalizeToViewport(unsigned int width, unsigned int height);
+	void scale(float scale);
+	void translate(glm::vec2 trans);
 
 private:
 	unsigned int indicesCount;
