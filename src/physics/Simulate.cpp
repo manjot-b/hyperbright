@@ -723,6 +723,16 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 		{
 			vehicle->currentTile = *tileCoords;
 			
+			// We don't want to change the tile color if another vehicle
+			// is already on the tile.
+			bool onlyVehicleOnTile = true;
+			for (const auto& otherVehicle : vehicles) {
+				if (otherVehicle->getTeam() != vehicle->getTeam() && otherVehicle->currentTile == vehicle->currentTile) {
+					onlyVehicleOnTile = false;
+					break;
+				}
+			}
+
 			if (arena.isTrap(vehicle->currentTile)) {
 				
 				if (vehicle->getTeam() == vehicles.at(0)->getTeam()) {
@@ -735,16 +745,14 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 				std::optional<engine::teamStats::Teams> team = arena.getTeamOnTile(*tileCoords);
 			
 				if (team) {
-					// Decrement the teams score if not the current vehicle colors and remove the team
-					arena.setTileTeam(*tileCoords, nullopt);
+					// Decrement the teams score and remove the team
+					arena.setTileTeam(*tileCoords, std::nullopt);
 					engine::teamStats::scores[*team]--;
 					vehicle->increaseEnergy();
 				}
 			
-				//CHANGE TILE COLOR TO ORIGINAL TILE COLOR
-				//BUMP UP CUR VEHICLE EMERGY
-			} else if (vehicle->enoughEnergy() && !arena.tileHasChargingStation(*tileCoords))
-			{
+			
+			} else if (vehicle->enoughEnergy() && onlyVehicleOnTile && !arena.tileHasChargingStation(*tileCoords)) {
 				std::optional<engine::teamStats::Teams> old = arena.getTeamOnTile(*tileCoords);
 
 				if (old && *old != vehicle->getTeam())
