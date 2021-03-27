@@ -20,7 +20,7 @@ Renderer::Renderer()
 	shadowShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/shadow_vertex.glsl", "rsc/shaders/shadow_fragment.glsl");
 	shadowShader->link();
 	shadowMap = std::make_shared<openGLHelper::Texture>(4096, 4096, true);
-	shadowBuffer = std::make_unique<openGLHelper::FrameBuffer>(shadowMap);
+	shadowBuffer = std::make_unique<openGLHelper::FrameBuffer>(shadowMap, true);
 
 	perspective = glm::perspective(glm::radians(45.0f), float(width)/height, 0.1f, 1000.0f);
 
@@ -145,7 +145,7 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 *	menu: The menu object.
 */
 
-void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD* hud = nullptr)
+void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, const std::unique_ptr<ui::HUD>& hud)
 {
 	// Render to the shadow map first.
 	lightView = glm::lookAt(
@@ -180,7 +180,12 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	for (const auto& renderable : renderables)
 	{
 		renderable->getShader()->use();
-		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition(), lightProjection * lightView);
+		//if (hud) {
+		//	renderable->sendSharedShaderUniforms(hud->getMiniMapOrtho(), hud->getMiniMapCameraView(), hud->getMiniMapCameraPos(), lightProjection * lightView);
+		//}
+		//else {
+			renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition(), lightProjection * lightView);
+		//}
 		renderable->render();
 	}
 
@@ -194,7 +199,22 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 
 	// Render UI elements
 	menu.render();
-	if (hud != nullptr) {
+	if (hud) {
+		
+		hud->preRenderMiniMap();
+		//shadowMap->bind(GL_TEXTURE1);
+		// Renders the scene to the minimaps framebuffer.
+		for (const auto& renderable : renderables)
+		{
+			renderable->getShader()->use();
+			renderable->sendSharedShaderUniforms(hud->getMiniMapOrtho(), hud->getMiniMapCameraView(), hud->getMiniMapCameraPos(), lightProjection * lightView);
+			renderable->render();
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, width, height);
+		
+		
 		hud->drawHUD();
 	}
 	devUI.render();

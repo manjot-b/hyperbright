@@ -9,7 +9,7 @@
 namespace hyperbright {
 namespace engine {
 Engine::Engine() :
-	camera(), mainMenu(), pauseMenu(), endMenu(), playerHUD(0, 0), devUI(render::Renderer::getInstance().getWindow()),
+	camera(), mainMenu(), pauseMenu(), endMenu(), devUI(render::Renderer::getInstance().getWindow()),
 	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(100)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -21,6 +21,8 @@ Engine::Engine() :
 	loadTextures();
 	initEntities();
 	initDevUI();
+
+	playerHUD = std::make_unique<ui::HUD>(0.f, 0.f, *arena);
 
 	audioPlayer = std::make_shared<audio::AudioPlayer>();
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
@@ -51,7 +53,7 @@ void Engine::resetAll()
 
 	initEntities();
 	initDevUI();
-	playerHUD.update(0, 0);
+	playerHUD->update(0, 0);
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
 		camera,
 		vehicles[0],
@@ -341,11 +343,11 @@ void Engine::runGame() {
 		devUI.update(deltaSec, roundTimer);
 
 		//HUD
-		playerHUD.update(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
-		playerHUD.updateTime(roundTimer);
+		playerHUD->update(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
+		playerHUD->updateTime(roundTimer);
 
 		// render the updated position of all models and ImGui
-		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, &playerHUD);
+		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, playerHUD);
 
 		getDevUISettings();
 		glfwPollEvents();

@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 #include "HUD.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <string>
 #include <iostream>
 #include <stdio.h>
@@ -11,7 +13,25 @@
 namespace hyperbright {
 namespace ui {
 
-HUD::HUD(float s, float e) : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(150.f), speed(s), energy(e) {}
+HUD::HUD(float s, float e, const entity::Arena& arena) :
+	font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(150.f), speed(s), energy(e), miniMapPos(0.f, 50.f, 0.1f)
+{
+	miniMapTexture = std::make_shared<openGLHelper::Texture>(128, 128, false);
+	miniMapBuffer = std::make_unique<openGLHelper::FrameBuffer>(miniMapTexture, false);
+	
+	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
+	quadShader->link();
+	quad = std::make_unique<openGLHelper::Quad>(quadShader, miniMapTexture);
+	//quad = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/tree.jpeg"));
+
+	float orthoSize = arena.getArenaSize().x * .5f * arena.getTileWidth();
+	miniMapOrtho = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, .1f, 300.f);
+	miniMapView = glm::lookAt(
+		miniMapPos,
+		glm::vec3(0.f, 0.f, 0.f),
+		glm::vec3(0.f, 1.f, 0.f)
+	);
+}
 
 void HUD::updateWindowAndFontSize()
 {
@@ -38,6 +58,7 @@ void HUD::drawHUD() {
 	font.Render(speedStr, -1, FTPoint(xCord, yCord, 0));
 	font.FaceSize(scale * defaultFontSize / 3);
 	font.Render("KPH", -1, FTPoint(width - (3 * 21 * scale), 10* scale, 0));
+	
 
 	/*
 	float max = M_PI - (speed / 29) * (M_PI / 2);
@@ -58,7 +79,6 @@ void HUD::drawHUD() {
 	}
 	glEnd();
 	*/
-
 
 	//Energy bar
 	int numOfBar = (int)(energy * 25);
@@ -104,6 +124,21 @@ void HUD::drawHUD() {
 	glVertex2f(-1, 1- timerHeight);
 	glEnd();
 	glPopAttrib();
+
+	// render minimap
+	
+	quad->getShader()->use();
+	quad->normalizeToViewport(width, height);
+	quad->render();
+	glUseProgram(0);
+}
+
+void HUD::preRenderMiniMap()
+{
+	glViewport(0, 0, miniMapTexture->getWidth(), miniMapTexture->getHeight());
+	miniMapBuffer->bind();
+	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 //update roundTimer
@@ -116,6 +151,10 @@ void HUD::update(float s, float e) {
 	speed = s;
 	energy = e;
 }
+
+const glm::vec3& HUD::getMiniMapCameraPos() { return miniMapPos; }
+const glm::mat4& HUD::getMiniMapCameraView() { return miniMapView; }
+const glm::mat4& HUD::getMiniMapOrtho() { return miniMapOrtho; }
 
 }	// namespace ui
 }	// namespace hyperbright
