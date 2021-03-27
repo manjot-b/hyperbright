@@ -279,5 +279,9 @@ std::vector<std::vector<bool>> Arena::getAiArenaRepresentation() {
 	}
 	return arenaRep;
 }
+
+glm::vec2 Arena::getArenaSize() const { return glm::vec2(tileGrid.size(), tileGrid[0].size()); }
+float Arena::getTileWidth() const { return tileWidth + 2 * tileBorderWidth; }
+
 }	// namespace entity
 }	// namespace hyperbright

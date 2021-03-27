@@ -8,17 +8,19 @@ namespace hyperbright {
 namespace openGLHelper {
 
 /*
- A FrameBuffer object that can only hold a depth texture for now.
+ A FrameBuffer object that can only hold a texture.
 */
 class FrameBuffer
 {
 public:
-	FrameBuffer(std::shared_ptr<Texture>& depthTexture);
+	FrameBuffer(std::shared_ptr<Texture>& texture, bool isDepth);
+	~FrameBuffer();
 	void bind() const;
 	const std::shared_ptr<Texture>& getTexture() const;
 
 private:
 	unsigned int id;
+	unsigned int renderBufferId;
 	std::shared_ptr<Texture> texture;
 };
 }	// namespace openGLHelper

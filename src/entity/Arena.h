@@ -53,6 +53,9 @@ public:
 	void placeTrap(glm::vec2 location);
 	void removeTrap(glm::vec2 location);
 	std::vector<std::vector<bool>> getAiArenaRepresentation();
+
+	glm::vec2 getArenaSize() const;
+	float getTileWidth() const;
 private:
 	class Tile {
 		friend class Arena;

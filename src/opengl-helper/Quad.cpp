@@ -63,5 +63,15 @@ void Quad::normalizeToViewport(unsigned int width, unsigned int height)
 	modelMat = glm::scale(glm::mat4(1.f), glm::vec3(1.f, yScale, 1.f));
 }
 
+void Quad::scale(float scale)
+{
+	modelMat = glm::scale(modelMat, glm::vec3(scale, scale, 1.f));
+}
+
+void Quad::translate(glm::vec2 trans)
+{
+	modelMat = glm::translate(modelMat, glm::vec3(trans, 0.f));
+}
+
 }	// namespace openGLHelper
 }	// namespace hyperbright

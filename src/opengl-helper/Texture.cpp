@@ -58,10 +58,15 @@ Texture::Texture(unsigned int width, unsigned int height, bool isDepth) : width(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, isDepth ? GL_CLAMP_TO_BORDER : GL_REPEAT);
     float borderColor[] = { 1.f, 1.f, 1.f, 1.f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, isDepth ? GL_NEAREST : GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, isDepth ? GL_NEAREST : GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, isDepth ? GL_NEAREST : GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, isDepth ? GL_NEAREST : GL_LINEAR);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Texture::~Texture()
+{
+    glDeleteTextures(1, &id);
 }
 
 unsigned int Texture::getId() const
