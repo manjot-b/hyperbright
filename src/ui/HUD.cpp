@@ -16,7 +16,7 @@ namespace ui {
 HUD::HUD(float s, float e, const entity::Arena& arena) :
 	font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(150.f), speed(s), energy(e), miniMapPos(0.f, 50.f, 0.1f)
 {
-	miniMapTexture = std::make_shared<openGLHelper::Texture>(128, 128, false);
+	miniMapTexture = std::make_shared<openGLHelper::Texture>(512, 512, false);
 	miniMapBuffer = std::make_unique<openGLHelper::FrameBuffer>(miniMapTexture, false);
 	
 	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
@@ -44,6 +44,14 @@ void HUD::drawHUD() {
 	float scale = (width * 0.125) / defaultFontSize;
 	float xCord = (float)width - (3 * 63 * scale);
 	float yCord = 45 * scale;
+
+	// Render minimap
+	// For some reason this needs to happen before rendering the quads for the energy bar
+	// down below. Otherwise those quads don't render.
+	quad->getShader()->use();
+	quad->normalizeToViewport(width, height);
+	quad->render();
+	glUseProgram(0);
 
 	//Speedometer
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -125,12 +133,7 @@ void HUD::drawHUD() {
 	glEnd();
 	glPopAttrib();
 
-	// render minimap
 	
-	quad->getShader()->use();
-	quad->normalizeToViewport(width, height);
-	quad->render();
-	glUseProgram(0);
 }
 
 void HUD::preRenderMiniMap()

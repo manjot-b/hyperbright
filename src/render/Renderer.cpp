@@ -180,12 +180,7 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	for (const auto& renderable : renderables)
 	{
 		renderable->getShader()->use();
-		//if (hud) {
-		//	renderable->sendSharedShaderUniforms(hud->getMiniMapOrtho(), hud->getMiniMapCameraView(), hud->getMiniMapCameraPos(), lightProjection * lightView);
-		//}
-		//else {
-			renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition(), lightProjection * lightView);
-		//}
+		renderable->sendSharedShaderUniforms(perspective, camera.getViewMatrix(), camera.getPosition(), lightProjection * lightView);
 		renderable->render();
 	}
 
@@ -202,7 +197,7 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	if (hud) {
 		
 		hud->preRenderMiniMap();
-		//shadowMap->bind(GL_TEXTURE1);
+
 		// Renders the scene to the minimaps framebuffer.
 		for (const auto& renderable : renderables)
 		{
