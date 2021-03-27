@@ -37,6 +37,13 @@ FrameBuffer::FrameBuffer(std::shared_ptr<Texture>& texture, bool isDepth) :
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+FrameBuffer::~FrameBuffer()
+{
+	if (renderBufferId)
+		glDeleteRenderbuffers(1, &renderBufferId);
+	glDeleteFramebuffers(1, &id);
+}
+
 void FrameBuffer::bind() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, id);

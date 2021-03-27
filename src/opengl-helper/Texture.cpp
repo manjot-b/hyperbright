@@ -64,6 +64,11 @@ Texture::Texture(unsigned int width, unsigned int height, bool isDepth) : width(
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+Texture::~Texture()
+{
+    glDeleteTextures(1, &id);
+}
+
 unsigned int Texture::getId() const
 {
 	return id;

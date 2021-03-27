@@ -14,6 +14,7 @@ class FrameBuffer
 {
 public:
 	FrameBuffer(std::shared_ptr<Texture>& texture, bool isDepth);
+	~FrameBuffer();
 	void bind() const;
 	const std::shared_ptr<Texture>& getTexture() const;
 
