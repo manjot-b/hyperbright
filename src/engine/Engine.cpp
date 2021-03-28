@@ -19,15 +19,12 @@ Engine::Engine() :
 
 	// load textures into a shared pointer.
 	loadTextures();
-	initEntities();
+	initMainMenuEntities();
 	initDevUI();
-
-	playerHUD = std::make_unique<ui::HUD>(0.f, 0.f, *arena);
 
 	audioPlayer = std::make_shared<audio::AudioPlayer>();
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
 		camera,
-		vehicles[0],
 		mainMenu,
 		pauseMenu,
 		endMenu,
@@ -51,12 +48,10 @@ void Engine::resetAll()
 	for (unsigned int i = 0; i < teamStats::teamCount; i++)
 		teamStats::scores[static_cast<teamStats::Teams>(i)] = 0;
 
-	initEntities();
+	initMainMenuEntities();
 	initDevUI();
-	playerHUD->update(0, 0);
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
 		camera,
-		vehicles[0],
 		mainMenu,
 		pauseMenu,
 		endMenu,
@@ -66,7 +61,8 @@ void Engine::resetAll()
 void Engine::initDevUI()
 {
 	devUI.settings.fps = fps;
-	devUI.settings.vehicleBodyMaterial = vehicles[0]->getBodyMaterial();
+	if (vehicles.size() > 0)
+		devUI.settings.vehicleBodyMaterial = vehicles[0]->getBodyMaterial();
 }
 
 void Engine::loadTextures()
@@ -175,19 +171,30 @@ void Engine::buildArena2() {
 }
 
 
+void Engine::initMainMenuEntities()
+{
+	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
+	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
+	int arena_size = 25;
+	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
+	arena->addChargingStation(arena_size / 2, arena_size / 2 + 3, entity::Arena::Orientation::POS_Z);
+	renderables.push_back(arena);
+}
 
 void Engine::initEntities()
 {	
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
-	currentArena = 2;
-	if (currentArena == 1) {
+	switch (mainMenu.getArenaSelection())
+	{
+	case ui::MainMenu::ArenaSelection::ARENA1:
 		buildArena1();
-	}
-	else if (currentArena == 2) {
+		break;
+	case ui::MainMenu::ArenaSelection::ARENA2:
 		buildArena2();
+		break;
 	}
 
 	renderables.push_back(arena);
@@ -197,7 +204,8 @@ void Engine::initEntities()
 	vehicles.push_back(player);
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(player));
-	
+	controller->setPlayerVehicle(player);
+
 	// Create the 4 ai vehicles, setting their starting position, direction, and team (which includes the color of the vehicle/tiles)
 	
 	std::shared_ptr<entity::Vehicle> ai1 = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM1, shader, arena->getTilePos(ai1StartingPosition) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
@@ -213,7 +221,7 @@ void Engine::initEntities()
 	std::shared_ptr<entity::Vehicle> ai3 = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM3, shader, arena->getTilePos(ai3StartingPosition) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai3);
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(ai3));
-	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));	
+	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
 }
 
 
@@ -222,9 +230,13 @@ void Engine::run()
 	while (!controller->isWindowClosed())
 	{
 		runMainMenu();
+		renderables.clear();	// remove main menu entities
+		initEntities();
+		initDevUI();
+
 		runGame();
 
-		if (mainMenu.getState() != ui::MainMenu::State::ON) {
+		if (mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 			endGame();
 
 			if (!controller->isWindowClosed()) {	// user selected to go to main menu from end menu.
@@ -244,7 +256,7 @@ This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
 	audioPlayer->playStartMenuMusic();
-	while (!controller->isWindowClosed() && mainMenu.getState() == ui::MainMenu::State::ON) {
+	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::OFF) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -260,6 +272,8 @@ void Engine::runMainMenu() {
 
 		devUI.update(deltaSec, roundTimer);
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
+		
+		arena->animateChargingStations(currentFrame);
 
 		// render only the menu for now.
 		render::Renderer::getInstance().render(renderables, devUI, mainMenu, camera, nullptr);
@@ -273,21 +287,25 @@ void Engine::runMainMenu() {
 
 void Engine::runGame() {
 	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena, &vehicles, renderables);
-	pickupManager->initPickups(shader, currentArena);
+	pickupManager->initPickups(shader, mainMenu.getArenaSelection());
 
 	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
 	ai::AiManager aiManager;
-	aiManager.setArena(arena, currentArena);//MUST DO BEFORE LOADING VEHICLE
+	aiManager.setArena(arena, mainMenu.getArenaSelection());//MUST DO BEFORE LOADING VEHICLE
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
+	ui::HUD playerHUD(0.f, 0.f, *arena);
+
 	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();
 
-	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::ON) {
+	lastFrame = glfwGetTime();	// Accounts for setup time
+
+	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;
@@ -343,11 +361,11 @@ void Engine::runGame() {
 		devUI.update(deltaSec, roundTimer);
 
 		//HUD
-		playerHUD->update(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
-		playerHUD->updateTime(roundTimer);
+		playerHUD.update(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
+		playerHUD.updateTime(roundTimer);
 
 		// render the updated position of all models and ImGui
-		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, playerHUD);
+		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, &playerHUD);
 
 		getDevUISettings();
 		glfwPollEvents();
@@ -360,7 +378,7 @@ void Engine::runGame() {
 //A loop for endgame
 void Engine::endGame()
 {
-	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::ON) {
+	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 		// update global time
 		float currentFrame = glfwGetTime();
 		deltaSec = currentFrame - lastFrame;

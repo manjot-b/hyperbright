@@ -33,7 +33,6 @@ public:
 
 	Controller(GLFWwindow* window,
 		render::Camera& camera,
-		std::shared_ptr<entity::Vehicle>& playerVehicle,
 		ui::MainMenu& mainmenu,
 		ui::PauseMenu& pausemenu,
 		ui::EndMenu& endmenu,
@@ -50,6 +49,8 @@ public:
 	//std::queue<int> gameInput();
 	void processInput(float deltaSec);
 	bool isCameraManual() { return manualCamera; }
+
+	void setPlayerVehicle(std::shared_ptr<entity::Vehicle>& vehicle);
 
 private:
 	GLFWwindow* window;

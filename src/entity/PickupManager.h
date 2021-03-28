@@ -5,7 +5,7 @@
 #include "entity/Arena.h"
 #include "entity/Pickup.h"
 #include "entity/Vehicle.h"
-
+#include "ui/Menu.h"
 
 namespace hyperbright {
 namespace entity {
@@ -17,7 +17,7 @@ public:
 	void checkPickups();
 	void animatePickups(float fpsLimit);
 	void tearDown();
-	void initPickups(const std::shared_ptr<openGLHelper::Shader>& shader, int arenaSelection);
+	void initPickups(const std::shared_ptr<openGLHelper::Shader>& shader, ui::MainMenu::ArenaSelection arenaSelection);
 
 	std::vector< std::shared_ptr<Pickup> > carriedPickups;//pickups currently being carried by players
 	std::vector< std::shared_ptr<Pickup> > onArenaPickups;//pickups to render and search for collisions

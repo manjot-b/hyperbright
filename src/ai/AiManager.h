@@ -4,6 +4,7 @@
 #include "ai/Ai.h"
 #include "entity/Vehicle.h"
 #include "entity/Arena.h"
+#include "ui/Menu.h"
 
 namespace hyperbright {
 namespace ai {
@@ -16,12 +17,12 @@ public:
 	void loadAiVehicle(std::shared_ptr<entity::Vehicle> vehicle);
 	void makeMoves();
 	//void setArena(std::vector<std::vector<bool>> arena);
-	void setArena(std::shared_ptr<entity::Arena> a, int arenaSelection);
+	void setArena(std::shared_ptr<entity::Arena> a, ui::MainMenu::ArenaSelection arenaSelection);
 private:
 	std::vector<std::shared_ptr<Ai>> loadedAi;
 	//std::vector<std::vector<bool>> arenaRep;
 	std::shared_ptr<entity::Arena> arena;
-	int currentArena;
+	ui::MainMenu::ArenaSelection currentArena;
 	void generatePath(std::shared_ptr<Ai> ai);
 	glm::vec2 generateTargetOne(glm::vec2 lastGoal, std::shared_ptr<Ai> ai);
 	glm::vec2 generateTargetTwo(glm::vec2 lastGoal, std::shared_ptr<Ai> ai);

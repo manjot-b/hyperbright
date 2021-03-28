@@ -34,6 +34,7 @@ public:
 	void run();
 	
 private:
+	void initMainMenuEntities();
 	void buildArena1();
 	void buildArena2();
 
@@ -47,7 +48,6 @@ private:
 	ui::PauseMenu pauseMenu;
 	ui::EndMenu endMenu;
 	ui::DevUI devUI;
-	std::unique_ptr<ui::HUD> playerHUD;
 	std::shared_ptr<entity::Arena> arena;
 	std::unique_ptr<Controller> controller;
 
@@ -65,7 +65,6 @@ private:
 
 	std::shared_ptr<audio::AudioPlayer> audioPlayer;
 	std::unique_ptr<entity::PickupManager> pickupManager;
-	int currentArena;
 
 	float fps;
 	float deltaSec;

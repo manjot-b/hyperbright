@@ -8,10 +8,10 @@ namespace hyperbright {
 
 		//////////////////////////////////////////////////////////////////
 		void AiManager::loadAiVehicle(std::shared_ptr<entity::Vehicle> vehicle) {
-			if (currentArena == 1) {
+			if (currentArena == ui::MainMenu::ArenaSelection::ARENA1) {
 				loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena, e)));
 			}
-			else if (currentArena == 2) {
+			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA2) {
 				loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena, e)));
 			}
 		}
@@ -35,11 +35,11 @@ namespace hyperbright {
 
 		//////////////////////////////////////////////////////////////////
 
-		void AiManager::setArena(std::shared_ptr<entity::Arena> ar, int arenaSelection) {
+		void AiManager::setArena(std::shared_ptr<entity::Arena> ar, ui::MainMenu::ArenaSelection arenaSelection) {
 			arena = ar;
 			currentArena = arenaSelection;
 
-			if (arenaSelection == 1) {
+			if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA1) {
 				/*
 				a b c
 				d e f
@@ -64,7 +64,7 @@ namespace hyperbright {
 				 p = glm::vec2(20, 30);
 				 q = glm::vec2(36, 30);
 			}
-			else if (arenaSelection == 2) {
+			else if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA2) {
 				 a = glm::vec2(2, 2);//PU
 				 b = glm::vec2(17, 2);//PU
 				 c = glm::vec2(2, 17);//PU
@@ -87,10 +87,10 @@ namespace hyperbright {
 		//GENERATE PATH FOR GIVEN AI
 		void AiManager::generatePath(std::shared_ptr<Ai> ai) {
 
-			if (currentArena==1) {
+			if (currentArena == ui::MainMenu::ArenaSelection::ARENA1) {
 				ai->targetTile = generateTargetOne(ai->targetTile, ai);
 			}
-			else if (currentArena==2) {
+			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA2) {
 				ai->targetTile = generateTargetTwo(ai->targetTile, ai);
 			}
 			//std::cout << "Goal Tile for "<< ai->vehicle->getId()<<" : " << ai->targetTile.x << " "<< ai->targetTile.y << std::endl;

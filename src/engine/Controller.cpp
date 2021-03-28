@@ -6,12 +6,11 @@ namespace hyperbright {
 namespace engine {
 Controller::Controller(GLFWwindow* _window,
 	render::Camera& _camera,
-	std::shared_ptr<entity::Vehicle>& _playerVehicle,
 	ui::MainMenu& _mainmenu,
 	ui::PauseMenu& _pausemenu,
 	ui::EndMenu& _endmenu,
 	audio::AudioPlayer& _audioPlayer) :
-	window(_window), camera(_camera), playerVehicle(_playerVehicle),
+	window(_window), camera(_camera),
 	mainMenu(_mainmenu), pauseMenu(_pausemenu), endMenu(_endmenu),
 	audioPlayer(_audioPlayer), isCursorShowing(false), manualCamera(false)
 {
@@ -26,6 +25,8 @@ Controller::Controller(GLFWwindow* _window,
 	// Let GLFW store pointer to this instance of Engine.
 	glfwSetWindowUserPointer(window, static_cast<void*>(this));
 }
+
+void Controller::setPlayerVehicle(std::shared_ptr<entity::Vehicle>& vehicle) { playerVehicle = vehicle; }
 
 Controller::~Controller() {
 
@@ -42,7 +43,7 @@ bool trap;
 
 void Controller::processInput(float deltaSec)
 {
-	if (mainMenu.getState() == ui::MainMenu::State::ON || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
+	if (mainMenu.getState() != ui::MainMenu::State::OFF || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
 		return;
 	}
 
@@ -240,7 +241,7 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 {
 	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
 
-	if (controller->mainMenu.getState() == ui::MainMenu::State::ON) {
+	if (controller->mainMenu.getState() != ui::MainMenu::State::OFF) {
 		controller->mainMenuKeyCallback(key, scancode, action, mods);
 	}
 	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
@@ -275,8 +276,20 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_ENTER:
-			mainMenu.setState(ui::MainMenu::State::OFF);
+			if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
+				mainMenu.setState(ui::MainMenu::State::SETUP);
+			}
+			else {	// Finished SETUP. Enter game.
+				mainMenu.setState(ui::MainMenu::State::OFF);
+			}
 			audioPlayer.playMenuEnterSound();
+			break;
+		case GLFW_KEY_RIGHT:
+		case GLFW_KEY_LEFT:
+			if (mainMenu.getState() == ui::MainMenu::State::SETUP) {
+				mainMenu.setArenaSelection(mainMenu.getArenaSelection() == ui::MainMenu::ArenaSelection::ARENA1 ? 
+					ui::MainMenu::ArenaSelection::ARENA2 : ui::MainMenu::ArenaSelection::ARENA1);
+			}
 			break;
 		}
 	}
@@ -320,7 +333,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 			else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
 				pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
 				pauseMenu.setState(ui::PauseMenu::State::OFF);
-				mainMenu.setState(ui::MainMenu::State::ON);
+				mainMenu.setState(ui::MainMenu::State::WELCOME);
 			}
 			else {
 				pauseMenu.setState(ui::PauseMenu::State::OFF);
@@ -366,7 +379,7 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 		case GLFW_KEY_ENTER:
 			if (endMenu.getSelection() == ui::EndMenu::Selection::MAIN_MENU) {
 				endMenu.setState(ui::EndMenu::State::OFF);
-				mainMenu.setState(ui::MainMenu::State::ON);
+				mainMenu.setState(ui::MainMenu::State::WELCOME);
 			}
 			else {
 				setWindowShouldClose(true);
