@@ -57,10 +57,15 @@ namespace hyperbright {
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 15)) + glm::vec3(0.f, 1.f, 0.f));
 			}
 			else if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA4) {
-				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(3, 3)) + glm::vec3(0.f, 1.f, 0.f));
-				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(4, 4)) + glm::vec3(0.f, 1.f, 0.f));
-				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(5, 5)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(8, 8)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(8, 6)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(6, 8)) + glm::vec3(0.f, 1.f, 0.f));
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(6, 6)) + glm::vec3(0.f, 1.f, 0.f));
+
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(7, 6)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(7, 8)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(6, 7)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(8, 7)) + glm::vec3(0.f, 1.f, 0.f));
 			}
 
 			pickupIdCounter = 1;

@@ -131,7 +131,7 @@ namespace hyperbright {
 				c = glm::vec2(2, 17);//PU
 				d = glm::vec2(17, 17);//PU
 
-				e = glm::vec2(10, 9);//CHARGE
+				e = glm::vec2(7, 7);//CHARGE
 
 				f = glm::vec2(9, 3);
 				g = glm::vec2(9, 16);
@@ -173,7 +173,13 @@ namespace hyperbright {
 		//////////////////////////////////////////////////////////////////
 
 		glm::vec2 AiManager::generateTargetFour(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
-			return e;
+
+			if(ai->vehicle->energy <= 0.f){
+				return e;
+			}
+			else {
+				return glm::vec2(rand()%13 + 1, rand()%13 + 1);
+			}
 		}
 
 		//////////////////////////////////////////////////////////////////
