@@ -14,6 +14,12 @@ namespace hyperbright {
 			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA2) {
 				loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena, e)));
 			}
+			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA3) {
+				loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena, e)));
+			}
+			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA4) {
+				loadedAi.push_back(std::make_shared<Ai>(Ai(vehicle, arena, e)));
+			}
 		}
 
 
@@ -45,41 +51,96 @@ namespace hyperbright {
 				d e f
 				g h i
 				*/
-				 a = glm::vec2(3, 3);
-				 b = glm::vec2(20, 3);
-				 c = glm::vec2(36, 3);
-				 d = glm::vec2(3, 20);
-				 e = glm::vec2(20, 20);
-				 f = glm::vec2(36, 20);
-				 g = glm::vec2(3, 36);
-				 h = glm::vec2(20, 36);
-				 i = glm::vec2(36, 36);
+				a = glm::vec2(3, 3);
+				b = glm::vec2(20, 3);
+				c = glm::vec2(36, 3);
+				d = glm::vec2(3, 20);
+				e = glm::vec2(20, 20);
+				f = glm::vec2(36, 20);
+				g = glm::vec2(3, 36);
+				h = glm::vec2(20, 36);
+				i = glm::vec2(36, 36);
 
-				 j = glm::vec2(3, 10);
-				 k = glm::vec2(20, 10);
-				 l = glm::vec2(30, 3);
-				 m = glm::vec2(10, 20);
-				 n = glm::vec2(30, 20);
-				 o = glm::vec2(10, 36);
-				 p = glm::vec2(20, 30);
-				 q = glm::vec2(36, 30);
+				j = glm::vec2(3, 10);
+				k = glm::vec2(20, 10);
+				l = glm::vec2(30, 3);
+				m = glm::vec2(10, 20);
+				n = glm::vec2(30, 20);
+				o = glm::vec2(10, 36);
+				p = glm::vec2(20, 30);
+				q = glm::vec2(36, 30);
 			}
 			else if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA2) {
-				 a = glm::vec2(2, 2);//PU
-				 b = glm::vec2(17, 2);//PU
-				 c = glm::vec2(2, 17);//PU
-				 d = glm::vec2(17, 17);//PU
+				a = glm::vec2(2, 2);//PU
+				b = glm::vec2(17, 2);//PU
+				c = glm::vec2(2, 17);//PU
+				d = glm::vec2(17, 17);//PU
 
-				 e = glm::vec2(10, 9);//CHARGE
+				e = glm::vec2(10, 9);//CHARGE
 
-				 f = glm::vec2(9, 3);
-				 g = glm::vec2(9, 16);
-				 h = glm::vec2(5, 5);//CHARGE
-				 i = glm::vec2(14, 5);
-				 j = glm::vec2(2, 10);
-				 k = glm::vec2(17, 10);
-				 l = glm::vec2(5, 14);
-				 m = glm::vec2(14, 14);//CHARGE
+				f = glm::vec2(9, 3);
+				g = glm::vec2(9, 16);
+				h = glm::vec2(5, 5);//CHARGE
+				i = glm::vec2(14, 5);
+				j = glm::vec2(2, 10);
+				k = glm::vec2(17, 10);
+				l = glm::vec2(5, 14);
+				m = glm::vec2(14, 14);//CHARGE
+			}
+			else if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA3) {
+				/*
+				a = glm::vec2(9, 8);
+				b = glm::vec2(9, 21);
+				c = glm::vec2(3, 14);
+				d = glm::vec2(27, 14);//PU
+
+				e = glm::vec2(9, 14);//CHARGE
+
+				f = glm::vec2(3, 2);//PU
+				g = glm::vec2(27, 2);
+				h = glm::vec2(3, 27);//PU
+				i = glm::vec2(27, 27);
+				j = glm::vec2(20, 2);//CHARGE
+				k = glm::vec2(20, 27);//CHARGE
+				l = glm::vec2(15, 9);//PU
+				m = glm::vec2(15, 20);//PU
+				n = glm::vec2(20, 9);
+				o = glm::vec2(20, 20);
+				*/
+				a = glm::vec2(8, 9);
+				b = glm::vec2(21, 9);
+				c = glm::vec2(14, 3);
+				d = glm::vec2(14, 27);//PU
+
+				e = glm::vec2(14, 9);//CHARGE
+
+				f = glm::vec2(2, 3);//PU
+				g = glm::vec2(2, 27);
+				h = glm::vec2(27, 3);//PU
+				i = glm::vec2(27, 27);
+				j = glm::vec2(2, 20);//CHARGE
+				k = glm::vec2(27, 20);//CHARGE
+				l = glm::vec2(9, 15);//PU
+				m = glm::vec2(20, 15);//PU
+				n = glm::vec2(8, 20);
+				o = glm::vec2(21, 20);
+			}
+			else if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA4) {
+				a = glm::vec2(2, 2);//PU
+				b = glm::vec2(17, 2);//PU
+				c = glm::vec2(2, 17);//PU
+				d = glm::vec2(17, 17);//PU
+
+				e = glm::vec2(7, 7);//CHARGE
+
+				f = glm::vec2(9, 3);
+				g = glm::vec2(9, 16);
+				h = glm::vec2(5, 5);//CHARGE
+				i = glm::vec2(14, 5);
+				j = glm::vec2(2, 10);
+				k = glm::vec2(3, 10);
+				l = glm::vec2(5, 14);
+				m = glm::vec2(14, 14);//CHARGE
 			}
 		}
 
@@ -93,6 +154,12 @@ namespace hyperbright {
 			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA2) {
 				ai->targetTile = generateTargetTwo(ai->targetTile, ai);
 			}
+			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA3) {
+				ai->targetTile = generateTargetThree(ai->targetTile, ai);
+			}
+			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA4) {
+				ai->targetTile = generateTargetFour(ai->targetTile, ai);
+			}
 			//std::cout << "Goal Tile for "<< ai->vehicle->getId()<<" : " << ai->targetTile.x << " "<< ai->targetTile.y << std::endl;
 			//std::vector<glm::vec2> pathList;
 			//glm::vec2 currentTile = ai->vehicle->currentTile;
@@ -101,6 +168,215 @@ namespace hyperbright {
 			ai->path.push_back(ai->targetTile);
 			ai->state = HASTARGET;
 			return;
+		}
+
+		//////////////////////////////////////////////////////////////////
+
+		glm::vec2 AiManager::generateTargetFour(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
+
+			if(ai->vehicle->energy <= 0.f){
+				return e;
+			}
+			else {
+				return glm::vec2(rand()%13 + 1, rand()%13 + 1);
+			}
+		}
+
+		//////////////////////////////////////////////////////////////////
+
+		glm::vec2 AiManager::generateTargetThree(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
+			int selector;
+			if (lastGoal == a) {
+
+				if (ai->pastGoal == l) {
+					ai->pastGoal = lastGoal;
+					return e;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return l;
+				}
+			}
+			else if (lastGoal == b) {
+				if (ai->pastGoal == m) {
+					ai->pastGoal = lastGoal;
+					return e;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return m;
+				}
+			}
+			else if (lastGoal == c) {
+				while (true) {
+					selector = rand() % 3;
+					if (selector == 0 && ai->pastGoal != e) {
+						ai->pastGoal = lastGoal;
+						return e;
+					}
+					else if (selector == 1 && ai->pastGoal != f) {
+						ai->pastGoal = lastGoal;
+						return f;
+					}
+					else if (ai->pastGoal != h) {
+						ai->pastGoal = lastGoal;
+						return h;
+					}
+				}
+			}
+			else if (lastGoal == d) {
+				while (true) {
+					selector = rand() % 3;
+					if (selector == 0 && ai->pastGoal != e) {
+						ai->pastGoal = lastGoal;
+						return e;
+					}
+					else if (selector == 1 && ai->pastGoal != g) {
+						ai->pastGoal = lastGoal;
+						return g;
+					}
+					else if (ai->pastGoal != i) {
+						ai->pastGoal = lastGoal;
+						return i;
+					}
+				}
+			}
+			else if (lastGoal == e) {
+				while (true) {
+					selector = rand() % 4;
+					if (selector == 0 && ai->pastGoal != a) {
+						ai->pastGoal = lastGoal;
+						return a;
+					}
+					else if (selector == 1 && ai->pastGoal != b) {
+						ai->pastGoal = lastGoal;
+						return b;
+					}
+					else if (selector == 2 && ai->pastGoal != c) {
+						ai->pastGoal = lastGoal;
+						return c;
+					}
+					else {
+						ai->pastGoal = lastGoal;
+						return d;
+					}
+				}
+			}
+			else if (lastGoal == f) {
+				if (ai->pastGoal == j) {
+					ai->pastGoal = lastGoal;
+					return c;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return j;
+				}
+			}
+			else if (lastGoal == g) {
+				if (ai->pastGoal == j) {
+					ai->pastGoal = lastGoal;
+					return d;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return j;
+				}
+			}
+			else if (lastGoal == h) {
+				if (ai->pastGoal == c) {
+					ai->pastGoal = lastGoal;
+					return k;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return c;
+				}
+			}
+			else if (lastGoal == i) {
+				if (ai->pastGoal == k) {
+					ai->pastGoal = lastGoal;
+					return d;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return k;
+				}
+			}
+			else if (lastGoal == j) {
+				while (true) {
+					selector = rand() % 3;
+					if (selector == 0 && ai->pastGoal != f) {
+						ai->pastGoal = lastGoal;
+						return f;
+					}
+					else if (selector == 1 && ai->pastGoal != n) {
+						ai->pastGoal = lastGoal;
+						return n;
+					}
+					else if (ai->pastGoal != g) {
+						ai->pastGoal = lastGoal;
+						return g;
+					}
+				}
+			}
+			else if (lastGoal == k) {
+				while (true) {
+					selector = rand() % 3;
+					if (selector == 0 && ai->pastGoal != o) {
+						ai->pastGoal = lastGoal;
+						return o;
+					}
+					else if (selector == 1 && ai->pastGoal != h) {
+						ai->pastGoal = lastGoal;
+						return h;
+					}
+					else if (ai->pastGoal != i) {
+						ai->pastGoal = lastGoal;
+						return i;
+					}
+				}
+			}
+			else if (lastGoal == l) {
+				if (ai->pastGoal == a) {
+					ai->pastGoal = lastGoal;
+					return n;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return a;
+				}
+			}
+			else if (lastGoal == m) {
+				if (ai->pastGoal == b) {
+					ai->pastGoal = lastGoal;
+					return o;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return b;
+				}
+			}
+			else if (lastGoal == n) {
+				if (ai->pastGoal == j) {
+					ai->pastGoal = lastGoal;
+					return l;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return j;
+				}
+			}
+			else if (lastGoal == o) {
+				if (ai->pastGoal == m) {
+					ai->pastGoal = lastGoal;
+					return k;
+				}
+				else {
+					ai->pastGoal = lastGoal;
+					return m;
+				}
+			}
+
 		}
 
 		//////////////////////////////////////////////////////////////////
@@ -115,7 +391,8 @@ namespace hyperbright {
 				else {
 					return g;
 				}
-			} else if(lastGoal == f){//NORTH OF CENTER
+			}
+			else if (lastGoal == f) {//NORTH OF CENTER
 				ai->pastGoal = f;
 				if (ai->vehicle->energy <= 0) {//EMERGY CHECK
 					return e;
@@ -171,8 +448,8 @@ namespace hyperbright {
 					return j;
 				}
 			}
-			else if (lastGoal==j) {//LEFT SIDE
-				if (ai->pastGoal!=l) {
+			else if (lastGoal == j) {//LEFT SIDE
+				if (ai->pastGoal != l) {
 					ai->pastGoal = j;
 					return l;
 				}
@@ -221,32 +498,32 @@ namespace hyperbright {
 			}
 			else if (lastGoal == m) {//CORNER SE
 			//ai->pastGoal = m;
-			if (!ai->vehicle->hasPickup() && ai->pastGoal != d) {//PU CHECK
+				if (!ai->vehicle->hasPickup() && ai->pastGoal != d) {//PU CHECK
+					ai->pastGoal = m;
+					return d;
+				}
 				ai->pastGoal = m;
-				return d;
-			}
-			ai->pastGoal = m;
-			if (rand() % 2 == 1) {
-				return g;
-			}
-			else {
-				return k;
-			}
+				if (rand() % 2 == 1) {
+					return g;
+				}
+				else {
+					return k;
+				}
 			}
 		}
 
 		//////////////////////////////////////////////////////////////////
-		
+
 
 		//DECIDE WHERE TO GO NEXT
 
 		//UPDATE PAST GOAL
 		glm::vec2 AiManager::generateTargetOne(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
-			int selector;	
-			
+			int selector;
+
 			if (lastGoal == a) {
-				
-				if (ai->pastGoal==j) {
+
+				if (ai->pastGoal == j) {
 					ai->pastGoal = lastGoal;
 					return b;
 				}
@@ -266,7 +543,7 @@ namespace hyperbright {
 						ai->pastGoal = lastGoal;
 						return l;
 					}
-					else if ( ai->pastGoal != k){
+					else if (ai->pastGoal != k) {
 						ai->pastGoal = lastGoal;
 						return k;
 					}
@@ -319,7 +596,7 @@ namespace hyperbright {
 				}
 			}
 			else if (lastGoal == f) {
-				while(true){
+				while (true) {
 					selector = rand() % 3;
 					if (selector == 0 && ai->pastGoal != c) {
 						ai->pastGoal = lastGoal;
@@ -400,7 +677,7 @@ namespace hyperbright {
 						ai->pastGoal = lastGoal;
 						return b;
 					}
-					else if(ai->pastGoal != e) {
+					else if (ai->pastGoal != e) {
 						ai->pastGoal = lastGoal;
 						return e;
 					}
