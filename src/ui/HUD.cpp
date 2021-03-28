@@ -28,6 +28,12 @@ HUD::HUD(std::shared_ptr<entity::Vehicle> v, const entity::Arena& arena, float& 
 	quadShader->link();
 	quad = std::make_unique<openGLHelper::Quad>(quadShader, miniMapTexture);
 	//quad = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/tree.jpeg"));
+	timerQuad = std::make_unique<openGLHelper::Quad>(quadShader, timerTexture);
+	emp = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/emp.png"));
+	zap = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/zap.png"));
+	speedz = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/speed.png"));
+	slowtrap = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/slowtrap.png"));
+	syphon = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/syphon.png"));
 
 	float orthoSize = arena.getArenaSize().x * .5f * arena.getTileWidth();
 	miniMapOrtho = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, .1f, 300.f);
@@ -61,7 +67,6 @@ void HUD::drawHUD() {
 	glUseProgram(0);
 
 	//Timer
-	timerQuad = std::make_unique<openGLHelper::Quad>(quadShader, timerTexture);
 	timerQuad->getShader()->use();
 	timerQuad->normalizeToViewport(width, height);
 	timerQuad->translate(glm::vec2(-0.96f, 0.52f));
@@ -85,16 +90,55 @@ void HUD::drawHUD() {
 	font.FaceSize(scale * defaultFontSize / 2);
 	font.Render(timerStr, -1, FTPoint(scale * 50, (height - scale * 50), 0));
 
-	//a quad to be textured
-	/*float timerHeight = 0.15;
-	float timerWidth = (height * timerHeight) / width;
-	glBegin(GL_QUADS);
-	glColor3f(1, 1, 1);
-	glVertex2f(-1, 1);
-	glVertex2f(-1 + timerWidth, 1);
-	glVertex2f(-1 + timerWidth, 1 - timerHeight);
-	glVertex2f(-1, 1 - timerHeight);
-	glEnd();*/
+
+	//pickups
+	if (player->hasPickup()) {
+		pickup = player->getPickup();
+		switch (pickup->type) {
+		case (0):
+			emp->getShader()->use();
+			emp->normalizeToViewport(width, height);
+			emp->translate(glm::vec2(-0.9f, 0.3f));
+			emp->scale(.2f);
+			emp->render();
+			glUseProgram(0);
+			break;
+		case(1):
+			zap->getShader()->use();
+			zap->normalizeToViewport(width, height);
+			zap->translate(glm::vec2(-0.9f, 0.3f));
+			zap->scale(.2f);
+			zap->render();
+			glUseProgram(0);
+			break;
+		case(2):
+			speedz->getShader()->use();
+			speedz->normalizeToViewport(width, height);
+			speedz->translate(glm::vec2(-0.9f, 0.3f));
+			speedz->scale(.2f);
+			speedz->render();
+			glUseProgram(0);
+			break;
+		case(3):
+			slowtrap->getShader()->use();
+			slowtrap->normalizeToViewport(width, height);
+			slowtrap->translate(glm::vec2(-0.9f, 0.3f));
+			slowtrap->scale(.2f);
+			slowtrap->render();
+			glUseProgram(0);
+			break;
+		case(4):
+			syphon->getShader()->use();
+			syphon->normalizeToViewport(width, height);
+			syphon->translate(glm::vec2(-0.9f, 0.3f));
+			syphon->scale(.2f);
+			syphon->render();
+			glUseProgram(0);
+			break;
+		}
+	}
+
+
 
 	//Speedometer
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -109,32 +153,6 @@ void HUD::drawHUD() {
 	font.Render(speedStr, -1, FTPoint(xCord, yCord, 0));
 	font.FaceSize(scale * defaultFontSize / 3);
 	font.Render("KPH", -1, FTPoint(width - (3 * 21 * scale), 10* scale, 0));
-	
-	if (player->hasPickup()) {
-		pickup = player->getPickup();
-		switch (pickup->type) {
-		case (0):
-			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
-			font.Render("EMP", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
-			break;
-		case(1):
-			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
-			font.Render("ZAP", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
-			break;
-		case(2):
-			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
-			font.Render("SPEED", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
-			break;
-		case(3):
-			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
-			font.Render("SLOWTRAP", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
-			break;
-		case(4):
-			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
-			font.Render("SYPHON", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
-			break;
-		}
-	}
 
 	/*
 	float max = M_PI - (speed / 29) * (M_PI / 2);
