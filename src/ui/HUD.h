@@ -33,7 +33,7 @@ private:
 	unsigned int width, height;
 	float speed;
 	float energy;
-	float roundTimer;
+	float &roundTimer;
 	std::shared_ptr<entity::Vehicle> player;
 	std::shared_ptr<entity::Pickup> pickup;
 
@@ -43,6 +43,12 @@ private:
 	std::shared_ptr<openGLHelper::Shader> quadShader;
 	std::unique_ptr<openGLHelper::Quad> quad;
 	std::unique_ptr<openGLHelper::Quad> timerQuad;
+	std::unique_ptr<openGLHelper::Quad> emp;
+	std::unique_ptr<openGLHelper::Quad> zap;
+	std::unique_ptr<openGLHelper::Quad> speedz;
+	std::unique_ptr<openGLHelper::Quad> slowtrap;
+	std::unique_ptr<openGLHelper::Quad> syphon;
+
 
 	glm::vec3 miniMapPos;
 	glm::mat4 miniMapOrtho;
