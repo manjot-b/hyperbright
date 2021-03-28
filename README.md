@@ -3,6 +3,11 @@
 2. It is recommended to create a **build/** directory in the root directory of this project to store the build artifacts. Enter into the **build/** directory and enter `cmake ..` to generate the build system files.
 3. Build the project with the generated build system files. For example, on Linux ~~a Makefile will be created which can be invoked with `make -jN`~~ this does not compile due to PhysX. On Windows, a Visual Studio Solution file will be created, which can be opened and built with Visual Studio.
 
+# Objective
+ - Using the energy reserves your vehicle carries, trigger the most tiles in the arena to your color before the round timer ends.
+ - When energy gets low, find a power station to recharge.
+ - Collect pickups on the map to receive a random power, giving you an advantage if used strategically.
+
 # Controls
  - Upon start-up press ENTER to take you to the Arena selection screen where you can use left and right ARROWS to choose and ENTER again to select.
  - W, A, S, D to control the vehicle.
