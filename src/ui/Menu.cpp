@@ -58,7 +58,7 @@ void MainMenu::render() {
 		xCoord = ((float)width / 2) - (11 * (50 * scaleSmall) / 2);
 		yCoord = (float)height * (2.f / rows);
 		font.FaceSize(scaleSmall * defaultFontSize);
-		const std::string arena = "< Arena " + std::to_string(static_cast<int>(_arenaSelection)) + " >";
+		const std::string arena = "< Arena " + std::to_string(static_cast<int>(_arenaSelection) + 1) + " >";
 		font.Render(arena.c_str(), -1, FTPoint(xCoord, yCoord, 0));
 
 		xCoord = ((float)width / 2) - (11 * (50 * scaleSmall) / 2);
