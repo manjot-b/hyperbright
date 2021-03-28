@@ -72,7 +72,6 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 			IPhysical* second = static_cast<IPhysical*>(pairs[i].otherActor->userData);
 
 			if (first->getTriggerType() == IPhysical::TriggerType::CHARGING_STATION) {
-				//cout << "Station collision detected \n";
 				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
 				// This collision will repeat so only trigger it's effect if the 
 				// vehicle needs to be recharged.
@@ -85,17 +84,17 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 				}
 			}
 			else if (first->getTriggerType() == IPhysical::TriggerType::PICKUP) {
-				
-				//cout << "Pickup collision detected" << endl;
 				entity::Vehicle* v = dynamic_cast<entity::Vehicle*>(second);
-				std::shared_ptr<entity::Pickup> p = pum->handlePickupOnCollision(v);
 
-				if (v->getTeam() == vehs->at(0)->getTeam()) {
-					audioPlayer->playPickupCollision();
-				}
+				if (!v->hasPickup()) {
+					std::shared_ptr<entity::Pickup> p = pum->handlePickupOnCollision(v);
+					if (v->getTeam() == vehs->at(0)->getTeam()) {
+						audioPlayer->playPickupCollision();
+					}
 
-				if (p->pickupNumber != 0) {
-					toBeRemovedPickups.push(p);
+					if (p->pickupNumber != 0) {
+						toBeRemovedPickups.push(p);
+					}
 				}
 			}
 		}
