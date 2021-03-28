@@ -53,6 +53,7 @@ void DevUI::render()
     ImGui::Text("Application average %.3f ms/frame %.3f FPS", _deltaSec*1000, 1/_deltaSec);
     ImGui::Text("Time: %.2f s", _roundTimer);
     ImGui::SliderInt("FPS Cap", &(settings.fps), 30, 144);
+    ImGui::SliderFloat("Music Volume", &settings.musicVolume, 0.f, 1.f);
     ImGui::Text("Scores:");
     for (unsigned int i = static_cast<unsigned int>(engine::teamStats::Teams::TEAM0); i != static_cast<unsigned int>(engine::teamStats::Teams::LAST); i++)
     {
@@ -70,7 +71,6 @@ void DevUI::render()
     ImGui::ColorEdit3("Fresnel", (float*)&settings.vehicleBodyMaterial.fresnel);
     ImGui::Checkbox("Beckmann NDF", &settings.vehicleBodyMaterial.useBeckmann);
     ImGui::Checkbox("GGX NDF", &settings.vehicleBodyMaterial.useGGX);
-    ImGui::SliderFloat("Music Volume", &settings.musicVolume, 0.f, 1.f);
 
     ImGui::End();
 
