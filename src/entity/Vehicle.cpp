@@ -126,12 +126,6 @@ void Vehicle::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowSh
 		wheel->renderShadow(shadowShader);
 }
 
-// 0 => do nothing, 1 => left correction, 2 => right correction
-void Vehicle::straighten(int dir)
-{
-	ctrl.straighten = dir;
-}
-
 quat Vehicle::getOrientation() const
 {
 	return quat_cast(lookAt(vec3(0.f), direction, up));
@@ -272,13 +266,11 @@ void Vehicle::stopBrake()
 void Vehicle::stopLeft()
 {
 	ctrl.input[3] = 0;
-	straighten(2);
 }
 
 void Vehicle::stopRight()
 {
 	ctrl.input[2] = 0;
-	straighten(1);
 }
 
 void Vehicle::stopHardTurn() 

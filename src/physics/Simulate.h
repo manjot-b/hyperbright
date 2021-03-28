@@ -35,7 +35,7 @@ public:
 	void cleanupPhysics();
 private:
 	void initPhysics();
-
+	glm::vec2 arenaSize;
 
 	// physicsModels are all moving/colliding objects in the game including the vehicles
 	// this list is used to update the graphical models with the transforms created by PhysX

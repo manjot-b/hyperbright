@@ -39,10 +39,10 @@ namespace snippetvehicle
 
 using namespace physx;
 
-PxRigidStatic* createDrivablePlane(const PxFilterData& simFilterData, PxMaterial* material, PxPhysics* physics)
+PxRigidStatic* createDrivablePlane(const PxFilterData& simFilterData, PxMaterial* material, PxPhysics* physics, PxVec3 normal, float distance)
 {
 	//Add a plane to the scene.
-	PxRigidStatic* groundPlane = PxCreatePlane(*physics, PxPlane(0,1,0,0), *material);
+	PxRigidStatic* groundPlane = PxCreatePlane(*physics, PxPlane(normal.x, normal.y, normal.z, distance), *material);
 
 	//Get the plane shape so we can set query and simulation filter data.
 	PxShape* shapes[1];
