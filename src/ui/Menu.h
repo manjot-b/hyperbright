@@ -35,7 +35,8 @@ public:
 
 	enum class ArenaSelection {
 		ARENA1,
-		ARENA2
+		ARENA2,
+		LAST	// Not an actual selction. Used to get the selection count
 	};
 
 	MainMenu(State state = State::WELCOME, ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
