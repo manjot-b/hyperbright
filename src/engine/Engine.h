@@ -34,6 +34,7 @@ public:
 	void run();
 	
 private:
+	void initMainMenuEntities();
 	void buildArena1();
 	void buildArena2();
 
@@ -65,7 +66,6 @@ private:
 
 	std::shared_ptr<audio::AudioPlayer> audioPlayer;
 	std::unique_ptr<entity::PickupManager> pickupManager;
-	int currentArena;
 
 	float fps;
 	float deltaSec;

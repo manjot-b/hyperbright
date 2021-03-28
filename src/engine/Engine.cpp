@@ -19,7 +19,7 @@ Engine::Engine() :
 
 	// load textures into a shared pointer.
 	loadTextures();
-	initEntities();
+	initMainMenuEntities();
 	initDevUI();
 
 	playerHUD = std::make_unique<ui::HUD>(0.f, 0.f, *arena);
@@ -27,7 +27,6 @@ Engine::Engine() :
 	audioPlayer = std::make_shared<audio::AudioPlayer>();
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
 		camera,
-		vehicles[0],
 		mainMenu,
 		pauseMenu,
 		endMenu,
@@ -51,12 +50,11 @@ void Engine::resetAll()
 	for (unsigned int i = 0; i < teamStats::teamCount; i++)
 		teamStats::scores[static_cast<teamStats::Teams>(i)] = 0;
 
-	initEntities();
+	initMainMenuEntities();
 	initDevUI();
 	playerHUD->update(0, 0);
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
 		camera,
-		vehicles[0],
 		mainMenu,
 		pauseMenu,
 		endMenu,
@@ -66,7 +64,8 @@ void Engine::resetAll()
 void Engine::initDevUI()
 {
 	devUI.settings.fps = fps;
-	devUI.settings.vehicleBodyMaterial = vehicles[0]->getBodyMaterial();
+	if (vehicles.size() > 0)
+		devUI.settings.vehicleBodyMaterial = vehicles[0]->getBodyMaterial();
 }
 
 void Engine::loadTextures()
@@ -175,19 +174,28 @@ void Engine::buildArena2() {
 }
 
 
+void Engine::initMainMenuEntities()
+{
+	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
+	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
+	int arena_size = 20;
+	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
+}
 
 void Engine::initEntities()
 {	
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
-	currentArena = 2;
-	if (currentArena == 1) {
+	switch (mainMenu.getArenaSelection())
+	{
+	case ui::MainMenu::ArenaSelection::ARENA1:
 		buildArena1();
-	}
-	else if (currentArena == 2) {
+		break;
+	case ui::MainMenu::ArenaSelection::ARENA2:
 		buildArena2();
+		break;
 	}
 
 	renderables.push_back(arena);
@@ -197,7 +205,8 @@ void Engine::initEntities()
 	vehicles.push_back(player);
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(player));
-	
+	controller->setPlayerVehicle(player);
+
 	// Create the 4 ai vehicles, setting their starting position, direction, and team (which includes the color of the vehicle/tiles)
 	
 	std::shared_ptr<entity::Vehicle> ai1 = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM1, shader, arena->getTilePos(ai1StartingPosition) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
@@ -222,6 +231,10 @@ void Engine::run()
 	while (!controller->isWindowClosed())
 	{
 		runMainMenu();
+		renderables.clear();	// remove main menu entities
+		initEntities();
+		initDevUI();
+
 		runGame();
 
 		if (mainMenu.getState() != ui::MainMenu::State::WELCOME) {
@@ -273,19 +286,21 @@ void Engine::runMainMenu() {
 
 void Engine::runGame() {
 	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena, &vehicles, renderables);
-	pickupManager->initPickups(shader, currentArena);
+	pickupManager->initPickups(shader, mainMenu.getArenaSelection());
 
 	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
 	ai::AiManager aiManager;
-	aiManager.setArena(arena, currentArena);//MUST DO BEFORE LOADING VEHICLE
+	aiManager.setArena(arena, mainMenu.getArenaSelection());//MUST DO BEFORE LOADING VEHICLE
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
 	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();
+
+	lastFrame = glfwGetTime();	// Accounts for setup time
 
 	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 		// update global time

@@ -6,12 +6,11 @@ namespace hyperbright {
 namespace engine {
 Controller::Controller(GLFWwindow* _window,
 	render::Camera& _camera,
-	std::shared_ptr<entity::Vehicle>& _playerVehicle,
 	ui::MainMenu& _mainmenu,
 	ui::PauseMenu& _pausemenu,
 	ui::EndMenu& _endmenu,
 	audio::AudioPlayer& _audioPlayer) :
-	window(_window), camera(_camera), playerVehicle(_playerVehicle),
+	window(_window), camera(_camera),
 	mainMenu(_mainmenu), pauseMenu(_pausemenu), endMenu(_endmenu),
 	audioPlayer(_audioPlayer), isCursorShowing(false), manualCamera(false)
 {
@@ -26,6 +25,8 @@ Controller::Controller(GLFWwindow* _window,
 	// Let GLFW store pointer to this instance of Engine.
 	glfwSetWindowUserPointer(window, static_cast<void*>(this));
 }
+
+void Controller::setPlayerVehicle(std::shared_ptr<entity::Vehicle>& vehicle) { playerVehicle = vehicle; }
 
 Controller::~Controller() {
 
@@ -280,7 +281,6 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 			}
 			else {	// Finished SETUP. Enter game.
 				mainMenu.setState(ui::MainMenu::State::OFF);
-				mainMenu.setArenaSelection(ui::MainMenu::ArenaSelection::ARENA1);
 			}
 			audioPlayer.playMenuEnterSound();
 			break;
