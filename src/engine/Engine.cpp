@@ -174,6 +174,7 @@ void Engine::buildArena2() {
 void Engine::initMainMenuEntities()
 {
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
+	skyBox->rotate(glm::vec3(glm::radians(30.f), 0.f, 0.f));
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
 	int arena_size = 25;
@@ -185,6 +186,7 @@ void Engine::initMainMenuEntities()
 void Engine::initEntities()
 {	
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
+	skyBox->rotate(glm::vec3(glm::radians(30.f), 0.f, 0.f));
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
 	switch (mainMenu.getArenaSelection())

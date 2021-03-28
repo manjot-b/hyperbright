@@ -96,7 +96,7 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 
-	directionalLight = { false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f) };
+	directionalLight = { false, glm::vec3(-.5f, -.5f, 1.f), glm::vec3(.4f, .4f, .5f) };
 
 	// TO-DO: Use actual arena size to contruct light's orthgraphic and view matrices.
 	float orthoSize = 60.f;
