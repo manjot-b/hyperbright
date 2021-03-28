@@ -22,8 +22,6 @@ Engine::Engine() :
 	initMainMenuEntities();
 	initDevUI();
 
-	playerHUD = std::make_unique<ui::HUD>(0.f, 0.f, *arena);
-
 	audioPlayer = std::make_shared<audio::AudioPlayer>();
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
 		camera,
@@ -52,7 +50,6 @@ void Engine::resetAll()
 
 	initMainMenuEntities();
 	initDevUI();
-	playerHUD->update(0, 0);
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
 		camera,
 		mainMenu,
@@ -224,7 +221,7 @@ void Engine::initEntities()
 	std::shared_ptr<entity::Vehicle> ai3 = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM3, shader, arena->getTilePos(ai3StartingPosition) + glm::vec3(0, 1.f, 0), glm::vec3(0.f, 0.f, -1.f));
 	vehicles.push_back(ai3);
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(ai3));
-	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));	
+	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(ai3));
 }
 
 
@@ -301,6 +298,8 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
+	ui::HUD playerHUD(0.f, 0.f, *arena);
+
 	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();
 
@@ -362,11 +361,11 @@ void Engine::runGame() {
 		devUI.update(deltaSec, roundTimer);
 
 		//HUD
-		playerHUD->update(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
-		playerHUD->updateTime(roundTimer);
+		playerHUD.update(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
+		playerHUD.updateTime(roundTimer);
 
 		// render the updated position of all models and ImGui
-		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, playerHUD);
+		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, &playerHUD);
 
 		getDevUISettings();
 		glfwPollEvents();
