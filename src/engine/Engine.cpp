@@ -179,8 +179,10 @@ void Engine::initMainMenuEntities()
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
-	int arena_size = 20;
+	int arena_size = 25;
 	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
+	arena->addChargingStation(arena_size / 2, arena_size / 2 + 3, entity::Arena::Orientation::POS_Z);
+	renderables.push_back(arena);
 }
 
 void Engine::initEntities()
@@ -273,6 +275,8 @@ void Engine::runMainMenu() {
 
 		devUI.update(deltaSec, roundTimer);
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
+		
+		arena->animateChargingStations(currentFrame);
 
 		// render only the menu for now.
 		render::Renderer::getInstance().render(renderables, devUI, mainMenu, camera, nullptr);
