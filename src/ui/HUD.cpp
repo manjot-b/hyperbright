@@ -18,6 +18,8 @@ HUD::HUD(float s, float e, const entity::Arena& arena) :
 {
 	miniMapTexture = std::make_shared<openGLHelper::Texture>(256, 256, false);
 	miniMapBuffer = std::make_unique<openGLHelper::FrameBuffer>(miniMapTexture, false);
+
+	timerTexture = std::make_shared<openGLHelper::Texture>("rsc/images/timer2.png");
 	
 	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
 	quadShader->link();
@@ -54,6 +56,42 @@ void HUD::drawHUD() {
 	quad->scale(.35f);
 	quad->render();
 	glUseProgram(0);
+
+	//Timer
+	timerQuad = std::make_unique<openGLHelper::Quad>(quadShader, timerTexture);
+	timerQuad->getShader()->use();
+	timerQuad->normalizeToViewport(width, height);
+	timerQuad->translate(glm::vec2(-0.96f, 0.52f));
+	timerQuad->scale(.08f);
+	timerQuad->render();
+	glUseProgram(0);
+	glPixelTransferf(GL_RED_BIAS, 0);
+	glPixelTransferf(GL_GREEN_BIAS, 0);
+	glPixelTransferf(GL_BLUE_BIAS, 0);
+
+	int minutes = (int)roundTimer / 60;
+	int seconds = (int)roundTimer % 60;
+
+	char timerStr[100];
+	if (seconds < 10) {
+		sprintf(timerStr, "0%d:0%d", minutes, seconds);
+	}
+	else {
+		sprintf(timerStr, "0%d:%d", minutes, seconds);
+	}
+	font.FaceSize(scale * defaultFontSize / 2);
+	font.Render(timerStr, -1, FTPoint(scale * 50, (height - scale * 50), 0));
+
+	//a quad to be textured
+	/*float timerHeight = 0.15;
+	float timerWidth = (height * timerHeight) / width;
+	glBegin(GL_QUADS);
+	glColor3f(1, 1, 1);
+	glVertex2f(-1, 1);
+	glVertex2f(-1 + timerWidth, 1);
+	glVertex2f(-1 + timerWidth, 1 - timerHeight);
+	glVertex2f(-1, 1 - timerHeight);
+	glEnd();*/
 
 	//Speedometer
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -100,38 +138,6 @@ void HUD::drawHUD() {
 		glVertex2f(i + 0.015, -0.8);
 		glVertex2f(i + 0.015, -0.95);
 	}
-	glEnd();
-
-
-
-
-	//Timer
-	glPixelTransferf(GL_RED_BIAS, 0);
-	glPixelTransferf(GL_GREEN_BIAS, 0);
-	glPixelTransferf(GL_BLUE_BIAS, 0);
-
-	int minutes = (int)roundTimer / 60;
-	int seconds = (int)roundTimer % 60;
-
-	char timerStr[100];
-	if (seconds < 10) {
-		sprintf(timerStr, "0%d:0%d", minutes, seconds);
-	}
-	else {
-		sprintf(timerStr, "0%d:%d", minutes, seconds);
-	}
-	font.FaceSize(scale * defaultFontSize / 2);
-	font.Render(timerStr, -1, FTPoint(scale * 50, (height - scale * 50), 0));
-
-	//a quad to be textured
-	float timerHeight = 0.15;
-	float timerWidth = (height * timerHeight) / width;
-	glBegin(GL_QUADS);
-	glColor3f(1, 1, 1);
-	glVertex2f(-1, 1);
-	glVertex2f(-1 + timerWidth, 1);
-	glVertex2f(-1 + timerWidth, 1 - timerHeight);
-	glVertex2f(-1, 1- timerHeight);
 	glEnd();
 	glPopAttrib();
 
