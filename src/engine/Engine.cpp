@@ -206,10 +206,10 @@ void Engine::buildArena3() {
 	////////////////////////////////////////////
 
 	// Starting positions ////////////////////// 
-	playerStartingPosition = glm::vec2(8, 14);
-	ai1StartingPosition = glm::vec2(8, 15);
-	ai2StartingPosition = glm::vec2(11, 14);
-	ai3StartingPosition = glm::vec2(10, 15);
+	playerStartingPosition = glm::vec2(15, 9);
+	ai1StartingPosition = glm::vec2(15, 8);
+	ai2StartingPosition = glm::vec2(16, 8);
+	ai3StartingPosition = glm::vec2(14, 8);
 	////////////////////////////////////////////
 	arena->addChargingStation(9, 14, Arena::Orientation::NEG_Z);
 	arena->addChargingStation(20, 2, Arena::Orientation::POS_X);
