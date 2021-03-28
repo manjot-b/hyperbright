@@ -13,8 +13,11 @@
 namespace hyperbright {
 namespace ui {
 
-HUD::HUD(float s, float e, const entity::Arena& arena) :
-	font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(150.f), speed(s), energy(e), miniMapPos(0.f, 50.f, 0.1f)
+HUD::HUD(std::shared_ptr<entity::Vehicle> v, const entity::Arena& arena, float& roundTimer) :
+	font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(150.f), 
+	player(v), roundTimer(roundTimer),
+	miniMapPos(0.f, 50.f, 0.1f)
+
 {
 	miniMapTexture = std::make_shared<openGLHelper::Texture>(256, 256, false);
 	miniMapBuffer = std::make_unique<openGLHelper::FrameBuffer>(miniMapTexture, false);
@@ -60,7 +63,7 @@ void HUD::drawHUD() {
 	glPixelTransferf(GL_RED_BIAS, 0);
 	glPixelTransferf(GL_GREEN_BIAS, -0.7);
 	glPixelTransferf(GL_BLUE_BIAS, -1);
-	double realSpeed = std::max(round(speed * 5), 0.f);
+	double realSpeed = std::max(round(abs(player->readSpeedometer()) * 5), 0.f);
 
 	char speedStr[100];
 	sprintf(speedStr, "%d", (int)realSpeed);
@@ -69,6 +72,31 @@ void HUD::drawHUD() {
 	font.FaceSize(scale * defaultFontSize / 3);
 	font.Render("KPH", -1, FTPoint(width - (3 * 21 * scale), 10* scale, 0));
 	
+	if (player->hasPickup()) {
+		pickup = player->getPickup();
+		switch (pickup->type) {
+		case (0):
+			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
+			font.Render("EMP", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
+			break;
+		case(1):
+			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
+			font.Render("ZAP", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
+			break;
+		case(2):
+			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
+			font.Render("SPEED", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
+			break;
+		case(3):
+			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
+			font.Render("SLOWTRAP", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
+			break;
+		case(4):
+			font.Render("Pickup: ", -1, FTPoint(width - (9 * 21 * scale), 200 * scale, 0));
+			font.Render("SYPHON", -1, FTPoint(width - (8 * 21 * scale), 160 * scale, 0));
+			break;
+		}
+	}
 
 	/*
 	float max = M_PI - (speed / 29) * (M_PI / 2);
@@ -91,7 +119,7 @@ void HUD::drawHUD() {
 	*/
 
 	//Energy bar
-	int numOfBar = (int)(energy * 25);
+	int numOfBar = (int)(player->energy * 25);
 	glBegin(GL_QUADS);
 	glColor3f(0, 0.71, 1);
 	for (float i = -0.995; i < (-1 + 0.02 * numOfBar); i += (0.005 + 0.015)) {
@@ -147,11 +175,13 @@ void HUD::preRenderMiniMap()
 }
 
 //update roundTimer
+// *NOT BEING USED CURRENTLY*
 void HUD::updateTime(float time) {
 	roundTimer = time;
 }
 
 //update vehicle speed and energy
+// *NOT BEING USED CURRENTLY*
 void HUD::update(float s, float e) {
 	speed = s;
 	energy = e;

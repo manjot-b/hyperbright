@@ -5,6 +5,8 @@
 #include <FTGL/ftgl.h>
 
 #include "entity/Arena.h"
+#include "entity/Vehicle.h"
+#include "entity/Pickup.h"
 #include "opengl-helper/FrameBuffer.h"
 #include "opengl-helper/Quad.h"
 #include "opengl-helper/Texture.h"
@@ -15,7 +17,7 @@ namespace ui {
 class HUD
 {
 public:
-	HUD(float s, float e, const entity::Arena& arena);
+	HUD(std::shared_ptr<entity::Vehicle> v, const entity::Arena& arena, float& roundTimer);
 	void drawHUD();
 	void updateTime(float time);
 	void update(float s, float e);
@@ -32,6 +34,8 @@ private:
 	float speed;
 	float energy;
 	float roundTimer;
+	std::shared_ptr<entity::Vehicle> player;
+	std::shared_ptr<entity::Pickup> pickup;
 
 	std::shared_ptr<openGLHelper::Texture> miniMapTexture;
 	std::unique_ptr<openGLHelper::FrameBuffer> miniMapBuffer;

@@ -300,7 +300,7 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(2));
 	aiManager.loadAiVehicle(vehicles.at(3));
 
-	ui::HUD playerHUD(0.f, 0.f, *arena);
+	ui::HUD playerHUD(vehicles[0], *arena, roundTimer);
 
 	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();
@@ -361,10 +361,6 @@ void Engine::runGame() {
 		}
 
 		devUI.update(deltaSec, roundTimer);
-
-		//HUD
-		playerHUD.update(vehicles[0]->readSpeedometer(), vehicles[0]->energy);
-		playerHUD.updateTime(roundTimer);
 
 		// render the updated position of all models and ImGui
 		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, &playerHUD);
