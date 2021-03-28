@@ -170,6 +170,76 @@ void Engine::buildArena2() {
 	arena->addChargingStation(14, 14, Arena::Orientation::POS_X);
 }
 
+void Engine::buildArena3() {
+	using namespace entity;
+
+	int arena_size = 30;
+	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
+
+	// BUILD ARENA LAYOUT ///////////////////////
+
+	//CENTER
+	//2X9
+	arena->addWall(5, 4, 2, 9);
+	arena->addWall(5, 17, 2, 9);
+	arena->addWall(23, 4, 2, 9);
+	arena->addWall(23, 17, 2, 9);
+
+	//10X2
+	arena->addWall(7, 4, 10, 2);
+	arena->addWall(7, 24, 10, 2);
+	arena->addWall(13, 11, 10, 2);
+	arena->addWall(13, 17, 10, 2);
+	//2X3
+	arena->addWall(11, 10, 2, 3);
+	arena->addWall(11, 17, 2, 3);
+	//2X4
+	arena->addWall(17, 4, 2, 4);
+	arena->addWall(17, 22, 2, 4);
+
+	//WALLS AROUND ARENA
+	arena->addWall(0, 0, 1, arena_size); //left
+	arena->addWall(0, arena_size - 1, arena_size, 1);//top
+
+	arena->addWall(arena_size - 1, 0, 1, arena_size - 1);//right
+	arena->addWall(0, 0, arena_size - 1, 1);//bottom
+	////////////////////////////////////////////
+
+	// Starting positions ////////////////////// 
+	playerStartingPosition = glm::vec2(8, 14);
+	ai1StartingPosition = glm::vec2(8, 15);
+	ai2StartingPosition = glm::vec2(11, 14);
+	ai3StartingPosition = glm::vec2(10, 15);
+	////////////////////////////////////////////
+	arena->addChargingStation(9, 14, Arena::Orientation::NEG_Z);
+	arena->addChargingStation(20, 2, Arena::Orientation::POS_X);
+	arena->addChargingStation(20, 27, Arena::Orientation::POS_X);
+}
+void Engine::buildArena4() {
+	using namespace entity;
+
+	int arena_size = 15;
+	arena = std::make_shared<entity::Arena>(arena_size, arena_size, shader);
+
+	// BUILD ARENA LAYOUT ///////////////////////
+
+	//WALLS AROUND ARENA
+	arena->addWall(0, 0, 1, arena_size); //left
+	arena->addWall(0, arena_size - 1, arena_size, 1);//top
+
+	arena->addWall(arena_size - 1, 0, 1, arena_size - 1);//right
+	arena->addWall(0, 0, arena_size - 1, 1);//bottom
+	////////////////////////////////////////////
+
+	// Starting positions ////////////////////// 
+	playerStartingPosition = glm::vec2(8, 8);
+	ai1StartingPosition = glm::vec2(7, 8);
+	ai2StartingPosition = glm::vec2(9, 11);
+	ai3StartingPosition = glm::vec2(10, 11);
+	////////////////////////////////////////////
+	arena->addChargingStation(7, 7, Arena::Orientation::NEG_Z);
+}
+
 
 void Engine::initMainMenuEntities()
 {
@@ -196,6 +266,12 @@ void Engine::initEntities()
 		break;
 	case ui::MainMenu::ArenaSelection::ARENA2:
 		buildArena2();
+		break;
+	case ui::MainMenu::ArenaSelection::ARENA3:
+		buildArena3();
+		break;
+	case ui::MainMenu::ArenaSelection::ARENA4:
+		buildArena4();
 		break;
 	}
 

@@ -37,6 +37,8 @@ private:
 	void initMainMenuEntities();
 	void buildArena1();
 	void buildArena2();
+	void buildArena3();
+	void buildArena4();
 
 	glm::vec2 playerStartingPosition;
 	glm::vec2 ai1StartingPosition;

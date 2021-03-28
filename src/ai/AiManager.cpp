@@ -81,6 +81,42 @@ namespace hyperbright {
 				 l = glm::vec2(5, 14);
 				 m = glm::vec2(14, 14);//CHARGE
 			}
+			else if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA3) {
+				a = glm::vec2(9, 8);
+				b = glm::vec2(9, 21);
+				c = glm::vec2(3, 14);
+				d = glm::vec2(27, 14);//PU
+
+				e = glm::vec2(3, 2);//CHARGE
+
+				f = glm::vec2(3, 2);//PU
+				g = glm::vec2(27, 2);
+				h = glm::vec2(3, 27);//PU
+				i = glm::vec2(27, 27);
+				j = glm::vec2(20, 2);//CHARGE
+				k = glm::vec2(20, 27);//CHARGE
+				l = glm::vec2(15, 9);//PU
+				m = glm::vec2(15, 20);//PU
+				n = glm::vec2(20, 9);
+				o = glm::vec2(20, 20);
+			}
+			else if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA4) {
+				a = glm::vec2(2, 2);//PU
+				b = glm::vec2(17, 2);//PU
+				c = glm::vec2(2, 17);//PU
+				d = glm::vec2(17, 17);//PU
+
+				e = glm::vec2(10, 9);//CHARGE
+
+				f = glm::vec2(9, 3);
+				g = glm::vec2(9, 16);
+				h = glm::vec2(5, 5);//CHARGE
+				i = glm::vec2(14, 5);
+				j = glm::vec2(2, 10);
+				k = glm::vec2(3, 10);
+				l = glm::vec2(5, 14);
+				m = glm::vec2(14, 14);//CHARGE
+			}
 		}
 
 		/////////////////////////////////////////s/////////////////////////
@@ -93,6 +129,12 @@ namespace hyperbright {
 			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA2) {
 				ai->targetTile = generateTargetTwo(ai->targetTile, ai);
 			}
+			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA3) {
+				ai->targetTile = generateTargetThree(ai->targetTile, ai);
+			}
+			else if (currentArena == ui::MainMenu::ArenaSelection::ARENA4) {
+				ai->targetTile = generateTargetFour(ai->targetTile, ai);
+			}
 			//std::cout << "Goal Tile for "<< ai->vehicle->getId()<<" : " << ai->targetTile.x << " "<< ai->targetTile.y << std::endl;
 			//std::vector<glm::vec2> pathList;
 			//glm::vec2 currentTile = ai->vehicle->currentTile;
@@ -101,6 +143,18 @@ namespace hyperbright {
 			ai->path.push_back(ai->targetTile);
 			ai->state = HASTARGET;
 			return;
+		}
+
+		//////////////////////////////////////////////////////////////////
+
+		glm::vec2 AiManager::generateTargetFour(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
+			return e;
+		}
+
+		//////////////////////////////////////////////////////////////////
+
+		glm::vec2 AiManager::generateTargetThree(glm::vec2 lastGoal, std::shared_ptr<Ai> ai) {
+			return e;
 		}
 
 		//////////////////////////////////////////////////////////////////

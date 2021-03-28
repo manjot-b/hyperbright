@@ -36,6 +36,8 @@ public:
 	enum class ArenaSelection {
 		ARENA1,
 		ARENA2,
+		ARENA3,
+		ARENA4,
 		LAST	// Not an actual selction. Used to get the selection count
 	};
 

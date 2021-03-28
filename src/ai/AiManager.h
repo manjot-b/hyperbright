@@ -26,6 +26,8 @@ private:
 	void generatePath(std::shared_ptr<Ai> ai);
 	glm::vec2 generateTargetOne(glm::vec2 lastGoal, std::shared_ptr<Ai> ai);
 	glm::vec2 generateTargetTwo(glm::vec2 lastGoal, std::shared_ptr<Ai> ai);
+	glm::vec2 generateTargetThree(glm::vec2 lastGoal, std::shared_ptr<Ai> ai);
+	glm::vec2 generateTargetFour(glm::vec2 lastGoal, std::shared_ptr<Ai> ai);
 	//bool nextStep(glm::vec2 target, glm::vec2 currentTile, std::vector<glm::vec2> &pathList);
 
 	glm::vec2 a;
