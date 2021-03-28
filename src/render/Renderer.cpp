@@ -46,7 +46,12 @@ void Renderer::initWindow()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-	window = glfwCreateWindow(width, height, "OpenGL Example", nullptr, nullptr);
+	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+	width = mode->width;
+	height = mode->height;
+
+	window = glfwCreateWindow(width, height, "HyperBright", primaryMonitor, nullptr);
 	if (!window)
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
@@ -96,7 +101,7 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	shader->use();
 	shader->setUniformMatrix4fv("perspective", perspective);
 
-	directionalLight = { false, glm::vec3(-1.f, -1.f, 1.f), glm::vec3(.4f, .4f, .5f) };
+	directionalLight = { false, glm::vec3(-.5f, -.5f, 1.f), glm::vec3(.4f, .4f, .5f) };
 
 	// TO-DO: Use actual arena size to contruct light's orthgraphic and view matrices.
 	float orthoSize = 60.f;
