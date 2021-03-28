@@ -285,12 +285,32 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 			audioPlayer.playMenuEnterSound();
 			break;
 		case GLFW_KEY_RIGHT:
+		{
+			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
+			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
+			int nextIdx = static_cast<int>(selection) - 1;
+
+			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
+			nextIdx = (count + (nextIdx % count)) % count;
+			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
+
+			mainMenu.setArenaSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
+		}
+		break;
 		case GLFW_KEY_LEFT:
-			if (mainMenu.getState() == ui::MainMenu::State::SETUP) {
-				mainMenu.setArenaSelection(mainMenu.getArenaSelection() == ui::MainMenu::ArenaSelection::ARENA1 ? 
-					ui::MainMenu::ArenaSelection::ARENA2 : ui::MainMenu::ArenaSelection::ARENA1);
-			}
-			break;
+		{
+			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
+			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
+			int nextIdx = static_cast<int>(selection) + 1;
+
+			nextIdx = nextIdx % count;
+			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
+
+			mainMenu.setArenaSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
+		}
+		break;
 		}
 	}
 }
