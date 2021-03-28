@@ -39,8 +39,10 @@ private:
 
 	std::shared_ptr<openGLHelper::Texture> miniMapTexture;
 	std::unique_ptr<openGLHelper::FrameBuffer> miniMapBuffer;
+	std::shared_ptr<openGLHelper::Texture> timerTexture;
 	std::shared_ptr<openGLHelper::Shader> quadShader;
 	std::unique_ptr<openGLHelper::Quad> quad;
+	std::unique_ptr<openGLHelper::Quad> timerQuad;
 
 	glm::vec3 miniMapPos;
 	glm::mat4 miniMapOrtho;
