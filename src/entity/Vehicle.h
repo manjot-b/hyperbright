@@ -23,8 +23,6 @@ struct VehicleController {
 	bool flipImpulse = false;
 	std::pair<int, bool> boost = std::make_pair(0, false);
 	std::pair<int, bool> trap = std::make_pair(0, false);
-	// straighten: 0 => do nothing, 1 => left correction, 2 => right correction
-	int straighten = 0;
 };
 
 class Vehicle : public render::IRenderable, public physics::IPhysical

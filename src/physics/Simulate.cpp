@@ -153,6 +153,7 @@ void removePickups() {
 Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena, std::shared_ptr<entity::PickupManager>& _pickupManager) :
 	physicsModels(_physicsModels), vehicles(_vehicles)
 {
+	arenaSize = arena.getArenaSize()/2.f * arena.getTileWidth();
 	vehs = &_vehicles;
 	initPhysics();
 	pum = _pickupManager;
@@ -500,13 +501,30 @@ void Simulate::initPhysics()
 
 	//Create a plane to drive on.
 	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
-	PxRigidStatic* gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
+	PxRigidStatic* gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(0, 1, 0), 0.f);
 	
 	// Store nullptr for the userData because we don't ever do anything with the ground.
 	// If we do eventually need to perform some logic on the walls when a collision happens,
 	// then we need to create a Ground class that extends IPhysical and sets the TriggerType to the appropriate value.
 	gGroundPlane->userData = nullptr;
 	gScene->addActor(*gGroundPlane);
+	
+
+	PxRigidStatic* barrier1 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(1, 0, 0), arenaSize.x);
+	barrier1->userData = nullptr;
+	gScene->addActor(*barrier1);
+
+	PxRigidStatic* barrier2 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(-1, 0, 0), arenaSize.x);
+	barrier2->userData = nullptr;
+	gScene->addActor(*barrier2);
+
+	PxRigidStatic* barrier3 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(0, 0, 1), arenaSize.y);
+	barrier3->userData = nullptr;
+	gScene->addActor(*barrier3);
+
+	PxRigidStatic* barrier4 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(0, 0, -1), arenaSize.y);
+	barrier4->userData = nullptr;
+	gScene->addActor(*barrier4);
 
 	//Create Vehicle bodies
 	VehicleDesc vehicleDesc = initVehicleDesc();
@@ -578,18 +596,13 @@ void setDriveMode(entity::VehicleController* ctrl)
 		}
 	}
 	//RIGHT
-	else if (ctrl->input[3]) {
+	if (ctrl->input[3]) {
 		if (ctrl->input[4]) {
 			Driving::startHandbrakeTurnRightMode(vNum);
 		}
 		else {
 			Driving::startTurnHardRightMode(vNum);
 		}
-	}
-	//STRAIGHTEN
-	else if (ctrl->straighten != 0){
-		Driving::releaseTurn(ctrl->straighten, vNum);
-		ctrl->straighten = 0;
 	}
 }
 
