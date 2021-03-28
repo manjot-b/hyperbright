@@ -29,16 +29,27 @@ public:
 
 	enum class State {
 		OFF,
-		WELCOME
+		WELCOME,
+		SETUP
 	};
 
-	MainMenu(State state = State::WELCOME);
+	enum class ArenaSelection {
+		ARENA1,
+		ARENA2
+	};
+
+	MainMenu(State state = State::WELCOME, ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
+	
 	void render();
+	
 	State getState() const;
 	void setState(State state);
+	ArenaSelection getArenaSelection() const;
+	void setArenaSelection(ArenaSelection selection);
 
 private:
 	State _state;
+	ArenaSelection _arenaSelection;
 };
 
 

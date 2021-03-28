@@ -275,8 +275,21 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_ENTER:
-			mainMenu.setState(ui::MainMenu::State::OFF);
+			if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
+				mainMenu.setState(ui::MainMenu::State::SETUP);
+			}
+			else {	// Finished SETUP. Enter game.
+				mainMenu.setState(ui::MainMenu::State::OFF);
+				mainMenu.setArenaSelection(ui::MainMenu::ArenaSelection::ARENA1);
+			}
 			audioPlayer.playMenuEnterSound();
+			break;
+		case GLFW_KEY_RIGHT:
+		case GLFW_KEY_LEFT:
+			if (mainMenu.getState() == ui::MainMenu::State::SETUP) {
+				mainMenu.setArenaSelection(mainMenu.getArenaSelection() == ui::MainMenu::ArenaSelection::ARENA1 ? 
+					ui::MainMenu::ArenaSelection::ARENA2 : ui::MainMenu::ArenaSelection::ARENA1);
+			}
 			break;
 		}
 	}
