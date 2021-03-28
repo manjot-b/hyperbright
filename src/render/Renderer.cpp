@@ -46,7 +46,12 @@ void Renderer::initWindow()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-	window = glfwCreateWindow(width, height, "OpenGL Example", nullptr, nullptr);
+	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+	width = mode->width;
+	height = mode->height;
+
+	window = glfwCreateWindow(width, height, "HyperBright", primaryMonitor, nullptr);
 	if (!window)
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
