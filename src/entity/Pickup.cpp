@@ -81,39 +81,30 @@ namespace hyperbright {
 			else if (type == ZAP) {
 				//std::cout << "ZAP!! \n";
 
-				engine::teamStats::Teams firstPlace;
 				//engine::teamStats::Teams secondPlace = usedByTeam;
 
 				engine::teamStats::Teams team0 = _vehicles->at(0)->getTeam();
 				engine::teamStats::Teams team1 = _vehicles->at(1)->getTeam();
 				engine::teamStats::Teams team2 = _vehicles->at(2)->getTeam();
 				engine::teamStats::Teams team3 = _vehicles->at(3)->getTeam();
-				/*
+				engine::teamStats::Teams firstPlace = team0;
 				//FIND FIRST PLACE
-
+/*
 				if (engine::teamStats::scores.at(team0) >= engine::teamStats::scores.at(firstPlace)) {
-					secondPlace = firstPlace;
 					firstPlace = team0;
-				}
-				else if (engine::teamStats::scores.at(team1) >= engine::teamStats::scores.at(firstPlace)) {
-					secondPlace = firstPlace;
+				} 
+				else*/ if (engine::teamStats::scores.at(team1) >= engine::teamStats::scores.at(firstPlace)) {
 					firstPlace = team1;
 				}
-				else if (engine::teamStats::scores.at(team2) >= engine::teamStats::scores.at(firstPlace)) {
-					secondPlace = firstPlace;
+				 if (engine::teamStats::scores.at(team2) >= engine::teamStats::scores.at(firstPlace)) {
 					firstPlace = team2;
 				}
-				else if (engine::teamStats::scores.at(team3) >= engine::teamStats::scores.at(firstPlace)) {
-					secondPlace = firstPlace;
+				 if (engine::teamStats::scores.at(team3) >= engine::teamStats::scores.at(firstPlace)) {
 					firstPlace = team3;
 				}
 
-				if (firstPlace == usedByTeam) {
-					firstPlace = secondPlace;
-				}
-				*/
-
-				firstPlace = _vehicles->at(rand() % 4)->getTeam();
+				
+				//firstPlace = _vehicles->at(rand() % 4)->getTeam();
 				zapOldTeam = firstPlace;
 
 				//zapOldTeam = firstPlace;
