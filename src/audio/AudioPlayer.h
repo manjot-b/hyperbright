@@ -28,6 +28,8 @@ public:
 	void playTrapHitSound();
 	void playZapSound();
 	void setMusicVolume(float volume);
+	void playWinSound();
+	void playLossSound();
 private:
 	void init();
 	int curLoaded;

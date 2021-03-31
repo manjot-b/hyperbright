@@ -16,10 +16,13 @@
 #define SPEED 9
 #define TRAPHIT 10
 #define ZAP 11
+#define LOSSMUSIC 12
+#define WINMUSIC 13
 
-#define NUM_BUFFERS 12 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 12
-#define NUM_ENVIRONMENTS 12
+
+#define NUM_BUFFERS 14 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 14
+#define NUM_ENVIRONMENTS 1
 
 namespace hyperbright {
 namespace audio {
@@ -304,6 +307,20 @@ void AudioPlayer::init() {
     alSourcefv(source[ZAP], AL_VELOCITY, source0Vel);
     alSourcei(source[ZAP], AL_BUFFER, buffer[ZAP]);
 
+    loadSound("rsc/sounds/loss.wav");
+    alSourcef(source[LOSSMUSIC], AL_PITCH, 1.0f);
+    alSourcef(source[LOSSMUSIC], AL_GAIN, 1.0f);
+    alSourcefv(source[LOSSMUSIC], AL_POSITION, source0Pos);
+    alSourcefv(source[LOSSMUSIC], AL_VELOCITY, source0Vel);
+    alSourcei(source[LOSSMUSIC], AL_BUFFER, buffer[LOSSMUSIC]);
+
+    loadSound("rsc/sounds/win.wav");
+    alSourcef(source[WINMUSIC], AL_PITCH, 1.0f);
+    alSourcef(source[WINMUSIC], AL_GAIN, 1.0f);
+    alSourcefv(source[WINMUSIC], AL_POSITION, source0Pos);
+    alSourcefv(source[WINMUSIC], AL_VELOCITY, source0Vel);
+    alSourcei(source[WINMUSIC], AL_BUFFER, buffer[WINMUSIC]);
+
     return;
 }
 
@@ -427,6 +444,22 @@ void AudioPlayer::playTrapHitSound() {
     alSourcePlay(source[TRAPHIT]);
 
 }
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playWinSound() {
+
+    alSourcePlay(source[WINMUSIC]);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playLossSound() {
+
+    alSourcePlay(source[LOSSMUSIC]);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 void AudioPlayer::playSpeedSound() {
