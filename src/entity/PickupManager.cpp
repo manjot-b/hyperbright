@@ -8,8 +8,8 @@
 
 namespace hyperbright {
 	namespace entity {
-		PickupManager::PickupManager(std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::IRenderable>>& _renderables) :
-			arena(_arena), renderables(_renderables) {
+		PickupManager::PickupManager(std::shared_ptr<audio::AudioPlayer>& _audioPlayer, std::shared_ptr<entity::Arena> _arena, std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::vector<std::shared_ptr<render::IRenderable>>& _renderables) :
+			arena(_arena), renderables(_renderables) , audioPlayer(_audioPlayer){
 			vehicles = _vehicles;
 			pickupDownTime = 8.f;
 		}
@@ -85,6 +85,9 @@ namespace hyperbright {
 			for (int i = 0; i < carriedPickups.size(); i++) {
 				if (!carriedPickups.at(i)->beingCarried && carriedPickups.at(i)->active) {
 					//std::cout << "PU ACTIVATED: " << carriedPickups.at(i)->pickupNumber <<"\n";
+					if (carriedPickups.at(i)->type == EMP) {
+						audioPlayer->playEmpSound();
+					}
 					carriedPickups.at(i)->activate(vehicles);
 					moveToActive(carriedPickups.at(i));
 					removeFromCarried(carriedPickups.at(i));

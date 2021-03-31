@@ -15,10 +15,11 @@
 #define EMP 8
 #define SPEED 9
 #define TRAPHIT 10
+#define ZAP 11
 
-#define NUM_BUFFERS 11 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 11
-#define NUM_ENVIRONMENTS 11
+#define NUM_BUFFERS 12 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 12
+#define NUM_ENVIRONMENTS 12
 
 namespace hyperbright {
 namespace audio {
@@ -296,6 +297,13 @@ void AudioPlayer::init() {
     alSourcefv(source[TRAPHIT], AL_VELOCITY, source0Vel);
     alSourcei(source[TRAPHIT], AL_BUFFER, buffer[TRAPHIT]);
 
+    loadSound("rsc/sounds/zap.wav");
+    alSourcef(source[ZAP], AL_PITCH, 1.0f);
+    alSourcef(source[ZAP], AL_GAIN, 1.0f);
+    alSourcefv(source[ZAP], AL_POSITION, source0Pos);
+    alSourcefv(source[ZAP], AL_VELOCITY, source0Vel);
+    alSourcei(source[ZAP], AL_BUFFER, buffer[ZAP]);
+
     return;
 }
 
@@ -396,6 +404,13 @@ void AudioPlayer::playMenuEnterSound() {
 void AudioPlayer::playUsePowerupSound() {
 
     alSourcePlay(source[USEPOWERUP]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playZapSound() {
+
+    alSourcePlay(source[ZAP]);
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -198,7 +198,10 @@ void Controller::processInput(float deltaSec)
 		if (playerVehicle->hasPickup()) {
 			int type = playerVehicle->getPickup()->type;
 			if (type == EMP) {
-				audioPlayer.playEmpSound();
+				//audioPlayer.playEmpSound();
+			}
+			else if (type == ZAP) {
+				audioPlayer.playZapSound();
 			}
 			else if (type == SPEED) {
 				audioPlayer.playSpeedSound();
