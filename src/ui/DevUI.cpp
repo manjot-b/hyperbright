@@ -20,7 +20,7 @@ DevUI::DevUI(GLFWwindow* window) : showDemo(false)
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
-    settings.musicVolume = 0.f;
+    settings.musicVolume = 0.5f;
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
