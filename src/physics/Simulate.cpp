@@ -656,7 +656,7 @@ void Simulate::stepPhysics(float frameRate)
 	// update the stats of each vehicle
 	for (auto& vehicle : vehicles) {
 		vehicle->updateOrientation();
-		vehicle->updateSpeedometer(frameRate);
+		vehicle->updateSpeedometerAndAcceleration(frameRate);
 		if (vehicle->getTeam() == engine::teamStats::Teams::TEAM0) {
 			// print out aspects of the player vehicle per frame here
 			

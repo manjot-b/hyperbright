@@ -75,7 +75,7 @@ public:
 	void setWheelsModelMatrix(const glm::mat4& frontLeft, const glm::mat4& frontRight, const glm::mat4& rearRight, const glm::mat4& rearLeft);
 	void setPosition(const glm::vec3& position);
 	void setColor(const glm::vec4 _color) { color = _color; }
-	void updateSpeedometer(float deltaTime);
+	void updateSpeedometerAndAcceleration(float deltaTime);
 
 	float pickupTime;
 	glm::vec2 currentTile;
@@ -127,7 +127,6 @@ private:
 	unsigned int brakeLightsIdx;
 	glm::vec4 brakeLightsColor;
 	glm::vec4 reverseLightsColor;
-	void straighten(int dir);
 };
 }	// namespace entity
 }	// namespace hyperbright

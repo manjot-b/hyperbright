@@ -1,6 +1,8 @@
 #pragma once
+#include "entity/Vehicle.h"
 
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace hyperbright {
 namespace render {
@@ -34,6 +36,8 @@ public:
     void processMouseMovement(float xoffset, float yoffset);
     void processMouseScroll(Movement direction, float yoffset);
     void updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi);
+    void updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime);
+    void initCameraBoom(glm::vec3 position, glm::vec3 direction);
 
 private:
     glm::mat4 view;
@@ -44,6 +48,15 @@ private:
     glm::vec3 up;
     glm::vec3 right;
     glm::vec3 worldUp;
+
+    struct BoomArm {
+        glm::vec3 position;
+        glm::vec3 direction;
+        glm::vec3 velocity;
+        float currentLength;
+        float restingLength;
+    }boomArm;
+
     // euler Angles
     float yaw;
     float pitch;

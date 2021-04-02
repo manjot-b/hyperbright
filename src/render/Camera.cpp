@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
+#include <iostream>
 
 namespace hyperbright {
 namespace render {
@@ -113,6 +114,70 @@ void Camera::updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi)
 
 	direction = position + front;
 	view = glm::lookAt(position, direction, up);
+}
+
+float const aboveShoulder = 2.f;
+float const belowForward = 0.4f;
+float const aheadVehicle = 2.f;
+float const catchUp = 10.f;
+//float const straighten = 1.f;
+//float deltaTheta = 0.f;
+//float theta = 0.f;
+
+void Camera::initCameraBoom(glm::vec3 position, glm::vec3 direction)
+{
+	float testLength = 5.5f;
+	boomArm.velocity = glm::vec3(0.f);
+	boomArm.restingLength = testLength;
+	boomArm.currentLength = testLength;
+	boomArm.position = glm::vec3(position.x, aboveShoulder, position.z);
+	boomArm.direction = glm::normalize(direction);
+}
+
+void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime)
+{
+	glm::vec3 pDir = player->getDirection();
+	glm::vec3 pPos = player->getPosition();
+
+	glm::vec3 poi = pPos + pDir * aheadVehicle;
+	poi.y -= belowForward;
+
+	front = glm::normalize(poi - boomArm.position);
+	right = glm::normalize(glm::cross(front, worldUp));
+	up = glm::normalize(glm::cross(right, front));
+
+	/*
+	float dotF_D = glm::dot(front, pDir);
+	float deltaTheta = 0.f;
+	if (dotF_D > 0.1f || dotF_D < -0.1f) {
+		deltaTheta = (1.f - dotF_D) * straighten;
+	}
+
+	glm::vec3 perpP_C = glm::cross(front, pDir);
+
+	if (deltaTheta != 0.f) {
+		if (perpP_C.y > 0.f) {
+			glm::mat4 rotM = glm::rotate(glm::mat4(1.f), glm::radians(deltaTheta), up);
+			front = glm::vec3(rotM * glm::vec4(front, 1.f));
+		}
+		else if (perpP_C.y < 0.f) {
+			glm::mat4 rotM = glm::rotate(glm::mat4(1.f), glm::radians(-deltaTheta), up);
+			front = glm::vec3(rotM * glm::vec4(front, 1.f));
+		}
+	}*/
+
+	boomArm.currentLength = glm::length(poi - boomArm.position);
+	boomArm.velocity = (boomArm.currentLength - boomArm.restingLength) * front * catchUp;
+	boomArm.position = boomArm.position + boomArm.velocity * deltaTime;
+	boomArm.position.y = aboveShoulder;
+
+	position = boomArm.position;
+	direction = position + front;
+
+	//std::cout << "Position:  " << position.x << " " << position.y << " " << position.z << std::endl;
+	//std::cout << "Direction: " << direction.x << " " << direction.y << " " << direction.z << "\n" << std::endl;
+	view = glm::lookAt(position, direction, up);
+
 }
 }   // namespace render
 }   // namespace hyperbright

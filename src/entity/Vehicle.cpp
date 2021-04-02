@@ -178,8 +178,10 @@ void Vehicle::applyFlipImpulse()
 
 void Vehicle::applyBoost(int duration)
 {
-	ctrl.boost.first = duration;
-	ctrl.boost.second = true;
+	if (upright) {
+		ctrl.boost.first = duration;
+		ctrl.boost.second = true;
+	}
 }
 
 void Vehicle::releaseBoost()
@@ -278,7 +280,7 @@ void Vehicle::stopHardTurn()
 	ctrl.input[4] = 0;
 }
 
-void Vehicle::updateSpeedometer(float deltaTime)
+void Vehicle::updateSpeedometerAndAcceleration(float deltaTime)
 {
 	vec3 travelled = body->getPosition() - lastPosition;
 	float projOnDirection = dot(travelled, direction);
@@ -288,6 +290,7 @@ void Vehicle::updateSpeedometer(float deltaTime)
 	else {
 		speedometer = -length(travelled) / deltaTime;
 	}
+	if (speedometer < 0.5f && speedometer > -0.5f) speedometer = 0.f;
 }
 
 void Vehicle::setModelMatrix(const glm::mat4& modelMat)

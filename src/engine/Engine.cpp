@@ -370,6 +370,8 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
+	camera.initCameraBoom(vehicles[0]->getPosition(), vehicles[0]->getForward());
+
 	ai::AiManager aiManager;
 	aiManager.setArena(arena, mainMenu.getArenaSelection());//MUST DO BEFORE LOADING VEHICLE
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
@@ -432,7 +434,7 @@ void Engine::runGame() {
 			if (!controller->isCameraManual())
 			{
 				// grab position from player vehicle
-				camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getForward());
+				camera.updateCameraVectors(vehicles[0], deltaSec);
 			}
 		}
 
