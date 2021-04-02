@@ -18,10 +18,12 @@
 #define ZAP 11
 #define LOSSMUSIC 12
 #define WINMUSIC 13
+#define WALLCOLLISION 14
+#define CARCOLLISION 15
 
 
-#define NUM_BUFFERS 14 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 14
+#define NUM_BUFFERS 16 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 16
 #define NUM_ENVIRONMENTS 1
 
 namespace hyperbright {
@@ -314,12 +316,29 @@ void AudioPlayer::init() {
     alSourcefv(source[LOSSMUSIC], AL_VELOCITY, source0Vel);
     alSourcei(source[LOSSMUSIC], AL_BUFFER, buffer[LOSSMUSIC]);
 
+
     loadSound("rsc/sounds/win.wav");
     alSourcef(source[WINMUSIC], AL_PITCH, 1.0f);
     alSourcef(source[WINMUSIC], AL_GAIN, 1.0f);
     alSourcefv(source[WINMUSIC], AL_POSITION, source0Pos);
     alSourcefv(source[WINMUSIC], AL_VELOCITY, source0Vel);
     alSourcei(source[WINMUSIC], AL_BUFFER, buffer[WINMUSIC]);
+
+
+    loadSound("rsc/sounds/wall_collision.wav");
+    alSourcef(source[WALLCOLLISION], AL_PITCH, 1.0f);
+    alSourcef(source[WALLCOLLISION], AL_GAIN, 1.0f);
+    alSourcefv(source[WALLCOLLISION], AL_POSITION, source0Pos);
+    alSourcefv(source[WALLCOLLISION], AL_VELOCITY, source0Vel);
+    alSourcei(source[WALLCOLLISION], AL_BUFFER, buffer[WALLCOLLISION]);
+
+    loadSound("rsc/sounds/car_collision.wav");
+    alSourcef(source[CARCOLLISION], AL_PITCH, 1.0f);
+    alSourcef(source[CARCOLLISION], AL_GAIN, 1.0f);
+    alSourcefv(source[CARCOLLISION], AL_POSITION, source0Pos);
+    alSourcefv(source[CARCOLLISION], AL_VELOCITY, source0Vel);
+    alSourcei(source[CARCOLLISION], AL_BUFFER, buffer[CARCOLLISION]);
+
 
     return;
 }
@@ -461,6 +480,20 @@ void AudioPlayer::playLossSound() {
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+
+void AudioPlayer::playWallCollisionSound() {
+
+    alSourcePlay(source[WALLCOLLISION]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playCarCollisionSound() {
+
+    alSourcePlay(source[CARCOLLISION]);
+}
+
 
 void AudioPlayer::playSpeedSound() {
 

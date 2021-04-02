@@ -30,6 +30,8 @@ public:
 	void setMusicVolume(float volume);
 	void playWinSound();
 	void playLossSound();
+	void playCarCollisionSound();
+	void playWallCollisionSound();
 private:
 	void init();
 	int curLoaded;
