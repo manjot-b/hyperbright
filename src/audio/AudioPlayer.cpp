@@ -19,11 +19,12 @@
 #define LOSSMUSIC 12
 #define WINMUSIC 13
 #define WALLCOLLISION 14
-#define CARCOLLISION 15
+#define CARCOLLISION1 15
+#define CARCOLLISION2 16
+#define CARCOLLISION3 17
 
-
-#define NUM_BUFFERS 16 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 16
+#define NUM_BUFFERS 18 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 18
 #define NUM_ENVIRONMENTS 1
 
 namespace hyperbright {
@@ -332,12 +333,26 @@ void AudioPlayer::init() {
     alSourcefv(source[WALLCOLLISION], AL_VELOCITY, source0Vel);
     alSourcei(source[WALLCOLLISION], AL_BUFFER, buffer[WALLCOLLISION]);
 
-    loadSound("rsc/sounds/car_collision.wav");
-    alSourcef(source[CARCOLLISION], AL_PITCH, 1.0f);
-    alSourcef(source[CARCOLLISION], AL_GAIN, 1.0f);
-    alSourcefv(source[CARCOLLISION], AL_POSITION, source0Pos);
-    alSourcefv(source[CARCOLLISION], AL_VELOCITY, source0Vel);
-    alSourcei(source[CARCOLLISION], AL_BUFFER, buffer[CARCOLLISION]);
+    loadSound("rsc/sounds/car_collision1.wav");
+    alSourcef(source[CARCOLLISION1], AL_PITCH, 1.0f);
+    alSourcef(source[CARCOLLISION1], AL_GAIN, 1.0f);
+    alSourcefv(source[CARCOLLISION1], AL_POSITION, source0Pos);
+    alSourcefv(source[CARCOLLISION1], AL_VELOCITY, source0Vel);
+    alSourcei(source[CARCOLLISION1], AL_BUFFER, buffer[CARCOLLISION1]);
+
+    loadSound("rsc/sounds/car_collision2.wav");
+    alSourcef(source[CARCOLLISION2], AL_PITCH, 1.0f);
+    alSourcef(source[CARCOLLISION2], AL_GAIN, 1.0f);
+    alSourcefv(source[CARCOLLISION2], AL_POSITION, source0Pos);
+    alSourcefv(source[CARCOLLISION2], AL_VELOCITY, source0Vel);
+    alSourcei(source[CARCOLLISION2], AL_BUFFER, buffer[CARCOLLISION2]);
+
+    loadSound("rsc/sounds/car_collision3.wav");
+    alSourcef(source[CARCOLLISION3], AL_PITCH, 1.0f);
+    alSourcef(source[CARCOLLISION3], AL_GAIN, 1.0f);
+    alSourcefv(source[CARCOLLISION3], AL_POSITION, source0Pos);
+    alSourcefv(source[CARCOLLISION3], AL_VELOCITY, source0Vel);
+    alSourcei(source[CARCOLLISION3], AL_BUFFER, buffer[CARCOLLISION3]);
 
 
     return;
@@ -490,8 +505,16 @@ void AudioPlayer::playWallCollisionSound() {
 //////////////////////////////////////////////////////////////////////////////
 
 void AudioPlayer::playCarCollisionSound() {
-
-    alSourcePlay(source[CARCOLLISION]);
+    int selector = rand() % 3;
+    if (selector == 0) {
+        alSourcePlay(source[CARCOLLISION1]);
+    }
+    else if (selector == 1) {
+        alSourcePlay(source[CARCOLLISION2]);
+    }
+    else {
+        alSourcePlay(source[CARCOLLISION3]);
+    }
 }
 
 
