@@ -39,6 +39,7 @@ private:
 	void buildArena2();
 	void buildArena3();
 	void buildArena4();
+	bool winCheck();
 
 	glm::vec2 playerStartingPosition;
 	glm::vec2 ai1StartingPosition;
