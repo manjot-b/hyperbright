@@ -5,13 +5,14 @@
 #include "entity/Arena.h"
 #include "entity/Pickup.h"
 #include "entity/Vehicle.h"
+#include "audio/AudioPlayer.h"
 #include "ui/Menu.h"
 
 namespace hyperbright {
 namespace entity {
 class PickupManager {
 public:
-	PickupManager(std::shared_ptr<entity::Arena> arena, std::vector<std::shared_ptr<entity::Vehicle>> * _vehicles, std::vector<std::shared_ptr<render::IRenderable>>& renderables);
+	PickupManager(std::shared_ptr<audio::AudioPlayer>& audioPlayer , std::shared_ptr<entity::Arena> arena, std::vector<std::shared_ptr<entity::Vehicle>> * _vehicles, std::vector<std::shared_ptr<render::IRenderable>>& renderables);
 	~PickupManager();
 
 	void checkPickups();
@@ -49,7 +50,7 @@ private:
 		int pickupId;
 	};
 	std::vector<std::shared_ptr<entity::Vehicle>>* vehicles;
-
+	std::shared_ptr<audio::AudioPlayer>& audioPlayer;
 	int pickupIdCounter;
 	void checkCarriedPickups();
 	void checkActivePickups();

@@ -15,10 +15,17 @@
 #define EMP 8
 #define SPEED 9
 #define TRAPHIT 10
+#define ZAP 11
+#define LOSSMUSIC 12
+#define WINMUSIC 13
+#define WALLCOLLISION 14
+#define CARCOLLISION1 15
+#define CARCOLLISION2 16
+#define CARCOLLISION3 17
 
-#define NUM_BUFFERS 11 //NUMBER OF SOUND FILES
-#define NUM_SOURCES 11
-#define NUM_ENVIRONMENTS 11
+#define NUM_BUFFERS 18 //NUMBER OF SOUND FILES
+#define NUM_SOURCES 18
+#define NUM_ENVIRONMENTS 1
 
 namespace hyperbright {
 namespace audio {
@@ -296,6 +303,58 @@ void AudioPlayer::init() {
     alSourcefv(source[TRAPHIT], AL_VELOCITY, source0Vel);
     alSourcei(source[TRAPHIT], AL_BUFFER, buffer[TRAPHIT]);
 
+    loadSound("rsc/sounds/zap.wav");
+    alSourcef(source[ZAP], AL_PITCH, 1.0f);
+    alSourcef(source[ZAP], AL_GAIN, 1.0f);
+    alSourcefv(source[ZAP], AL_POSITION, source0Pos);
+    alSourcefv(source[ZAP], AL_VELOCITY, source0Vel);
+    alSourcei(source[ZAP], AL_BUFFER, buffer[ZAP]);
+
+    loadSound("rsc/sounds/loss.wav");
+    alSourcef(source[LOSSMUSIC], AL_PITCH, 1.0f);
+    alSourcef(source[LOSSMUSIC], AL_GAIN, 1.0f);
+    alSourcefv(source[LOSSMUSIC], AL_POSITION, source0Pos);
+    alSourcefv(source[LOSSMUSIC], AL_VELOCITY, source0Vel);
+    alSourcei(source[LOSSMUSIC], AL_BUFFER, buffer[LOSSMUSIC]);
+    alSourcei(source[LOSSMUSIC], AL_LOOPING, AL_TRUE);
+
+    loadSound("rsc/sounds/win.wav");
+    alSourcef(source[WINMUSIC], AL_PITCH, 1.0f);
+    alSourcef(source[WINMUSIC], AL_GAIN, 1.0f);
+    alSourcefv(source[WINMUSIC], AL_POSITION, source0Pos);
+    alSourcefv(source[WINMUSIC], AL_VELOCITY, source0Vel);
+    alSourcei(source[WINMUSIC], AL_BUFFER, buffer[WINMUSIC]);
+    alSourcei(source[WINMUSIC], AL_LOOPING, AL_TRUE);
+
+    loadSound("rsc/sounds/wall_collision.wav");
+    alSourcef(source[WALLCOLLISION], AL_PITCH, 1.0f);
+    alSourcef(source[WALLCOLLISION], AL_GAIN, 1.0f);
+    alSourcefv(source[WALLCOLLISION], AL_POSITION, source0Pos);
+    alSourcefv(source[WALLCOLLISION], AL_VELOCITY, source0Vel);
+    alSourcei(source[WALLCOLLISION], AL_BUFFER, buffer[WALLCOLLISION]);
+
+    loadSound("rsc/sounds/car_collision1.wav");
+    alSourcef(source[CARCOLLISION1], AL_PITCH, 1.0f);
+    alSourcef(source[CARCOLLISION1], AL_GAIN, 1.0f);
+    alSourcefv(source[CARCOLLISION1], AL_POSITION, source0Pos);
+    alSourcefv(source[CARCOLLISION1], AL_VELOCITY, source0Vel);
+    alSourcei(source[CARCOLLISION1], AL_BUFFER, buffer[CARCOLLISION1]);
+
+    loadSound("rsc/sounds/car_collision2.wav");
+    alSourcef(source[CARCOLLISION2], AL_PITCH, 1.0f);
+    alSourcef(source[CARCOLLISION2], AL_GAIN, 1.0f);
+    alSourcefv(source[CARCOLLISION2], AL_POSITION, source0Pos);
+    alSourcefv(source[CARCOLLISION2], AL_VELOCITY, source0Vel);
+    alSourcei(source[CARCOLLISION2], AL_BUFFER, buffer[CARCOLLISION2]);
+
+    loadSound("rsc/sounds/car_collision3.wav");
+    alSourcef(source[CARCOLLISION3], AL_PITCH, 1.0f);
+    alSourcef(source[CARCOLLISION3], AL_GAIN, 1.0f);
+    alSourcefv(source[CARCOLLISION3], AL_POSITION, source0Pos);
+    alSourcefv(source[CARCOLLISION3], AL_VELOCITY, source0Vel);
+    alSourcei(source[CARCOLLISION3], AL_BUFFER, buffer[CARCOLLISION3]);
+
+
     return;
 }
 
@@ -400,6 +459,13 @@ void AudioPlayer::playUsePowerupSound() {
 
 //////////////////////////////////////////////////////////////////////////////
 
+void AudioPlayer::playZapSound() {
+
+    alSourcePlay(source[ZAP]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
 void AudioPlayer::playEmpSound() {
 
     alSourcePlay(source[EMP]);
@@ -412,7 +478,58 @@ void AudioPlayer::playTrapHitSound() {
     alSourcePlay(source[TRAPHIT]);
 
 }
+
 //////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::startWinMusic() {
+
+    alSourcePlay(source[WINMUSIC]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::stopWinMusic() {
+
+    alSourceStop(source[WINMUSIC]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::startLossMusic() {
+
+    alSourcePlay(source[LOSSMUSIC]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::stopLossMusic() {
+
+    alSourceStop(source[LOSSMUSIC]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+
+void AudioPlayer::playWallCollisionSound() {
+
+    alSourcePlay(source[WALLCOLLISION]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::playCarCollisionSound() {
+    int selector = rand() % 3;
+    if (selector == 0) {
+        alSourcePlay(source[CARCOLLISION1]);
+    }
+    else if (selector == 1) {
+        alSourcePlay(source[CARCOLLISION2]);
+    }
+    else {
+        alSourcePlay(source[CARCOLLISION3]);
+    }
+}
+
 
 void AudioPlayer::playSpeedSound() {
 

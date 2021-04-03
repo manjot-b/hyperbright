@@ -80,8 +80,9 @@ public:
 	float pickupTime;
 	glm::vec2 currentTile;
 	float energy = 1.f;
-	bool suckerActive;//IMPLEMENTATION IN COLLISION DETECTION 
+	bool zapActive;//IMPLEMENTATION IN COLLISION DETECTION 
 	bool syphonActive;//IMPLEMENTATION IN COLLISION DETECTION
+	bool trapActive;
 	
 	// driving movements act as a toggle. call the appropriate movement 
 	// function to start moving then call the cooresponding stop function 

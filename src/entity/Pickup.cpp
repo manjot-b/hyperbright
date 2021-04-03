@@ -116,21 +116,22 @@ namespace hyperbright {
 				if (firstPlace == team0) {
 					whoWasZapped = 0;
 					_vehicles->at(0)->setTeam(usedByTeam);
+					_vehicles->at(0)->zapActive = true;
 				}
 				else if (firstPlace == team1) {
 					whoWasZapped = 1;
 					_vehicles->at(1)->setTeam(usedByTeam);
-
+					_vehicles->at(1)->zapActive = true;
 				}
 				else if (firstPlace == team2) {
 					whoWasZapped = 2;
 					_vehicles->at(2)->setTeam(usedByTeam);
-
+					_vehicles->at(2)->zapActive = true;
 				}
 				else if (firstPlace == team3) {
 					whoWasZapped = 3;
 					_vehicles->at(3)->setTeam(usedByTeam);
-
+					_vehicles->at(3)->zapActive = true;
 				}
 
 			}
@@ -198,15 +199,19 @@ namespace hyperbright {
 			if (type == ZAP) {
 				if (whoWasZapped == 0) {
 					_vehicles->at(0)->setTeam(zapOldTeam);
+					_vehicles->at(0)->zapActive = false;
 				}
 				else if (whoWasZapped == 1) {
 					_vehicles->at(1)->setTeam(zapOldTeam);
+					_vehicles->at(1)->zapActive = false;
 				}
 				else if (whoWasZapped == 2) {
 					_vehicles->at(2)->setTeam(zapOldTeam);
+					_vehicles->at(2)->zapActive = false;
 				}
 				else if (whoWasZapped == 3) {
 					_vehicles->at(3)->setTeam(zapOldTeam);
+					_vehicles->at(3)->zapActive = false;
 				}
 			}
 			else if (type == SYPHON) {

@@ -30,6 +30,9 @@ Vehicle::Vehicle(
 	string bodyIdSuffix = "body";
 	string wheelsIdSuffix = "wheel";
 	syphonActive = false;
+	zapActive = false;
+	trapActive = false;
+
 	switch (team)
 	{
 	case teamStats::Teams::TEAM0:
@@ -193,11 +196,13 @@ void Vehicle::applyTrap(int duration)
 {
 	ctrl.trap.first = duration;
 	ctrl.trap.second = true;
+	trapActive = true;
 }
 
 void Vehicle::releaseTrap()
 {
 	ctrl.trap.second = false;
+	trapActive = false;
 }
 
 void Vehicle::accelerateForward()

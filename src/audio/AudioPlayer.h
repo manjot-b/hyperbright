@@ -26,7 +26,15 @@ public:
 	void playEmpSound();
 	void playSpeedSound();
 	void playTrapHitSound();
+	void playZapSound();
 	void setMusicVolume(float volume);
+	void startWinMusic();
+	void stopWinMusic();
+	void playCarCollisionSound();
+	void playWallCollisionSound();
+	void startLossMusic();
+	void stopLossMusic();
+
 private:
 	void init();
 	int curLoaded;

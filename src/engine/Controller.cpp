@@ -245,15 +245,6 @@ void Controller::processInput(float deltaSec)
 			}
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		{
-			if (!handbrake)
-			{
-				playerVehicle->hardTurn();
-				handbrake = true;
-			}
-		}
-
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 		{
 			if (handbrake)
@@ -263,33 +254,47 @@ void Controller::processInput(float deltaSec)
 			}
 		}
 
-		/////////////// FLIP VEHICLE CONTROLS
-		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-		{
-			// only apply the flip impulse if the vehicle is upside down and 1 second has past since the last attempt
-			if (!playerVehicle->isUpright() && (glfwGetTime() - flipTimer > 1.f))
-			{
-				playerVehicle->applyFlipImpulse();
-				flipTimer = glfwGetTime();
+	/////////////// VEHICLE PICKUP ACTIVATE CONTROLS
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		if (playerVehicle->hasPickup()) {
+			int type = playerVehicle->getPickup()->type;
+			if (type == EMP) {
+				//audioPlayer.playEmpSound();
+			}
+			else if (type == ZAP) {
+				audioPlayer.playZapSound();
 			}
 		}
 
-		/////////////// VEHICLE PICKUP ACTIVATE CONTROLS
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	}
+
+	/////////////// FLIP VEHICLE CONTROLS
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		// only apply the flip impulse if the vehicle is upside down and 1 second has past since the last attempt
+		if (!playerVehicle->isUpright() && (glfwGetTime() - flipTimer > 1.f))
 		{
-			if (playerVehicle->hasPickup()) {
-				int type = playerVehicle->getPickup()->type;
-				if (type == EMP) {
-					audioPlayer.playEmpSound();
-				}
-				else if (type == SPEED) {
-					audioPlayer.playSpeedSound();
-				}
-				else {
-					audioPlayer.playUsePowerupSound();
-				}
-				playerVehicle->activatePickup();
+			playerVehicle->applyFlipImpulse();
+			flipTimer = glfwGetTime();
+		}
+	}
+
+	/////////////// VEHICLE PICKUP ACTIVATE CONTROLS
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		if (playerVehicle->hasPickup()) {
+			int type = playerVehicle->getPickup()->type;
+			if (type == EMP) {
+				audioPlayer.playEmpSound();
 			}
+			else if (type == SPEED) {
+				audioPlayer.playSpeedSound();
+			}
+			else {
+				audioPlayer.playUsePowerupSound();
+			}
+			playerVehicle->activatePickup();
 		}
 	}
 

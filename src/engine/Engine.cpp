@@ -364,7 +364,7 @@ void Engine::runMainMenu() {
 //////////////////////////////////////////////////////////
 
 void Engine::runGame() {
-	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(arena, &vehicles, renderables);
+	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(audioPlayer,arena, &vehicles, renderables);
 	pickupManager->initPickups(shader, mainMenu.getArenaSelection());
 
 	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager);
@@ -451,10 +451,27 @@ void Engine::runGame() {
 	audioPlayer->stopCarIdle();
 	simulator.cleanupPhysics();
 }
-
+bool Engine::winCheck() {
+	int playerScore = teamStats::scores.at(vehicles.at(0)->getTeam());
+	if (playerScore > teamStats::scores.at(vehicles.at(1)->getTeam())) {
+		if (playerScore > teamStats::scores.at(vehicles.at(2)->getTeam())) {
+			if (playerScore > teamStats::scores.at(vehicles.at(3)->getTeam())) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
 //A loop for endgame
 void Engine::endGame()
 {
+	if (winCheck()){
+		audioPlayer->startWinMusic();
+	}
+	else {
+		audioPlayer->startLossMusic();
+	}
+
 	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 		// update global time
 		float currentFrame = glfwGetTime();
@@ -477,6 +494,13 @@ void Engine::endGame()
 		
 		getDevUISettings();
 		glfwPollEvents();
+	}
+
+	if (winCheck()) {
+		audioPlayer->stopWinMusic();
+	}
+	else {
+		audioPlayer->stopLossMusic();
 	}
 }
 
