@@ -83,6 +83,7 @@ private:
 	void resetAll();
 
 	void getDevUISettings();
+	void getDevUIHandlingSettings(physics::Simulate simulator);
 };
 }	// namespace engine
 }	// namespace hyperbright

@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
+#include <iostream>
 
 namespace hyperbright {
 namespace render {
@@ -113,6 +114,54 @@ void Camera::updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi)
 
 	direction = position + front;
 	view = glm::lookAt(position, direction, up);
+}
+
+void Camera::initCameraBoom(glm::vec3 position, glm::vec3 direction)
+{
+	
+	boomArm.velocity = glm::vec3(0.f);
+	boomArm.restingLength = camRestLength;
+	boomArm.currentLength = camRestLength;
+	boomArm.position = glm::vec3(position.x, camHeight, position.z);
+	boomArm.direction = glm::normalize(direction);
+}
+
+void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime)
+{
+	glm::vec3 pDir = player->getDirection();	// direction of the vehicle
+	glm::vec3 pPos = player->getPosition();		// position of the vehilce
+
+	glm::vec3 poi = pPos + pDir * poiDepth;	// poi of interest in front 
+	poi.y += poiHeight;						// and slightly below the vehicle
+
+	// orientation vectors
+	front = glm::normalize(poi - boomArm.position);	
+	right = glm::normalize(glm::cross(front, worldUp));
+	up = glm::normalize(glm::cross(right, front));
+
+	// swing the camera to the back of the vehicle
+	glm::vec3 betwP_B = (poi - pDir * camRestLength) - boomArm.position;					// vector from the resting position to the current boom position
+	boomArm.position += camSwingStrength * glm::length(betwP_B) * glm::normalize(betwP_B);	// close that gap proportional to it's distance
+
+	// semi-implicit Euler integration to accelerate the boom towards the poi
+	boomArm.currentLength = glm::length(poi - boomArm.position);							// length between the poi and boom position
+	boomArm.velocity = (boomArm.currentLength - boomArm.restingLength) * front * camVelocityCoeficient;	// update velocity proportional to the distance from rest * by some catch up factor
+	boomArm.position = boomArm.position + boomArm.velocity * deltaTime;						// update position based on new velocity * a small change in time
+	boomArm.position.y = camHeight;		// Always keep the camera at the same height
+
+	// TO-DO: alter the up direction based on the turning radius
+
+	boomArm.direction = boomArm.position + front;	// update direction based on booms position and direction to poi
+	view = glm::lookAt(boomArm.position, boomArm.direction, up);
+}
+
+void Camera::setConfigs(float _camHeight, float _camVelCoef, float _camRestLen, float _camSwStr, float _poiHeight, float _poiDepth) {
+	camHeight = _camHeight;
+	camVelocityCoeficient = _camVelCoef;
+	camRestLength = _camRestLen;
+	camSwingStrength = _camSwStr;
+	poiHeight = _poiHeight;
+	poiDepth = _poiDepth;
 }
 }   // namespace render
 }   // namespace hyperbright

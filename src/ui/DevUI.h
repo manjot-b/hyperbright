@@ -14,13 +14,35 @@ public:
 	struct Settings {
 		int fps;
 		model::Material vehicleBodyMaterial;
+
 		float musicVolume;
-	} settings;
+
+		float cameraHeight;
+		float cameraVelocityCoeficient;
+		float cameraRestLength;
+		float cameraSwingStrength;
+		float poiHeight;
+		float poiDepth;
+
+		struct Handling {
+			float velStepOne;
+			float velStepTwo;
+			float velStepThr;
+			float velStepFou;
+			float stepOneTurnStr;
+			float stepTwoTurnStr;
+			float stepThrTurnStr;
+			float stepFouTurnStr;
+		} handling;
+	} settings;	  
 
 	DevUI(GLFWwindow* window);
 	~DevUI();
 	void update(float deltaSec, float roundTimer);
 	void render();
+
+	void setCameraDefaults();
+	void setHandlingDefaults();
 private:
 	bool showDemo;
 	float _deltaSec;

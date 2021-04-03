@@ -1,6 +1,8 @@
 #pragma once
+#include "entity/Vehicle.h"
 
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace hyperbright {
 namespace render {
@@ -33,17 +35,37 @@ public:
     void processKeyboard(Movement direction, float deltaTime);
     void processMouseMovement(float xoffset, float yoffset);
     void processMouseScroll(Movement direction, float yoffset);
-    void updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi);
+    void updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi); // static camera behind vehicle
+    void updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime); // dynamic camera on boom 
+    void initCameraBoom(glm::vec3 position, glm::vec3 direction);
+    void setConfigs(float camHeight, float camVelCoef, float camRestLen, float camSwStr, float poiHeight, float poiDepth);
 
 private:
     glm::mat4 view;
     // camera Attributes
     glm::vec3 position;
-    glm::vec3 front;
     glm::vec3 direction;
+    // orientation
+    glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
     glm::vec3 worldUp;
+    // camera/poi positioning
+    float camHeight = 2.f;
+    float camVelocityCoeficient = 4.f;
+    float camRestLength = 7.5f;
+    float camSwingStrength = 0.07f;
+    float poiHeight = -0.4f;
+    float poiDepth = 2.f;
+
+    struct BoomArm {
+        glm::vec3 position;
+        glm::vec3 direction;
+        glm::vec3 velocity;
+        float currentLength;
+        float restingLength;
+    }boomArm;
+
     // euler Angles
     float yaw;
     float pitch;

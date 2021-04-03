@@ -18,7 +18,7 @@ Controller::Controller(GLFWwindow* _window,
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetScrollCallback(window, scrollCallback);
-
+	
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -32,11 +32,11 @@ Controller::~Controller() {
 
 }
 
-bool wPressed;
-bool sPressed;
-bool aPressed;
-bool dPressed;
-bool shiftPressed;
+bool forward;
+bool backward;
+bool left;
+bool right;
+bool handbrake;
 float flipTimer = glfwGetTime();
 bool boost;
 bool trap;
@@ -84,111 +84,183 @@ void Controller::processInput(float deltaSec)
 		}
 	}
 
-
 	////////////////////////////////////////// PLAYER VEHICLE CONTROLS
+	
+	////////////////////////////////////////// JOYSTICK
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		if (!wPressed) {
-			//std::cout << "Up key PRESSED" << std::endl;
-			playerVehicle->accelerateForward();
-			wPressed = true;
+	if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
+		int count;
+		const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+
+		if (GLFW_PRESS == buttons[0]) { // square
+			std::cout << "Button 0" << std::endl;
+		}
+
+		if (GLFW_RELEASE == buttons[0]) {
+
+		}
+
+		if (GLFW_PRESS == buttons[1]) { // cross
+			std::cout << "Button 1" << std::endl;
+			if (!forward) {
+				//std::cout << "Up key PRESSED" << std::endl;
+				playerVehicle->accelerateForward();
+				forward = true;
+			}
+		}
+
+		if (GLFW_RELEASE == buttons[1]) {
+			if (forward)
+			{
+				//std::cout << "Up key RELEASED" << std::endl;
+				playerVehicle->stopForward();
+				forward = false;
+			}
+		}
+
+		if (GLFW_PRESS == buttons[2]) { // circle
+			std::cout << "Button 2" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[3]) { // triangle
+			std::cout << "Button 3" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[4]) { // L1
+			std::cout << "Button 4" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[5]) { // R1
+			std::cout << "Button 5" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[6]) { // L2
+			std::cout << "Button 6" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[7]) { // R2
+			std::cout << "Button 7" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[8]) { // share
+			std::cout << "Button 8" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[9]) { // options
+			std::cout << "Button 9" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[10]) { // L3
+			std::cout << "Button 10" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[11]) { // R3
+			std::cout << "Button 11" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[12]) { // PS
+			std::cout << "Button 12" << std::endl;
+		}
+
+		if (GLFW_PRESS == buttons[13]) { // touch pad
+			std::cout << "Button 13" << std::endl;
 		}
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE)
-	{
-		if (wPressed)
+	////////////////////////////////////////// KEYBOARD
+	if (!glfwJoystickPresent(GLFW_JOYSTICK_1)) {
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
-			//std::cout << "Up key RELEASED" << std::endl;
-			playerVehicle->stopForward();
-			wPressed = false;
+			if (!forward) {
+				//std::cout << "Up key PRESSED" << std::endl;
+				playerVehicle->accelerateForward();
+				forward = true;
+			}
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		if (!aPressed) {
-			//std::cout << "Left key PRESSED" << std::endl;
-			playerVehicle->turnLeft();
-			aPressed = true;
-		}
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE)
-	{
-		if (aPressed)
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE)
 		{
-			//std::cout << "Left key RELEASED" << std::endl;
-			playerVehicle->stopLeft();
-			aPressed = false;
+			if (forward)
+			{
+				//std::cout << "Up key RELEASED" << std::endl;
+				playerVehicle->stopForward();
+				forward = false;
+			}
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		// *** need to run accel reverse every frame to check if braking or reversing
-		//std::cout << "Down key PRESSED" << std::endl;
-		playerVehicle->accelerateReverse();
-		sPressed = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE)
-	{
-		if (sPressed)
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			//std::cout << "Down key RELEASED" << std::endl;
-			playerVehicle->stopReverse();
-			sPressed = false;
+			if (!left) {
+				//std::cout << "Left key PRESSED" << std::endl;
+				playerVehicle->turnLeft();
+				left = true;
+			}
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		
-		if(!dPressed) {
-			//std::cout << "Right key PRESSED" << std::endl;
-			playerVehicle->turnRight();
-			dPressed = true;
-		}
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
-	{
-		if (dPressed)
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE)
 		{
-			//std::cout << "Right key RELEASED" << std::endl;
-			playerVehicle->stopRight();
-			dPressed = false;
+			if (left)
+			{
+				//std::cout << "Left key RELEASED" << std::endl;
+				playerVehicle->stopLeft();
+				left = false;
+			}
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-	{
-		if (!shiftPressed)
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
-			playerVehicle->hardTurn();
-			shiftPressed = true;
+			// *** need to run accel reverse every frame to check if braking or reversing
+			//std::cout << "Down key PRESSED" << std::endl;
+			playerVehicle->accelerateReverse();
+			backward = true;
 		}
-	}
 
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
-	{
-		if (shiftPressed)
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE)
 		{
-			playerVehicle->stopHardTurn();
-			shiftPressed = false;
+			if (backward)
+			{
+				//std::cout << "Down key RELEASED" << std::endl;
+				playerVehicle->stopReverse();
+				backward = false;
+			}
 		}
-	}
 
-	/////////////// FLIP VEHICLE CONTROLS
-	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-	{
-		// only apply the flip impulse if the vehicle is upside down and 5 seconds has past since the last attempt
-		if (!playerVehicle->isUpright() && (glfwGetTime() - flipTimer > 2.f)) 
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			playerVehicle->applyFlipImpulse();
-			flipTimer = glfwGetTime();
+
+			if (!right) {
+				//std::cout << "Right key PRESSED" << std::endl;
+				playerVehicle->turnRight();
+				right = true;
+			}
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
+		{
+			if (right)
+			{
+				//std::cout << "Right key RELEASED" << std::endl;
+				playerVehicle->stopRight();
+				right = false;
+			}
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		{
+			if (!handbrake)
+			{
+				playerVehicle->hardTurn();
+				handbrake = true;
+			}
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
+		{
+			if (handbrake)
+			{
+				playerVehicle->stopHardTurn();
+				handbrake = false;
+			}
 		}
 	}
 
@@ -201,7 +273,29 @@ void Controller::processInput(float deltaSec)
 				//audioPlayer.playEmpSound();
 			}
 			else if (type == ZAP) {
-				audioPlayer.playZapSound();
+				//audioPlayer.playZapSound();
+			}
+		}
+	}
+
+	/////////////// FLIP VEHICLE CONTROLS
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		// only apply the flip impulse if the vehicle is upside down and 1 second has past since the last attempt
+		if (!playerVehicle->isUpright() && (glfwGetTime() - flipTimer > 1.f))
+		{
+			playerVehicle->applyFlipImpulse();
+			flipTimer = glfwGetTime();
+		}
+	}
+
+	/////////////// VEHICLE PICKUP ACTIVATE CONTROLS
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		if (playerVehicle->hasPickup()) {
+			int type = playerVehicle->getPickup()->type;
+			if (type == EMP) {
+				audioPlayer.playEmpSound();
 			}
 			else if (type == SPEED) {
 				audioPlayer.playSpeedSound();
@@ -209,7 +303,7 @@ void Controller::processInput(float deltaSec)
 			else {
 				audioPlayer.playUsePowerupSound();
 			}
-			playerVehicle->activatePickup();		
+			playerVehicle->activatePickup();
 		}
 	}
 

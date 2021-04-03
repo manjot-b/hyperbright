@@ -370,6 +370,8 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *arena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
+	camera.initCameraBoom(vehicles[0]->getPosition(), vehicles[0]->getForward());
+
 	ai::AiManager aiManager;
 	aiManager.setArena(arena, mainMenu.getArenaSelection());//MUST DO BEFORE LOADING VEHICLE
 	aiManager.loadAiVehicle(vehicles.at(1));//MUST LOAD EACH VEHICLE CONTROLLED BY AI
@@ -432,7 +434,7 @@ void Engine::runGame() {
 			if (!controller->isCameraManual())
 			{
 				// grab position from player vehicle
-				camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getForward());
+				camera.updateCameraVectors(vehicles[0], deltaSec);
 			}
 		}
 
@@ -442,6 +444,7 @@ void Engine::runGame() {
 		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, &playerHUD);
 
 		getDevUISettings();
+		getDevUIHandlingSettings(simulator);
 		glfwPollEvents();
 	}
 	audioPlayer->stopGameMusic();
@@ -510,6 +513,18 @@ void Engine::getDevUISettings() {
 		devUI.settings.vehicleBodyMaterial.color = teamStats::colors.at(static_cast<teamStats::Teams>(i));
 		vehicles[i]->setBodyMaterial(devUI.settings.vehicleBodyMaterial);
 	}
+
+	camera.setConfigs(
+		devUI.settings.cameraHeight,
+		devUI.settings.cameraVelocityCoeficient,
+		devUI.settings.cameraRestLength,
+		devUI.settings.cameraSwingStrength,
+		devUI.settings.poiHeight,
+		devUI.settings.poiDepth);
+}
+void Engine::getDevUIHandlingSettings(physics::Simulate simulator)
+{
+	simulator.setConfigs(devUI.settings.handling);
 }
 }	// namespace engine
 }	// namespace hyperbright
