@@ -187,10 +187,11 @@ namespace hyperbright {
 
 		/////////////////////////////////////////////////////////////////////
 
-		void Pickup::use(engine::teamStats::Teams team) {
+		void Pickup::use(engine::teamStats::Teams team, int teamNum) {
 			beingCarried = false;
 			active = true;
 			usedByTeam = team;
+			usedByTeamNum = teamNum;
 		}
 
 		/////////////////////////////////////////////////////////////////////
@@ -215,16 +216,16 @@ namespace hyperbright {
 				}
 			}
 			else if (type == SYPHON) {
-				if (usedByTeam == _vehicles->at(0)->getTeam()) {
+				if (usedByTeamNum == 0) {
 					_vehicles->at(0)->syphonActive = false;
 				}
-				else if (usedByTeam == _vehicles->at(1)->getTeam()) {
+				else if (usedByTeamNum == 1) {
 					_vehicles->at(1)->syphonActive = false;
 				}
-				else if (usedByTeam == _vehicles->at(2)->getTeam()) {
+				else if (usedByTeamNum == 2) {
 					_vehicles->at(2)->syphonActive = false;
 				}
-				else if (usedByTeam == _vehicles->at(3)->getTeam()) {
+				else if (usedByTeamNum == 3) {
 					_vehicles->at(3)->syphonActive = false;
 				}
 			}
