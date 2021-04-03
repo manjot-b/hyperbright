@@ -316,7 +316,7 @@ void AudioPlayer::init() {
     alSourcefv(source[LOSSMUSIC], AL_POSITION, source0Pos);
     alSourcefv(source[LOSSMUSIC], AL_VELOCITY, source0Vel);
     alSourcei(source[LOSSMUSIC], AL_BUFFER, buffer[LOSSMUSIC]);
-
+    alSourcei(source[LOSSMUSIC], AL_LOOPING, AL_TRUE);
 
     loadSound("rsc/sounds/win.wav");
     alSourcef(source[WINMUSIC], AL_PITCH, 1.0f);
@@ -324,7 +324,7 @@ void AudioPlayer::init() {
     alSourcefv(source[WINMUSIC], AL_POSITION, source0Pos);
     alSourcefv(source[WINMUSIC], AL_VELOCITY, source0Vel);
     alSourcei(source[WINMUSIC], AL_BUFFER, buffer[WINMUSIC]);
-
+    alSourcei(source[WINMUSIC], AL_LOOPING, AL_TRUE);
 
     loadSound("rsc/sounds/wall_collision.wav");
     alSourcef(source[WALLCOLLISION], AL_PITCH, 1.0f);
@@ -481,17 +481,30 @@ void AudioPlayer::playTrapHitSound() {
 
 //////////////////////////////////////////////////////////////////////////////
 
-void AudioPlayer::playWinSound() {
+void AudioPlayer::startWinMusic() {
 
     alSourcePlay(source[WINMUSIC]);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::stopWinMusic() {
+
+    alSourceStop(source[WINMUSIC]);
+}
 
 //////////////////////////////////////////////////////////////////////////////
 
-void AudioPlayer::playLossSound() {
+void AudioPlayer::startLossMusic() {
 
     alSourcePlay(source[LOSSMUSIC]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void AudioPlayer::stopLossMusic() {
+
+    alSourceStop(source[LOSSMUSIC]);
 }
 
 //////////////////////////////////////////////////////////////////////////////

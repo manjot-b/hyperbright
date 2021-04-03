@@ -28,10 +28,13 @@ public:
 	void playTrapHitSound();
 	void playZapSound();
 	void setMusicVolume(float volume);
-	void playWinSound();
-	void playLossSound();
+	void startWinMusic();
+	void stopWinMusic();
 	void playCarCollisionSound();
 	void playWallCollisionSound();
+	void startLossMusic();
+	void stopLossMusic();
+
 private:
 	void init();
 	int curLoaded;
