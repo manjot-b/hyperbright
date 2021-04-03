@@ -444,6 +444,7 @@ void Engine::runGame() {
 		render::Renderer::getInstance().render(renderables, devUI, pauseMenu, camera, &playerHUD);
 
 		getDevUISettings();
+		getDevUIHandlingSettings(simulator);
 		glfwPollEvents();
 	}
 	audioPlayer->stopGameMusic();
@@ -488,6 +489,18 @@ void Engine::getDevUISettings() {
 		devUI.settings.vehicleBodyMaterial.color = teamStats::colors.at(static_cast<teamStats::Teams>(i));
 		vehicles[i]->setBodyMaterial(devUI.settings.vehicleBodyMaterial);
 	}
+
+	camera.setConfigs(
+		devUI.settings.cameraHeight,
+		devUI.settings.cameraVelocityCoeficient,
+		devUI.settings.cameraRestLength,
+		devUI.settings.cameraSwingStrength,
+		devUI.settings.poiHeight,
+		devUI.settings.poiDepth);
+}
+void Engine::getDevUIHandlingSettings(physics::Simulate simulator)
+{
+	simulator.setConfigs(devUI.settings.handling);
 }
 }	// namespace engine
 }	// namespace hyperbright

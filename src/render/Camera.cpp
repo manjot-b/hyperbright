@@ -116,68 +116,52 @@ void Camera::updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi)
 	view = glm::lookAt(position, direction, up);
 }
 
-float const aboveShoulder = 2.f;
-float const belowForward = 0.4f;
-float const aheadVehicle = 2.f;
-float const catchUp = 10.f;
-//float const straighten = 1.f;
-//float deltaTheta = 0.f;
-//float theta = 0.f;
-
 void Camera::initCameraBoom(glm::vec3 position, glm::vec3 direction)
 {
-	float testLength = 5.5f;
+	
 	boomArm.velocity = glm::vec3(0.f);
-	boomArm.restingLength = testLength;
-	boomArm.currentLength = testLength;
-	boomArm.position = glm::vec3(position.x, aboveShoulder, position.z);
+	boomArm.restingLength = camRestLength;
+	boomArm.currentLength = camRestLength;
+	boomArm.position = glm::vec3(position.x, camHeight, position.z);
 	boomArm.direction = glm::normalize(direction);
 }
 
 void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime)
 {
-	glm::vec3 pDir = player->getDirection();
-	glm::vec3 pPos = player->getPosition();
+	glm::vec3 pDir = player->getDirection();	// direction of the vehicle
+	glm::vec3 pPos = player->getPosition();		// position of the vehilce
 
-	glm::vec3 poi = pPos + pDir * aheadVehicle;
-	poi.y -= belowForward;
+	glm::vec3 poi = pPos + pDir * poiDepth;	// poi of interest in front 
+	poi.y += poiHeight;						// and slightly below the vehicle
 
-	front = glm::normalize(poi - boomArm.position);
+	// orientation vectors
+	front = glm::normalize(poi - boomArm.position);	
 	right = glm::normalize(glm::cross(front, worldUp));
 	up = glm::normalize(glm::cross(right, front));
 
-	/*
-	float dotF_D = glm::dot(front, pDir);
-	float deltaTheta = 0.f;
-	if (dotF_D > 0.1f || dotF_D < -0.1f) {
-		deltaTheta = (1.f - dotF_D) * straighten;
-	}
+	// swing the camera to the back of the vehicle
+	glm::vec3 betwP_B = (poi - pDir * camRestLength) - boomArm.position;					// vector from the resting position to the current boom position
+	boomArm.position += camSwingStrength * glm::length(betwP_B) * glm::normalize(betwP_B);	// close that gap proportional to it's distance
 
-	glm::vec3 perpP_C = glm::cross(front, pDir);
+	// semi-implicit Euler integration to accelerate the boom towards the poi
+	boomArm.currentLength = glm::length(poi - boomArm.position);							// length between the poi and boom position
+	boomArm.velocity = (boomArm.currentLength - boomArm.restingLength) * front * camVelocityCoeficient;	// update velocity proportional to the distance from rest * by some catch up factor
+	boomArm.position = boomArm.position + boomArm.velocity * deltaTime;						// update position based on new velocity * a small change in time
+	boomArm.position.y = camHeight;		// Always keep the camera at the same height
 
-	if (deltaTheta != 0.f) {
-		if (perpP_C.y > 0.f) {
-			glm::mat4 rotM = glm::rotate(glm::mat4(1.f), glm::radians(deltaTheta), up);
-			front = glm::vec3(rotM * glm::vec4(front, 1.f));
-		}
-		else if (perpP_C.y < 0.f) {
-			glm::mat4 rotM = glm::rotate(glm::mat4(1.f), glm::radians(-deltaTheta), up);
-			front = glm::vec3(rotM * glm::vec4(front, 1.f));
-		}
-	}*/
+	// TO-DO: alter the up direction based on the turning radius
 
-	boomArm.currentLength = glm::length(poi - boomArm.position);
-	boomArm.velocity = (boomArm.currentLength - boomArm.restingLength) * front * catchUp;
-	boomArm.position = boomArm.position + boomArm.velocity * deltaTime;
-	boomArm.position.y = aboveShoulder;
+	boomArm.direction = boomArm.position + front;	// update direction based on booms position and direction to poi
+	view = glm::lookAt(boomArm.position, boomArm.direction, up);
+}
 
-	position = boomArm.position;
-	direction = position + front;
-
-	//std::cout << "Position:  " << position.x << " " << position.y << " " << position.z << std::endl;
-	//std::cout << "Direction: " << direction.x << " " << direction.y << " " << direction.z << "\n" << std::endl;
-	view = glm::lookAt(position, direction, up);
-
+void Camera::setConfigs(float _camHeight, float _camVelCoef, float _camRestLen, float _camSwStr, float _poiHeight, float _poiDepth) {
+	camHeight = _camHeight;
+	camVelocityCoeficient = _camVelCoef;
+	camRestLength = _camRestLen;
+	camSwingStrength = _camSwStr;
+	poiHeight = _poiHeight;
+	poiDepth = _poiDepth;
 }
 }   // namespace render
 }   // namespace hyperbright

@@ -448,6 +448,7 @@ void AudioPlayer::setMusicVolume(float volume) {
     alSourcef(source[GAMEMUSIC], AL_GAIN, volume);
     alSourcef(source[STARTMENUMUSIC], AL_GAIN, volume);
     
+    /*
     // added this to turn down all volume
     alSourcef(source[PICKUPCOLLISION], AL_GAIN, volume);
     alSourcef(source[CARIDLE], AL_GAIN, volume);
@@ -457,7 +458,7 @@ void AudioPlayer::setMusicVolume(float volume) {
     alSourcef(source[MENUSWITCH], AL_GAIN, volume);
     alSourcef(source[MENUENTER], AL_GAIN, volume);
     alSourcef(source[SPEED], AL_GAIN, volume);
-    alSourcef(source[TRAPHIT], AL_GAIN, volume);
+    alSourcef(source[TRAPHIT], AL_GAIN, volume);*/
 }
 
 //////////////////////////////////////////////////////////////////////////////

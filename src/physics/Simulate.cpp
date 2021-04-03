@@ -152,7 +152,7 @@ void removePickups() {
 Simulate::Simulate(vector<shared_ptr<IPhysical>>& _physicsModels, vector<shared_ptr<entity::Vehicle>>& _vehicles, const entity::Arena& arena, std::shared_ptr<entity::PickupManager>& _pickupManager) :
 	physicsModels(_physicsModels), vehicles(_vehicles)
 {
-	arenaSize = arena.getArenaSize()/2.f * arena.getTileWidth();
+	arenaSize = (arena.getArenaSize()/2.f - 1.f) * arena.getTileWidth();
 	vehs = &_vehicles;
 	initPhysics();
 	pum = _pickupManager;
@@ -198,12 +198,20 @@ void Simulate::addChargingStations(const entity::Arena::ChargingStationList& sta
 	}
 }
 
+float velStepOne = 0.f;
+float stepOneTurnStr = 0.8f;
+float velStepTwo = 10.f;
+float stepTwoTurnStr = 0.4f;
+float velStepThr = 20.f;
+float stepThrTurnStr = 0.3f;
+float velStepFou = 60.f;
+float stepFouTurnStr = 0.2f;
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
-	0.0f,		0.8f,
-	10.0f,		0.4f,
-	20.0f,		0.3f,
-	60.0f,		0.2f,
+	velStepOne,		stepOneTurnStr,
+	velStepTwo,		stepTwoTurnStr,
+	velStepThr,		stepThrTurnStr,
+	velStepFou,		stepFouTurnStr,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
@@ -441,7 +449,7 @@ namespace Driving {
 	void applyVehicleBoost(int v)
 	{
 		PxF32 mass = gVehicle4W[v]->getRigidDynamicActor()->getMass();
-		if (gVehicle4W[v]->computeForwardSpeed() < 40) 
+		if (gVehicle4W[v]->computeForwardSpeed() < 60) 
 			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, mass * 0.5f), PxVec3(0.f, 0.f, 0.f), PxForceMode::eIMPULSE);
 	}
 	void applyVehicleTrap(int v)
@@ -624,7 +632,6 @@ void Simulate::stepPhysics(float frameRate)
 		setDriveMode(ctrl);
 		smoothControlValues(ctrl->contrId, frameRate);
 	}
-
 	// Vehicle wheel raycasts and state updating
 	for (int i = 0; i < number_of_vehicles; i++) {
 		//Raycasts.
@@ -889,6 +896,19 @@ void Simulate::cleanupPhysics()
 
 void Simulate::setAudioPlayer(std::shared_ptr<audio::AudioPlayer> player) {
 	audioPlayer = player;
+}
+
+void Simulate::setConfigs(ui::DevUI::Settings::Handling turn)
+{
+	gSteerVsForwardSpeedData[0] = turn.velStepOne;
+	gSteerVsForwardSpeedData[1] = turn.stepOneTurnStr;
+	gSteerVsForwardSpeedData[2] = turn.velStepTwo;
+	gSteerVsForwardSpeedData[3] = turn.stepTwoTurnStr;
+	gSteerVsForwardSpeedData[4] = turn.velStepThr;
+	gSteerVsForwardSpeedData[5] = turn.stepThrTurnStr;
+	gSteerVsForwardSpeedData[6] = turn.velStepFou;
+	gSteerVsForwardSpeedData[7] = turn.stepFouTurnStr;
+	gSteerVsForwardSpeedTable = { gSteerVsForwardSpeedData, 4 };
 }
 
 }	// namespace physics

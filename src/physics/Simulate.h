@@ -14,6 +14,7 @@
 #include "entity/Vehicle.h"
 #include "model/Model.h"
 #include "physics/Interface.h"
+#include "ui/DevUI.h"
 
 namespace hyperbright {
 namespace physics {
@@ -21,7 +22,6 @@ namespace physics {
 class Simulate
 {
 public:
-
 	Simulate(std::vector<std::shared_ptr<IPhysical>>& physicsModels, 
 		std::vector<std::shared_ptr<entity::Vehicle>>& vehicles, 
 		const entity::Arena& arena,
@@ -32,6 +32,7 @@ public:
 	void cookMeshes(const model::Model& mesh, void* _userData, bool useModelMatrix = false);
 	void checkVehiclesOverTile(entity::Arena& arena, const std::vector<std::shared_ptr<entity::Vehicle>>& vehicles);
 	void setAudioPlayer(std::shared_ptr<audio::AudioPlayer> audioPlayer);
+	void setConfigs(ui::DevUI::Settings::Handling turn);
 	void cleanupPhysics();
 private:
 	void initPhysics();
