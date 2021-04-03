@@ -564,6 +564,8 @@ void AudioPlayer::setMusicVolume(float volume) {
 
     alSourcef(source[GAMEMUSIC], AL_GAIN, volume);
     alSourcef(source[STARTMENUMUSIC], AL_GAIN, volume);
+    alSourcef(source[WINMUSIC], AL_GAIN, volume);
+    alSourcef(source[LOSSMUSIC], AL_GAIN, volume);
     
     /*
     // added this to turn down all volume
