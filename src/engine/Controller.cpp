@@ -245,6 +245,15 @@ void Controller::processInput(float deltaSec)
 			}
 		}
 
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		{
+			if (!handbrake)
+			{
+				playerVehicle->hardTurn();
+				handbrake = true;
+			}
+		}
+
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 		{
 			if (handbrake)
@@ -253,6 +262,7 @@ void Controller::processInput(float deltaSec)
 				handbrake = false;
 			}
 		}
+	}
 
 	/////////////// VEHICLE PICKUP ACTIVATE CONTROLS
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -263,10 +273,9 @@ void Controller::processInput(float deltaSec)
 				//audioPlayer.playEmpSound();
 			}
 			else if (type == ZAP) {
-				audioPlayer.playZapSound();
+				//audioPlayer.playZapSound();
 			}
 		}
-
 	}
 
 	/////////////// FLIP VEHICLE CONTROLS
