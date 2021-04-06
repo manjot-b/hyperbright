@@ -50,9 +50,9 @@ namespace hyperbright {
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(17, 17)) + glm::vec3(0.f, 1.f, 0.f));
 			}
 			else if (arenaSelection == ui::MainMenu::ArenaSelection::ARENA3) {
-				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(14, 27)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(14, 26)) + glm::vec3(0.f, 1.f, 0.f));
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(2, 3)) + glm::vec3(0.f, 1.f, 0.f));
-				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(27, 3)) + glm::vec3(0.f, 1.f, 0.f));
+				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(26, 3)) + glm::vec3(0.f, 1.f, 0.f));
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(9, 15)) + glm::vec3(0.f, 1.f, 0.f));
 				onArenaPickupLocations.push_back(arena->getTilePos(glm::vec2(20, 15)) + glm::vec3(0.f, 1.f, 0.f));
 			}

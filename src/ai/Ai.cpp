@@ -14,8 +14,8 @@ namespace hyperbright {
 			stuckCheck = false;
 			stuckTimer = glfwGetTime();
 			rollTimer = glfwGetTime();
-			rollstuckTimeout = 4.f;
-			stuckTimeout = 2.5f;
+			rollstuckTimeout = 3.f;
+			stuckTimeout = 2.0f;
 			backupTime = 1.5f;
 			currentTile = startTile;
 			pastGoal = glm::vec2(1, 1);//ARBITRARY
@@ -40,7 +40,7 @@ namespace hyperbright {
 			updateCurrentTile();
 			if (vehicle->currentTile == targetTile) {
 				const std::string& name = engine::teamStats::names[vehicle->getTeam()];
-				std::cout << name << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
+				//::cout << name << " GOAL REACHED: " << targetTile.x << " " << targetTile .y << std::endl;
 				path.pop_back();
 				state = NOTARGET;
 				return;
@@ -94,6 +94,7 @@ namespace hyperbright {
 
 				vehicle->stopLeft();
 				vehicle->stopRight();
+				vehicle->stopHardTurn();
 
 				//std::cout <<angleBetween <<std::endl;
 				if (angleBetween < 5.f && angleBetween > -5.f) {
@@ -103,12 +104,27 @@ namespace hyperbright {
 				else if (angleBetween > 0.f) {
 					vehicle->turnRight();
 					//std::cout << "right" << std::endl;
-					vehicle->accelerateForward();
+					if (angleBetween > 90.f && vehicle->readSpeedometer() > 10) {
+						//vehicle->brake();
+						vehicle->hardTurn();
+					}
+					else {
+						vehicle->accelerateForward();
+					}
 				}
 				else {
 					vehicle->turnLeft();
 					//std::cout << "left" << std::endl;
 					vehicle->accelerateForward();
+					if (angleBetween < -90.f && vehicle->readSpeedometer() > 10) {
+						//vehicle->brake();
+						vehicle->hardTurn();
+					}
+					else {
+						vehicle->accelerateForward();
+					}
+				
+
 				}
 			}
 		}

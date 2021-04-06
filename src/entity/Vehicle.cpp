@@ -36,6 +36,7 @@ Vehicle::Vehicle(
 	switch (team)
 	{
 	case teamStats::Teams::TEAM0:
+		teamNum = 0;
 		ctrl.contrId = 0;
 		break;
 	case teamStats::Teams::TEAM1:
@@ -168,7 +169,7 @@ void Vehicle::equipPickup(std::shared_ptr<Pickup> _pickup)
 void Vehicle::activatePickup()
 {
 	if (pickupEquiped) {
-		pickup->use(team);
+		pickup->use(team, teamNum);
 		pickup = nullptr;
 		pickupEquiped = false;
 	}

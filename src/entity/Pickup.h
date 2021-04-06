@@ -49,7 +49,7 @@ public:
 	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
 	void animate(float deltaSec);
 
-	void use(engine::teamStats::Teams team);//VEHICLES CALL THIS FUNCTION
+	void use(engine::teamStats::Teams team, int teamNum);//VEHICLES CALL THIS FUNCTION
 
 	void setModelMatrix(const glm::mat4& modelMat);
 	void setPosition(const glm::vec3& position);
@@ -65,6 +65,9 @@ private:
 	int whoWasZapped;
 	engine::teamStats::Teams zapOldTeam;
 	engine::teamStats::Teams usedByTeam;
+
+	int usedByTeamNum;
+
 	//int type;
 	float pickupTime;
 	float pickUpStartTime;

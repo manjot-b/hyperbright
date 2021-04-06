@@ -110,14 +110,14 @@ namespace hyperbright {
 				a = glm::vec2(8, 9);
 				b = glm::vec2(21, 9);
 				c = glm::vec2(14, 3);
-				d = glm::vec2(14, 27);//PU
+				d = glm::vec2(14, 26);//PU
 
 				e = glm::vec2(14, 9);//CHARGE
 
 				f = glm::vec2(2, 3);//PU
-				g = glm::vec2(2, 27);
-				h = glm::vec2(27, 3);//PU
-				i = glm::vec2(27, 27);
+				g = glm::vec2(2, 26);
+				h = glm::vec2(26, 3);//PU
+				i = glm::vec2(26, 26);
 				j = glm::vec2(2, 20);//CHARGE
 				k = glm::vec2(27, 20);//CHARGE
 				l = glm::vec2(9, 15);//PU
