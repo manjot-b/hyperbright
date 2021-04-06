@@ -48,9 +48,6 @@ private:
 	std::unique_ptr<openGLHelper::Quad> speedz;
 	std::unique_ptr<openGLHelper::Quad> slowtrap;
 	std::unique_ptr<openGLHelper::Quad> syphon;
-	std::unique_ptr<openGLHelper::Quad> slowed;
-	std::unique_ptr<openGLHelper::Quad> zapped;
-	std::unique_ptr<openGLHelper::Quad> syphonOn;
 
 
 	glm::vec3 miniMapPos;
