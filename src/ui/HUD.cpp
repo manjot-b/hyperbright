@@ -34,6 +34,9 @@ HUD::HUD(std::shared_ptr<entity::Vehicle> v, const entity::Arena& arena, float& 
 	speedz = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/speed.png"));
 	slowtrap = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/slowtrap.png"));
 	syphon = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/syphon.png"));
+	slowed = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/slowactive.png"));
+	zapped = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/zapactive.png"));
+	syphonOn = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/syphonactive.png"));
 
 	float orthoSize = arena.getArenaSize().x * .5f * arena.getTileWidth();
 	miniMapOrtho = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, .1f, 300.f);
@@ -136,6 +139,31 @@ void HUD::drawHUD() {
 			glUseProgram(0);
 			break;
 		}
+	}
+
+	if (player->syphonActive == true) {
+		syphonOn->getShader()->use();
+		syphonOn->normalizeToViewport(width, height);
+		syphonOn->translate(glm::vec2(0.f, 0.f));
+		syphonOn->scale(1.2f);
+		syphonOn->render();
+		glUseProgram(0);
+	}
+	if (player->zapActive == true) {
+		zapped->getShader()->use();
+		zapped->normalizeToViewport(width, height);
+		zapped->translate(glm::vec2(0.f, 0.f));
+		zapped->scale(1.2f);
+		zapped->render();
+		glUseProgram(0);
+	}
+	if (player->getController().trap.second == true) {
+		slowed->getShader()->use();
+		slowed->normalizeToViewport(width, height);
+		slowed->translate(glm::vec2(0.f, 0.f));
+		slowed->scale(1.2f);
+		slowed->render();
+		glUseProgram(0);
 	}
 
 
