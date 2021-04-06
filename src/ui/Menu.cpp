@@ -17,6 +17,9 @@ The base Menu class. All other Menu must derive from this class.
 Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(100.f), width(0), height(0), color(0.72f, 0.11f, 0.87f)
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
+	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
+	quadShader->link();
+	tips = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/tips.png"));
 }
 
 void Menu::updateWindowAndFontSize()
@@ -143,6 +146,12 @@ void PauseMenu::render() {
 			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 			break;
 		}
+		tips->getShader()->use();
+		tips->normalizeToViewport(width, height);
+		tips->translate(glm::vec2(0.f, -0.8f));
+		tips->scale(1.2f);
+		tips->render();
+		glUseProgram(0);
 		glPopAttrib();
 	}
 }
