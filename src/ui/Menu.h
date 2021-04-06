@@ -3,6 +3,9 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <FTGL/ftgl.h>
+#include "opengl-helper/FrameBuffer.h"
+#include "opengl-helper/Quad.h"
+#include "opengl-helper/Texture.h"
 
 namespace hyperbright {
 namespace ui {
@@ -17,6 +20,8 @@ protected:
 	float defaultFontSize;
 	unsigned int width, height;
 	glm::vec3 color;
+	std::shared_ptr<openGLHelper::Shader> quadShader;
+	std::unique_ptr<openGLHelper::Quad> tips;
 
 	void updateWindowAndFontSize();
 };
