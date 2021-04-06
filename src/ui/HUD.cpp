@@ -14,7 +14,7 @@ namespace hyperbright {
 namespace ui {
 
 HUD::HUD(std::shared_ptr<entity::Vehicle> v, const entity::Arena& arena, float& roundTimer) :
-	font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(150.f), 
+	font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(150.f),
 	player(v), roundTimer(roundTimer),
 	miniMapPos(0.f, 50.f, 0.1f)
 
@@ -141,6 +141,8 @@ void HUD::drawHUD() {
 		}
 	}
 
+
+	//Displaying a message when player is affected by a powerup
 	if (player->syphonActive == true) {
 		syphonOn->getShader()->use();
 		syphonOn->normalizeToViewport(width, height);
@@ -148,16 +150,14 @@ void HUD::drawHUD() {
 		syphonOn->scale(1.2f);
 		syphonOn->render();
 		glUseProgram(0);
-	}
-	if (player->zapActive == true) {
+	} else if (player->zapActive == true) {
 		zapped->getShader()->use();
 		zapped->normalizeToViewport(width, height);
 		zapped->translate(glm::vec2(0.f, 0.f));
 		zapped->scale(1.2f);
 		zapped->render();
 		glUseProgram(0);
-	}
-	if (player->getController().trap.second == true) {
+	} else if (player->getController().trap.second == true) {
 		slowed->getShader()->use();
 		slowed->normalizeToViewport(width, height);
 		slowed->translate(glm::vec2(0.f, 0.f));
