@@ -52,20 +52,23 @@ PxFilterFlags VehicleFilterShader
 	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
 	{
 		pairFlags = PxPairFlag::eTRIGGER_DEFAULT; 
-		//std::cout << "COLLIDING WITH TRIGGER VOLUME\n";
-
 		return PxFilterFlag::eDEFAULT;
-		//return PxFilterFlags();
-
 	}
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
 
 	if( (0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)) )
 		return PxFilterFlag::eSUPPRESS;
 
-	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+	// trigger the contact callback for pairs (A,B) where
+	// the filtermask of A contains the ID of B and vice versa.
+	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1)) {
+		pairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+	}
+
 	pairFlags |= PxPairFlags(PxU16(filterData0.word2 | filterData1.word2));
 
-	return PxFilterFlags();
+	return PxFilterFlag::eDEFAULT;
 }
 
 } // namespace snippetvehicle

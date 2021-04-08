@@ -56,12 +56,32 @@ std::shared_ptr<entity::PickupManager> pum;
 std::queue<std::shared_ptr<entity::Pickup>> toBeRemovedPickups;
 vector<shared_ptr<entity::Vehicle>>* vehs = NULL;
 class CollisionCallBack : public physx::PxSimulationEventCallback {
-	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints);  PX_UNUSED(count); }
-	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors);  PX_UNUSED(count); }
-	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors);  PX_UNUSED(count); }
-	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {}
+	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { cout << "constraint break\n"; PX_UNUSED(constraints);  PX_UNUSED(count); }
+	void onWake(PxActor** actors, PxU32 count) { cout << "wake up\n"; PX_UNUSED(actors);  PX_UNUSED(count); }
+	void onSleep(PxActor** actors, PxU32 count) { cout << "sleep\n"; PX_UNUSED(actors);  PX_UNUSED(count); }
+	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) { 
+		for (PxU32 i = 0; i < nbPairs; i++) {
+			// only make collision sounds for player vehicle
+			if (pairHeader.actors[0] == gVehicle4W[0]->getRigidDynamicActor() ||
+				pairHeader.actors[1] == gVehicle4W[0]->getRigidDynamicActor()) {
+
+				// quick and sloppy pair detection
+				// the only way this call can be thrown is if a vehicle
+				// hits a wall or another vehicle so just check for those 2 things
+				if (pairHeader.actors[0]->userData == nullptr ||
+					pairHeader.actors[1]->userData == nullptr) {
+					// collided with wall, make wall collision sound
+					audioPlayer->playWallCollisionSound();
+				}
+				else {
+					// collided with vehicle, make vehicle collision sound
+					audioPlayer->playCarCollisionSound();
+				}
+			}
+		}
+	}
 	void onTrigger(PxTriggerPair* pairs, PxU32 count) {
-		for (physx::PxU32 i = 0; i < count; i++) {
+		for (PxU32 i = 0; i < count; i++) {
 			if (pairs[i].flags & (PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER |
 				PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
 				continue;
@@ -99,7 +119,7 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 			}
 		}
 	}
-	void onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) {}
+	void onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) { cout << "advance collision\n"; }
 };
 CollisionCallBack collisionCallBack;
 
@@ -517,19 +537,19 @@ void Simulate::initPhysics()
 	gScene->addActor(*gGroundPlane);
 	
 
-	PxRigidStatic* barrier1 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(1, 0, 0), arenaSize.x);
+	PxRigidStatic* barrier1 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(1, 0, 0), arenaSize.x + 0.1f);
 	barrier1->userData = nullptr;
 	gScene->addActor(*barrier1);
 
-	PxRigidStatic* barrier2 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(-1, 0, 0), arenaSize.x);
+	PxRigidStatic* barrier2 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(-1, 0, 0), arenaSize.x + 0.1f);
 	barrier2->userData = nullptr;
 	gScene->addActor(*barrier2);
 
-	PxRigidStatic* barrier3 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(0, 0, 1), arenaSize.y);
+	PxRigidStatic* barrier3 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(0, 0, 1), arenaSize.y + 0.1f);
 	barrier3->userData = nullptr;
 	gScene->addActor(*barrier3);
 
-	PxRigidStatic* barrier4 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(0, 0, -1), arenaSize.y);
+	PxRigidStatic* barrier4 = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics, PxVec3(0, 0, -1), arenaSize.y + 0.1f);
 	barrier4->userData = nullptr;
 	gScene->addActor(*barrier4);
 
