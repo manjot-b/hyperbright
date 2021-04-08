@@ -37,7 +37,8 @@ bool Arena::Tile::hasChargingStation() const { return _hasChargingStation; }
 */
 //bool AiArenaRepresentation;
 
-Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shader>& shader, float tileScale) : IRenderable(shader),
+Arena::Arena(size_t rows, size_t cols, const std::shared_ptr<openGLHelper::Shader>& shader, Difficulty difficulty, float tileScale) : IRenderable(shader),
+	difficulty(difficulty),
 	tileModelMatrices( std::make_shared<std::vector<glm::mat4>>( rows * cols, glm::mat4(1.f) )),
 	tileBaseColor(.3f, .3f, .3f, 1.f),
 	tileColors( std::make_shared<std::vector<glm::vec4>>(rows * cols, tileBaseColor) ),
@@ -282,6 +283,7 @@ std::vector<std::vector<bool>> Arena::getAiArenaRepresentation() {
 
 glm::vec2 Arena::getArenaSize() const { return glm::vec2(tileGrid.size(), tileGrid[0].size()); }
 float Arena::getTileWidth() const { return tileWidth + 2 * tileBorderWidth; }
+Arena::Difficulty Arena::getDifficulty() const { return difficulty; }
 
 }	// namespace entity
 }	// namespace hyperbright

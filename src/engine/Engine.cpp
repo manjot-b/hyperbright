@@ -77,11 +77,12 @@ void Engine::loadTextures()
 
 void Engine::initArenas()
 {
+	using namespace entity;
 	arenas = {
-		std::make_shared<entity::Arena>(arena1Size, arena1Size, shader),
-		std::make_shared<entity::Arena>(arena2Size, arena2Size, shader),
-		std::make_shared<entity::Arena>(arena3Size, arena3Size, shader),
-		std::make_shared<entity::Arena>(arena4Size, arena4Size, shader)
+		std::make_shared<Arena>(arena1Size, arena1Size, shader, Arena::Difficulty::BEGINNER),
+		std::make_shared<Arena>(arena2Size, arena2Size, shader, Arena::Difficulty::BEGINNER),
+		std::make_shared<Arena>(arena3Size, arena3Size, shader, Arena::Difficulty::BEGINNER),
+		std::make_shared<Arena>(arena4Size, arena4Size, shader, Arena::Difficulty::BEGINNER)
 	};
 }
 
@@ -249,7 +250,7 @@ void Engine::initMainMenuEntities()
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
 	int arenaSize = 25;
-	currentArena = std::make_shared<entity::Arena>(arenaSize, arenaSize, shader);
+	currentArena = std::make_shared<entity::Arena>(arenaSize, arenaSize, shader, entity::Arena::Difficulty::BEGINNER);
 	currentArena->addChargingStation(arenaSize / 2, arenaSize / 2 + 3, entity::Arena::Orientation::POS_Z);
 	renderables.push_back(currentArena);
 }

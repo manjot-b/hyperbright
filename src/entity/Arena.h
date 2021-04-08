@@ -31,7 +31,13 @@ public:
 		
 	};
 
-	Arena(size_t length, size_t width, const std::shared_ptr<openGLHelper::Shader>& shader, float tileScale = 5);
+	enum class Difficulty {
+		BEGINNER,
+		NORMAL,
+		HARD
+	};
+
+	Arena(size_t length, size_t width, const std::shared_ptr<openGLHelper::Shader>& shader, Difficulty difficulty, float tileScale = 5);
 	~Arena();
 
 	void render() const;
@@ -56,6 +62,7 @@ public:
 
 	glm::vec2 getArenaSize() const;
 	float getTileWidth() const;
+	Difficulty getDifficulty() const;
 private:
 	class Tile {
 		friend class Arena;
@@ -78,6 +85,7 @@ private:
 		std::optional<engine::teamStats::Teams> team;	// tile may not have a team.
 	};
 
+	Difficulty difficulty;
 	std::shared_ptr<model::Model> instancedTile;
 	std::shared_ptr<model::Model> instancedTileBorder;
 
