@@ -148,7 +148,7 @@ void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float
 	boomArm.velocity = (boomArm.currentLength - boomArm.restingLength) * front * camVelocityCoeficient;	// update velocity proportional to the distance from rest * by some catch up factor
 	boomArm.position = boomArm.position + boomArm.velocity * deltaTime;						// update position based on new velocity * a small change in time
 	boomArm.position.y = camHeight;		// Always keep the camera at the same height
-
+	position = boomArm.position;
 	// TO-DO: alter the up direction based on the turning radius
 
 	boomArm.direction = boomArm.position + front;	// update direction based on booms position and direction to poi
