@@ -35,6 +35,15 @@ public:
 	void setConfigs(ui::DevUI::Settings::Handling turn);
 	void cleanupPhysics();
 private:
+	struct FilterGroup
+	{
+		enum Enum
+		{
+			eVEHICLE = (1 << 0),
+			eWALL = (1 << 1)
+		};
+	};
+
 	void initPhysics();
 	glm::vec2 arenaSize;
 
