@@ -35,11 +35,17 @@ public:
 	
 private:
 	void initMainMenuEntities();
+	void initArenas();
 	void buildArena1();
 	void buildArena2();
 	void buildArena3();
 	void buildArena4();
 	bool winCheck();
+
+	const unsigned int arena1Size = 40;
+	const unsigned int arena2Size = 20;
+	const unsigned int arena3Size = 30;
+	const unsigned int arena4Size = 15;
 
 	glm::vec2 playerStartingPosition;
 	glm::vec2 ai1StartingPosition;
@@ -51,7 +57,8 @@ private:
 	ui::PauseMenu pauseMenu;
 	ui::EndMenu endMenu;
 	ui::DevUI devUI;
-	std::shared_ptr<entity::Arena> arena;
+	std::vector<std::shared_ptr<entity::Arena>> arenas;
+	std::shared_ptr<entity::Arena> currentArena;
 	std::unique_ptr<Controller> controller;
 
 	std::vector<std::shared_ptr<entity::Vehicle>> vehicles;
