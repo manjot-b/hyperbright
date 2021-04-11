@@ -417,6 +417,7 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 
 void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mods)
 {
+	audioPlayer.stopCarIdle();
 	if (action == GLFW_PRESS)
 	{
 		switch (key) {
@@ -456,6 +457,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 				mainMenu.setState(ui::MainMenu::State::WELCOME);
 			}
 			else {
+				audioPlayer.playCarIdle();
 				pauseMenu.setState(ui::PauseMenu::State::OFF);
 			}
 			audioPlayer.playMenuEnterSound();
