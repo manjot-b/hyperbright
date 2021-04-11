@@ -297,6 +297,9 @@ void Controller::processInput(float deltaSec)
 			if (type == EMP) {
 				audioPlayer.playEmpSound();
 			}
+			else if (type == ZAP) {
+				audioPlayer.playZapSound();
+			}
 			else if (type == SPEED) {
 				audioPlayer.playSpeedSound();
 			}

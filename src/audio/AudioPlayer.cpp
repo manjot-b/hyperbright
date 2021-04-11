@@ -335,21 +335,21 @@ void AudioPlayer::init() {
 
     loadSound("rsc/sounds/car_collision1.wav");
     alSourcef(source[CARCOLLISION1], AL_PITCH, 1.0f);
-    alSourcef(source[CARCOLLISION1], AL_GAIN, 1.0f);
+    alSourcef(source[CARCOLLISION1], AL_GAIN, 0.6f);
     alSourcefv(source[CARCOLLISION1], AL_POSITION, source0Pos);
     alSourcefv(source[CARCOLLISION1], AL_VELOCITY, source0Vel);
     alSourcei(source[CARCOLLISION1], AL_BUFFER, buffer[CARCOLLISION1]);
 
     loadSound("rsc/sounds/car_collision2.wav");
     alSourcef(source[CARCOLLISION2], AL_PITCH, 1.0f);
-    alSourcef(source[CARCOLLISION2], AL_GAIN, 1.0f);
+    alSourcef(source[CARCOLLISION2], AL_GAIN, 0.6f);
     alSourcefv(source[CARCOLLISION2], AL_POSITION, source0Pos);
     alSourcefv(source[CARCOLLISION2], AL_VELOCITY, source0Vel);
     alSourcei(source[CARCOLLISION2], AL_BUFFER, buffer[CARCOLLISION2]);
 
     loadSound("rsc/sounds/car_collision3.wav");
     alSourcef(source[CARCOLLISION3], AL_PITCH, 1.0f);
-    alSourcef(source[CARCOLLISION3], AL_GAIN, 1.0f);
+    alSourcef(source[CARCOLLISION3], AL_GAIN, 0.6f);
     alSourcefv(source[CARCOLLISION3], AL_POSITION, source0Pos);
     alSourcefv(source[CARCOLLISION3], AL_VELOCITY, source0Vel);
     alSourcei(source[CARCOLLISION3], AL_BUFFER, buffer[CARCOLLISION3]);
@@ -385,29 +385,6 @@ AudioPlayer::~AudioPlayer() {
     alcMakeContextCurrent(NULL);
     alcDestroyContext(ctx);
     alcCloseDevice(device);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-//USED FOR TESTING AND INITIAL DESIGN DELETE LATER
-void AudioPlayer::playMusic(int number) {
-    alSourcef(source[number], AL_PITCH, 1.0f);
-    alSourcef(source[number], AL_GAIN, 1.0f);
-    alSourcefv(source[number], AL_POSITION, source0Pos);
-    alSourcefv(source[number], AL_VELOCITY, source0Vel);
-    alSourcei(source[number], AL_BUFFER, buffer[number]);
-    alSourcei(source[number], AL_LOOPING, AL_TRUE);
-    alSourcePlay(source[number]);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-//USED FOR TESTING AND INITIAL DESIGN DELETE LATER
-void AudioPlayer::playSound(int number) {
-    alSourcef(source[number], AL_PITCH, 1.0f);
-    alSourcef(source[number], AL_GAIN, 1.0f);
-    alSourcefv(source[number], AL_POSITION, source0Pos);
-    alSourcefv(source[number], AL_VELOCITY, source0Vel);
-    alSourcei(source[number], AL_BUFFER, buffer[number]);
-    alSourcePlay(source[number]);
 }
 
 //////////////////////////////////////////////////////////////////////////////

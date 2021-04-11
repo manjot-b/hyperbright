@@ -80,9 +80,9 @@ void Engine::initArenas()
 	using namespace entity;
 	arenas = {
 		std::make_shared<Arena>(arena1Size, arena1Size, shader, Arena::Difficulty::BEGINNER),
-		std::make_shared<Arena>(arena2Size, arena2Size, shader, Arena::Difficulty::BEGINNER),
-		std::make_shared<Arena>(arena3Size, arena3Size, shader, Arena::Difficulty::BEGINNER),
-		std::make_shared<Arena>(arena4Size, arena4Size, shader, Arena::Difficulty::BEGINNER)
+		std::make_shared<Arena>(arena2Size, arena2Size, shader, Arena::Difficulty::NORMAL),
+		std::make_shared<Arena>(arena3Size, arena3Size, shader, Arena::Difficulty::NORMAL),
+		std::make_shared<Arena>(arena4Size, arena4Size, shader, Arena::Difficulty::HARD)
 	};
 }
 
