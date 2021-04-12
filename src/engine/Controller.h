@@ -51,6 +51,7 @@ public:
 	bool isCameraManual() { return manualCamera; }
 
 	void setPlayerVehicle(std::shared_ptr<entity::Vehicle>& vehicle);
+	bool altDriveControls = false;
 
 private:
 	GLFWwindow* window;

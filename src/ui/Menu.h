@@ -46,6 +46,17 @@ public:
 		LAST	// Not an actual selction. Used to get the selection count
 	};
 
+	enum class ControllerSelection {
+		XBOX,
+		PS4,
+		NONE
+	};
+
+	enum class Selection {
+		CONTROLLER,
+		ARENA
+	};
+
 	MainMenu(State state = State::WELCOME, ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
 	
 	void render();
@@ -54,10 +65,16 @@ public:
 	void setState(State state);
 	ArenaSelection getArenaSelection() const;
 	void setArenaSelection(ArenaSelection selection);
+	ControllerSelection getControllerSelection() const;
+	void setControllerSelection(ControllerSelection controller);
+	Selection getSelection() const;
+	void setSelection(Selection select);
 
 private:
 	State _state;
 	ArenaSelection _arenaSelection;
+	ControllerSelection _controllerSelection;
+	Selection _selection;
 };
 
 
