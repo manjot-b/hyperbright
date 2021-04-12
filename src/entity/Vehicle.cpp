@@ -253,6 +253,36 @@ void Vehicle::resetControls()
 	}
 }
 
+void Vehicle::accelerateForward(float d)
+{
+	accelerateForward();
+	ctrl.analogDrive = d;
+}
+
+void Vehicle::accelerateReverse(float d)
+{
+	accelerateReverse();
+	ctrl.analogDrive = d;
+}
+
+void Vehicle::brake(float d)
+{
+	brake();
+	ctrl.analogDrive = d;
+}
+
+void Vehicle::turnLeft(float s)
+{
+	turnLeft();
+	ctrl.analogSteer = s;
+}
+
+void Vehicle::turnRight(float s)
+{
+	turnRight();
+	ctrl.analogSteer = s;
+}
+
 void Vehicle::stopForward()
 {
 	ctrl.input[0] = 0;

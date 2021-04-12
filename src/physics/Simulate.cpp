@@ -260,18 +260,18 @@ PxVehicleKeySmoothingData gKeySmoothingData =
 PxVehiclePadSmoothingData gPadSmoothingData =
 {
 	{
-		6.0f,	//rise rate eANALOG_INPUT_ACCEL
-		6.0f,	//rise rate eANALOG_INPUT_BRAKE		
-		6.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
-		2.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
-		2.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
-	},
-	{
-		10.0f,	//fall rate eANALOG_INPUT_ACCEL
-		10.0f,	//fall rate eANALOG_INPUT_BRAKE		
-		10.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-		5.0f,	//fall rate eANALOG_INPUT_STEER_LEFT
-		5.0f	//fall rate eANALOG_INPUT_STEER_RIGHT
+		2.0f,	//rise rate eANALOG_INPUT_ACCEL
+		5.0f,	//rise rate eANALOG_INPUT_BRAKE		
+		10.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
+		0.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
+		0.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
+	},		  
+	{		  
+		4.0f,	//fall rate eANALOG_INPUT_ACCEL
+		5.0f,	//fall rate eANALOG_INPUT_BRAKE		
+		12.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
+		9.f, 	//fall rate eANALOG_INPUT_STEER_LEFT
+		9.f		//fall rate eANALOG_INPUT_STEER_RIGHT
 	}
 };
 
@@ -289,10 +289,6 @@ enum DriveMode
 	eDRIVE_MODE_NONE
 };
 
-PxF32		gVehicleModeLifetime = 4.0f;
-PxF32		gVehicleModeTimer = 0.0f;
-PxU32		gVehicleOrderProgress = 0;
-bool		gVehicleOrderComplete = false;
 bool		gMimicKeyInputs = true;
 const PxF32 normalChassisMass = 1400.0f;
 const PxF32 slowChassisMass = 3000.0f;
@@ -341,7 +337,7 @@ VehicleDesc initVehicleDesc()
 }
 
 namespace Driving {
-	void startAccelerateForwardsMode(int v)
+	void startAccelerateForwardsMode(int v, float aDrive)
 	{
 		gVehicle4W[v]->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
 		if (gMimicKeyInputs)
@@ -350,11 +346,11 @@ namespace Driving {
 		}
 		else
 		{
-			gVehicleInputData[v].setAnalogAccel(1.0f);
+			gVehicleInputData[v].setAnalogAccel(aDrive);
 		}
 	}
 
-	void startAccelerateReverseMode(int v)
+	void startAccelerateReverseMode(int v, float aDrive)
 	{
 		gVehicle4W[v]->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
 
@@ -364,11 +360,11 @@ namespace Driving {
 		}
 		else
 		{
-			gVehicleInputData[v].setAnalogAccel(1.0f);
+			gVehicleInputData[v].setAnalogAccel(aDrive);
 		}
 	}
 
-	void startBrakeMode(int v)
+	void startBrakeMode(int v, float aDrive)
 	{
 		if (gMimicKeyInputs)
 		{
@@ -376,11 +372,11 @@ namespace Driving {
 		}
 		else
 		{
-			gVehicleInputData[v].setAnalogBrake(1.0f);
+			gVehicleInputData[v].setAnalogBrake(aDrive);
 		}
 	}
 
-	void startTurnHardLeftMode(int v)
+	void startTurnHardLeftMode(int v, float aSteer)
 	{
 		if (gMimicKeyInputs)
 		{
@@ -388,11 +384,11 @@ namespace Driving {
 		}
 		else
 		{
-			gVehicleInputData[v].setAnalogSteer(-1.0f);
+			gVehicleInputData[v].setAnalogSteer(-aSteer);
 		}
 	}
 
-	void startTurnHardRightMode(int v)
+	void startTurnHardRightMode(int v, float aSteer)
 	{
 		if (gMimicKeyInputs)
 		{
@@ -400,11 +396,11 @@ namespace Driving {
 		}
 		else
 		{
-			gVehicleInputData[v].setAnalogSteer(1.0f);
+			gVehicleInputData[v].setAnalogSteer(-aSteer);
 		}
 	}
 
-	void startHandbrakeTurnLeftMode(int v)
+	void startHandbrakeTurnLeftMode(int v, float aSteer)
 	{
 		if (gMimicKeyInputs)
 		{
@@ -413,12 +409,12 @@ namespace Driving {
 		}
 		else
 		{
-			gVehicleInputData[v].setAnalogSteer(-1.0f);
+			gVehicleInputData[v].setAnalogSteer(-aSteer);
 			gVehicleInputData[v].setAnalogHandbrake(1.0f);
 		}
 	}
 
-	void startHandbrakeTurnRightMode(int v)
+	void startHandbrakeTurnRightMode(int v, float aSteer)
 	{
 		if (gMimicKeyInputs)
 		{
@@ -427,18 +423,8 @@ namespace Driving {
 		}
 		else
 		{
-			gVehicleInputData[v].setAnalogSteer(1.0f);
+			gVehicleInputData[v].setAnalogSteer(-aSteer);
 			gVehicleInputData[v].setAnalogHandbrake(1.0f);
-		}
-	}
-
-	void releaseTurn(int dir, int v)
-	{
-		if (dir == 1) {
-			startTurnHardLeftMode(v);
-		}
-		else {
-			startTurnHardRightMode(v);
 		}
 	}
 
@@ -580,6 +566,18 @@ void Simulate::initPhysics()
 void setDriveMode(entity::VehicleController* ctrl)
 {
 	int vNum = ctrl->contrId;
+	float aDrive;
+	float aSteer;
+	if (ctrl->analogController) {
+		gMimicKeyInputs = false;
+		aDrive = ctrl->analogDrive;
+		aSteer = ctrl->analogSteer;
+	}
+	else {
+		gMimicKeyInputs = true;
+		aDrive = 1.f;
+		aSteer = 1.f;
+	}
 
 	//APPLY FLIP PULSE
 	if (ctrl->flipImpulse) {
@@ -587,12 +585,14 @@ void setDriveMode(entity::VehicleController* ctrl)
 		ctrl->flipImpulse = false;
 	}
 
+	//APPLY TRAP
 	if (ctrl->trap.second) {
 		Driving::applyVehicleTrap(vNum);
 		ctrl->trap.first -= 1;
 		if (ctrl->trap.first <= 0) ctrl->trap.second = false;
 	}
 
+	//APPLY BOOST
 	if (ctrl->boost.second) {
 		Driving::applyVehicleBoost(vNum);
 		ctrl->boost.first -= 1;
@@ -602,33 +602,33 @@ void setDriveMode(entity::VehicleController* ctrl)
 	Driving::releaseAllControls(vNum);
 	//BRAKE
 	if (ctrl->input[5]) {
-		Driving::startBrakeMode(vNum);
+		Driving::startBrakeMode(vNum, aDrive);
 	} 
 	//FORWARD
 	else if (ctrl->input[0]) {
-		Driving::startAccelerateForwardsMode(vNum);
+		Driving::startAccelerateForwardsMode(vNum, aDrive);
 	}
 	//REVERSE
 	else if (ctrl->input[1]) {
-		Driving::startAccelerateReverseMode(vNum);
+		Driving::startAccelerateReverseMode(vNum, aDrive);
 	}
 
 	//LEFT
 	if (ctrl->input[2]) {
 		if (ctrl->input[4]) {
-			Driving::startHandbrakeTurnLeftMode(vNum);
+			Driving::startHandbrakeTurnLeftMode(vNum, aSteer);
 		}
 		else {
-			Driving::startTurnHardLeftMode(vNum);
+			Driving::startTurnHardLeftMode(vNum, aSteer);
 		}
 	}
 	//RIGHT
 	if (ctrl->input[3]) {
 		if (ctrl->input[4]) {
-			Driving::startHandbrakeTurnRightMode(vNum);
+			Driving::startHandbrakeTurnRightMode(vNum, aSteer);
 		}
 		else {
-			Driving::startTurnHardRightMode(vNum);
+			Driving::startTurnHardRightMode(vNum, aSteer);
 		}
 	}
 }

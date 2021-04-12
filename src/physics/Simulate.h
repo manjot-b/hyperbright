@@ -54,20 +54,19 @@ private:
 	// A list of vehicles needed for initializing the vehicle actors and updating vehicle stats
 	std::vector<std::shared_ptr<entity::Vehicle>>& vehicles;
 	void addChargingStations(const entity::Arena::ChargingStationList& stations);
-};
+}; //namespace Simulate
 
 void addPickup(std::shared_ptr<entity::Pickup>& pickup);
 void removePickups();
 
 namespace Driving {
-void startAccelerateForwardsMode(int v);
-void startAccelerateReverseMode(int v);
-void startBrakeMode(int v);
-void startTurnHardLeftMode(int v);
-void startTurnHardRightMode(int v);
-void startHandbrakeTurnLeftMode(int v);
-void startHandbrakeTurnRightMode(int v);
-void releaseTurn(int dir, int v);
+void startAccelerateForwardsMode(int v, float aDrive);
+void startAccelerateReverseMode(int v, float aDrive);
+void startBrakeMode(int v, float aDrive);
+void startTurnHardLeftMode(int v, float aSteer);
+void startTurnHardRightMode(int v, float aSteer);
+void startHandbrakeTurnLeftMode(int v, float aSteer);
+void startHandbrakeTurnRightMode(int v, float aSteer);
 void releaseAllControls(int v);
 void applyVehicleFlipImpulse(int v);
 void applyVehicleBoost(int v);

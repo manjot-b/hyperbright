@@ -51,12 +51,16 @@ private:
     glm::vec3 right;
     glm::vec3 worldUp;
     // camera/poi positioning
-    float camHeight = 2.f;
+    float camHeight = 2.5f;
     float camVelocityCoeficient = 4.f;
     float camRestLength = 7.5f;
     float camSwingStrength = 0.07f;
     float poiHeight = -0.4f;
     float poiDepth = 2.f;
+    float panL = 0.f;
+    float panR = 0.f;
+    float panU = 0.f;
+    float panD = 0.f;
 
     struct BoomArm {
         glm::vec3 position;
@@ -75,6 +79,11 @@ private:
     float scrollSensitivity;
 
     void updateCameraVectors();
+public:
+    void panLeft(float p)  { panL = -p; }
+    void panRight(float p) { panR =  p; }
+    void panUp(float p)    { panU = -p; }
+    void panDown(float p)  { panD =  p; }
 };
 }   // namespace render
 }   // namespace hyperbright

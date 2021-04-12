@@ -4,6 +4,7 @@
 
 namespace hyperbright {
 namespace engine {
+
 Controller::Controller(GLFWwindow* _window,
 	render::Camera& _camera,
 	ui::MainMenu& _mainmenu,
@@ -22,7 +23,7 @@ Controller::Controller(GLFWwindow* _window,
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	// Let GLFW store pointer to this instance of Engine.
+	// Let GLFW store pointer to this instance of Controller.
 	glfwSetWindowUserPointer(window, static_cast<void*>(this));
 }
 
@@ -44,6 +45,12 @@ bool trap;
 void Controller::processInput(float deltaSec)
 {
 	if (mainMenu.getState() != ui::MainMenu::State::OFF || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
+		if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
+			glfwGetGamepadState(GLFW_JOYSTICK_1, &joystick);
+
+			// check state of the game and use appropraite joystick controls
+			joystickCallback(window, joystick);
+		}
 		return;
 	}
 
@@ -89,83 +96,153 @@ void Controller::processInput(float deltaSec)
 	////////////////////////////////////////// JOYSTICK
 
 	if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
+		glfwGetGamepadState(GLFW_JOYSTICK_1, &joystick);
+		playerVehicle->setAnalogController(true);
+
+		// check state of the game and use appropraite joystick controls
+		joystickCallback(window, joystick);
+
 		int count;
 		const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
 
-		if (GLFW_PRESS == buttons[0]) { // square
-			std::cout << "Button 0" << std::endl;
-		}
-
-		if (GLFW_RELEASE == buttons[0]) {
-
-		}
-
-		if (GLFW_PRESS == buttons[1]) { // cross
-			std::cout << "Button 1" << std::endl;
-			if (!forward) {
-				//std::cout << "Up key PRESSED" << std::endl;
-				playerVehicle->accelerateForward();
-				forward = true;
+		if (joystick.buttons[GLFW_GAMEPAD_BUTTON_A]) { // ACTIVATE PICKUP
+			if (playerVehicle->hasPickup()) {
+				int type = playerVehicle->getPickup()->type;
+				if (type == EMP) {
+					audioPlayer.playEmpSound();
+				}
+				else if (type == SPEED) {
+					audioPlayer.playSpeedSound();
+				}
+				else {
+					audioPlayer.playUsePowerupSound();
+				}
+				playerVehicle->activatePickup();
 			}
 		}
 
-		if (GLFW_RELEASE == buttons[1]) {
+		if (joystick.buttons[GLFW_GAMEPAD_BUTTON_B]) { // HANDBRAKE
+			if (!handbrake)
+			{
+				playerVehicle->hardTurn();
+				handbrake = true;
+			}
+		}
+		else {
+			if (handbrake)
+			{
+				playerVehicle->stopHardTurn();
+				handbrake = false;
+			}
+		}
+
+		if (joystick.buttons[GLFW_GAMEPAD_BUTTON_Y]) { // FLIP
+			// only apply the flip impulse if the vehicle is upside down and 1 second has past since the last attempt
+			if (!playerVehicle->isUpright() && (glfwGetTime() - flipTimer > 1.f))
+			{
+				playerVehicle->applyFlipImpulse();
+				flipTimer = glfwGetTime();
+			}
+		}
+
+		if (joystick.buttons[GLFW_GAMEPAD_BUTTON_START]) { // PAUSE
+			if (pauseMenu.getState() == ui::PauseMenu::State::OFF) {
+				pauseMenu.setState(ui::PauseMenu::State::ON);
+			}
+			else {
+				pauseMenu.setState(ui::PauseMenu::State::OFF);
+			}
+		}
+
+		const float turn = joystick.axes[GLFW_GAMEPAD_AXIS_LEFT_X];
+		if (turn > 0.1f) {	
+			if (left)	// stop turning left
+			{
+				playerVehicle->stopLeft();
+				left = false;
+			}
+			// turn right
+			playerVehicle->turnRight(turn);
+			right = true;
+		}
+		else if (turn < -0.1f) { 
+			if (right)	// stop turning right
+			{
+				playerVehicle->stopRight();
+				right = false;
+			}
+			// turn left
+			playerVehicle->turnLeft(turn);
+			left = true;
+		}
+		else {	// stop turning both directions
+			if (left)	// stop turning left
+			{
+				playerVehicle->stopLeft();
+				left = false;
+			}
+
+			if (right)	// stop turning right
+			{
+				playerVehicle->stopRight();
+				right = false;
+			}
+		}
+
+		if (joystick.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER] > -0.9f) {
+			playerVehicle->accelerateReverse((1.f + joystick.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER]) / 2.f);
+			backward = true;
+		}
+		else {
+			if (backward)
+			{
+				playerVehicle->stopReverse();
+				backward = false;
+			}
+		}
+
+		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] > -0.9f) {
+			playerVehicle->accelerateForward((1.f + joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER]) / 2.f);
+			forward = true;
+		}
+		else {
 			if (forward)
 			{
-				//std::cout << "Up key RELEASED" << std::endl;
 				playerVehicle->stopForward();
 				forward = false;
 			}
 		}
 
-		if (GLFW_PRESS == buttons[2]) { // circle
-			std::cout << "Button 2" << std::endl;
+		///////////////// PAN CAMERA AROUND
+		float sensitivity = 0.1f;
+		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] > sensitivity) {
+			camera.panLeft(0.f);
+			camera.panRight(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X]);
+		}
+		else if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] < -sensitivity) {
+			camera.panRight(0.f);
+			camera.panLeft(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X]);
+		}
+		else {
+			camera.panLeft(0.f);
+			camera.panRight(0.f);
 		}
 
-		if (GLFW_PRESS == buttons[3]) { // triangle
-			std::cout << "Button 3" << std::endl;
+		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] > sensitivity) {
+			camera.panDown(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y]);
 		}
-
-		if (GLFW_PRESS == buttons[4]) { // L1
-			std::cout << "Button 4" << std::endl;
+		else if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] < -sensitivity) {
+			camera.panUp(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y]);
 		}
-
-		if (GLFW_PRESS == buttons[5]) { // R1
-			std::cout << "Button 5" << std::endl;
-		}
-
-		if (GLFW_PRESS == buttons[6]) { // L2
-			std::cout << "Button 6" << std::endl;
-		}
-
-		if (GLFW_PRESS == buttons[7]) { // R2
-			std::cout << "Button 7" << std::endl;
-		}
-
-		if (GLFW_PRESS == buttons[8]) { // share
-			std::cout << "Button 8" << std::endl;
-		}
-
-		if (GLFW_PRESS == buttons[9]) { // options
-			std::cout << "Button 9" << std::endl;
-		}
-
-		if (GLFW_PRESS == buttons[10]) { // L3
-			std::cout << "Button 10" << std::endl;
-		}
-
-		if (GLFW_PRESS == buttons[11]) { // R3
-			std::cout << "Button 11" << std::endl;
-		}
-
-		if (GLFW_PRESS == buttons[12]) { // PS
-			std::cout << "Button 12" << std::endl;
-		}
-
-		if (GLFW_PRESS == buttons[13]) { // touch pad
-			std::cout << "Button 13" << std::endl;
+		else {
+			camera.panDown(0.f);
+			camera.panUp(0.f);
 		}
 	}
+	else {
+		playerVehicle->setAnalogController(false);
+	}
+
 
 	////////////////////////////////////////// KEYBOARD
 	if (!glfwJoystickPresent(GLFW_JOYSTICK_1)) {
@@ -264,20 +341,6 @@ void Controller::processInput(float deltaSec)
 		}
 	}
 
-	/////////////// VEHICLE PICKUP ACTIVATE CONTROLS
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
-		if (playerVehicle->hasPickup()) {
-			int type = playerVehicle->getPickup()->type;
-			if (type == EMP) {
-				//audioPlayer.playEmpSound();
-			}
-			else if (type == ZAP) {
-				//audioPlayer.playZapSound();
-			}
-		}
-	}
-
 	/////////////// FLIP VEHICLE CONTROLS
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{
@@ -366,6 +429,21 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 	}
 }
 
+void Controller::joystickCallback(GLFWwindow* window, GLFWgamepadstate& joystick)
+{
+	Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
+
+	if (controller->mainMenu.getState() != ui::MainMenu::State::OFF) {
+		controller->mainMenuJoystickCallback(joystick);
+	}
+	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
+		controller->pauseMenuJoystickCallback(joystick);
+	}
+	else if (controller->endMenu.getState() == ui::EndMenu::State::ON) {
+		controller->endMenuJoystickCallback(joystick);
+	}
+}
+
 void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
@@ -410,6 +488,63 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		break;
 		}
 	}
+}
+
+bool mainMenuLeft = false;
+bool mainMenuRight = false;
+bool mainMenuEnter = false;
+
+void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
+{
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_LEFT]) {
+		if (!mainMenuLeft) {
+			mainMenuLeft = true;
+			std::cout << "DPAD Left" << std::endl;
+			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
+			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
+			int nextIdx = static_cast<int>(selection) - 1;
+
+			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
+			nextIdx = (count + (nextIdx % count)) % count;
+			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
+
+			mainMenu.setArenaSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
+		}
+	}
+	else { mainMenuLeft = false; }
+
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT]) {
+		if (!mainMenuRight) {
+			mainMenuRight = true;
+			std::cout << "DPAD Right" << std::endl;
+			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
+			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
+			int nextIdx = static_cast<int>(selection) + 1;
+
+			nextIdx = nextIdx % count;
+			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
+
+			mainMenu.setArenaSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
+		}
+	}
+	else { mainMenuRight = false; }
+
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_A]) {
+		if (!mainMenuEnter) {
+			mainMenuEnter = true;
+			std::cout << "Button A" << std::endl;
+			if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
+				mainMenu.setState(ui::MainMenu::State::SETUP);
+			}
+			else {	// Finished SETUP. Enter game.
+				mainMenu.setState(ui::MainMenu::State::OFF);
+			}
+			audioPlayer.playMenuEnterSound();
+		}
+	}
+	else { mainMenuEnter = false; }
 }
 
 void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mods)
@@ -460,6 +595,58 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 		}
 	}
 }
+
+bool pauseMenuUp = false;
+bool pauseMenuDown = false;
+
+void Controller::pauseMenuJoystickCallback(GLFWgamepadstate& joystick)
+{
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP]) {
+		if (!pauseMenuUp) {
+			pauseMenuUp = true;
+			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
+			int count = static_cast<int>(ui::PauseMenu::Selection::LAST);
+			int nextIdx = static_cast<int>(selection) - 1;
+
+			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
+			nextIdx = (count + (nextIdx % count)) % count;
+			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
+
+			pauseMenu.setSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
+		}
+	}
+	else { pauseMenuUp = false; }
+
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN]) {
+		if (!pauseMenuDown) {
+			pauseMenuDown = true;
+			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
+			unsigned int count = static_cast<unsigned int>(ui::PauseMenu::Selection::LAST);
+			unsigned int nextIdx = (static_cast<unsigned int>(selection) + 1) % count;
+			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
+
+			pauseMenu.setSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
+		}
+	}
+	else { pauseMenuDown = false; }
+
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_A]) {
+		if (pauseMenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
+			setWindowShouldClose(true);
+		}
+		else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
+			pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
+			pauseMenu.setState(ui::PauseMenu::State::OFF);
+			mainMenu.setState(ui::MainMenu::State::WELCOME);
+		}
+		else {
+			pauseMenu.setState(ui::PauseMenu::State::OFF);
+		}
+		audioPlayer.playMenuEnterSound();
+	}
+}
 void Controller::gameKeyCallback(int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
@@ -475,6 +662,13 @@ void Controller::gameKeyCallback(int key, int scancode, int action, int mods)
 			pauseMenu.setState(ui::PauseMenu::State::ON);
 			break;
 		}
+	}
+}
+
+void Controller::gameJoystickCallback(GLFWgamepadstate& joystick)
+{
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_START]) {
+		pauseMenu.setState(ui::PauseMenu::State::ON);
 	}
 }
 
@@ -504,6 +698,33 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 			audioPlayer.playMenuEnterSound();
 			break;
 		}
+	}
+}
+
+bool endMenuChangeSelected = false;
+
+void Controller::endMenuJoystickCallback(GLFWgamepadstate& joystick)
+{
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP] || joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN]) {
+		if (!endMenuChangeSelected) {
+			endMenuChangeSelected = true;
+			ui::EndMenu::Selection selection = endMenu.getSelection();
+			endMenu.setSelection(
+				selection == ui::EndMenu::Selection::MAIN_MENU ? ui::EndMenu::Selection::QUIT : ui::EndMenu::Selection::MAIN_MENU);
+			audioPlayer.playMenuSwitchSound();
+		}
+	}
+	else { endMenuChangeSelected = false; }
+
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_A]) {
+		if (endMenu.getSelection() == ui::EndMenu::Selection::MAIN_MENU) {
+			endMenu.setState(ui::EndMenu::State::OFF);
+			mainMenu.setState(ui::MainMenu::State::WELCOME);
+		}
+		else {
+			setWindowShouldClose(true);
+		}
+		audioPlayer.playMenuEnterSound();
 	}
 }
 

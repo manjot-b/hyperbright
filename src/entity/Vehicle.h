@@ -23,6 +23,9 @@ struct VehicleController {
 	bool flipImpulse = false;
 	std::pair<int, bool> boost = std::make_pair(0, false);
 	std::pair<int, bool> trap = std::make_pair(0, false);
+	bool analogController = false;
+	float analogDrive = 1.0f;
+	float analogSteer = 1.0f;
 };
 
 class Vehicle : public render::IRenderable, public physics::IPhysical
@@ -38,6 +41,7 @@ public:
 
 	VehicleController& getController()		{ return ctrl; }
 	const glm::vec4& getColor() const		{ return color; }
+	const void setAnalogController(bool b)	{ ctrl.analogController = b; }
 	glm::vec3 getForward() const			{ return body->getPosition() + direction; }
 	glm::vec3 getDirection() const			{ return direction; }
 	glm::vec3 getUp() const					{ return up; }
@@ -93,6 +97,13 @@ public:
 	void turnRight();
 	void hardTurn();
 	void resetControls();
+
+	// driving movements using analog controller
+	void accelerateForward(float d);
+	void accelerateReverse(float d);
+	void brake(float d);
+	void turnLeft(float s);
+	void turnRight(float s);
 
 	void stopForward();
 	void stopReverse();

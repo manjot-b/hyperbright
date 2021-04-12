@@ -23,7 +23,7 @@ DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 
     // set default settings
         // volume
-    settings.musicVolume = 0.5f;
+    settings.musicVolume = 0.f;
 
         // camera
     setCameraDefaults();
@@ -123,7 +123,7 @@ void DevUI::render()
 }
 
 void DevUI::setCameraDefaults() {
-    settings.cameraHeight = 2.f;
+    settings.cameraHeight = 2.5f;
     settings.cameraVelocityCoeficient = 4.f;
     settings.cameraRestLength = 7.5f;
     settings.cameraSwingStrength = 0.07f;
