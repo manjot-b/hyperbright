@@ -33,6 +33,16 @@ public:
 			float stepTwoTurnStr;
 			float stepThrTurnStr;
 			float stepFouTurnStr;
+
+			float analogAccel;
+			float analogBrake;
+			float analogHandBrake;
+			float analogSteer;
+									 
+			float analogAccelFall;
+			float analogBrakeFall;
+			float analogHandBrakeFall;
+			float analogSteerFall;
 		} handling;
 	} settings;	  
 

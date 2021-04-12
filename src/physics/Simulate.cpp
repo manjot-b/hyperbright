@@ -219,13 +219,13 @@ void Simulate::addChargingStations(const entity::Arena::ChargingStationList& sta
 }
 
 float velStepOne = 0.f;
-float stepOneTurnStr = 0.8f;
-float velStepTwo = 10.f;
-float stepTwoTurnStr = 0.4f;
-float velStepThr = 20.f;
-float stepThrTurnStr = 0.3f;
-float velStepFou = 60.f;
-float stepFouTurnStr = 0.2f;
+float stepOneTurnStr = 0.7f;
+float velStepTwo = 7.f;
+float stepTwoTurnStr = 0.6f;
+float velStepThr = 18.f;
+float stepThrTurnStr = 0.33f;
+float velStepFou = 25.f;
+float stepFouTurnStr = 0.15f;
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
 	velStepOne,		stepOneTurnStr,
@@ -257,21 +257,31 @@ PxVehicleKeySmoothingData gKeySmoothingData =
 	}
 };
 
+float analogAccel = 14.0f;
+float analogBrake = 3.0f;
+float analogHandBrake = 20.f;
+float analogSteer = 1.5f;
+
+float analogAccelFall = 3.0f;
+float analogBrakeFall = 20.0f;
+float analogHandBrakeFall = 20.f;
+float analogSteerFall = 10.f;
+
 PxVehiclePadSmoothingData gPadSmoothingData =
 {
 	{
-		2.0f,	//rise rate eANALOG_INPUT_ACCEL
-		5.0f,	//rise rate eANALOG_INPUT_BRAKE		
-		10.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
-		0.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
-		0.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
+		analogAccel,	//rise rate eANALOG_INPUT_ACCEL
+		analogBrake,	//rise rate eANALOG_INPUT_BRAKE		
+		analogHandBrake,	//rise rate eANALOG_INPUT_HANDBRAKE	
+		analogSteer,	//rise rate eANALOG_INPUT_STEER_LEFT
+		analogSteer,	//rise rate eANALOG_INPUT_STEER_RIGHT
 	},		  
 	{		  
-		4.0f,	//fall rate eANALOG_INPUT_ACCEL
-		5.0f,	//fall rate eANALOG_INPUT_BRAKE		
-		12.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-		9.f, 	//fall rate eANALOG_INPUT_STEER_LEFT
-		9.f		//fall rate eANALOG_INPUT_STEER_RIGHT
+		analogAccelFall,	//fall rate eANALOG_INPUT_ACCEL
+		analogBrakeFall,	//fall rate eANALOG_INPUT_BRAKE		
+		analogHandBrakeFall,	//fall rate eANALOG_INPUT_HANDBRAKE	
+		analogSteerFall, 	//fall rate eANALOG_INPUT_STEER_LEFT
+		analogSteerFall		//fall rate eANALOG_INPUT_STEER_RIGHT
 	}
 };
 
@@ -929,6 +939,17 @@ void Simulate::setConfigs(ui::DevUI::Settings::Handling turn)
 	gSteerVsForwardSpeedData[6] = turn.velStepFou;
 	gSteerVsForwardSpeedData[7] = turn.stepFouTurnStr;
 	gSteerVsForwardSpeedTable = { gSteerVsForwardSpeedData, 4 };
+
+	gPadSmoothingData.mRiseRates[0] = turn.analogAccel;
+	gPadSmoothingData.mRiseRates[1] = turn.analogBrake;
+	gPadSmoothingData.mRiseRates[2] = turn.analogHandBrake;
+	gPadSmoothingData.mRiseRates[3] = turn.analogSteer;
+	gPadSmoothingData.mRiseRates[4] = turn.analogSteer;
+	gPadSmoothingData.mRiseRates[5] = turn.analogAccelFall;
+	gPadSmoothingData.mRiseRates[6] = turn.analogBrakeFall;
+	gPadSmoothingData.mRiseRates[7] = turn.analogHandBrakeFall;
+	gPadSmoothingData.mRiseRates[8] = turn.analogSteerFall;
+	gPadSmoothingData.mRiseRates[9] = turn.analogSteerFall;
 }
 
 }	// namespace physics
