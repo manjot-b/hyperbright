@@ -30,11 +30,7 @@ void Menu::updateWindowAndFontSize()
 
 MainMenu::MainMenu(State state, ArenaSelection arenaSelection) : Menu(),
 	_state(state), _arenaSelection(arenaSelection)
-{
-	if (glfwJoystickPresent(GLFW_JOYSTICK_1)) { 
-		setControllerSelection(ControllerSelection::XBOX);
-	}
-}
+{}
 
 void MainMenu::render() {
 	updateWindowAndFontSize();
@@ -62,48 +58,12 @@ void MainMenu::render() {
 		font.FaceSize(scale * defaultFontSize);
 		font.Render("SETUP", -1, FTPoint(xCoord, yCoord, 0));
 
-		if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
-			const std::string ctrl = (_controllerSelection == MainMenu::ControllerSelection::XBOX) ? "XBOX" : "PS4";
-			const std::string controller = "< GAMEPAD " + ctrl + " >";
-			const std::string arena = "< Arena " + std::to_string(static_cast<int>(_arenaSelection) + 1) + " >";
-
-			switch (_selection) {
-			case (Selection::ARENA):
-				xCoord = ((float)width / 2) - (14 * (50 * scaleSmall) / 2);
-				yCoord = (float)height * (3.3f / rows);
-				font.FaceSize(scaleSmall * defaultFontSize);
-				font.Render(controller.c_str(), -1, FTPoint(xCoord, yCoord, 0));
-
-				xCoord = ((float)width / 2) - (10 * (50 * scale) / 2);
-				yCoord = (float)height * (2.f / rows);
-				font.FaceSize(scale * defaultFontSize);
-				font.Render(arena.c_str(), -1, FTPoint(xCoord, yCoord, 0));
-				break;
-
-			case (Selection::CONTROLLER):
-				xCoord = ((float)width / 2) - (14 * (50 * scale) / 2);
-				yCoord = (float)height * (3.3f / rows);
-				font.FaceSize(scale * defaultFontSize);
-				font.Render(controller.c_str(), -1, FTPoint(xCoord, yCoord, 0));
-
-				xCoord = ((float)width / 2) - (10 * (50 * scaleSmall) / 2);
-				yCoord = (float)height * (2.f / rows);
-				font.FaceSize(scaleSmall * defaultFontSize);
-				font.Render(arena.c_str(), -1, FTPoint(xCoord, yCoord, 0));
-				break;
-			}
-
-		}
-		else {
-
-			xCoord = ((float)width / 2) - (11 * (50 * scaleSmall) / 2);
-			yCoord = (float)height * (2.f / rows);
-			font.FaceSize(scaleSmall * defaultFontSize);
-			const std::string arena = "< Arena " + std::to_string(static_cast<int>(_arenaSelection) + 1) + " >";
-			font.Render(arena.c_str(), -1, FTPoint(xCoord, yCoord, 0));
-		}
-
+		xCoord = ((float)width / 2) - (11 * (50 * scaleSmall) / 2);
+		yCoord = (float)height * (2.f / rows);
 		font.FaceSize(scaleSmall * defaultFontSize);
+		const std::string arena = "< Arena " + std::to_string(static_cast<int>(_arenaSelection) + 1) + " >";
+		font.Render(arena.c_str(), -1, FTPoint(xCoord, yCoord, 0));
+
 		xCoord = ((float)width / 2) - (11 * (50 * scaleSmall) / 2);
 		yCoord = (float)height * (0.f / rows);
 		font.Render("Press enter", -1, FTPoint(xCoord, yCoord, 0));
@@ -120,14 +80,6 @@ void MainMenu::setState(State state) { _state = state; }
 MainMenu::ArenaSelection MainMenu::getArenaSelection() const { return _arenaSelection; }
 
 void MainMenu::setArenaSelection(ArenaSelection selection) { _arenaSelection = selection; }
-
-MainMenu::ControllerSelection MainMenu::getControllerSelection() const { return _controllerSelection; }
-
-void MainMenu::setControllerSelection(ControllerSelection controller) { _controllerSelection = controller; }
-
-MainMenu::Selection MainMenu::getSelection() const { return _selection; }
-
-void MainMenu::setSelection(Selection select) { _selection = select; }
 
 
 PauseMenu::PauseMenu(State state, Selection selection) : _selection(selection), _state(state) {}

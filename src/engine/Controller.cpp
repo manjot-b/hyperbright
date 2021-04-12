@@ -89,175 +89,60 @@ void Controller::processInput(float deltaSec)
 	////////////////////////////////////////// JOYSTICK
 
 	if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
-
 		int count;
 		const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
-		const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
 
-		if (axes[0] < -0.1) { // L-x - left
-			std::cout << "Axes 0" << std::endl;
-			if (right) // stop turning right
-			{
-				playerVehicle->stopRight();
-				right = false;
-			}
-
-			if (!left) {	// turn left
-				playerVehicle->turnLeft();
-				left = true;
-			}
-		}
-		else if (axes[0] > 0.1) { // L-x - right
-			if (left)	// stop turning left
-			{
-				playerVehicle->stopLeft();
-				left = false;
-			}
-
-			if (!right) {	// turn right
-				playerVehicle->turnRight();
-				right = true;
-			}
-		}
-		else {	// no turning
-			if (left) // stop turning left
-			{
-				playerVehicle->stopLeft();
-				left = false;
-			}
-
-			if (right) // stop turning right
-			{
-				playerVehicle->stopRight();
-				right = false;
-			}
-		}
-
-		if (axes[1] == 1 || axes[1] == -1) { // L-y
-			std::cout << "Axes 1" << std::endl;
-		}
-
-		if (axes[2] == 1 || axes[2] == -1) { // R-x
-			std::cout << "Axes 2" << std::endl;
-		}
-
-		if (mainMenu.getControllerSelection() == ui::MainMenu::ControllerSelection::PS4) {
-			if (axes[3] == 1) {	// LTrigger
-				std::cout << "Axes 3" << std::endl;
-				playerVehicle->accelerateReverse();
-				backward = true;
-			}
-			else {
-				if (backward)
-				{
-					playerVehicle->stopReverse();
-					backward = false;
-				}
-			}
-		}
-
-		if (mainMenu.getControllerSelection() == ui::MainMenu::ControllerSelection::PS4) {
-			if (axes[4] == 1) { // accel - RTrigger(PS4) 
-				std::cout << "Axes 4" << std::endl;
-				if (!forward) {
-					playerVehicle->accelerateForward();
-					forward = true;
-				}
-			}
-			else {
-				if (forward)
-				{
-					std::cout << "Axes 4 - OFF" << std::endl;
-					playerVehicle->stopForward();
-					forward = false;
-				}
-			}
-		}
-		else {
-			if (axes[4] == 1) {	// brake/reverse - LTrigger(XBOX)
-				std::cout << "Axes 4" << std::endl;
-				playerVehicle->accelerateReverse();
-				backward = true;
-			}
-			else {
-				if (backward)
-				{
-					playerVehicle->stopReverse();
-					backward = false;
-				}
-			}
-		}
-
-		if (mainMenu.getControllerSelection() == ui::MainMenu::ControllerSelection::XBOX) {
-			if (axes[5] == 1) { // R-y(PS4) RTrigger(XBOX)
-				std::cout << "Axes 5" << std::endl;
-				if (!forward) {
-					playerVehicle->accelerateForward();
-					forward = true;
-				}
-			}
-			else {
-				if (forward)
-				{
-					std::cout << "Axes 5 - OFF" << std::endl;
-					playerVehicle->stopForward();
-					forward = false;
-				}
-			}
-		}
-
-		if (GLFW_PRESS == buttons[0]) { // square - ignored
+		if (GLFW_PRESS == buttons[0]) { // square
 			std::cout << "Button 0" << std::endl;
-			if (!playerVehicle->isUpright() && (glfwGetTime() - flipTimer > 1.f))
-			{
-				playerVehicle->applyFlipImpulse();
-				flipTimer = glfwGetTime();
-			}
 		}
 
-		if (GLFW_PRESS == buttons[1]) { // cross - activate pickup
+		if (GLFW_RELEASE == buttons[0]) {
+
+		}
+
+		if (GLFW_PRESS == buttons[1]) { // cross
 			std::cout << "Button 1" << std::endl;
-			playerVehicle->activatePickup();
+			if (!forward) {
+				//std::cout << "Up key PRESSED" << std::endl;
+				playerVehicle->accelerateForward();
+				forward = true;
+			}
 		}
 
-		if (GLFW_PRESS == buttons[2]) { // circle - handbrake
+		if (GLFW_RELEASE == buttons[1]) {
+			if (forward)
+			{
+				//std::cout << "Up key RELEASED" << std::endl;
+				playerVehicle->stopForward();
+				forward = false;
+			}
+		}
+
+		if (GLFW_PRESS == buttons[2]) { // circle
 			std::cout << "Button 2" << std::endl;
-			if (!handbrake)
-			{
-				playerVehicle->hardTurn();
-				handbrake = true;
-			}
 		}
 
-		if (GLFW_RELEASE == buttons[2]) {
-			if (handbrake)
-			{
-				playerVehicle->stopHardTurn();
-				handbrake = false;
-			}
-		}
-
-		if (GLFW_PRESS == buttons[3]) { // triangle - ignored
+		if (GLFW_PRESS == buttons[3]) { // triangle
 			std::cout << "Button 3" << std::endl;
 		}
 
-		if (GLFW_PRESS == buttons[4]) { // L1 - ignored
+		if (GLFW_PRESS == buttons[4]) { // L1
 			std::cout << "Button 4" << std::endl;
 		}
 
-		if (GLFW_PRESS == buttons[5]) { // R1 - ignored
+		if (GLFW_PRESS == buttons[5]) { // R1
 			std::cout << "Button 5" << std::endl;
 		}
 
-		if (GLFW_PRESS == buttons[6]) { // L2 - ignored
+		if (GLFW_PRESS == buttons[6]) { // L2
 			std::cout << "Button 6" << std::endl;
 		}
 
-		if (GLFW_PRESS == buttons[7]) { // R2 - using axes
+		if (GLFW_PRESS == buttons[7]) { // R2
 			std::cout << "Button 7" << std::endl;
 		}
 
-		if (GLFW_PRESS == buttons[8]) { // share - ignored
+		if (GLFW_PRESS == buttons[8]) { // share
 			std::cout << "Button 8" << std::endl;
 		}
 
@@ -498,51 +383,31 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 			break;
 		case GLFW_KEY_RIGHT:
 		{
-			if (mainMenu.getSelection() == ui::MainMenu::Selection::ARENA) {
-				ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
-				int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
-				int nextIdx = static_cast<int>(selection) + 1;
+			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
+			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
+			int nextIdx = static_cast<int>(selection) + 1;
 
-				nextIdx = nextIdx % count;
-				ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
+			nextIdx = nextIdx % count;
+			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
 
-				mainMenu.setArenaSelection(nextSelection);
-				audioPlayer.playMenuSwitchSound();
-			}
-			else if (mainMenu.getControllerSelection() == ui::MainMenu::ControllerSelection::XBOX) {
-				mainMenu.setControllerSelection(ui::MainMenu::ControllerSelection::PS4);
-				audioPlayer.playMenuSwitchSound();
-			}
+			mainMenu.setArenaSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
 		}
 		break;
 		case GLFW_KEY_LEFT:
 		{
-			if (mainMenu.getSelection() == ui::MainMenu::Selection::ARENA) {
-				ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
-				int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
-				int nextIdx = static_cast<int>(selection) - 1;
+			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
+			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
+			int nextIdx = static_cast<int>(selection) - 1;
 
-				// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
-				nextIdx = (count + (nextIdx % count)) % count;
-				ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
+			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
+			nextIdx = (count + (nextIdx % count)) % count;
+			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
 
-				mainMenu.setArenaSelection(nextSelection);
-				audioPlayer.playMenuSwitchSound();
-			}
-			else if (mainMenu.getControllerSelection() == ui::MainMenu::ControllerSelection::PS4) {
-				mainMenu.setControllerSelection(ui::MainMenu::ControllerSelection::XBOX);
-				audioPlayer.playMenuSwitchSound();
-			}
+			mainMenu.setArenaSelection(nextSelection);
+			audioPlayer.playMenuSwitchSound();
 		}
 		break;
-		case GLFW_KEY_UP:
-			if (mainMenu.getSelection() == ui::MainMenu::Selection::ARENA) audioPlayer.playMenuSwitchSound();
-			mainMenu.setSelection(ui::MainMenu::Selection::CONTROLLER);
-			break;
-		case GLFW_KEY_DOWN:
-			if (mainMenu.getSelection() == ui::MainMenu::Selection::CONTROLLER) audioPlayer.playMenuSwitchSound();
-			mainMenu.setSelection(ui::MainMenu::Selection::ARENA);
-			break;
 		}
 	}
 }
