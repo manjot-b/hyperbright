@@ -132,15 +132,22 @@ void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float
 {
 	glm::vec3 pDir = player->getDirection();	// direction of the vehicle
 	glm::vec3 pPos = player->getPosition();		// position of the vehilce
+	glm::vec3 poi;
+	glm::vec3 altPoi;
 
 	float speed = player->readSpeedometer();
 	float dynPoiDepth = std::min(poiDepth, abs(speed / 10.f));
-	if (speed < -4.f) {
-		pDir = -pDir;
-	}
-
-	glm::vec3 poi = pPos + pDir * dynPoiDepth;
+	poi = pPos + pDir * dynPoiDepth;
 	poi.y += poiHeight;
+
+	if (speed < 0.f && player->isReverse()) {
+		altPoi = pPos - pDir * dynPoiDepth;
+		poi = 0.7f * poi + 0.3f * altPoi;
+		camSwingStrength = 0.02f;
+		//camHeight = 1.5f;
+		boomArm.restingLength = 1.0f;
+		camVelocityCoeficient = 3.0f;
+	}
 
 	if (panL > 0.f || panR > 0.f) {
 		if (panL > 0.f) {
@@ -153,9 +160,11 @@ void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float
 			boomArm.position -= (right * panR * panR * panScale);
 		}
 	}
+
 	// swing the camera to the back of the vehicle
 	glm::vec3 betwP_B = (poi - pDir * camRestLength) - boomArm.position;					// vector from the resting position to the current boom position
-	boomArm.position += camSwingStrength * glm::length(betwP_B) * glm::normalize(betwP_B);	// close that gap proportional to it's distance
+	glm::vec3 swingDist = camSwingStrength * glm::length(betwP_B) * glm::normalize(betwP_B);
+	boomArm.position += swingDist;	// close that gap proportional to it's distance
 
 	// orientation vectors
 	front = glm::normalize(poi - boomArm.position);
@@ -163,8 +172,10 @@ void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float
 	up = glm::normalize(glm::cross(right, front));
 
 	// semi-implicit Euler integration to accelerate the boom towards the poi
-	boomArm.currentLength = glm::length(poi - boomArm.position);							// length between the poi and boom position
-	boomArm.velocity = (boomArm.currentLength - boomArm.restingLength) * front * camVelocityCoeficient;	// update velocity proportional to the distance from rest * by some catch up factor
+	boomArm.currentLength = glm::length(poi - boomArm.position);// length between the poi and boom position
+	float stretch = boomArm.currentLength - boomArm.restingLength;
+	if (stretch < 0.f) camVelocityCoeficient *= 10.f;
+	boomArm.velocity = stretch * front * camVelocityCoeficient;	// update velocity proportional to the distance from rest * by some catch up factor
 	boomArm.position = boomArm.position + boomArm.velocity * deltaTime;						// update position based on new velocity * a small change in time
 	boomArm.position.y = camHeight;		// Always keep the camera at the same height
 	position = boomArm.position;

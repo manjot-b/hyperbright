@@ -134,11 +134,11 @@ void DevUI::render()
 
 void DevUI::setCameraDefaults() {
     settings.cameraHeight = 2.25f;
-    settings.cameraVelocityCoeficient = 0.675f;
-    settings.cameraRestLength = 4.5f;
-    settings.cameraSwingStrength = 0.05f;
+    settings.cameraVelocityCoeficient = 0.8f;
+    settings.cameraRestLength = 5.5f;
+    settings.cameraSwingStrength = 0.07f;
     settings.poiHeight = -0.4f;
-    settings.poiDepth = 2.f;
+    settings.poiDepth = 4.f;
 }
 
 void DevUI::setHandlingDefaults()

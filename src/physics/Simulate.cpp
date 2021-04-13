@@ -310,17 +310,17 @@ VehicleDesc initVehicleDesc()
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
 	const float vehScale = 1 / 3.f;
-	const PxF32 chassisMass = normalChassisMass; 
+	const PxF32 chassisMass = normalChassisMass;
 	const PxVec3 chassisDims(3.7f * vehScale, 2.5f * vehScale, 10.1f * vehScale);
 	const PxVec3 chassisMOI
 	((chassisDims.y * chassisDims.y + chassisDims.z * chassisDims.z) * chassisMass / 12.0f,
 		(chassisDims.x * chassisDims.x + chassisDims.z * chassisDims.z) * 0.8f * chassisMass / 12.0f,
 		(chassisDims.x * chassisDims.x + chassisDims.y * chassisDims.y) * chassisMass / 12.0f);
-	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y * 0.5f + 0.5f, 0.25f);
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y * 0.5f + 0.42f, 0.2f);
 
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.
-	const PxF32 wheelMass = 10.0f; // default 10
+	const PxF32 wheelMass = 20.0f; // default 10
 	const PxF32 wheelRadius = 1.f * vehScale;
 	const PxF32 wheelWidth = 0.1f;
 	const PxF32 wheelMOI = 0.5f * wheelMass * wheelRadius * wheelRadius;
@@ -465,14 +465,14 @@ namespace Driving {
 	void applyVehicleBoost(int v)
 	{
 		PxF32 mass = gVehicle4W[v]->getRigidDynamicActor()->getMass();
-		if (gVehicle4W[v]->computeForwardSpeed() < 60) 
-			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, mass * 0.5f), PxVec3(0.f, 0.f, 0.f), PxForceMode::eIMPULSE);
+		if (gVehicle4W[v]->computeForwardSpeed() < 40) 
+			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, mass * 0.75f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
 	}
 	void applyVehicleTrap(int v)
 	{
 		PxF32 mass = gVehicle4W[v]->getRigidDynamicActor()->getMass();
 		if (gVehicle4W[v]->computeForwardSpeed() > 5)
-			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 1.5f), PxVec3(0.f, 0.f, 0.f), PxForceMode::eIMPULSE);
+			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 1.f), PxVec3(0.f, 0.1f, -0.2f), PxForceMode::eIMPULSE);
 	}
 }//namespace Driving
 

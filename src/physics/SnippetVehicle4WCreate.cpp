@@ -82,11 +82,11 @@ void setupWheelsSimulationData
 		}
 
 		//Enable the handbrake for the rear wheels only.
-		wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque=3000.0f;
-		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=3000.0f;
+		wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque=5000.0f;
+		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=5000.0f;
 		//Enable steering for the front wheels only.
-		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.24f;
-		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.24f;
+		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.35f;
+		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.35f;
 	}
 
 	//Set up the tires.
@@ -97,11 +97,11 @@ void setupWheelsSimulationData
 		{
 			tires[i].mType = TIRE_TYPE_NORMAL;
 			tires[i].mFrictionVsSlipGraph[0][0] = 0.0f;
-			tires[i].mFrictionVsSlipGraph[0][1] = 1.0f;
-			tires[i].mFrictionVsSlipGraph[1][0] = 0.5f;
+			tires[i].mFrictionVsSlipGraph[0][1] = 0.75f;
+			tires[i].mFrictionVsSlipGraph[1][0] = 0.35f;
 			tires[i].mFrictionVsSlipGraph[1][1] = 1.0f;
-			tires[i].mFrictionVsSlipGraph[2][0] = 0.75f;
-			tires[i].mFrictionVsSlipGraph[2][1] = 0.60f;
+			tires[i].mFrictionVsSlipGraph[2][0] = 1.0f;
+			tires[i].mFrictionVsSlipGraph[2][1] = 0.45f;
 
 		}
 	}
@@ -120,8 +120,8 @@ void setupWheelsSimulationData
 		{
 			suspensions[i].mMaxCompression = 0.3f;
 			suspensions[i].mMaxDroop = 0.1f;
-			suspensions[i].mSpringStrength = 65000.0f;	
-			suspensions[i].mSpringDamperRate = 4500.0f;
+			suspensions[i].mSpringStrength = 60000.0f;	
+			suspensions[i].mSpringDamperRate = 3500.0f;
 			suspensions[i].mSprungMass = suspSprungMasses[i];
 		}
 
@@ -197,7 +197,7 @@ void setupWheelsSimulationData
 	PxVehicleAntiRollBarData barRear;
 	barRear.mWheel0 = PxVehicleDrive4WWheelOrder::eREAR_LEFT;
 	barRear.mWheel1 = PxVehicleDrive4WWheelOrder::eREAR_RIGHT;
-	barRear.mStiffness = 75000.0f;
+	barRear.mStiffness = 60000.0f;
 	wheelsSimData->addAntiRollBarData(barRear);
 }
 
@@ -284,8 +284,8 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 
 		//Engine
 		PxVehicleEngineData engine;
-		engine.mMOI = 0.5f;
-		engine.mPeakTorque=4000.0f;
+		engine.mMOI = 0.4f;
+		engine.mPeakTorque=4200.0f;
 		engine.mMaxOmega=1300.0f;//approx 6000 rpm
 		driveSimData.setEngineData(engine);
 

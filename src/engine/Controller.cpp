@@ -136,6 +136,21 @@ void Controller::processInput(float deltaSec)
 			}
 		}
 
+		/*if (joystick.buttons[GLFW_GAMEPAD_BUTTON_X]) { // BOOST TESTING
+				if (!boost) {
+					//std::cout << "Up key PRESSED" << std::endl;
+					playerVehicle->applyBoost(200);
+					boost = true;
+				}
+		}
+		else {
+			if (boost) {
+				//std::cout << "Up key PRESSED" << std::endl;
+				playerVehicle->releaseBoost();
+				boost = false;
+			}
+		}*/
+
 		if (joystick.buttons[GLFW_GAMEPAD_BUTTON_Y]) { // FLIP
 			// only apply the flip impulse if the vehicle is upside down and 1 second has past since the last attempt
 			if (!playerVehicle->isUpright() && (glfwGetTime() - flipTimer > 1.f))

@@ -104,7 +104,7 @@ void Vehicle::updateOrientation() {
 	up = normalize(vec3(rotMatrix * vec4(0.f, 1.f, 0.f, 1.f)));
 	right = normalize(vec3(rotMatrix * vec4(1.f, 0.f, 0.f, 1.f)));
 
-	upright = (up.y > 0) ? true : false;
+	upright = (up.y > 0.1) ? true : false;
 }
 
 Vehicle::~Vehicle() {
@@ -209,6 +209,7 @@ void Vehicle::releaseTrap()
 void Vehicle::accelerateForward()
 {
 	ctrl.input[0] = 1;
+	inReverse = false;
 }
 
 //void engine::teamStats::Teams setTeam(engine::teamStats::Teams t) { team = t; return; }
@@ -220,6 +221,7 @@ void Vehicle::accelerateReverse()
 		brake();
 	}
 	else {
+		inReverse = true;
 		body->getMeshes()[brakeLightsIdx]->material.color = reverseLightsColor;
 		stopBrake();
 		ctrl.input[1] = 1;

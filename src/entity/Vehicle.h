@@ -41,14 +41,15 @@ public:
 
 	VehicleController& getController()		{ return ctrl; }
 	const glm::vec4& getColor() const		{ return color; }
-	const void setAnalogController(bool b)	{ ctrl.analogController = b; }
 	glm::vec3 getForward() const			{ return body->getPosition() + direction; }
 	glm::vec3 getDirection() const			{ return direction; }
 	glm::vec3 getUp() const					{ return up; }
 	const glm::vec3& getPosition() const	{ return body->getPosition(); }
 	float readSpeedometer()					{ return speedometer; }
 	engine::teamStats::Teams getTeam() const{ return team; }
+
 	void setTeam(engine::teamStats::Teams t){ team = t; }
+	const void setAnalogController(bool b)	{ ctrl.analogController = b; }
 
 	void increaseEnergy();
 	void updateOrientation();
@@ -62,6 +63,7 @@ public:
 	bool enoughEnergy();
 	bool fullEnergy();
 	bool isUpright()						{ return upright; }
+	bool isReverse()						{ return inReverse; }
 
 	bool hasPickup()						{ return pickupEquiped; }
 	std::shared_ptr<Pickup> getPickup()		{ return pickup; }
@@ -125,6 +127,7 @@ private:
 	glm::vec3 up;
 	glm::vec3 right;
 	bool upright;
+	bool inReverse;
 
 	glm::vec3 lastPosition;
 	float speedometer;

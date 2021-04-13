@@ -24,7 +24,7 @@ public:
     };
 
     // constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, 5.0f, 0.0f),
+    Camera(glm::vec3 position = glm::vec3(-10.0f, 5.0f, -20.0f),
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
         float yaw = -90.0f, float pitch = 0.0f);
 
@@ -51,9 +51,9 @@ private:
     glm::vec3 right;
     glm::vec3 worldUp;
     // camera/poi positioning
-    float camHeight = 2.5f;
-    float camVelocityCoeficient = 4.f;
-    float camRestLength = 7.5f;
+    float camHeight = 2.25f;
+    float camVelocityCoeficient = 0.8f;
+    float camRestLength = 5.5f;
     float camSwingStrength = 0.07f;
     float poiHeight = -0.4f;
     float poiDepth = 2.f;
