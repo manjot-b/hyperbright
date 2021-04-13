@@ -23,7 +23,7 @@ DevUI::DevUI(GLFWwindow* window) : showDemo(false)
 
     // set default settings
         // volume
-    settings.musicVolume = 0.5f;
+    settings.musicVolume = 0.f;
 
         // camera
     setCameraDefaults();
@@ -112,6 +112,16 @@ void DevUI::render()
     ImGui::SliderFloat("Turning at Vel 3", &settings.handling.stepThrTurnStr, 0.f, 1.f);
     ImGui::SliderFloat("Velocity Interval 4", &settings.handling.velStepFou, settings.handling.velStepThr,                        100.f);
     ImGui::SliderFloat("Turning at Vel 4", &settings.handling.stepFouTurnStr, 0.f, 1.f);
+    ImGui::Spacing();
+    ImGui::SliderFloat("Accel", &settings.handling.analogAccel, 1.f, 20.f);
+    ImGui::SliderFloat("Brake", &settings.handling.analogBrake, 1.f, 20.f);
+    ImGui::SliderFloat("HandBrake", &settings.handling.analogHandBrake, 1.f, 20.f);
+    ImGui::SliderFloat("Steer", &settings.handling.analogSteer, 0.1f, 10.f);
+    ImGui::SliderFloat("AccelFall", &settings.handling.analogAccelFall, 1.f, 20.f);
+    ImGui::SliderFloat("BrakeFall", &settings.handling.analogBrakeFall, 1.f, 20.f);
+    ImGui::SliderFloat("HandBrakeFall", &settings.handling.analogHandBrakeFall, 1.f, 20.f);
+    ImGui::SliderFloat("SteerFall", &settings.handling.analogSteerFall, 0.1f, 10.f);
+
     if (ImGui::Button("Reset")) setHandlingDefaults();
     ImGui::EndChild();
     // Player Vehicle Driving Settings
@@ -123,24 +133,34 @@ void DevUI::render()
 }
 
 void DevUI::setCameraDefaults() {
-    settings.cameraHeight = 2.f;
-    settings.cameraVelocityCoeficient = 4.f;
-    settings.cameraRestLength = 7.5f;
+    settings.cameraHeight = 2.25f;
+    settings.cameraVelocityCoeficient = 0.8f;
+    settings.cameraRestLength = 5.5f;
     settings.cameraSwingStrength = 0.07f;
     settings.poiHeight = -0.4f;
-    settings.poiDepth = 2.f;
+    settings.poiDepth = 4.f;
 }
 
 void DevUI::setHandlingDefaults()
 {
     settings.handling.velStepOne = 0.f;
-    settings.handling.velStepTwo = 10.f;
-    settings.handling.velStepThr = 20.f;
-    settings.handling.velStepFou = 60.f;
-    settings.handling.stepOneTurnStr = 0.8f;
-    settings.handling.stepTwoTurnStr = 0.4f;
-    settings.handling.stepThrTurnStr = 0.3f;
-    settings.handling.stepFouTurnStr = 0.2f;
+    settings.handling.velStepTwo = 7.f;
+    settings.handling.velStepThr = 18.f;
+    settings.handling.velStepFou = 25.f;
+    settings.handling.stepOneTurnStr = 0.7f;
+    settings.handling.stepTwoTurnStr = 0.6f;
+    settings.handling.stepThrTurnStr = 0.33f;
+    settings.handling.stepFouTurnStr = 0.15f;
+
+    settings.handling.analogAccel = 14.0f;
+    settings.handling.analogBrake = 3.0f;
+    settings.handling.analogHandBrake = 20.f;
+    settings.handling.analogSteer = 1.5f;
+
+    settings.handling.analogAccelFall = 3.0f;
+    settings.handling.analogBrakeFall = 20.0f;
+    settings.handling.analogHandBrakeFall = 20.f;
+    settings.handling.analogSteerFall = 10.f;
 }
 
 }	// namespace ui

@@ -376,7 +376,7 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *currentArena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
-	camera.initCameraBoom(vehicles[0]->getPosition(), vehicles[0]->getForward());
+	camera.initCameraBoom(glm::vec3(-10.f, 10.f, -25.f), vehicles[0]->getForward());
 
 	ai::AiManager aiManager;
 	aiManager.setArena(currentArena, mainMenu.getArenaSelection());//MUST DO BEFORE LOADING VEHICLE
@@ -417,7 +417,7 @@ void Engine::runGame() {
 
 			audioPlayer->adjustCarIdlePitch(vehicles.at(0)->readSpeedometer());
 
-			simulator.stepPhysics(fpsLimit);
+			simulator.stepPhysics(deltaSec);
 			simulator.checkVehiclesOverTile(*currentArena, vehicles);
 
 			// check for pickups to be added to scene

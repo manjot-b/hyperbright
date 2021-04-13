@@ -23,6 +23,9 @@ struct VehicleController {
 	bool flipImpulse = false;
 	std::pair<int, bool> boost = std::make_pair(0, false);
 	std::pair<int, bool> trap = std::make_pair(0, false);
+	bool analogController = false;
+	float analogDrive = 1.0f;
+	float analogSteer = 1.0f;
 };
 
 class Vehicle : public render::IRenderable, public physics::IPhysical
@@ -44,7 +47,9 @@ public:
 	const glm::vec3& getPosition() const	{ return body->getPosition(); }
 	float readSpeedometer()					{ return speedometer; }
 	engine::teamStats::Teams getTeam() const{ return team; }
+
 	void setTeam(engine::teamStats::Teams t){ team = t; }
+	const void setAnalogController(bool b)	{ ctrl.analogController = b; }
 
 	void increaseEnergy();
 	void updateOrientation();
@@ -58,6 +63,7 @@ public:
 	bool enoughEnergy();
 	bool fullEnergy();
 	bool isUpright()						{ return upright; }
+	bool isReverse()						{ return inReverse; }
 
 	bool hasPickup()						{ return pickupEquiped; }
 	std::shared_ptr<Pickup> getPickup()		{ return pickup; }
@@ -94,6 +100,13 @@ public:
 	void hardTurn();
 	void resetControls();
 
+	// driving movements using analog controller
+	void accelerateForward(float d);
+	void accelerateReverse(float d);
+	void brake(float d);
+	void turnLeft(float s);
+	void turnRight(float s);
+
 	void stopForward();
 	void stopReverse();
 	void stopBrake();
@@ -114,6 +127,7 @@ private:
 	glm::vec3 up;
 	glm::vec3 right;
 	bool upright;
+	bool inReverse;
 
 	glm::vec3 lastPosition;
 	float speedometer;

@@ -48,6 +48,7 @@ public:
 
 	//std::queue<int> gameInput();
 	void processInput(float deltaSec);
+
 	bool isCameraManual() { return manualCamera; }
 
 	void setPlayerVehicle(std::shared_ptr<entity::Vehicle>& vehicle);
@@ -67,12 +68,18 @@ private:
 	float lastX;
 	float lastY;
 	std::queue<int> currentDrivingControls;
+	GLFWgamepadstate joystick;
 
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void joystickCallback(GLFWwindow* window, GLFWgamepadstate& joystick);
 	void mainMenuKeyCallback(int key, int scancode, int action, int mods);
+	void mainMenuJoystickCallback(GLFWgamepadstate& joystick);
 	void pauseMenuKeyCallback(int key, int scancode, int action, int mods);
+	void pauseMenuJoystickCallback(GLFWgamepadstate& joystick);
 	void gameKeyCallback(int key, int scancode, int action, int mods);
+	void gameJoystickCallback(GLFWgamepadstate& joystick);
 	void endMenuKeyCallback(int key, int scancode, int action, int mods);
+	void endMenuJoystickCallback(GLFWgamepadstate& joystick);
 	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 };
