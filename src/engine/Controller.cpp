@@ -375,6 +375,9 @@ void Controller::processInput(float deltaSec)
 			if (type == EMP) {
 				audioPlayer.playEmpSound();
 			}
+			else if (type == ZAP) {
+				audioPlayer.playZapSound();
+			}
 			else if (type == SPEED) {
 				audioPlayer.playSpeedSound();
 			}
@@ -564,6 +567,7 @@ void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 
 void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mods)
 {
+	audioPlayer.stopCarIdle();
 	if (action == GLFW_PRESS)
 	{
 		switch (key) {
@@ -603,6 +607,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 				mainMenu.setState(ui::MainMenu::State::WELCOME);
 			}
 			else {
+				audioPlayer.playCarIdle();
 				pauseMenu.setState(ui::PauseMenu::State::OFF);
 			}
 			audioPlayer.playMenuEnterSound();

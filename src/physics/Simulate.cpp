@@ -71,7 +71,7 @@ class CollisionCallBack : public physx::PxSimulationEventCallback {
 				if (pairHeader.actors[0]->userData == nullptr ||
 					pairHeader.actors[1]->userData == nullptr) {
 					// collided with wall, make wall collision sound
-					audioPlayer->playWallCollisionSound();
+					audioPlayer->playCarCollisionSound();
 				}
 				else {
 					// collided with vehicle, make vehicle collision sound
