@@ -243,6 +243,7 @@ void Controller::processInput(float deltaSec)
 			camera.panRight(0.f);
 		}
 
+
 		float lookBackThreshhold = 0.2f;
 		float lookForwardThreshhold = 0.2f;
 		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] > lookBackThreshhold) {
