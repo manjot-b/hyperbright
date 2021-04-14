@@ -258,31 +258,31 @@ void Vehicle::resetControls()
 void Vehicle::accelerateForward(float d)
 {
 	accelerateForward();
-	ctrl.analogDrive = d;
+	ctrl.analogDrive = d * d;
 }
 
 void Vehicle::accelerateReverse(float d)
 {
 	accelerateReverse();
-	ctrl.analogDrive = d;
+	ctrl.analogDrive = d * d;
 }
 
 void Vehicle::brake(float d)
 {
 	brake();
-	ctrl.analogDrive = d;
+	ctrl.analogDrive = d * d;
 }
 
 void Vehicle::turnLeft(float s)
 {
 	turnLeft();
-	ctrl.analogSteer = s;
+	ctrl.analogSteer = -s * s;
 }
 
 void Vehicle::turnRight(float s)
 {
 	turnRight();
-	ctrl.analogSteer = s;
+	ctrl.analogSteer = s * s;
 }
 
 void Vehicle::stopForward()

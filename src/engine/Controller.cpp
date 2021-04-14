@@ -230,11 +230,11 @@ void Controller::processInput(float deltaSec)
 		}
 
 		///////////////// PAN CAMERA AROUND
-		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] > threshhold) {
+		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] > 0.05) {
 			camera.panLeft(0.f);
 			camera.panRight(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X]);
 		}
-		else if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] < -threshhold) {
+		else if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] < -0.05) {
 			camera.panRight(0.f);
 			camera.panLeft(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X]);
 		}
@@ -243,7 +243,8 @@ void Controller::processInput(float deltaSec)
 			camera.panRight(0.f);
 		}
 
-		float lookBackThreshhold = 0.5f;
+
+		float lookBackThreshhold = 0.2f;
 		float lookForwardThreshhold = 0.2f;
 		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] > lookBackThreshhold) {
 			camera.lookBack(true);
