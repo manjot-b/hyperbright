@@ -173,7 +173,7 @@ void HUD::drawHUD() {
 	glPixelTransferf(GL_RED_BIAS, 0);
 	glPixelTransferf(GL_GREEN_BIAS, -0.7);
 	glPixelTransferf(GL_BLUE_BIAS, -1);
-	double realSpeed = std::max(round(abs(player->readSpeedometer()) * 5), 0.f);
+	double realSpeed = std::max(round(abs(player->readSpeedometer()) * 2), 0.f);
 
 	char speedStr[100];
 	sprintf(speedStr, "%d", (int)realSpeed);
