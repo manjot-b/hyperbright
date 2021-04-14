@@ -126,44 +126,44 @@ void Camera::initCameraBoom(glm::vec3 position, glm::vec3 direction)
 	boomArm.direction = glm::normalize(direction);
 }
 
-float panScale = 1.f;
+float panScale = 0.75f;
 float panVerticalScale = 1 / 10.f;
+float rest = 0;
 void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime)
 {
 	glm::vec3 pDir = player->getDirection();	// direction of the vehicle
 	glm::vec3 pPos = player->getPosition();		// position of the vehilce
 	glm::vec3 poi;
-	glm::vec3 altPoi;
-
-	
 
 	float speed = player->readSpeedometer();
 	float dynPoiDepth = (player->trapActive) ? 1.0f : std::min(poiDepth, abs(speed / 10.f));
 	if (lookingBack) {
 		pDir = -pDir;
-		poi = pPos + pDir * poiDepth;
-		boomArm.restingLength = 5.5f;
-		camSwingStrength = 0.3f;
+		std::swap(panL, panR);
+		poiHeight += 1 - std::max(panL, panR);
+		rest += 0.005f;
+		camRestLength += rest;
+		camRestLength = std::max(16.f, camRestLength);
 	}
-	else {
-		poi = pPos + pDir * dynPoiDepth;
-	}
+	else { rest = 0; }
+
+	poi = pPos + pDir * dynPoiDepth * (1.f - std::max(panL, panR));
 	poi.y += poiHeight;
 
 	if (panL > 0.f || panR > 0.f) {
 		if (panL > 0.f) {
 			glm::vec3 left = glm::normalize(glm::cross(worldUp, pDir));
-			boomArm.position -= (left * panL * panL * panScale);
+			boomArm.position += ((left + pDir * 0.5f) * panL * panL * panL * panL * panScale);
 		}
 
 		if (panR > 0.f) {
 			glm::vec3 right = glm::normalize(glm::cross(pDir, worldUp));
-			boomArm.position -= (right * panR * panR * panScale);
+			boomArm.position += ((right + pDir * 0.5f) * panR * panR * panR * panR * panScale);
 		}
 	}
 
 	// swing the camera to the back of the vehicle
-	glm::vec3 betwP_B = (poi - pDir * camRestLength) - boomArm.position;					// vector from the resting position to the current boom position
+	glm::vec3 betwP_B = (poi - pDir * camRestLength) - boomArm.position; // vector from the resting position to the current boom position
 	glm::vec3 swingDist = camSwingStrength * glm::length(betwP_B) * glm::normalize(betwP_B);
 	boomArm.position += swingDist;	// close that gap proportional to it's distance
 
