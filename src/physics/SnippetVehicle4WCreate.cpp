@@ -192,12 +192,12 @@ void setupWheelsSimulationData
 	PxVehicleAntiRollBarData barFront;
 	barFront.mWheel0 = PxVehicleDrive4WWheelOrder::eFRONT_LEFT;
 	barFront.mWheel1 = PxVehicleDrive4WWheelOrder::eFRONT_RIGHT;
-	barFront.mStiffness = 70000.0f;
+	barFront.mStiffness = 80000.0f;
 	wheelsSimData->addAntiRollBarData(barFront);
 	PxVehicleAntiRollBarData barRear;
 	barRear.mWheel0 = PxVehicleDrive4WWheelOrder::eREAR_LEFT;
 	barRear.mWheel1 = PxVehicleDrive4WWheelOrder::eREAR_RIGHT;
-	barRear.mStiffness = 60000.0f;
+	barRear.mStiffness = 70000.0f;
 	wheelsSimData->addAntiRollBarData(barRear);
 }
 

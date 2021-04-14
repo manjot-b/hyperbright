@@ -135,19 +135,20 @@ void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float
 	glm::vec3 poi;
 	glm::vec3 altPoi;
 
-	float speed = player->readSpeedometer();
-	float dynPoiDepth = std::min(poiDepth, abs(speed / 10.f));
-	poi = pPos + pDir * dynPoiDepth;
-	poi.y += poiHeight;
+	
 
-	if (speed < 0.f && player->isReverse()) {
-		altPoi = pPos - pDir * dynPoiDepth;
-		poi = 0.7f * poi + 0.3f * altPoi;
-		camSwingStrength = 0.02f;
-		//camHeight = 1.5f;
-		boomArm.restingLength = 1.0f;
-		camVelocityCoeficient = 3.0f;
+	float speed = player->readSpeedometer();
+	float dynPoiDepth = (player->trapActive) ? 1.0f : std::min(poiDepth, abs(speed / 10.f));
+	if (lookingBack) {
+		pDir = -pDir;
+		poi = pPos + pDir * poiDepth;
+		boomArm.restingLength = 5.5f;
+		camSwingStrength = 0.3f;
 	}
+	else {
+		poi = pPos + pDir * dynPoiDepth;
+	}
+	poi.y += poiHeight;
 
 	if (panL > 0.f || panR > 0.f) {
 		if (panL > 0.f) {
@@ -181,13 +182,10 @@ void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float
 	position = boomArm.position;
 
 	boomArm.direction = boomArm.position + front;	// update direction based on booms position and direction to poi
-	boomArm.direction.y += panU * panU * panVerticalScale - panD * panD * panVerticalScale;
 	view = glm::lookAt(boomArm.position, boomArm.direction, up);
 
 	panL = 0.f;
 	panR = 0.f;
-	panU = 0.f;
-	panD = 0.f;
 }
 
 void Camera::setConfigs(float _camHeight, float _camVelCoef, float _camRestLen, float _camSwStr, float _poiHeight, float _poiDepth) {

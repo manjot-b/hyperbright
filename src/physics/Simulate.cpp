@@ -242,18 +242,18 @@ PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4)
 PxVehicleKeySmoothingData gKeySmoothingData =
 {
 	{
-		2.0f,	//rise rate eANALOG_INPUT_ACCEL
+		12.0f,	//rise rate eANALOG_INPUT_ACCEL
 		5.0f,	//rise rate eANALOG_INPUT_BRAKE		
-		10.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
-		0.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
-		0.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
+		20.f,	//rise rate eANALOG_INPUT_HANDBRAKE	
+		1.f,	//rise rate eANALOG_INPUT_STEER_LEFT
+		1.f,	//rise rate eANALOG_INPUT_STEER_RIGHT
 	},
 	{
-		4.0f,	//fall rate eANALOG_INPUT_ACCEL
-		5.0f,	//fall rate eANALOG_INPUT_BRAKE		
-		12.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-		9.f,	//fall rate eANALOG_INPUT_STEER_LEFT
-		9.f	//fall rate eANALOG_INPUT_STEER_RIGHT
+		2.f,	//fall rate eANALOG_INPUT_ACCEL
+		20.0f,	//fall rate eANALOG_INPUT_BRAKE		
+		20.f,	//fall rate eANALOG_INPUT_HANDBRAKE	
+		10.f,	//fall rate eANALOG_INPUT_STEER_LEFT
+		10.f	//fall rate eANALOG_INPUT_STEER_RIGHT
 	}
 };
 
@@ -472,7 +472,7 @@ namespace Driving {
 	{
 		PxF32 mass = gVehicle4W[v]->getRigidDynamicActor()->getMass();
 		if (gVehicle4W[v]->computeForwardSpeed() > 5)
-			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 1.f), PxVec3(0.f, 0.1f, -0.2f), PxForceMode::eIMPULSE);
+			PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 1.5f), PxVec3(0.f, 0.1f, -1.f), PxForceMode::eIMPULSE);
 	}
 }//namespace Driving
 

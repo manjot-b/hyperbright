@@ -50,6 +50,7 @@ public:
 
 	void setTeam(engine::teamStats::Teams t){ team = t; }
 	const void setAnalogController(bool b)	{ ctrl.analogController = b; }
+	const void setAnalogDriveController(float v) { ctrl.analogDrive = v; }
 
 	void increaseEnergy();
 	void updateOrientation();
