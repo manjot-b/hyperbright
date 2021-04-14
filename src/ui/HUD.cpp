@@ -102,7 +102,7 @@ void HUD::drawHUD() {
 			emp->getShader()->use();
 			emp->normalizeToViewport(width, height);
 			emp->translate(glm::vec2(-0.9f, 0.3f));
-			emp->scale(.2f);
+			emp->scale(.12f);
 			emp->render();
 			glUseProgram(0);
 			break;
@@ -146,22 +146,22 @@ void HUD::drawHUD() {
 	if (player->syphonActive == true) {
 		syphonOn->getShader()->use();
 		syphonOn->normalizeToViewport(width, height);
-		syphonOn->translate(glm::vec2(0.f, 0.f));
-		syphonOn->scale(1.2f);
+		syphonOn->translate(glm::vec2(0.f, 0.2f));
+		syphonOn->scale(1.f);
 		syphonOn->render();
 		glUseProgram(0);
 	} else if (player->zapActive == true) {
 		zapped->getShader()->use();
 		zapped->normalizeToViewport(width, height);
-		zapped->translate(glm::vec2(0.f, 0.f));
-		zapped->scale(1.2f);
+		zapped->translate(glm::vec2(0.f, 0.1f));
+		zapped->scale(1.f);
 		zapped->render();
 		glUseProgram(0);
 	} else if (player->getController().trap.second == true) {
 		slowed->getShader()->use();
 		slowed->normalizeToViewport(width, height);
-		slowed->translate(glm::vec2(0.f, 0.f));
-		slowed->scale(1.2f);
+		slowed->translate(glm::vec2(0.f, 0.1f));
+		slowed->scale(1.f);
 		slowed->render();
 		glUseProgram(0);
 	}
@@ -173,7 +173,7 @@ void HUD::drawHUD() {
 	glPixelTransferf(GL_RED_BIAS, 0);
 	glPixelTransferf(GL_GREEN_BIAS, -0.7);
 	glPixelTransferf(GL_BLUE_BIAS, -1);
-	double realSpeed = std::max(round(abs(player->readSpeedometer()) * 5), 0.f);
+	double realSpeed = std::max(round(abs(player->readSpeedometer()) * 3), 0.f);
 
 	char speedStr[100];
 	sprintf(speedStr, "%d", (int)realSpeed);

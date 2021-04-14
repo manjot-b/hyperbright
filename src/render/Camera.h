@@ -59,8 +59,7 @@ private:
     float poiDepth = 2.f;
     float panL = 0.f;
     float panR = 0.f;
-    float panU = 0.f;
-    float panD = 0.f;
+    bool lookingBack = false;
 
     struct BoomArm {
         glm::vec3 position;
@@ -80,10 +79,9 @@ private:
 
     void updateCameraVectors();
 public:
-    void panLeft(float p)  { panL = -p; }
-    void panRight(float p) { panR =  p; }
-    void panUp(float p)    { panU = -p; }
-    void panDown(float p)  { panD =  p; }
+    void panLeft(float p)   { panL = -p; }
+    void panRight(float p)  { panR =  p; }
+    void lookBack(bool b) { lookingBack = b; }
 };
 }   // namespace render
 }   // namespace hyperbright

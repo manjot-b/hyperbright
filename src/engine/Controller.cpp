@@ -121,7 +121,7 @@ void Controller::processInput(float deltaSec)
 			}
 		}
 
-		if (joystick.buttons[GLFW_GAMEPAD_BUTTON_B]) { // HANDBRAKE
+		if (joystick.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER]) { // HANDBRAKE
 			if (!handbrake)
 			{
 				playerVehicle->hardTurn();
@@ -169,8 +169,9 @@ void Controller::processInput(float deltaSec)
 			}
 		}
 
+		float threshhold = 0.15f;
 		const float turn = joystick.axes[GLFW_GAMEPAD_AXIS_LEFT_X];
-		if (turn > 0.1f) {	
+		if (turn > threshhold) {
 			if (left)	// stop turning left
 			{
 				playerVehicle->stopLeft();
@@ -180,7 +181,7 @@ void Controller::processInput(float deltaSec)
 			playerVehicle->turnRight(turn);
 			right = true;
 		}
-		else if (turn < -0.1f) { 
+		else if (turn < -threshhold) {
 			if (right)	// stop turning right
 			{
 				playerVehicle->stopRight();
@@ -229,12 +230,11 @@ void Controller::processInput(float deltaSec)
 		}
 
 		///////////////// PAN CAMERA AROUND
-		float sensitivity = 0.1f;
-		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] > sensitivity) {
+		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] > threshhold) {
 			camera.panLeft(0.f);
 			camera.panRight(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X]);
 		}
-		else if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] < -sensitivity) {
+		else if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] < -threshhold) {
 			camera.panRight(0.f);
 			camera.panLeft(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_X]);
 		}
@@ -243,15 +243,13 @@ void Controller::processInput(float deltaSec)
 			camera.panRight(0.f);
 		}
 
-		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] > sensitivity) {
-			camera.panDown(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y]);
+		float lookBackThreshhold = 0.5f;
+		float lookForwardThreshhold = 0.2f;
+		if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] > lookBackThreshhold) {
+			camera.lookBack(true);
 		}
-		else if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] < -sensitivity) {
-			camera.panUp(joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y]);
-		}
-		else {
-			camera.panDown(0.f);
-			camera.panUp(0.f);
+		else if (joystick.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] < lookForwardThreshhold) {
+			camera.lookBack(false);
 		}
 	}
 	else {

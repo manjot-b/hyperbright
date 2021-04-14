@@ -355,7 +355,7 @@ void Engine::runMainMenu() {
 		lastFrame = currentFrame;
 
 		devUI.update(deltaSec, roundTimer);
-		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
+		controller->processInput(fpsLimit);	// will update the menu state once ENTER is pressed.
 		
 		currentArena->animateChargingStations(currentFrame);
 
@@ -405,7 +405,7 @@ void Engine::runGame() {
 		}
 		lastFrame = currentFrame;
 
-		controller->processInput(deltaSec);
+		controller->processInput(fpsLimit);
 
 		//AI
 		aiManager.makeMoves();
@@ -417,7 +417,7 @@ void Engine::runGame() {
 
 			audioPlayer->adjustCarIdlePitch(vehicles.at(0)->readSpeedometer());
 
-			simulator.stepPhysics(deltaSec);
+			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*currentArena, vehicles);
 
 			// check for pickups to be added to scene
