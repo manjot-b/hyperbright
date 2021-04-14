@@ -72,7 +72,7 @@ namespace hyperbright {
 			//std::cout << "ACTIVATED:  ";
 			pickUpStartTime = glfwGetTime();
 			if (type == EMP) {
-				std::cout << engine::teamStats::names.at(usedByTeam) << " USED EMP!! \n";
+				//std::cout << engine::teamStats::names.at(usedByTeam) << " USED EMP!! \n";
 				_vehicles->at(0)->energy = 0;
 				_vehicles->at(1)->energy = 0;
 				_vehicles->at(2)->energy = 0;
@@ -82,12 +82,21 @@ namespace hyperbright {
 				//std::cout << "ZAP!! \n";
 
 				//engine::teamStats::Teams secondPlace = usedByTeam;
-
+				
+				/*
 				engine::teamStats::Teams team0 = _vehicles->at(0)->getTeam();
 				engine::teamStats::Teams team1 = _vehicles->at(1)->getTeam();
 				engine::teamStats::Teams team2 = _vehicles->at(2)->getTeam();
 				engine::teamStats::Teams team3 = _vehicles->at(3)->getTeam();
+				engine::teamStats::Teams firstPlace = team0
+				*/
+				engine::teamStats::Teams team0 = engine::teamStats::Teams::TEAM0;
+				engine::teamStats::Teams team1 = engine::teamStats::Teams::TEAM1;
+				engine::teamStats::Teams team2 = engine::teamStats::Teams::TEAM2;
+				engine::teamStats::Teams team3 = engine::teamStats::Teams::TEAM3;
 				engine::teamStats::Teams firstPlace = team0;
+
+
 				//FIND FIRST PLACE
 /*
 				if (engine::teamStats::scores.at(team0) >= engine::teamStats::scores.at(firstPlace)) {
@@ -109,7 +118,7 @@ namespace hyperbright {
 
 				//zapOldTeam = firstPlace;
 
-				std::cout << engine::teamStats::names.at(usedByTeam) << " ZAPPED " << engine::teamStats::names.at(zapOldTeam) << "\n";
+				//std::cout << engine::teamStats::names.at(usedByTeam) << " ZAPPED " << engine::teamStats::names.at(zapOldTeam) << "\n";
 
 
 				//CHANGE COLOR
@@ -136,7 +145,7 @@ namespace hyperbright {
 
 			}
 			else if (type == SPEED) {//NEED IMPULSE FUNCTION
-				std::cout << engine::teamStats::names.at(usedByTeam) << " USED SPEED!! \n";
+				//std::cout << engine::teamStats::names.at(usedByTeam) << " USED SPEED!! \n";
 				float speedTime = 250.f;//IN FRAMES!!
 				if (usedByTeam == _vehicles->at(0)->getTeam()) {
 					_vehicles->at(0)->applyBoost(speedTime);
@@ -153,32 +162,32 @@ namespace hyperbright {
 
 			}
 			else if (type == SLOWTRAP) {
-				std::cout << engine::teamStats::names.at(usedByTeam) << " LAYED A TRAP!! \n";
-				if (usedByTeam == _vehicles->at(0)->getTeam()) {
+				//std::cout << engine::teamStats::names.at(usedByTeam) << " LAYED A TRAP!! \n";
+				if (usedByTeam == engine::teamStats::Teams::TEAM0) {
 					trapTile = _vehicles->at(0)->currentTile;
 				}
-				else if (usedByTeam == _vehicles->at(1)->getTeam()) {
+				else if (usedByTeam == engine::teamStats::Teams::TEAM1) {
 					trapTile = _vehicles->at(1)->currentTile;
 				}
-				else if (usedByTeam == _vehicles->at(2)->getTeam()) {
+				else if (usedByTeam == engine::teamStats::Teams::TEAM2) {
 					trapTile = _vehicles->at(2)->currentTile;
 				}
-				else if (usedByTeam == _vehicles->at(3)->getTeam()) {
+				else if (usedByTeam == engine::teamStats::Teams::TEAM3) {
 					trapTile = _vehicles->at(3)->currentTile;
 				}
 			}
 			else if (type == SYPHON) {
-				std::cout << engine::teamStats::names.at(usedByTeam) << " USED SYPHON!! \n";
-				if (usedByTeam == _vehicles->at(0)->getTeam()) {
+				//std::cout << engine::teamStats::names.at(usedByTeam) << " USED SYPHON!! \n";
+				if (usedByTeamNum == 0) {
 					_vehicles->at(0)->syphonActive = true;
 				}
-				else if (usedByTeam == _vehicles->at(1)->getTeam()) {
+				else if (usedByTeamNum == 1) {
 					_vehicles->at(1)->syphonActive = true;
 				}
-				else if (usedByTeam == _vehicles->at(2)->getTeam()) {
+				else if (usedByTeamNum == 2) {
 					_vehicles->at(2)->syphonActive = true;
 				}
-				else if (usedByTeam == _vehicles->at(3)->getTeam()) {
+				else if (usedByTeamNum == 3) {
 					_vehicles->at(3)->syphonActive = true;
 				}
 			}
@@ -199,19 +208,19 @@ namespace hyperbright {
 		void Pickup::deactivate(std::vector<std::shared_ptr<entity::Vehicle>>* _vehicles, std::shared_ptr<entity::Arena> arena) {
 			if (type == ZAP) {
 				if (whoWasZapped == 0) {
-					_vehicles->at(0)->setTeam(zapOldTeam);
+					_vehicles->at(0)->setTeam(engine::teamStats::Teams::TEAM0);
 					_vehicles->at(0)->zapActive = false;
 				}
 				else if (whoWasZapped == 1) {
-					_vehicles->at(1)->setTeam(zapOldTeam);
+					_vehicles->at(1)->setTeam(engine::teamStats::Teams::TEAM1);
 					_vehicles->at(1)->zapActive = false;
 				}
 				else if (whoWasZapped == 2) {
-					_vehicles->at(2)->setTeam(zapOldTeam);
+					_vehicles->at(2)->setTeam(engine::teamStats::Teams::TEAM2);
 					_vehicles->at(2)->zapActive = false;
 				}
 				else if (whoWasZapped == 3) {
-					_vehicles->at(3)->setTeam(zapOldTeam);
+					_vehicles->at(3)->setTeam(engine::teamStats::Teams::TEAM3);
 					_vehicles->at(3)->zapActive = false;
 				}
 			}
