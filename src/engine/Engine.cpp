@@ -417,7 +417,7 @@ void Engine::runGame() {
 
 			audioPlayer->adjustCarIdlePitch(vehicles.at(0)->readSpeedometer());
 
-			simulator.stepPhysics(deltaSec);
+			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*currentArena, vehicles);
 
 			// check for pickups to be added to scene
