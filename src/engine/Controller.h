@@ -74,12 +74,25 @@ private:
 	static void joystickCallback(GLFWwindow* window, GLFWgamepadstate& joystick);
 	void mainMenuKeyCallback(int key, int scancode, int action, int mods);
 	void mainMenuJoystickCallback(GLFWgamepadstate& joystick);
+	void mainMenuSelectButton();
+	void mainMenuRightButton();
+	void mainMenuLeftButton();
+	void mainMenuUpOrDownButton();
+
 	void pauseMenuKeyCallback(int key, int scancode, int action, int mods);
 	void pauseMenuJoystickCallback(GLFWgamepadstate& joystick);
+	void pauseSelectButton();
+	void pauseUpButton();
+	void pauseDownButton();
+
 	void gameKeyCallback(int key, int scancode, int action, int mods);
 	void gameJoystickCallback(GLFWgamepadstate& joystick);
+
 	void endMenuKeyCallback(int key, int scancode, int action, int mods);
 	void endMenuJoystickCallback(GLFWgamepadstate& joystick);
+	void endSelectButton();
+	void endUpOrDownButton();
+
 	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 };

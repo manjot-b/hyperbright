@@ -314,6 +314,9 @@ void Engine::run()
 	while (!controller->isWindowClosed())
 	{
 		runMainMenu();
+		if (mainMenu.getSelection() == ui::MainMenu::Selection::EXIT)
+			break;
+
 		renderables.clear();	// remove main menu entities
 		initEntities();
 		initDevUI();
