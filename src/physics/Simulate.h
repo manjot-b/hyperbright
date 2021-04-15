@@ -29,6 +29,7 @@ public:
 	~Simulate();
 	
 	void applyIntroForce(float maxSpeed);
+	void applyStoppingForce();
 	void stepPhysics(float deltaSec);
 	void setModelPose(std::shared_ptr<IPhysical>& model);
 	void cookMeshes(const model::Model& mesh, void* _userData, bool useModelMatrix = false);

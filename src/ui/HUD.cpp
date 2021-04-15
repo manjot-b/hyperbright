@@ -79,9 +79,10 @@ void HUD::displayCountdown() {
 	float yCord = 45 * scale;
 
 	char speedStr[100];
-	sprintf(speedStr, "%i", intCountdown);
+	sprintf(speedStr, "%d", intCountdown);
 	font.FaceSize(scale * defaultFontSize * 2.f * countdownScale);
 	font.Render(speedStr, -1, FTPoint(width / 2.f, height / 2.f + 100 * scale, 0));
+	glPopAttrib();
 }
 
 void HUD::drawHUD() {
@@ -94,11 +95,8 @@ void HUD::drawHUD() {
 		// Render minimap
 		// For some reason this needs to happen before rendering the quads for the energy bar
 		// down below. Otherwise those quads don't render.
-		quad->getShader()->use();
-		quad->normalizeToViewport(width, height);
-		quad->translate(glm::vec2(.8f, .3f));
-		quad->scale(.35f);
-		quad->render();
+		miniMap->getShader()->use();
+		miniMap->render();
 		glUseProgram(0);
 
 		//Timer
@@ -134,7 +132,7 @@ void HUD::drawHUD() {
 				emp->getShader()->use();
 				emp->normalizeToViewport(width, height);
 				emp->translate(glm::vec2(-0.9f, 0.3f));
-				emp->scale(.12f);
+				emp->scale(.2f);
 				emp->render();
 				glUseProgram(0);
 				break;
@@ -178,7 +176,7 @@ void HUD::drawHUD() {
 		if (player->syphonActive == true) {
 			syphonOn->getShader()->use();
 			syphonOn->normalizeToViewport(width, height);
-			syphonOn->translate(glm::vec2(0.f, 0.2f));
+			syphonOn->translate(glm::vec2(0.f, 0.1f));
 			syphonOn->scale(1.f);
 			syphonOn->render();
 			glUseProgram(0);

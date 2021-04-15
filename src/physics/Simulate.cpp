@@ -660,6 +660,13 @@ void Simulate::applyIntroForce(float maxSpeed)
 		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[0]->getRigidDynamicActor(), PxVec3(0.f, 0.f, mass * 0.75f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
 }
 
+void Simulate::applyStoppingForce()
+{
+	PxF32 mass = gVehicle4W[0]->getRigidDynamicActor()->getMass();
+	if (gVehicle4W[0]->computeForwardSpeed() > 0.f)
+		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[0]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 0.75f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
+}
+
 void Simulate::stepPhysics(float frameRate)
 {
 	//Cycle through the vehicles and set there driving mode
