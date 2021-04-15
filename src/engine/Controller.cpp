@@ -601,6 +601,7 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 			break;
 		case GLFW_KEY_ENTER:
 			pauseSelectButton();
+			audioPlayer.playCarIdle();
 			break;
 		}
 	}
