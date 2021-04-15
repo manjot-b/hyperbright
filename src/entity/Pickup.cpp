@@ -25,8 +25,6 @@ namespace hyperbright {
 			pickupNumber = 0;
 
 			tile = glm::vec2(0, 0);
-			//pickupNumber = puNum;
-			//setArenaLocation(glm::vec3(0.f, 0.f, 3.f));
 		}
 
 
@@ -49,19 +47,18 @@ namespace hyperbright {
 			if (type == EMP) {
 				pickupTime = 2.f;
 			}
-			else if (ZAP) {
+			else if (type == ZAP) {
 				pickupTime = 5.f;
 			} else if (type == SPEED) {
 				pickupTime = 3.f;
 			}
 			else if (type == SYPHON) {
-				pickupTime = 8.f;
+				pickupTime = 7.f;
 			}
 			else if (type == SLOWTRAP) {
-				pickupTime = 3.f;
+				pickupTime = 1.5f;
 			}
 			//position
-
 			model = std::make_shared<model::Model>("rsc/models/powerup.obj", "pickup", shader, nullptr);
 
 		}
@@ -80,16 +77,6 @@ namespace hyperbright {
 			}
 			else if (type == ZAP) {
 				//std::cout << "ZAP!! \n";
-
-				//engine::teamStats::Teams secondPlace = usedByTeam;
-				
-				/*
-				engine::teamStats::Teams team0 = _vehicles->at(0)->getTeam();
-				engine::teamStats::Teams team1 = _vehicles->at(1)->getTeam();
-				engine::teamStats::Teams team2 = _vehicles->at(2)->getTeam();
-				engine::teamStats::Teams team3 = _vehicles->at(3)->getTeam();
-				engine::teamStats::Teams firstPlace = team0
-				*/
 				engine::teamStats::Teams team0 = engine::teamStats::Teams::TEAM0;
 				engine::teamStats::Teams team1 = engine::teamStats::Teams::TEAM1;
 				engine::teamStats::Teams team2 = engine::teamStats::Teams::TEAM2;
@@ -98,11 +85,7 @@ namespace hyperbright {
 
 
 				//FIND FIRST PLACE
-/*
-				if (engine::teamStats::scores.at(team0) >= engine::teamStats::scores.at(firstPlace)) {
-					firstPlace = team0;
-				} 
-				else*/ if (engine::teamStats::scores.at(team1) >= engine::teamStats::scores.at(firstPlace)) {
+				 if (engine::teamStats::scores.at(team1) >= engine::teamStats::scores.at(firstPlace)) {
 					firstPlace = team1;
 				}
 				 if (engine::teamStats::scores.at(team2) >= engine::teamStats::scores.at(firstPlace)) {
@@ -112,11 +95,7 @@ namespace hyperbright {
 					firstPlace = team3;
 				}
 
-				
-				//firstPlace = _vehicles->at(rand() % 4)->getTeam();
 				zapOldTeam = firstPlace;
-
-				//zapOldTeam = firstPlace;
 
 				//std::cout << engine::teamStats::names.at(usedByTeam) << " ZAPPED " << engine::teamStats::names.at(zapOldTeam) << "\n";
 
@@ -192,7 +171,6 @@ namespace hyperbright {
 				}
 			}
 		}
-
 
 		/////////////////////////////////////////////////////////////////////
 
