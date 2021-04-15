@@ -469,13 +469,29 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_ENTER:
-			if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
-				mainMenu.setState(ui::MainMenu::State::SETUP);
+		{
+			switch (mainMenu.getSelection())
+			{
+			case ui::MainMenu::Selection::START:
+				if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
+					mainMenu.setState(ui::MainMenu::State::SETUP);
+				}
+				else {	// Finished SETUP. Enter game.
+					mainMenu.setState(ui::MainMenu::State::OFF);
+				}
+				audioPlayer.playMenuEnterSound();
+				break;
+			case ui::MainMenu::Selection::EXIT:
+				setWindowShouldClose(true);
+				break;
 			}
-			else {	// Finished SETUP. Enter game.
-				mainMenu.setState(ui::MainMenu::State::OFF);
-			}
-			audioPlayer.playMenuEnterSound();
+		}
+		break;
+		case GLFW_KEY_UP:
+		case GLFW_KEY_DOWN:
+			mainMenu.setSelection(mainMenu.getSelection() == ui::MainMenu::Selection::START ?
+				ui::MainMenu::Selection::EXIT : ui::MainMenu::Selection::START);
+			audioPlayer.playMenuSwitchSound();
 			break;
 		case GLFW_KEY_RIGHT:
 		{

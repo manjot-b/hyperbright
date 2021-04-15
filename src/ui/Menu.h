@@ -38,6 +38,11 @@ public:
 		SETUP
 	};
 
+	enum class Selection {
+		START,
+		EXIT
+	};
+
 	enum class ArenaSelection {
 		ARENA1,
 		ARENA2,
@@ -46,17 +51,20 @@ public:
 		LAST	// Not an actual selction. Used to get the selection count
 	};
 
-	MainMenu(State state = State::WELCOME, ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
+	MainMenu(State state = State::WELCOME, Selection selection = Selection::START, ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
 	
 	void render();
 	
 	State getState() const;
 	void setState(State state);
+	Selection getSelection() const;
+	void setSelection(Selection selection);
 	ArenaSelection getArenaSelection() const;
 	void setArenaSelection(ArenaSelection selection);
 
 private:
 	State _state;
+	Selection _selection;
 	ArenaSelection _arenaSelection;
 };
 

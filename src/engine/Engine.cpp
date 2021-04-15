@@ -314,6 +314,9 @@ void Engine::run()
 	while (!controller->isWindowClosed())
 	{
 		runMainMenu();
+		if (mainMenu.getSelection() == ui::MainMenu::Selection::EXIT)
+			break;
+
 		renderables.clear();	// remove main menu entities
 		initEntities();
 		initDevUI();
@@ -417,7 +420,7 @@ void Engine::runGame() {
 
 			audioPlayer->adjustCarIdlePitch(vehicles.at(0)->readSpeedometer());
 
-			simulator.stepPhysics(deltaSec);
+			simulator.stepPhysics(fpsLimit);
 			simulator.checkVehiclesOverTile(*currentArena, vehicles);
 
 			// check for pickups to be added to scene
