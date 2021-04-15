@@ -267,7 +267,10 @@ void Engine::initMainMenuEntities()
 
 	int arenaSize = 25;
 	currentArena = std::make_shared<entity::Arena>(arenaSize, arenaSize, shader, entity::Arena::Difficulty::BEGINNER);
-	currentArena->addChargingStation(arenaSize / 2, arenaSize / 2 + 2, entity::Arena::Orientation::POS_Z);
+
+	currentArena->addChargingStation(arenaSize / 2 - 1, arenaSize / 2 + 5, entity::Arena::Orientation::POS_Z);
+	currentArena->addWall(arenaSize / 2 + 3, arenaSize / 2 + 1, 2, 7);
+
 	renderables.push_back(currentArena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
