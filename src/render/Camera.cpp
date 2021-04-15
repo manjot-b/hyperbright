@@ -196,5 +196,14 @@ void Camera::setConfigs(float _camHeight, float _camVelCoef, float _camRestLen, 
 	poiHeight = _poiHeight;
 	poiDepth = _poiDepth;
 }
+void Camera::setCameraPostion(glm::vec3 _position)
+{
+	position = _position;
+}
+void Camera::setYawAndPitch(float _yaw, float _pitch)
+{
+	yaw = _yaw;
+	pitch = _pitch;
+}
 }   // namespace render
 }   // namespace hyperbright

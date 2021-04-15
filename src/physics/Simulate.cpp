@@ -47,8 +47,7 @@ PxBatchQuery* gBatchQuery = NULL;
 
 PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
-int const number_of_vehicles = 4;
-PxVehicleDrive4W* gVehicle4W[number_of_vehicles];
+PxVehicleDrive4W* gVehicle4W[4];
 
 bool gIsVehicleInAir[4] = { true, true, true, true };
 std::shared_ptr<audio::AudioPlayer> audioPlayer;
@@ -479,7 +478,7 @@ namespace Driving {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void Simulate::initPhysics()
 {
-	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
+	if (!gFoundation) gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 
 	if (!gFoundation) {
 		std::cout << "PxCreateFoundation failed!\n";
@@ -552,7 +551,7 @@ void Simulate::initPhysics()
 	//Create Vehicle bodies
 	VehicleDesc vehicleDesc = initVehicleDesc();
 	vector<shared_ptr<entity::Vehicle>>::iterator iter = vehicles.begin();
-	for (int i = 0; i < number_of_vehicles; i++, iter++) {
+	for (int i = 0; i < vehicles.size(); i++, iter++) {
 		gVehicle4W[i] = createVehicle4W(vehicleDesc, gPhysics, gCooking);
 		entity::Vehicle* vehicle = iter->get();
 
@@ -654,6 +653,13 @@ void smoothControlValues(int vNum, float frameRate) {
 	}
 }
 
+void Simulate::applyIntroForce(float maxSpeed)
+{
+	PxF32 mass = gVehicle4W[0]->getRigidDynamicActor()->getMass();
+	if (gVehicle4W[0]->computeForwardSpeed() < maxSpeed)
+		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[0]->getRigidDynamicActor(), PxVec3(0.f, 0.f, mass * 0.75f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
+}
+
 void Simulate::stepPhysics(float frameRate)
 {
 	//Cycle through the vehicles and set there driving mode
@@ -663,7 +669,7 @@ void Simulate::stepPhysics(float frameRate)
 		smoothControlValues(ctrl->contrId, frameRate);
 	}
 	// Vehicle wheel raycasts and state updating
-	for (int i = 0; i < number_of_vehicles; i++) {
+	for (int i = 0; i < vehicles.size(); i++) {
 		//Raycasts.
 		PxVehicleWheels* pxVehicles[1] = { gVehicle4W[i] };
 		PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
@@ -899,8 +905,8 @@ void Simulate::cleanupPhysics()
 		}
 	}
 
-	for (auto& vehicle : gVehicle4W) {
-		vehicle->free();
+	for (int i = 0; i < vehicles.size(); i++) {
+		gVehicle4W[i]->free();
 	}
 
 	PX_RELEASE(gBatchQuery);

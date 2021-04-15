@@ -60,6 +60,7 @@ private:
 	std::vector<std::shared_ptr<entity::Arena>> arenas;
 	std::shared_ptr<entity::Arena> currentArena;
 	std::unique_ptr<Controller> controller;
+	std::shared_ptr<entity::Vehicle> player;
 
 	std::vector<std::shared_ptr<entity::Vehicle>> vehicles;
 	std::vector<std::shared_ptr<physics::IPhysical>> physicsModels;
