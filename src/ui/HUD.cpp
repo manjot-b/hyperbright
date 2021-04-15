@@ -176,23 +176,23 @@ void HUD::drawHUD() {
 		if (player->syphonActive == true) {
 			syphonOn->getShader()->use();
 			syphonOn->normalizeToViewport(width, height);
-			syphonOn->translate(glm::vec2(0.f, 0.2f));
+			syphonOn->translate(glm::vec2(0.f, 0.1f));
 			syphonOn->scale(1.f);
 			syphonOn->render();
 			glUseProgram(0);
 		}
-		else if (player->zapActive == true) {
+		if (player->zapActive == true) {
 			zapped->getShader()->use();
 			zapped->normalizeToViewport(width, height);
-			zapped->translate(glm::vec2(0.f, 0.1f));
+			zapped->translate(glm::vec2(0.f, 0.f));
 			zapped->scale(1.f);
 			zapped->render();
 			glUseProgram(0);
 		}
-		else if (player->getController().trap.second == true) {
+		if (player->getController().trap.second == true) {
 			slowed->getShader()->use();
 			slowed->normalizeToViewport(width, height);
-			slowed->translate(glm::vec2(0.f, 0.1f));
+			slowed->translate(glm::vec2(0.f, -0.1f));
 			slowed->scale(1.f);
 			slowed->render();
 			glUseProgram(0);
