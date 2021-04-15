@@ -1,5 +1,8 @@
 #include "ChargingStation.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
+
 namespace hyperbright {
 namespace entity {
 ChargingStation::ChargingStation(const std::shared_ptr<openGLHelper::Shader>& shader) :
@@ -27,6 +30,15 @@ void ChargingStation::render() const
 void ChargingStation::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const
 {
 	model->renderShadow(shadowShader);
+}
+
+void ChargingStation::renderMiniMap() const
+{
+	glm::mat4 original = model->getModelMatrix();
+	glm::mat4 scaled = glm::scale(original, glm::vec3(5.f));
+	model->setModelMatrix(scaled);
+	model->render();
+	model->setModelMatrix(original);
 }
 
 void ChargingStation::animate(float time)

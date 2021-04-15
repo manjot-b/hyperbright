@@ -13,6 +13,11 @@ bool IRenderable::operator==(const IRenderable* other)
 	return false;
 }
 
+void IRenderable::renderMiniMap() const
+{
+	render();
+}
+
 const std::shared_ptr<openGLHelper::Shader>& IRenderable::getShader() const
 {
 	return _shader;

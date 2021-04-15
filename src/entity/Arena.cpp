@@ -93,6 +93,19 @@ void Arena::render() const
 		station->render();
 }
 
+void Arena::renderMiniMap() const
+{
+	instancedTile->setInstanceColors(tileColors);
+	instancedTile->render();
+	instancedTileBorder->render();
+
+	for (const auto& wall : walls)
+		wall->render();
+
+	for (const auto& station : chargingStations)
+		station->renderMiniMap();
+}
+
 void Arena::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const
 {
 	instancedTile->renderShadow(shadowShader);

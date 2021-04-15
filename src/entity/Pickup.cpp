@@ -263,6 +263,14 @@ namespace hyperbright {
 			model->renderShadow(shadowShader);
 		}
 
+		void Pickup::renderMiniMap() const {
+			glm::mat4 original = model->getModelMatrix();
+			glm::mat4 scaled = glm::scale(original, glm::vec3(5.f));
+			model->setModelMatrix(scaled);
+			model->render();
+			model->setModelMatrix(original);
+		}
+
 		void Pickup::animate(float deltaSec) {
 			const float rotSpeed = glm::radians(180.f) * deltaSec;
 			model->rotate(glm::vec3(0, rotSpeed, 0));

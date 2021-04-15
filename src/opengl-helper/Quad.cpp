@@ -10,7 +10,7 @@ namespace hyperbright {
 namespace openGLHelper {
 
 Quad::Quad(const std::shared_ptr<Shader>& shader, std::shared_ptr<Texture> texture) : IRenderable(shader),
-	texture(texture), modelMat(1.f)
+	texture(texture), width(1.f), height(1.f), modelMat(1.f)
 {
 	// A quad of length 1 for each side.
 	std::vector<model::Vertex> vertices = {
@@ -61,17 +61,29 @@ void Quad::normalizeToViewport(unsigned int width, unsigned int height)
 {
 	float yScale = ((float)width) / height;
 	modelMat = glm::scale(glm::mat4(1.f), glm::vec3(1.f, yScale, 1.f));
+	this->width = 1.f;
+	this->height = yScale;
 }
 
 void Quad::scale(float scale)
 {
-	modelMat = glm::scale(modelMat, glm::vec3(scale, scale, 1.f));
+	this->scale(glm::vec2(scale));
+}
+
+void Quad::scale(const glm::vec2 scale)
+{
+	modelMat = glm::scale(modelMat, glm::vec3(scale, 1.f));
+	width *= scale.x;
+	height *= scale.y;
 }
 
 void Quad::translate(glm::vec2 trans)
 {
 	modelMat = glm::translate(modelMat, glm::vec3(trans, 0.f));
 }
+
+float Quad::getWidth() const { return width; }
+float Quad::getHeight() const { return height; }
 
 }	// namespace openGLHelper
 }	// namespace hyperbright
