@@ -82,6 +82,7 @@ void HUD::displayCountdown() {
 	sprintf(speedStr, "%i", intCountdown);
 	font.FaceSize(scale * defaultFontSize * 2.f * countdownScale);
 	font.Render(speedStr, -1, FTPoint(width / 2.f, height / 2.f + 100 * scale, 0));
+	glPopAttrib();
 }
 
 void HUD::drawHUD() {
