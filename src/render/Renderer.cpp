@@ -79,6 +79,7 @@ void Renderer::initWindow()
 	});
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 
 }
 
