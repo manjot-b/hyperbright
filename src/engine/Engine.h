@@ -89,6 +89,7 @@ private:
 	void initEntities();
 	void initDevUI();
 	void resetAll();
+	void resetTeams();
 
 	void getDevUISettings();
 	void getDevUIHandlingSettings(physics::Simulate simulator);

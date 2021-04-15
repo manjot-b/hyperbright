@@ -522,10 +522,20 @@ void Engine::runGame() {
 		getDevUIHandlingSettings(simulator);
 		glfwPollEvents();
 	}
+	resetTeams();
 	audioPlayer->stopGameMusic();
 	audioPlayer->stopCarIdle();
 	simulator.cleanupPhysics();
 }
+
+void Engine::resetTeams(){
+	vehicles.at(0)->setTeam(engine::teamStats::Teams::TEAM0);
+	vehicles.at(1)->setTeam(engine::teamStats::Teams::TEAM1);
+	vehicles.at(2)->setTeam(engine::teamStats::Teams::TEAM2);
+	vehicles.at(3)->setTeam(engine::teamStats::Teams::TEAM3);
+}
+
+
 bool Engine::winCheck() {
 	int playerScore = teamStats::scores.at(vehicles.at(0)->getTeam());
 	if (playerScore > teamStats::scores.at(vehicles.at(1)->getTeam())) {

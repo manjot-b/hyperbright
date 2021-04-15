@@ -19,6 +19,8 @@ HUD::HUD(std::shared_ptr<entity::Vehicle> v, const entity::Arena& arena, float& 
 	miniMapPos(0.f, 50.f, 0.1f), 
 	state(State::INTRO)
 {
+	updateWindowAndFontSize();
+
 	miniMapTexture = std::make_shared<openGLHelper::Texture>(256, 256, false);
 	miniMapBuffer = std::make_unique<openGLHelper::FrameBuffer>(miniMapTexture, false);
 
@@ -26,8 +28,14 @@ HUD::HUD(std::shared_ptr<entity::Vehicle> v, const entity::Arena& arena, float& 
 	
 	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
 	quadShader->link();
-	quad = std::make_unique<openGLHelper::Quad>(quadShader, miniMapTexture);
-	//quad = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/tree.jpeg"));
+	
+	miniMap = std::make_unique<openGLHelper::Quad>(quadShader, miniMapTexture);
+	
+	glm::vec2 scale = glm::vec2(1.f, (float)width / height);
+	scale *= .35f;
+	miniMap->scale(scale);
+	miniMap->translate( glm::vec2(1.f - miniMap->getWidth() * .5f, 1.f - miniMap->getHeight() * .5f) / scale);
+	
 	timerQuad = std::make_unique<openGLHelper::Quad>(quadShader, timerTexture);
 	emp = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/emp.png"));
 	zap = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/zap.png"));

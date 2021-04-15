@@ -53,7 +53,7 @@ private:
 	std::unique_ptr<openGLHelper::FrameBuffer> miniMapBuffer;
 	std::shared_ptr<openGLHelper::Texture> timerTexture;
 	std::shared_ptr<openGLHelper::Shader> quadShader;
-	std::unique_ptr<openGLHelper::Quad> quad;
+	std::unique_ptr<openGLHelper::Quad> miniMap;
 	std::unique_ptr<openGLHelper::Quad> timerQuad;
 	std::unique_ptr<openGLHelper::Quad> emp;
 	std::unique_ptr<openGLHelper::Quad> zap;

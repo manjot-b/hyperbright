@@ -130,6 +130,21 @@ void Vehicle::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowSh
 		wheel->renderShadow(shadowShader);
 }
 
+void Vehicle::renderMiniMap() const
+{
+	glm::mat4 original = body->getModelMatrix();
+	model::Material::ShadingModel shading = body->getMeshes()[bodyIdx]->material.shadingModel;
+
+	glm::mat4 scaled = glm::scale(original, glm::vec3(5.f));
+	body->getMeshes()[bodyIdx]->material.shadingModel = model::Material::ShadingModel::PHONG;	
+	body->setModelMatrix(scaled);
+
+	body->render();
+
+	body->getMeshes()[bodyIdx]->material.shadingModel = shading;
+	body->setModelMatrix(original);
+}
+
 quat Vehicle::getOrientation() const
 {
 	return quat_cast(lookAt(vec3(0.f), direction, up));

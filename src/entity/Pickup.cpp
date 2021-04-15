@@ -243,7 +243,7 @@ namespace hyperbright {
 					arena->placeTrap(trapTile);
 				}
 			}
-			std::cout << "DEACTIVATED\n";
+			//std::cout << "DEACTIVATED\n";
 		}
 
 		/////////////////////////////////////////////////////////////////////
@@ -261,6 +261,14 @@ namespace hyperbright {
 
 		void Pickup::renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const {
 			model->renderShadow(shadowShader);
+		}
+
+		void Pickup::renderMiniMap() const {
+			glm::mat4 original = model->getModelMatrix();
+			glm::mat4 scaled = glm::scale(original, glm::vec3(5.f));
+			model->setModelMatrix(scaled);
+			model->render();
+			model->setModelMatrix(original);
 		}
 
 		void Pickup::animate(float deltaSec) {
