@@ -80,6 +80,9 @@ private:
 	void mainMenuUpOrDownButton();
 	void pauseMenuKeyCallback(int key, int scancode, int action, int mods);
 	void pauseMenuJoystickCallback(GLFWgamepadstate& joystick);
+	void pauseSelectButton();
+	void pauseUpButton();
+	void pauseDownButton();
 	void gameKeyCallback(int key, int scancode, int action, int mods);
 	void gameJoystickCallback(GLFWgamepadstate& joystick);
 	void endMenuKeyCallback(int key, int scancode, int action, int mods);

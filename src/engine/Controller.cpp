@@ -595,45 +595,13 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 	{
 		switch (key) {
 		case GLFW_KEY_UP:
-		{
-			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
-			int count = static_cast<int>(ui::PauseMenu::Selection::LAST);
-			int nextIdx = static_cast<int>(selection) - 1;
-
-			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
-			nextIdx = (count + (nextIdx % count)) % count;
-			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
-
-			pauseMenu.setSelection(nextSelection);
-			audioPlayer.playMenuSwitchSound();
-		}
-		break;
+			pauseUpButton();
+			break;
 		case GLFW_KEY_DOWN:
-		{
-			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
-			unsigned int count = static_cast<unsigned int>(ui::PauseMenu::Selection::LAST);
-			unsigned int nextIdx = (static_cast<unsigned int>(selection) + 1) % count;
-			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
-
-			pauseMenu.setSelection(nextSelection);
-			audioPlayer.playMenuSwitchSound();
-		}
-		break;
-
+			pauseDownButton();
+			break;
 		case GLFW_KEY_ENTER:
-			if (pauseMenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
-				setWindowShouldClose(true);
-			}
-			else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
-				pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
-				pauseMenu.setState(ui::PauseMenu::State::OFF);
-				mainMenu.setState(ui::MainMenu::State::WELCOME);
-			}
-			else {
-				audioPlayer.playCarIdle();
-				pauseMenu.setState(ui::PauseMenu::State::OFF);
-			}
-			audioPlayer.playMenuEnterSound();
+			pauseSelectButton();
 			break;
 		}
 	}
@@ -647,16 +615,7 @@ void Controller::pauseMenuJoystickCallback(GLFWgamepadstate& joystick)
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP]) {
 		if (!pauseMenuUp) {
 			pauseMenuUp = true;
-			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
-			int count = static_cast<int>(ui::PauseMenu::Selection::LAST);
-			int nextIdx = static_cast<int>(selection) - 1;
-
-			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
-			nextIdx = (count + (nextIdx % count)) % count;
-			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
-
-			pauseMenu.setSelection(nextSelection);
-			audioPlayer.playMenuSwitchSound();
+			pauseUpButton();
 		}
 	}
 	else { pauseMenuUp = false; }
@@ -664,32 +623,58 @@ void Controller::pauseMenuJoystickCallback(GLFWgamepadstate& joystick)
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN]) {
 		if (!pauseMenuDown) {
 			pauseMenuDown = true;
-			ui::PauseMenu::Selection selection = pauseMenu.getSelection();
-			unsigned int count = static_cast<unsigned int>(ui::PauseMenu::Selection::LAST);
-			unsigned int nextIdx = (static_cast<unsigned int>(selection) + 1) % count;
-			ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
-
-			pauseMenu.setSelection(nextSelection);
-			audioPlayer.playMenuSwitchSound();
+			pauseDownButton();
 		}
 	}
 	else { pauseMenuDown = false; }
 
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_A]) {
-		if (pauseMenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
-			setWindowShouldClose(true);
-		}
-		else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
-			pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
-			pauseMenu.setState(ui::PauseMenu::State::OFF);
-			mainMenu.setState(ui::MainMenu::State::WELCOME);
-		}
-		else {
-			pauseMenu.setState(ui::PauseMenu::State::OFF);
-		}
-		audioPlayer.playMenuEnterSound();
+		pauseSelectButton();
 	}
 }
+
+void Controller::pauseSelectButton()
+{
+	if (pauseMenu.getSelection() == ui::PauseMenu::Selection::QUIT) {
+		setWindowShouldClose(true);
+	}
+	else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
+		pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
+		pauseMenu.setState(ui::PauseMenu::State::OFF);
+		mainMenu.setState(ui::MainMenu::State::WELCOME);
+	}
+	else {
+		pauseMenu.setState(ui::PauseMenu::State::OFF);
+	}
+	audioPlayer.playMenuEnterSound();
+}
+
+void Controller::pauseUpButton()
+{
+	ui::PauseMenu::Selection selection = pauseMenu.getSelection();
+	int count = static_cast<int>(ui::PauseMenu::Selection::LAST);
+	int nextIdx = static_cast<int>(selection) - 1;
+
+	// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
+	nextIdx = (count + (nextIdx % count)) % count;
+	ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
+
+	pauseMenu.setSelection(nextSelection);
+	audioPlayer.playMenuSwitchSound();
+}
+
+void Controller::pauseDownButton()
+{
+	ui::PauseMenu::Selection selection = pauseMenu.getSelection();
+	unsigned int count = static_cast<unsigned int>(ui::PauseMenu::Selection::LAST);
+	unsigned int nextIdx = (static_cast<unsigned int>(selection) + 1) % count;
+	ui::PauseMenu::Selection nextSelection = static_cast<ui::PauseMenu::Selection>(nextIdx);
+
+	pauseMenu.setSelection(nextSelection);
+	audioPlayer.playMenuSwitchSound();
+}
+
+
 void Controller::gameKeyCallback(int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
