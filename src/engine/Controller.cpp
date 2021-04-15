@@ -469,57 +469,18 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_ENTER:
-		{
-			switch (mainMenu.getSelection())
-			{
-			case ui::MainMenu::Selection::START:
-				if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
-					mainMenu.setState(ui::MainMenu::State::SETUP);
-				}
-				else {	// Finished SETUP. Enter game.
-					mainMenu.setState(ui::MainMenu::State::OFF);
-				}
-				audioPlayer.playMenuEnterSound();
-				break;
-			case ui::MainMenu::Selection::EXIT:
-				setWindowShouldClose(true);
-				break;
-			}
-		}
-		break;
+			mainMenuSelectButton();
+			break;
 		case GLFW_KEY_UP:
 		case GLFW_KEY_DOWN:
-			mainMenu.setSelection(mainMenu.getSelection() == ui::MainMenu::Selection::START ?
-				ui::MainMenu::Selection::EXIT : ui::MainMenu::Selection::START);
-			audioPlayer.playMenuSwitchSound();
+			mainMenuUpOrDownButton();
 			break;
 		case GLFW_KEY_RIGHT:
-		{
-			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
-			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
-			int nextIdx = static_cast<int>(selection) + 1;
-
-			nextIdx = nextIdx % count;
-			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
-
-			mainMenu.setArenaSelection(nextSelection);
-			audioPlayer.playMenuSwitchSound();
-		}
-		break;
+			mainMenuRightButton();
+			break;
 		case GLFW_KEY_LEFT:
-		{
-			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
-			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
-			int nextIdx = static_cast<int>(selection) - 1;
-
-			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
-			nextIdx = (count + (nextIdx % count)) % count;
-			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
-
-			mainMenu.setArenaSelection(nextSelection);
-			audioPlayer.playMenuSwitchSound();
-		}
-		break;
+			mainMenuLeftButton();
+			break;
 		}
 	}
 }
@@ -534,9 +495,7 @@ void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP] || joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN]) {
 		if (!mainMenuUpOrDown) {
 			mainMenuUpOrDown = true;
-			mainMenu.setSelection(mainMenu.getSelection() == ui::MainMenu::Selection::START ?
-				ui::MainMenu::Selection::EXIT : ui::MainMenu::Selection::START);
-			audioPlayer.playMenuSwitchSound();
+			mainMenuUpOrDownButton();
 		}
 	}
 	else { mainMenuUpOrDown= false; }
@@ -544,16 +503,7 @@ void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_LEFT]) {
 		if (!mainMenuLeft) {
 			mainMenuLeft = true;
-			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
-			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
-			int nextIdx = static_cast<int>(selection) - 1;
-
-			// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
-			nextIdx = (count + (nextIdx % count)) % count;
-			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
-
-			mainMenu.setArenaSelection(nextSelection);
-			audioPlayer.playMenuSwitchSound();
+			mainMenuLeftButton();
 		}
 	}
 	else { mainMenuLeft = false; }
@@ -561,15 +511,7 @@ void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT]) {
 		if (!mainMenuRight) {
 			mainMenuRight = true;
-			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
-			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
-			int nextIdx = static_cast<int>(selection) + 1;
-
-			nextIdx = nextIdx % count;
-			ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
-
-			mainMenu.setArenaSelection(nextSelection);
-			audioPlayer.playMenuSwitchSound();
+			mainMenuRightButton();
 		}
 	}
 	else { mainMenuRight = false; }
@@ -578,24 +520,72 @@ void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 		if (!mainMenuEnter) {
 			mainMenuEnter = true;
 			std::cout << "Button A" << std::endl;
-			switch (mainMenu.getSelection())
-			{
-			case ui::MainMenu::Selection::START:
-				if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
-					mainMenu.setState(ui::MainMenu::State::SETUP);
-				}
-				else {	// Finished SETUP. Enter game.
-					mainMenu.setState(ui::MainMenu::State::OFF);
-				}
-				audioPlayer.playMenuEnterSound();
-				break;
-			case ui::MainMenu::Selection::EXIT:
-				setWindowShouldClose(true);
-				break;
-			}
+			mainMenuSelectButton();
 		}
 	}
 	else { mainMenuEnter = false; }
+}
+
+void Controller::mainMenuSelectButton()
+{
+	switch (mainMenu.getSelection())
+	{
+	case ui::MainMenu::Selection::START:
+		if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
+			mainMenu.setState(ui::MainMenu::State::SETUP);
+		}
+		else {	// Finished SETUP. Enter game.
+			mainMenu.setState(ui::MainMenu::State::OFF);
+		}
+		audioPlayer.playMenuEnterSound();
+		break;
+	case ui::MainMenu::Selection::EXIT:
+		setWindowShouldClose(true);
+		break;
+	}
+}
+
+void Controller::mainMenuRightButton()
+{
+	if (mainMenu.getState() == ui::MainMenu::State::SETUP)
+	{
+		ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
+		int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
+		int nextIdx = static_cast<int>(selection) + 1;
+
+		nextIdx = nextIdx % count;
+		ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
+
+		mainMenu.setArenaSelection(nextSelection);
+		audioPlayer.playMenuSwitchSound();
+	}
+}
+
+void Controller::mainMenuLeftButton()
+{
+	if (mainMenu.getState() == ui::MainMenu::State::SETUP)
+	{
+		ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
+		int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
+		int nextIdx = static_cast<int>(selection) - 1;
+
+		// modulo in c++ is not equivalent to mathematical modulo operation when dealing with negative numbers.
+		nextIdx = (count + (nextIdx % count)) % count;
+		ui::MainMenu::ArenaSelection nextSelection = static_cast<ui::MainMenu::ArenaSelection>(nextIdx);
+
+		mainMenu.setArenaSelection(nextSelection);
+		audioPlayer.playMenuSwitchSound();
+	}
+}
+
+void Controller::mainMenuUpOrDownButton()
+{
+	if (mainMenu.getState() == ui::MainMenu::State::WELCOME)
+	{
+		mainMenu.setSelection(mainMenu.getSelection() == ui::MainMenu::Selection::START ?
+			ui::MainMenu::Selection::EXIT : ui::MainMenu::Selection::START);
+		audioPlayer.playMenuSwitchSound();
+	}
 }
 
 void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mods)
