@@ -794,7 +794,7 @@ void Simulate::checkVehiclesOverTile(entity::Arena& arena, const std::vector<std
 					audioPlayer->playTrapHitSound();
 				}
 				vehicle->applyTrap(300.f);
-				std::cout << "TRAP TRIGGERED\n";
+				//std::cout << "TRAP TRIGGERED\n";
 				arena.removeTrap(vehicle->currentTile);
 			} else if(vehicle->syphonActive){
 				std::optional<engine::teamStats::Teams> team = arena.getTeamOnTile(*tileCoords);

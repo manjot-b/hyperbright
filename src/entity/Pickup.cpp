@@ -243,7 +243,7 @@ namespace hyperbright {
 					arena->placeTrap(trapTile);
 				}
 			}
-			std::cout << "DEACTIVATED\n";
+			//std::cout << "DEACTIVATED\n";
 		}
 
 		/////////////////////////////////////////////////////////////////////
