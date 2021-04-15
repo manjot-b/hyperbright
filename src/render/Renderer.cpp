@@ -211,7 +211,7 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 		{
 			renderable->getShader()->use();
 			renderable->sendSharedShaderUniforms(hud->getMiniMapOrtho(), hud->getMiniMapCameraView(), hud->getMiniMapCameraPos(), lightProjection * lightView);
-			renderable->render();
+			renderable->renderMiniMap();
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
