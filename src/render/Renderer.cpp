@@ -79,6 +79,7 @@ void Renderer::initWindow()
 	});
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 
 }
 
@@ -214,6 +215,7 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 			renderable->renderMiniMap();
 		}
 
+		glUseProgram(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 		
