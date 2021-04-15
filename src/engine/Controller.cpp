@@ -526,14 +526,24 @@ void Controller::mainMenuKeyCallback(int key, int scancode, int action, int mods
 
 bool mainMenuLeft = false;
 bool mainMenuRight = false;
+bool mainMenuUpOrDown = false;
 bool mainMenuEnter = false;
 
 void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 {
+	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP] || joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN]) {
+		if (!mainMenuUpOrDown) {
+			mainMenuUpOrDown = true;
+			mainMenu.setSelection(mainMenu.getSelection() == ui::MainMenu::Selection::START ?
+				ui::MainMenu::Selection::EXIT : ui::MainMenu::Selection::START);
+			audioPlayer.playMenuSwitchSound();
+		}
+	}
+	else { mainMenuUpOrDown= false; }
+
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_LEFT]) {
 		if (!mainMenuLeft) {
 			mainMenuLeft = true;
-			std::cout << "DPAD Left" << std::endl;
 			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
 			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
 			int nextIdx = static_cast<int>(selection) - 1;
@@ -551,7 +561,6 @@ void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT]) {
 		if (!mainMenuRight) {
 			mainMenuRight = true;
-			std::cout << "DPAD Right" << std::endl;
 			ui::MainMenu::ArenaSelection selection = mainMenu.getArenaSelection();
 			int count = static_cast<int>(ui::MainMenu::ArenaSelection::LAST);
 			int nextIdx = static_cast<int>(selection) + 1;
@@ -569,13 +578,21 @@ void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 		if (!mainMenuEnter) {
 			mainMenuEnter = true;
 			std::cout << "Button A" << std::endl;
-			if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
-				mainMenu.setState(ui::MainMenu::State::SETUP);
+			switch (mainMenu.getSelection())
+			{
+			case ui::MainMenu::Selection::START:
+				if (mainMenu.getState() == ui::MainMenu::State::WELCOME) {
+					mainMenu.setState(ui::MainMenu::State::SETUP);
+				}
+				else {	// Finished SETUP. Enter game.
+					mainMenu.setState(ui::MainMenu::State::OFF);
+				}
+				audioPlayer.playMenuEnterSound();
+				break;
+			case ui::MainMenu::Selection::EXIT:
+				setWindowShouldClose(true);
+				break;
 			}
-			else {	// Finished SETUP. Enter game.
-				mainMenu.setState(ui::MainMenu::State::OFF);
-			}
-			audioPlayer.playMenuEnterSound();
 		}
 	}
 	else { mainMenuEnter = false; }
