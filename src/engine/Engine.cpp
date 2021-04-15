@@ -427,7 +427,8 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *currentArena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
-	camera.initCameraBoom(glm::vec3(-10.f, 10.f, -25.f), vehicles[0]->getForward());
+	//camera.setCameraPostion(glm::vec3(6.f, 10.f, 10.f));
+	camera.initCameraBoom(glm::vec3(10.f, 5.f, 10.f), vehicles[0]->getDirection());
 
 	ai::AiManager aiManager;
 	aiManager.setArena(currentArena, mainMenu.getArenaSelection());//MUST DO BEFORE LOADING VEHICLE
@@ -441,6 +442,7 @@ void Engine::runGame() {
 	audioPlayer->playCarIdle();
 
 	lastFrame = glfwGetTime();	// Accounts for setup time
+	float introState = 5.f;
 
 	while (!controller->isWindowClosed() && endMenu.getState() != ui::EndMenu::State::ON && mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 		// update global time
@@ -456,42 +458,58 @@ void Engine::runGame() {
 		}
 		lastFrame = currentFrame;
 
-		controller->processInput(fpsLimit);
+		if (introState > 0.f) {
+			if (pauseMenu.getState() != ui::PauseMenu::State::ON) {
+				if (introState < 1.f) playerHUD.setState(ui::HUD::State::PLAY);
+				playerHUD.startCountdown = true;
+				playerHUD.countdownTimer = introState;
 
-		//AI
-		aiManager.makeMoves();
+				simulator.stepPhysics(fpsLimit);
+				simulator.checkVehiclesOverTile(*currentArena, vehicles);
 
-		if (pauseMenu.getState() != ui::PauseMenu::State::ON) {
-			roundTimer -= deltaSec;
-			if (roundTimer < 0.01f)
-				endMenu.setState(ui::EndMenu::State::ON);
-
-			audioPlayer->adjustCarIdlePitch(vehicles.at(0)->readSpeedometer());
-
-			simulator.stepPhysics(fpsLimit);
-			simulator.checkVehiclesOverTile(*currentArena, vehicles);
-
-			// check for pickups to be added to scene
-			while (pickupManager->toBeAddedPickups.size() > 0) {
-				physics::addPickup(pickupManager->toBeAddedPickups.front());	// adds physx actor
-				renderables.push_back(pickupManager->toBeAddedPickups.front());	// adds model to renderables
-				pickupManager->toBeAddedPickups.pop();
+				introScene(introState, fpsLimit);
+				introState -= deltaSec;
 			}
+		}
+		else {
+		
+			controller->processInput(fpsLimit);
 
-			// check for pickups that have been removed from renderables and remove their physx actors
-			physics::removePickups();
+			//AI
+			aiManager.makeMoves();
 
-			// check state of all pickups
-			pickupManager->checkPickups();
-			pickupManager->animatePickups(fpsLimit);
+			if (pauseMenu.getState() != ui::PauseMenu::State::ON) {
+				roundTimer -= deltaSec;
+				if (roundTimer < 0.01f)
+					endMenu.setState(ui::EndMenu::State::ON);
 
-			currentArena->animateChargingStations(currentFrame);
+				audioPlayer->adjustCarIdlePitch(vehicles.at(0)->readSpeedometer());
 
-			// set camera to player vehicles position
-			if (!controller->isCameraManual())
-			{
-				// grab position from player vehicle
-				camera.updateCameraVectors(vehicles[0], deltaSec);
+				simulator.stepPhysics(fpsLimit);
+				simulator.checkVehiclesOverTile(*currentArena, vehicles);
+
+				// check for pickups to be added to scene
+				while (pickupManager->toBeAddedPickups.size() > 0) {
+					physics::addPickup(pickupManager->toBeAddedPickups.front());	// adds physx actor
+					renderables.push_back(pickupManager->toBeAddedPickups.front());	// adds model to renderables
+					pickupManager->toBeAddedPickups.pop();
+				}
+
+				// check for pickups that have been removed from renderables and remove their physx actors
+				physics::removePickups();
+
+				// check state of all pickups
+				pickupManager->checkPickups();
+				pickupManager->animatePickups(fpsLimit);
+
+				currentArena->animateChargingStations(currentFrame);
+
+				// set camera to player vehicles position
+				if (!controller->isCameraManual())
+				{
+					// grab position from player vehicle
+					camera.updateCameraVectors(vehicles[0], fpsLimit);
+				}
 			}
 		}
 
@@ -592,6 +610,24 @@ void Engine::getDevUISettings() {
 void Engine::getDevUIHandlingSettings(physics::Simulate simulator)
 {
 	simulator.setConfigs(devUI.settings.handling);
+}
+void Engine::introScene(float introState, float deltaSec)
+{
+	if (introState < 1.f) {
+		camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getPosition() + vehicles[0]->getDirection() * 0.01f, deltaSec);
+	}
+	else if (introState < 2.f) {
+		camera.updateCameraVectors(vehicles[0]->getPosition(), vehicles[0]->getPosition() - vehicles[0]->getDirection() * 0.01f, deltaSec);
+	}
+	else if (introState < 3.f) {
+		camera.updateCameraVectors(vehicles[3]->getPosition(), vehicles[3]->getPosition() - vehicles[3]->getDirection() * 0.01f, deltaSec);
+	}
+	else if (introState < 4.f) {
+		camera.updateCameraVectors(vehicles[2]->getPosition(), vehicles[2]->getPosition() - vehicles[2]->getDirection() * 0.01f, deltaSec);
+	}
+	else {
+		camera.updateCameraVectors(vehicles[1]->getPosition(), vehicles[1]->getPosition() - vehicles[1]->getDirection() * 0.01f, deltaSec);
+	}
 }
 }	// namespace engine
 }	// namespace hyperbright

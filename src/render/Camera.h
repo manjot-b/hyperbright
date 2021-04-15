@@ -36,9 +36,11 @@ public:
     void processMouseMovement(float xoffset, float yoffset);
     void processMouseScroll(Movement direction, float yoffset);
     void updateCameraVectors();
-    void updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi); // static camera behind vehicle
-    void updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime); // dynamic camera on boom 
+    void updateCameraVectors(glm::vec3 position, glm::vec3 poi); // static camera following a point
+    void updateCameraVectors(glm::vec3 position, glm::vec3 poi, float deltaTime); // dynamic camera on boom following a point
+    void updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime); // dynamic camera on boom following vehicle
     void initCameraBoom(glm::vec3 position, glm::vec3 direction);
+
     void setConfigs(float camHeight, float camVelCoef, float camRestLen, float camSwStr, float poiHeight, float poiDepth);
     void setCameraPostion(glm::vec3 position); 
     void setYawAndPitch(float yaw, float pitch);
@@ -69,7 +71,6 @@ private:
         glm::vec3 direction;
         glm::vec3 velocity;
         float currentLength;
-        float restingLength;
     }boomArm;
 
     // euler Angles

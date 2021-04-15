@@ -17,17 +17,29 @@ namespace ui {
 class HUD
 {
 public:
+	enum class State {
+		INTRO,
+		PLAY,
+		OUTRO
+	};
+
 	HUD(std::shared_ptr<entity::Vehicle> v, const entity::Arena& arena, float& roundTimer);
 	void drawHUD();
 	void updateTime(float time);
 	void update(float s, float e);
 	void preRenderMiniMap();
+	void setState(State s)			{ state = s; }
+	void displayCountdown();
 
 	const glm::vec3& getMiniMapCameraPos();
 	const glm::mat4& getMiniMapCameraView();
 	const glm::mat4& getMiniMapOrtho();
+	float countdownTimer;
+	bool startCountdown = false;
 
 private:
+	State state;
+
 	FTGLPixmapFont font;
 	float defaultFontSize;
 	unsigned int width, height;
