@@ -92,6 +92,7 @@ private:
 
 	void getDevUISettings();
 	void getDevUIHandlingSettings(physics::Simulate simulator);
+	void introScene(float introState, float deltaSec);
 };
 }	// namespace engine
 }	// namespace hyperbright

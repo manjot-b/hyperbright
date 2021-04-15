@@ -97,15 +97,15 @@ void Camera::updateCameraVectors()
 	view = glm::lookAt(position, direction,  up);
 }
 
-void Camera::updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi)
+void Camera::updateCameraVectors(glm::vec3 pPosition, glm::vec3 poi)
 {
 	float belowForward = 0.4f;
 	float aboveShoulder = 2.f;
 	float behindShoulder = 4.5;
 
 	poi.y -= belowForward;
-	float newX = vehPosition.x - (poi.x - vehPosition.x)* behindShoulder;
-	float newZ = vehPosition.z - (poi.z - vehPosition.z)* behindShoulder;
+	float newX = pPosition.x - (poi.x - pPosition.x)* behindShoulder;
+	float newZ = pPosition.z - (poi.z - pPosition.z)* behindShoulder;
 	
 	position = { newX, aboveShoulder, newZ };
 	front = glm::normalize(poi - position);
@@ -116,14 +116,40 @@ void Camera::updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi)
 	view = glm::lookAt(position, direction, up);
 }
 
-void Camera::initCameraBoom(glm::vec3 position, glm::vec3 direction)
+void Camera::initCameraBoom(glm::vec3 pPosition, glm::vec3 direction)
 {
-	
 	boomArm.velocity = glm::vec3(0.f);
-	boomArm.restingLength = camRestLength;
 	boomArm.currentLength = camRestLength;
-	boomArm.position = glm::vec3(position.x, camHeight, position.z);
-	boomArm.direction = glm::normalize(direction);
+	boomArm.position = glm::vec3(pPosition.x, camHeight, pPosition.z);
+	boomArm.direction = direction;
+}
+
+void Camera::updateCameraVectors(glm::vec3 pPosition, glm::vec3 poi, float deltaTime)
+{
+	glm::vec3 pDir = glm::normalize(poi - pPosition);
+	poi.y += poiHeight;
+
+	// swing the camera to the back of the vehicle
+	glm::vec3 betwP_B = (poi - pDir * camRestLength) - boomArm.position; // vector from the resting position to the current boom position
+	glm::vec3 swingDist = camSwingStrength * glm::length(betwP_B) * glm::normalize(betwP_B);
+	boomArm.position += swingDist;	// close that gap proportional to it's distance
+
+	// orientation vectors
+	front = glm::normalize(poi - boomArm.position);
+	right = glm::normalize(glm::cross(front, worldUp));
+	up = glm::normalize(glm::cross(right, front));
+
+	// semi-implicit Euler integration to accelerate the boom towards the poi
+	boomArm.currentLength = glm::length(poi - boomArm.position);// length between the poi and boom position
+	float stretch = boomArm.currentLength - camRestLength;
+	if (stretch < 0.f) camVelocityCoeficient *= 10.f;
+	boomArm.velocity = stretch * front * camVelocityCoeficient;	// update velocity proportional to the distance from rest * by some catch up factor
+	boomArm.position = boomArm.position + boomArm.velocity * deltaTime;						// update position based on new velocity * a small change in time
+	boomArm.position.y = camHeight;		// Always keep the camera at the same height
+	position = boomArm.position;
+
+	boomArm.direction = boomArm.position + front;	// update direction based on booms position and direction to poi
+	view = glm::lookAt(boomArm.position, boomArm.direction, up);
 }
 
 float panScale = 0.75f;
@@ -174,7 +200,7 @@ void Camera::updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float
 
 	// semi-implicit Euler integration to accelerate the boom towards the poi
 	boomArm.currentLength = glm::length(poi - boomArm.position);// length between the poi and boom position
-	float stretch = boomArm.currentLength - boomArm.restingLength;
+	float stretch = boomArm.currentLength - camRestLength;
 	if (stretch < 0.f) camVelocityCoeficient *= 10.f;
 	boomArm.velocity = stretch * front * camVelocityCoeficient;	// update velocity proportional to the distance from rest * by some catch up factor
 	boomArm.position = boomArm.position + boomArm.velocity * deltaTime;						// update position based on new velocity * a small change in time
