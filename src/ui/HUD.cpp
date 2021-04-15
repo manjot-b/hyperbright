@@ -94,11 +94,8 @@ void HUD::drawHUD() {
 		// Render minimap
 		// For some reason this needs to happen before rendering the quads for the energy bar
 		// down below. Otherwise those quads don't render.
-		quad->getShader()->use();
-		quad->normalizeToViewport(width, height);
-		quad->translate(glm::vec2(.8f, .3f));
-		quad->scale(.35f);
-		quad->render();
+		miniMap->getShader()->use();
+		miniMap->render();
 		glUseProgram(0);
 
 		//Timer
