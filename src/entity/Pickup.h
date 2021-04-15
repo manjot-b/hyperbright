@@ -47,6 +47,7 @@ public:
 	//Position
 	void render() const;
 	void renderShadow(const std::shared_ptr<openGLHelper::Shader>& shadowShader) const;
+	void renderMiniMap() const;
 	void animate(float deltaSec);
 
 	void use(engine::teamStats::Teams team, int teamNum);//VEHICLES CALL THIS FUNCTION
