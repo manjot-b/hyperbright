@@ -247,7 +247,7 @@ void Engine::buildArena4() {
 
 void Engine::initMainMenuEntities()
 {
-	camera.setCameraPostion(glm::vec3(-8.f, 3.f, -2.f));
+	camera.setCameraPostion(glm::vec3(-8.f, 3.f, 20.f));
 	camera.setYawAndPitch(-80.f, 0.f);
 	camera.updateCameraVectors();
 
@@ -381,7 +381,10 @@ void Engine::runMainMenu() {
 		lastFrame = currentFrame;
 
 		float animationClock = glfwGetTime() - startTimer;
-		if (animationClock > leftHandbrake + handbrakeTurnRelease) {
+		if (animationClock > leftHandbrake + 3.5f) {
+			simulator.applyStoppingForce();
+		}
+		else if (animationClock > leftHandbrake + handbrakeTurnRelease) {
 			player->stopHardTurn();
 			player->stopLeft();
 			simulator.applyIntroForce(25);
@@ -421,6 +424,9 @@ void Engine::runMainMenu() {
 //////////////////////////////////////////////////////////
 
 void Engine::runGame() {
+	for (unsigned int i = 0; i < teamStats::teamCount; i++)
+		teamStats::scores[static_cast<teamStats::Teams>(i)] = 0;
+
 	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(audioPlayer, currentArena, &vehicles, renderables);
 	pickupManager->initPickups(shader, mainMenu.getArenaSelection());
 

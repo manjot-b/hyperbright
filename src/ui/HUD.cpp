@@ -79,7 +79,7 @@ void HUD::displayCountdown() {
 	float yCord = 45 * scale;
 
 	char speedStr[100];
-	sprintf(speedStr, "%i", intCountdown);
+	sprintf(speedStr, "%d", intCountdown);
 	font.FaceSize(scale * defaultFontSize * 2.f * countdownScale);
 	font.Render(speedStr, -1, FTPoint(width / 2.f, height / 2.f + 100 * scale, 0));
 	glPopAttrib();
@@ -132,7 +132,7 @@ void HUD::drawHUD() {
 				emp->getShader()->use();
 				emp->normalizeToViewport(width, height);
 				emp->translate(glm::vec2(-0.9f, 0.3f));
-				emp->scale(.12f);
+				emp->scale(.2f);
 				emp->render();
 				glUseProgram(0);
 				break;
