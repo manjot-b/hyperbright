@@ -685,7 +685,6 @@ void Controller::gameKeyCallback(int key, int scancode, int action, int mods)
 			manualCamera = !manualCamera;
 			std::cout << "Switch to manual camera." << std::endl;
 			break;
-
 		case GLFW_KEY_ESCAPE:
 			pauseMenu.setState(ui::PauseMenu::State::ON);
 			break;
@@ -708,22 +707,10 @@ void Controller::endMenuKeyCallback(int key, int scancode, int action, int mods)
 		{
 		case GLFW_KEY_UP:
 		case GLFW_KEY_DOWN:
-		{
-			ui::EndMenu::Selection selection = endMenu.getSelection();
-			endMenu.setSelection(
-				selection == ui::EndMenu::Selection::MAIN_MENU ? ui::EndMenu::Selection::QUIT : ui::EndMenu::Selection::MAIN_MENU);
-			audioPlayer.playMenuSwitchSound();
+			endUpOrDownButton();
 			break;
-		}
 		case GLFW_KEY_ENTER:
-			if (endMenu.getSelection() == ui::EndMenu::Selection::MAIN_MENU) {
-				endMenu.setState(ui::EndMenu::State::OFF);
-				mainMenu.setState(ui::MainMenu::State::WELCOME);
-			}
-			else {
-				setWindowShouldClose(true);
-			}
-			audioPlayer.playMenuEnterSound();
+			endSelectButton();
 			break;
 		}
 	}
@@ -736,24 +723,34 @@ void Controller::endMenuJoystickCallback(GLFWgamepadstate& joystick)
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP] || joystick.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN]) {
 		if (!endMenuChangeSelected) {
 			endMenuChangeSelected = true;
-			ui::EndMenu::Selection selection = endMenu.getSelection();
-			endMenu.setSelection(
-				selection == ui::EndMenu::Selection::MAIN_MENU ? ui::EndMenu::Selection::QUIT : ui::EndMenu::Selection::MAIN_MENU);
-			audioPlayer.playMenuSwitchSound();
+			endUpOrDownButton();
 		}
 	}
 	else { endMenuChangeSelected = false; }
 
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_A]) {
-		if (endMenu.getSelection() == ui::EndMenu::Selection::MAIN_MENU) {
-			endMenu.setState(ui::EndMenu::State::OFF);
-			mainMenu.setState(ui::MainMenu::State::WELCOME);
-		}
-		else {
-			setWindowShouldClose(true);
-		}
-		audioPlayer.playMenuEnterSound();
+		endSelectButton();
 	}
+}
+
+void Controller::endSelectButton()
+{
+	if (endMenu.getSelection() == ui::EndMenu::Selection::MAIN_MENU) {
+		endMenu.setState(ui::EndMenu::State::OFF);
+		mainMenu.setState(ui::MainMenu::State::WELCOME);
+	}
+	else {
+		setWindowShouldClose(true);
+	}
+	audioPlayer.playMenuEnterSound();
+}
+
+void Controller::endUpOrDownButton()
+{
+	ui::EndMenu::Selection selection = endMenu.getSelection();
+	endMenu.setSelection(
+		selection == ui::EndMenu::Selection::MAIN_MENU ? ui::EndMenu::Selection::QUIT : ui::EndMenu::Selection::MAIN_MENU);
+	audioPlayer.playMenuSwitchSound();
 }
 
 void Controller::mouseCallback(GLFWwindow* window, double xpos, double ypos)
