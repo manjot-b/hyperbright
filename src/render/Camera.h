@@ -24,7 +24,7 @@ public:
     };
 
     // constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(-10.0f, 5.0f, -20.0f),
+    Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f),
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
         float yaw = -90.0f, float pitch = 0.0f);
 
@@ -35,10 +35,13 @@ public:
     void processKeyboard(Movement direction, float deltaTime);
     void processMouseMovement(float xoffset, float yoffset);
     void processMouseScroll(Movement direction, float yoffset);
+    void updateCameraVectors();
     void updateCameraVectors(glm::vec3 vehPosition, glm::vec3 poi); // static camera behind vehicle
     void updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime); // dynamic camera on boom 
     void initCameraBoom(glm::vec3 position, glm::vec3 direction);
     void setConfigs(float camHeight, float camVelCoef, float camRestLen, float camSwStr, float poiHeight, float poiDepth);
+    void setCameraPostion(glm::vec3 position); 
+    void setYawAndPitch(float yaw, float pitch);
 
 private:
     glm::mat4 view;
@@ -77,7 +80,6 @@ private:
     float mouseSensitivity;
     float scrollSensitivity;
 
-    void updateCameraVectors();
 public:
     void panLeft(float p)   { panL = -p; }
     void panRight(float p)  { panR =  p; }

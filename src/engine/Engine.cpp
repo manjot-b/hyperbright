@@ -19,9 +19,7 @@ Engine::Engine() :
 
 	// load textures into a shared pointer.
 	loadTextures();
-	initMainMenuEntities();
-	initArenas();
-	initDevUI();
+
 
 	audioPlayer = std::make_shared<audio::AudioPlayer>();
 	controller = std::make_unique<Controller>(render::Renderer::getInstance().getWindow(),
@@ -30,6 +28,10 @@ Engine::Engine() :
 		pauseMenu,
 		endMenu,
 		*audioPlayer);
+
+	initMainMenuEntities();
+	initArenas();
+	initDevUI();
 }
 
 
@@ -245,14 +247,25 @@ void Engine::buildArena4() {
 
 void Engine::initMainMenuEntities()
 {
+	camera.setCameraPostion(glm::vec3(-8.f, 3.f, -2.f));
+	camera.setYawAndPitch(-80.f, 0.f);
+	camera.updateCameraVectors();
+
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	skyBox->rotate(glm::vec3(glm::radians(30.f), 0.f, 0.f));
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
 
 	int arenaSize = 25;
 	currentArena = std::make_shared<entity::Arena>(arenaSize, arenaSize, shader, entity::Arena::Difficulty::BEGINNER);
-	currentArena->addChargingStation(arenaSize / 2, arenaSize / 2 + 3, entity::Arena::Orientation::POS_Z);
+	currentArena->addChargingStation(arenaSize / 2, arenaSize / 2 + 2, entity::Arena::Orientation::POS_Z);
 	renderables.push_back(currentArena);
+
+	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
+	player = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM0, shader, currentArena->getTilePos(glm::vec2(15, 9)) + glm::vec3(0, 1.f, -1.f), glm::vec3(1.f, 0.f, 0.f));
+	vehicles.push_back(player);
+	renderables.push_back(std::static_pointer_cast<render::IRenderable>(player));
+	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(player));
+	controller->setPlayerVehicle(player);
 }
 
 void Engine::initEntities()
@@ -284,7 +297,7 @@ void Engine::initEntities()
 	renderables.push_back(currentArena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
-	std::shared_ptr<entity::Vehicle> player = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM0, shader, currentArena->getTilePos(playerStartingPosition) + glm::vec3(0, 1.f ,0), glm::vec3(1.f, 0.f, 0.f));
+	player = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM0, shader, currentArena->getTilePos(playerStartingPosition) + glm::vec3(0, 1.f ,0), glm::vec3(1.f, 0.f, 0.f));
 	vehicles.push_back(player);
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(player));
@@ -318,6 +331,7 @@ void Engine::run()
 			break;
 
 		renderables.clear();	// remove main menu entities
+		vehicles.clear();
 		initEntities();
 		initDevUI();
 
@@ -336,13 +350,22 @@ void Engine::run()
 	}
 }
 
+float start = 2.f;
+float left = start + 1.35f;
+float turnRelease = 0.8f;
+float leftHandbrake = left + 2.2f;
+float handbrakeTurnRelease = 0.57f;
 
 /*
 * 
 This Function contains the loop for the main menu.
 */
 void Engine::runMainMenu() {
+	std::shared_ptr<entity::PickupManager> pickupManager = std::make_shared<entity::PickupManager>(audioPlayer, currentArena, &vehicles, renderables);
+	physics::Simulate simulator(physicsModels, vehicles, *currentArena, pickupManager);
+
 	audioPlayer->playStartMenuMusic();
+	float startTimer = glfwGetTime();
 	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::OFF) {
 		// update global time
 		float currentFrame = glfwGetTime();
@@ -357,6 +380,30 @@ void Engine::runMainMenu() {
 		}
 		lastFrame = currentFrame;
 
+		float animationClock = glfwGetTime() - startTimer;
+		if (animationClock > leftHandbrake + handbrakeTurnRelease) {
+			player->stopHardTurn();
+			player->stopLeft();
+			simulator.applyIntroForce(25);
+		}
+		else if (animationClock > leftHandbrake) {
+			player->hardTurn();
+			player->turnLeft();
+		}
+		else if (animationClock > left + turnRelease) {
+			player->stopLeft();
+			simulator.applyIntroForce(30);
+		}
+		else if (animationClock > left) {
+			player->turnLeft();
+		} 
+		else if (animationClock > start) {
+			simulator.applyIntroForce(35);
+		} 
+
+		simulator.stepPhysics(fpsLimit);
+		simulator.checkVehiclesOverTile(*currentArena, vehicles);
+
 		devUI.update(deltaSec, roundTimer);
 		controller->processInput(fpsLimit);	// will update the menu state once ENTER is pressed.
 		
@@ -369,6 +416,7 @@ void Engine::runMainMenu() {
 		glfwPollEvents();
 	}
 	audioPlayer->stopStartMenuMusic();
+	simulator.cleanupPhysics();
 }
 //////////////////////////////////////////////////////////
 
