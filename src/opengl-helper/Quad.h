@@ -22,10 +22,15 @@ public:
 	const glm::mat4& getModelMatrix() const;
 	void normalizeToViewport(unsigned int width, unsigned int height);
 	void scale(float scale);
+	void scale(const glm::vec2 scale);
 	void translate(glm::vec2 trans);
+
+	float getWidth() const;
+	float getHeight() const;
 
 private:
 	unsigned int indicesCount;
+	float width, height;
 	glm::mat4 modelMat;
 	std::unique_ptr<VertexArray> vertexArray;
 	std::shared_ptr<Texture> texture;
