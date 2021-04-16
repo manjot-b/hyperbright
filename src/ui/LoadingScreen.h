@@ -15,7 +15,8 @@ public:
 	{
 		LOADING1,
 		LOADING2,
-		WAITING,
+		WAITING1,
+		WAITING2,
 		DONE
 	};
 
@@ -29,7 +30,8 @@ private:
 	State state;
 	std::shared_ptr<openGLHelper::Texture> loadingStart;
 	std::shared_ptr<openGLHelper::Texture> loadingMid;
-	std::shared_ptr<openGLHelper::Texture> loadingDone;
+	std::shared_ptr<openGLHelper::Texture> loadingDone1;
+	std::shared_ptr<openGLHelper::Texture> loadingDone2;
 	
 	std::shared_ptr<openGLHelper::Shader> quadShader;
 	std::unique_ptr<openGLHelper::Quad> quad;

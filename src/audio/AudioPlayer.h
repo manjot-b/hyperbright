@@ -33,7 +33,11 @@ public:
 	void startLossMusic();
 	void stopLossMusic();
 
+	void muteCarIdle();
+	void unmuteCarIdle(); 
+
 private:
+	float carIdleGain;
 	void init();
 	int curLoaded;
 	void loadSound(const char* filename);
