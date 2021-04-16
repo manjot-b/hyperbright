@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <FTGL/ftgl.h>
+
+#include "entity/Arena.h"
 #include "opengl-helper/FrameBuffer.h"
 #include "opengl-helper/Quad.h"
 #include "opengl-helper/Texture.h"
@@ -50,7 +52,9 @@ public:
 		LAST	// Not an actual selction. Used to get the selection count
 	};
 
-	MainMenu(State state = State::WELCOME, Selection selection = Selection::START, ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
+	MainMenu(const std::vector<std::shared_ptr<entity::Arena>>& arenas,
+		State state = State::WELCOME, Selection selection = Selection::START,
+		ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
 	
 	void render();
 	
@@ -70,6 +74,9 @@ private:
 	std::shared_ptr<openGLHelper::Texture> arena2;
 	std::shared_ptr<openGLHelper::Texture> arena3;
 	std::shared_ptr<openGLHelper::Texture> arena4;
+	const std::vector<std::shared_ptr<entity::Arena>>& arenas;
+	std::array<std::string, 3> difficulties;
+	glm::vec3 difficultyColor;
 };
 
 

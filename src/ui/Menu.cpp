@@ -30,12 +30,15 @@ void Menu::updateWindowAndFontSize()
 	//defaultFontSize = width * 0.05;
 }
 
-MainMenu::MainMenu(State state, Selection selection, ArenaSelection arenaSelection) : Menu(),
-	_state(state), _selection(selection), _arenaSelection(arenaSelection),
+MainMenu::MainMenu(const std::vector<std::shared_ptr<entity::Arena>>& _arenas,
+		State state, Selection selection,
+		ArenaSelection arenaSelection) : Menu(),
+	arenas(_arenas), _state(state), _selection(selection), _arenaSelection(arenaSelection),
 	arena1(std::make_shared<openGLHelper::Texture>("rsc/images/tree.jpeg")),
 	arena2(std::make_shared<openGLHelper::Texture>("rsc/images/zap.png")),
 	arena3(std::make_shared<openGLHelper::Texture>("rsc/images/speed.png")),
-	arena4(std::make_shared<openGLHelper::Texture>("rsc/images/slowtrap.png"))
+	arena4(std::make_shared<openGLHelper::Texture>("rsc/images/slowtrap.png")),
+	difficultyColor(0.8f, 0.5f, 0.3f)
 	
 {
 	// Don't why this can't be constrcuted in the initialzer list.
@@ -44,6 +47,7 @@ MainMenu::MainMenu(State state, Selection selection, ArenaSelection arenaSelecti
 	scale *= .5f;
 	quad->scale(scale);
 	quad->translate(glm::vec2(.9f - quad->getWidth() * .5f, -.25f) / scale);
+	difficulties = { "BEGINNER", "NORMAL", "HARDCORE" };
 }
 
 void MainMenu::render() {
@@ -107,15 +111,27 @@ void MainMenu::render() {
 		font.FaceSize(scaleBig * defaultFontSize);
 		font.Render("ARENA", -1, FTPoint(xCoord, yCoord, 0));
 
-		xCoord = ((float)width / 2) - (13 * (50 * scaleSmall) / 2);
+		xCoord = ((float)width / 2) - (14 * (50 * scaleSmall) / 2);
 		yCoord = (float)height * (1.5f / rows);
 		font.FaceSize(scale * defaultFontSize);
 		const std::string arena = "< Arena " + std::to_string(static_cast<int>(_arenaSelection) + 1) + " >";
 		font.Render(arena.c_str(), -1, FTPoint(xCoord, yCoord, 0));
 
-		xCoord = ((float)width / 2) - (13 * (50 * scaleSmall) / 2);
+		xCoord = ((float)width / 2) - (10 * (50 * scaleSmall) / 2);
 		yCoord = (float)height * (0.f / rows);
+		font.FaceSize(scaleSmall * defaultFontSize);
 		font.Render("Press enter", -1, FTPoint(xCoord, yCoord, 0));
+
+		glPixelTransferf(GL_RED_BIAS, difficultyColor.r - 1);
+		glPixelTransferf(GL_GREEN_BIAS, difficultyColor.g - 1);
+		glPixelTransferf(GL_BLUE_BIAS, difficultyColor.b - 1);
+		entity::Arena::Difficulty arenaDifficulty = arenas[static_cast<int>(_arenaSelection)]->getDifficulty();
+		const std::string& diff = difficulties[static_cast<int>(arenaDifficulty)];
+		xCoord = width - (diff.length() + 10) * (50 * scaleSmall) / 2;
+		yCoord = (float)height * (1.f / rows);
+		font.FaceSize(scaleSmall * defaultFontSize);
+		font.Render(diff.c_str(), -1, FTPoint(xCoord, yCoord, 0));
+
 		glPopAttrib();
 
 		quad->getShader()->use();
