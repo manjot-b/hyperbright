@@ -99,6 +99,20 @@ Vehicle::Vehicle(
 	wheels[physx::PxVehicleDrive4WWheelOrder::eFRONT_RIGHT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_fr", _shader, nullptr);
 	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_LEFT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_rl", _shader, nullptr);
 	wheels[physx::PxVehicleDrive4WWheelOrder::eREAR_RIGHT] = std::make_unique<model::Model>("rsc/models/wheel.obj", teamStats::names[team] + wheelsIdSuffix + "_rr", _shader, nullptr);
+
+	for (auto& wheel : wheels)
+	{
+		for (auto& mesh : wheel->getMeshes())
+		{
+			if (mesh->getName() == "rim") {
+				//mesh->material.reflectiveStrength = 0.2f;
+				mesh->material.useBeckmann = false;
+				mesh->material.useGGX = true;
+				mesh->material.roughness = 0.2f;
+				mesh->material.shadingModel = model::Material::ShadingModel::COOK_TORRANCE;
+			}
+		}
+	}
 }
 
 void Vehicle::updateOrientation() {
