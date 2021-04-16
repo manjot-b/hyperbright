@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <stb_image.h>
 
 #include <iostream>
 
@@ -51,7 +52,16 @@ void Renderer::initWindow()
 	width = mode->width;
 	height = mode->height;
 
+	int n;
+	GLFWimage icon[1];
+	unsigned char* data = stbi_load("rsc/images/test.png", &icon[0].width, &icon[0].height, &n, 0);
+	icon[0].pixels = data;
+
 	window = glfwCreateWindow(width, height, "HyperBright", primaryMonitor, nullptr);
+
+	glfwSetWindowIcon(window, 1, icon);
+	stbi_image_free(icon[0].pixels);
+
 	if (!window)
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
@@ -79,6 +89,7 @@ void Renderer::initWindow()
 	});
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 
 }
 
@@ -214,6 +225,7 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 			renderable->renderMiniMap();
 		}
 
+		glUseProgram(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 		

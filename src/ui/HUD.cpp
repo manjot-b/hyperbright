@@ -106,6 +106,8 @@ void HUD::drawHUD() {
 		timerQuad->scale(.08f);
 		timerQuad->render();
 		glUseProgram(0);
+
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		glPixelTransferf(GL_RED_BIAS, 0);
 		glPixelTransferf(GL_GREEN_BIAS, 0);
 		glPixelTransferf(GL_BLUE_BIAS, 0);
@@ -122,7 +124,7 @@ void HUD::drawHUD() {
 		}
 		font.FaceSize(scale * defaultFontSize / 2);
 		font.Render(timerStr, -1, FTPoint(scale * 50, (height - scale * 50), 0));
-
+		glPopAttrib();
 
 		//pickups
 		if (player->hasPickup()) {
@@ -213,26 +215,6 @@ void HUD::drawHUD() {
 		font.Render(speedStr, -1, FTPoint(xCord, yCord, 0));
 		font.FaceSize(scale * defaultFontSize / 3);
 		font.Render("KPH", -1, FTPoint(width - (3 * 21 * scale), 10 * scale, 0));
-
-		/*
-		float max = M_PI - (speed / 29) * (M_PI / 2);
-		float bigRadius = 0.9;
-		float smallRadius = 0.7;
-		float bigWidth = (height * bigRadius) / width;
-		float smallWidth = (height * smallRadius) / width;
-
-		glBegin(GL_QUADS);
-		glColor3f(1, 1, 0);
-		for (float i = M_PI; i > max; i -= (M_PI / 24) ) {
-			if (i < 5 * M_PI / 8)
-			glColor3f(1, 0, 0);
-			glVertex2f(bigWidth * cos(i) + 1, bigRadius * sin(i) - 1);
-			glVertex2f(bigWidth * cos(i - (M_PI / 32)) + 1, bigRadius * sin(i - (M_PI / 32)) - 1);
-			glVertex2f(smallWidth * cos(i - (M_PI / 32)) + 1, smallRadius * sin(i - (M_PI / 32)) - 1);
-			glVertex2f(smallWidth * cos(i) + 1, smallRadius * sin(i) - 1);
-		}
-		glEnd();
-		*/
 
 		//Energy bar
 		int numOfBar = (int)(player->energy * 25);

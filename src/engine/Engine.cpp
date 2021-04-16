@@ -251,8 +251,10 @@ void Engine::buildArena4() {
 
 void Engine::initMainMenuEntities()
 {
+
 	camera.setCameraPostion(glm::vec3(-10.f, 3.0f, 0.f));
 	camera.setYawAndPitch(-75.f, 0.f);
+
 	camera.updateCameraVectors();
 
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();

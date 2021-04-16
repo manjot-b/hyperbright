@@ -185,13 +185,14 @@ void PauseMenu::render() {
 			font.Render("Quit", -1, FTPoint(xCord, yCord, 0));
 			break;
 		}
+		glPopAttrib();
+
 		tips->getShader()->use();
 		tips->normalizeToViewport(width, height);
 		tips->translate(glm::vec2(0.f, -0.8f));
 		tips->scale(1.2f);
 		tips->render();
 		glUseProgram(0);
-		glPopAttrib();
 	}
 }
 
