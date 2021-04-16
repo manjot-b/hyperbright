@@ -459,7 +459,7 @@ namespace Driving {
 	void applyVehicleFlipImpulse(int v)
 	{
 		PxF32 mass = gVehicle4W[v]->getRigidDynamicActor()->getMass();
-		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(-mass, -3.5f * mass, 0.f), PxVec3(1.f, 0.f, 0.f), PxForceMode::eIMPULSE);
+		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[v]->getRigidDynamicActor(), PxVec3(-mass * 2.f, -3.f * mass, 0.f), PxVec3(1.f, 0.f, 0.f), PxForceMode::eIMPULSE);
 	}
 	void applyVehicleBoost(int v)
 	{
@@ -603,9 +603,11 @@ void setDriveMode(entity::VehicleController* ctrl)
 
 	//APPLY BOOST
 	if (ctrl->boost.second) {
-		Driving::applyVehicleBoost(vNum);
-		ctrl->boost.first -= 1;
-		if (ctrl->boost.first <= 0) ctrl->boost.second = false;
+		if (vehs->at(vNum)->isUpright()) {
+			Driving::applyVehicleBoost(vNum);
+			ctrl->boost.first -= 1;
+			if (ctrl->boost.first <= 0) ctrl->boost.second = false;
+		}
 	}
 
 	Driving::releaseAllControls(vNum);
@@ -660,11 +662,13 @@ void Simulate::applyIntroForce(float maxSpeed)
 		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[0]->getRigidDynamicActor(), PxVec3(0.f, 0.f, mass * 0.75f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
 }
 
-void Simulate::applyStoppingForce()
+float Simulate::applyStoppingForce()
 {
 	PxF32 mass = gVehicle4W[0]->getRigidDynamicActor()->getMass();
-	if (gVehicle4W[0]->computeForwardSpeed() > 0.f)
-		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[0]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 0.75f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
+	float speed = gVehicle4W[0]->computeForwardSpeed();
+	if (speed > 0.25f)
+		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[0]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 0.5f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
+	return speed;
 }
 
 void Simulate::stepPhysics(float frameRate)
