@@ -70,8 +70,8 @@ Vehicle::Vehicle(
 			mesh->material.color = color;
 			mesh->material.shadingModel = model::Material::ShadingModel::COOK_TORRANCE;
 			mesh->material.roughness = 0.2f;
-			mesh->material.useBeckmann = true;
-			mesh->material.useGGX = false;
+			mesh->material.useBeckmann = false;
+			mesh->material.useGGX = true;
 		}
 		else if (mesh->getName() == "front_lights")
 		{
