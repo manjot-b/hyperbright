@@ -43,6 +43,10 @@ void Engine::resetAll()
 	lastFrame = 0.f;
 	roundTimer = 100.f;
 	camera = render::Camera();
+
+	reachedTarget1 = false;
+	reachedTarget2 = false;
+	reachedTarget3 = false;
 	
 	vehicles.clear();
 	renderables.clear();
@@ -247,8 +251,10 @@ void Engine::buildArena4() {
 
 void Engine::initMainMenuEntities()
 {
-	camera.setCameraPostion(glm::vec3(-8.f, 3.f, 20.f));
-	camera.setYawAndPitch(-80.f, 0.f);
+
+	camera.setCameraPostion(glm::vec3(-10.f, 3.0f, 0.f));
+	camera.setYawAndPitch(-75.f, 0.f);
+
 	camera.updateCameraVectors();
 
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
@@ -261,7 +267,7 @@ void Engine::initMainMenuEntities()
 	renderables.push_back(currentArena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
-	player = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM0, shader, currentArena->getTilePos(glm::vec2(15, 9)) + glm::vec3(0, 1.f, -1.f), glm::vec3(1.f, 0.f, 0.f));
+	player = std::make_shared<entity::Vehicle>(teamStats::Teams::TEAM0, shader, currentArena->getTilePos(glm::vec2(15, 9)) + glm::vec3(0, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
 	vehicles.push_back(player);
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(player));
 	physicsModels.push_back(std::static_pointer_cast<physics::IPhysical>(player));
@@ -332,6 +338,8 @@ void Engine::run()
 
 		renderables.clear();	// remove main menu entities
 		vehicles.clear();
+		physicsModels.clear();
+
 		initEntities();
 		initDevUI();
 
@@ -349,12 +357,6 @@ void Engine::run()
 		}
 	}
 }
-
-float start = 2.f;
-float left = start + 1.35f;
-float turnRelease = 0.8f;
-float leftHandbrake = left + 2.2f;
-float handbrakeTurnRelease = 0.57f;
 
 /*
 * 
@@ -381,28 +383,7 @@ void Engine::runMainMenu() {
 		lastFrame = currentFrame;
 
 		float animationClock = glfwGetTime() - startTimer;
-		if (animationClock > leftHandbrake + 3.5f) {
-			simulator.applyStoppingForce();
-		}
-		else if (animationClock > leftHandbrake + handbrakeTurnRelease) {
-			player->stopHardTurn();
-			player->stopLeft();
-			simulator.applyIntroForce(25);
-		}
-		else if (animationClock > leftHandbrake) {
-			player->hardTurn();
-			player->turnLeft();
-		}
-		else if (animationClock > left + turnRelease) {
-			player->stopLeft();
-			simulator.applyIntroForce(30);
-		}
-		else if (animationClock > left) {
-			player->turnLeft();
-		} 
-		else if (animationClock > start) {
-			simulator.applyIntroForce(35);
-		} 
+		mainMenuAnimation(simulator, animationClock);
 
 		simulator.stepPhysics(fpsLimit);
 		simulator.checkVehiclesOverTile(*currentArena, vehicles);
@@ -433,7 +414,6 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *currentArena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
-	//camera.setCameraPostion(glm::vec3(6.f, 10.f, 10.f));
 	camera.initCameraBoom(glm::vec3(10.f, 5.f, 10.f), vehicles[0]->getDirection());
 
 	ai::AiManager aiManager;
@@ -613,10 +593,132 @@ void Engine::getDevUISettings() {
 		devUI.settings.poiHeight,
 		devUI.settings.poiDepth);
 }
+
 void Engine::getDevUIHandlingSettings(physics::Simulate simulator)
 {
 	simulator.setConfigs(devUI.settings.handling);
 }
+
+float start = 2.f;
+float left = start + 1.35f;
+float turnRelease = 0.8f;
+float leftHandbrake = left + 1.9f;
+float handbrakeTurnRelease = 0.57f;
+
+void Engine::mainMenuAnimation(physics::Simulate& simulator, float animationClock)
+{
+	if (reachedTarget3) {
+		simulator.applyStoppingForce();
+		return;
+	}
+
+	glm::vec3 target1 = currentArena->getTilePos(glm::vec2(15, 12));
+	glm::vec3 target2 = currentArena->getTilePos(glm::vec2(20, 12));
+	glm::vec3 target3 = currentArena->getTilePos(glm::vec2(14, 11));
+
+	if (animationClock > 1.5f) {
+		if (!reachedTarget1) {
+			//std::cout << "target: " << target1.x << " " << target1.y << " " << target1.z << std::endl;
+			//std::cout << "player: " << player->getPosition().x << " " << player->getPosition().y << " " << player->getPosition().z << std::endl;
+			reachedTarget3 = false;
+			glm::vec3 targetDir = glm::normalize(target1 - player->getPosition());
+			float projP_T = glm::dot(targetDir, player->getDirection());
+			if (projP_T < 0.99f) {
+				glm::vec3 perpP_T = glm::cross(targetDir, player->getDirection());
+				if (perpP_T.y > 0.f) { // turn right
+					player->stopLeft();
+					player->turnRight();
+					simulator.applyIntroForce(15);
+				}
+				else if (perpP_T.y <= 0.f) { // turn left
+					player->stopRight();
+					player->turnLeft();
+					simulator.applyIntroForce(15);
+				}
+			}
+			else {
+				player->stopRight();
+				player->stopLeft();
+				simulator.applyIntroForce(35);
+			}
+			std::cout << "target1: " << glm::length(target1 - player->getPosition()) << std::endl;
+
+			if (glm::length(target1 - player->getPosition()) < 3.f) reachedTarget1 = true;
+		}
+		else if (!reachedTarget2) {
+			glm::vec3 targetDir = glm::normalize(target2 - player->getPosition());
+			float projP_T = glm::dot(targetDir, player->getDirection());
+			if (projP_T < 0.99f) {
+				glm::vec3 perpP_T = glm::cross(targetDir, player->getDirection());
+				if (perpP_T.y > 0.f) { // turn right
+					player->stopLeft();
+					player->turnRight();
+					simulator.applyIntroForce(15);
+				}
+				else if (perpP_T.y < 0.f) { // turn left
+					player->stopRight();
+					player->turnLeft();
+					simulator.applyIntroForce(15);
+				}
+			}
+			else {
+				player->stopRight();
+				player->stopLeft();
+				simulator.applyIntroForce(30);
+			}
+			std::cout << "target2: " << glm::length(target2 - player->getPosition()) << std::endl;
+			if (glm::length(target2 - player->getPosition()) < 3.f) reachedTarget2 = true;
+		}
+		else if (!reachedTarget3) {
+			glm::vec3 targetDir = glm::normalize(target3 - player->getPosition());
+			float projP_T = glm::dot(targetDir, player->getDirection());
+			if (projP_T < 0.99f) {
+				glm::vec3 perpP_T = glm::cross(targetDir, player->getDirection());
+				if (perpP_T.y > 0.f) { // turn right
+					player->stopLeft();
+					player->turnRight();
+					simulator.applyIntroForce(15);
+				}
+				else if (perpP_T.y < 0.f) { // turn left
+					player->stopRight();
+					player->turnLeft();
+					simulator.applyIntroForce(15);
+				}
+			}
+			else {
+				player->stopRight();
+				player->stopLeft();
+				simulator.applyIntroForce(30);
+			}
+
+			std::cout << "target3: " << glm::length(target3 - player->getPosition()) << std::endl;
+			if (glm::length(target3 - player->getPosition()) < 5.f) reachedTarget3 = true;
+		}
+	}
+	/*if (animationClock > leftHandbrake + 3.5f) {
+		simulator.applyStoppingForce();
+	}
+	else if (animationClock > leftHandbrake + handbrakeTurnRelease) {
+		player->stopHardTurn();
+		player->stopLeft();
+		simulator.applyIntroForce(25);
+	}
+	else if (animationClock > leftHandbrake) {
+		player->hardTurn();
+		player->turnLeft();
+	}
+	else if (animationClock > left + turnRelease) {
+		player->stopLeft();
+		simulator.applyIntroForce(30);
+	}
+	else if (animationClock > left) {
+		player->turnLeft();
+	}
+	else if (animationClock > start) {
+		simulator.applyIntroForce(35);
+	}*/
+}
+
 void Engine::introScene(float introState, float deltaSec)
 {
 	if (introState < 1.f) {

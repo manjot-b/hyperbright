@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <stb_image.h>
 
 #include <iostream>
 
@@ -51,15 +52,22 @@ void Renderer::initWindow()
 	width = mode->width;
 	height = mode->height;
 
-<<<<<<< Updated upstream
-=======
+
 	int n;
 	GLFWimage icon[1];
 	unsigned char* data = stbi_load("rsc/images/icon.png", &icon[0].width, &icon[0].height, &n, 0);
 	icon[0].pixels = data;
 
->>>>>>> Stashed changes
+	int n;
+	GLFWimage icon[1];
+	unsigned char* data = stbi_load("rsc/images/test.png", &icon[0].width, &icon[0].height, &n, 0);
+	icon[0].pixels = data;
+
 	window = glfwCreateWindow(width, height, "HyperBright", primaryMonitor, nullptr);
+
+	glfwSetWindowIcon(window, 1, icon);
+	stbi_image_free(icon[0].pixels);
+
 	if (!window)
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
