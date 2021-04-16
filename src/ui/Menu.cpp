@@ -32,14 +32,18 @@ void Menu::updateWindowAndFontSize()
 
 MainMenu::MainMenu(State state, Selection selection, ArenaSelection arenaSelection) : Menu(),
 	_state(state), _selection(selection), _arenaSelection(arenaSelection),
-	arena1(std::make_shared<openGLHelper::Texture>("rsc/images/firstLoading1.png")),
-	arena2(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading2.png")),
-	arena3(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading3.png")),
-	arena4(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading3.png"))
+	arena1(std::make_shared<openGLHelper::Texture>("rsc/images/tree.jpeg")),
+	arena2(std::make_shared<openGLHelper::Texture>("rsc/images/zap.png")),
+	arena3(std::make_shared<openGLHelper::Texture>("rsc/images/speed.png")),
+	arena4(std::make_shared<openGLHelper::Texture>("rsc/images/slowtrap.png"))
 	
 {
 	// Don't why this can't be constrcuted in the initialzer list.
 	quad = std::make_unique<openGLHelper::Quad>(quadShader, arena1);
+	glm::vec2 scale = glm::vec2(1.f, (float)width / height);
+	scale *= .5f;
+	quad->scale(scale);
+	quad->translate(glm::vec2(.9f - quad->getWidth() * .5f, -.25f) / scale);
 }
 
 void MainMenu::render() {
@@ -94,7 +98,7 @@ void MainMenu::render() {
 			font.Render("QUIT", -1, FTPoint(xCoord, yCoord, 0));
 			break;
 		}
-		
+		glPopAttrib();
 	}
 	break;
 	case State::SETUP:
@@ -112,10 +116,13 @@ void MainMenu::render() {
 		xCoord = ((float)width / 2) - (13 * (50 * scaleSmall) / 2);
 		yCoord = (float)height * (0.f / rows);
 		font.Render("Press enter", -1, FTPoint(xCoord, yCoord, 0));
+		glPopAttrib();
+
+		quad->getShader()->use();
+		quad->render();
+		glUseProgram(0);
 		break;
 	}
-	
-	glPopAttrib();
 }
 
 MainMenu::State MainMenu::getState() const { return _state; }
@@ -128,7 +135,25 @@ void MainMenu::setSelection(Selection selection) { _selection = selection; }
 
 MainMenu::ArenaSelection MainMenu::getArenaSelection() const { return _arenaSelection; }
 
-void MainMenu::setArenaSelection(ArenaSelection selection) { _arenaSelection = selection; }
+void MainMenu::setArenaSelection(ArenaSelection selection)
+{
+	_arenaSelection = selection;
+	switch (_arenaSelection)
+	{
+	case ArenaSelection::ARENA1:
+		quad->setTexture(arena1);
+		break;
+	case ArenaSelection::ARENA2:
+		quad->setTexture(arena2);
+		break;
+	case ArenaSelection::ARENA3:
+		quad->setTexture(arena3);
+		break;
+	case ArenaSelection::ARENA4:
+		quad->setTexture(arena4);
+		break;
+	}
+}
 
 
 PauseMenu::PauseMenu(State state, Selection selection) :
