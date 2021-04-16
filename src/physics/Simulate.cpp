@@ -662,12 +662,12 @@ void Simulate::applyIntroForce(float maxSpeed)
 		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[0]->getRigidDynamicActor(), PxVec3(0.f, 0.f, mass * 0.75f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
 }
 
-float Simulate::applyStoppingForce()
+float Simulate::applyStoppingForce(int vNum)
 {
-	PxF32 mass = gVehicle4W[0]->getRigidDynamicActor()->getMass();
-	float speed = gVehicle4W[0]->computeForwardSpeed();
+	PxF32 mass = gVehicle4W[vNum]->getRigidDynamicActor()->getMass();
+	float speed = gVehicle4W[vNum]->computeForwardSpeed();
 	if (speed > 0.25f)
-		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[0]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 0.5f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
+		PxRigidBodyExt::addLocalForceAtLocalPos(*gVehicle4W[vNum]->getRigidDynamicActor(), PxVec3(0.f, 0.f, -mass * 0.5f), PxVec3(0.f, -0.1f, 0.2f), PxForceMode::eIMPULSE);
 	return speed;
 }
 

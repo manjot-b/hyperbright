@@ -36,6 +36,7 @@ public:
 	const glm::mat4& getMiniMapOrtho();
 	float countdownTimer;
 	bool startCountdown = false;
+	bool victory = false;
 
 private:
 	State state;

@@ -229,6 +229,31 @@ void HUD::drawHUD() {
 		glEnd();
 		glPopAttrib();
 	}
+
+	if (state == State::OUTRO) {
+		miniMap->getShader()->use();
+		miniMap->render();
+		glUseProgram(0);
+
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
+		glPixelTransferf(GL_RED_BIAS, 0);
+		glPixelTransferf(GL_GREEN_BIAS, -0.7);
+		glPixelTransferf(GL_BLUE_BIAS, -0.7);
+		float xCord = (float)width / 2.f - 200 * scale;
+		float yCord = height / 2.f - 120 * scale;
+
+		char speedStr[100];
+		font.FaceSize(scale * defaultFontSize);
+
+		if (victory) {
+			font.Render("WINNER!", -1, FTPoint(xCord, yCord, 0));
+		}
+		else {
+			font.Render("LOSER!", -1, FTPoint(xCord, yCord, 0));
+		}
+		glPopAttrib();
+
+	}
 }
 
 void HUD::preRenderMiniMap()
