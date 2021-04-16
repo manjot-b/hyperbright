@@ -1,6 +1,6 @@
 #version 330 core
 
-#define PI 3.1415926535
+#define PI 3.1415926
 #define E 2.7182818284
 #define EPSILON 1e-6
 
@@ -27,6 +27,7 @@ in vec4 instanceColor;
 
 uniform sampler2D tex;
 uniform sampler2D shadowMap;
+uniform samplerCube skybox;
 uniform bool hasTexture;
 uniform bool isInstanceColor;
 uniform vec4 color;
@@ -35,6 +36,7 @@ uniform int shadingModel;	// Either PHONG or COOK_TORRANCE
 uniform float diffuseCoeff;
 uniform float specularCoeff;
 uniform float shininess;	// used in phong
+uniform float reflectiveStrength;
 
 uniform float roughness;	// used in cook-torrance
 uniform vec3 fresnel;
@@ -232,6 +234,17 @@ void main()
 		if (hasTexture)
 			fColor = mix(texture(tex, texCoord), fColor, 0.5f);
 
+
+		
+		vec4 lightDirAndAtten = lightDirection(0);
+		vec3 lightDir = vec3(lightDirAndAtten);
+		vec3 unitNormal = normalize(normal);
+		vec3 reflect = 2 * dot(unitNormal, lightDir) * unitNormal - lightDir;
+		reflect = normalize(reflect);
+		vec3 skyboxCoords = vec3(reflect.xy, reflect.z);
+		vec4 reflectedCol = texture(skybox, skyboxCoords);
+		fColor = mix(fColor, reflectedCol, reflectiveStrength);
+		
 		if (shadingModel == PHONG) {
 			fragColor = phong() * fColor;
 		}

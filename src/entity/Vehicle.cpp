@@ -72,6 +72,7 @@ Vehicle::Vehicle(
 			mesh->material.roughness = 0.2f;
 			mesh->material.useBeckmann = false;
 			mesh->material.useGGX = true;
+			mesh->material.reflectiveStrength = .1f;
 		}
 		else if (mesh->getName() == "front_lights")
 		{
@@ -81,6 +82,10 @@ Vehicle::Vehicle(
 		{
 			brakeLightsColor = mesh->material.color;
 			brakeLightsIdx = index;
+		}
+		else if (mesh->getName() == "windows")
+		{
+			mesh->material.reflectiveStrength = 0.9f;
 		}
 
 		// brake lights color comes from car_model.obj
