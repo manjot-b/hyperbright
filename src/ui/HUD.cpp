@@ -198,8 +198,6 @@ void HUD::drawHUD() {
 			glUseProgram(0);
 		}
 
-
-
 		//Speedometer
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		glPixelTransferf(GL_RED_BIAS, 0);

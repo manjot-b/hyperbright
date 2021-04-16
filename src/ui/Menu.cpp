@@ -34,7 +34,7 @@ MainMenu::MainMenu(State state, Selection selection, ArenaSelection arenaSelecti
 
 void MainMenu::render() {
 	updateWindowAndFontSize();
-	float scale = (width * 0.08f) / defaultFontSize;
+	float scale = (width * 0.055f) / defaultFontSize;
 	float scaleBig = scale * 1.2f;
 	float scaleSmall = scale * .7;
 	float xCoord, yCoord;
@@ -44,6 +44,16 @@ void MainMenu::render() {
 	glPixelTransferf(GL_RED_BIAS, color.r - 1);
 	glPixelTransferf(GL_GREEN_BIAS, color.g - 1);
 	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
+
+	xCoord = ((float)width / 2) - (12 * (50 * scaleBig) / 2);
+	yCoord = ((float)height * 3.8 / 5);
+	font.FaceSize(1.5f * scaleBig * defaultFontSize);
+	font.Render("HYPER", -1, FTPoint(xCoord, yCoord, 0));
+
+	xCoord = ((float)width / 2) - (10 * (50 * scaleBig) / 2);
+	yCoord = ((float)height * 3.1 / 5);
+	font.FaceSize(1.5f * scaleBig * defaultFontSize);
+	font.Render("~~~ BRIGHT", -1, FTPoint(xCoord, yCoord, 0));
 	
 	switch (_state)
 	{
@@ -52,26 +62,26 @@ void MainMenu::render() {
 		switch (_selection)
 		{
 		case Selection::START:
-			xCoord = ((float)width / 2) - (5 * (50 * scaleBig) / 2);
-			yCoord = ((float)height * 3.5 / 5) + ((50 * scaleBig) / 2);
+			xCoord = ((float)width / 2) - (4 * (50 * scaleBig) / 2);
+			yCoord = ((float)height * 2 / 5) + ((50 * scaleBig));
 			font.FaceSize(scaleBig * defaultFontSize);
 			font.Render("START", -1, FTPoint(xCoord, yCoord, 0));
 
-			xCoord = ((float)width / 2) - (4 * (50 * scale) / 2);
-			yCoord = ((float)height * 2.5 / 5) + ((50 * scale) / 2);
+			xCoord = ((float)width / 2) - (3 * (50 * scale) / 2);
+			yCoord = ((float)height * 1.5 / 5) + ((50 * scale));
 			font.FaceSize(scale * defaultFontSize);
-			font.Render("EXIT", -1, FTPoint(xCoord, yCoord, 0));
+			font.Render("QUIT", -1, FTPoint(xCoord, yCoord, 0));
 			break;
 		case Selection::EXIT:
-			xCoord = ((float)width / 2) - (5 * (50 * scale) / 2);
-			yCoord = ((float)height * 3.5 / 5) + ((50 * scale) / 2);
+			xCoord = ((float)width / 2) - (4 * (50 * scale) / 2);
+			yCoord = ((float)height * 2 / 5) + ((50 * scale));
 			font.FaceSize(scale * defaultFontSize);
 			font.Render("START", -1, FTPoint(xCoord, yCoord, 0));
 
-			xCoord = ((float)width / 2) - (4 * (50 * scaleBig) / 2);
-			yCoord = ((float)height * 2.5 / 5) + ((50 * scaleBig) / 2);
+			xCoord = ((float)width / 2) - (3 * (50 * scaleBig) / 2);
+			yCoord = ((float)height * 1.5 / 5) + ((50 * scaleBig));
 			font.FaceSize(scaleBig * defaultFontSize);
-			font.Render("EXIT", -1, FTPoint(xCoord, yCoord, 0));
+			font.Render("QUIT", -1, FTPoint(xCoord, yCoord, 0));
 			break;
 		}
 		
@@ -79,17 +89,17 @@ void MainMenu::render() {
 	break;
 	case State::SETUP:
 		xCoord = ((float)width / 2) - (5 * (50 * scale) / 2);
-		yCoord = (float)height *  (5.f / rows);
-		font.FaceSize(scale * defaultFontSize);
-		font.Render("SETUP", -1, FTPoint(xCoord, yCoord, 0));
+		yCoord = (float)height *  (3.f / rows);
+		font.FaceSize(scaleBig * defaultFontSize);
+		font.Render("ARENA", -1, FTPoint(xCoord, yCoord, 0));
 
-		xCoord = ((float)width / 2) - (11 * (50 * scaleSmall) / 2);
-		yCoord = (float)height * (2.f / rows);
-		font.FaceSize(scaleSmall * defaultFontSize);
+		xCoord = ((float)width / 2) - (13 * (50 * scaleSmall) / 2);
+		yCoord = (float)height * (1.5f / rows);
+		font.FaceSize(scale * defaultFontSize);
 		const std::string arena = "< Arena " + std::to_string(static_cast<int>(_arenaSelection) + 1) + " >";
 		font.Render(arena.c_str(), -1, FTPoint(xCoord, yCoord, 0));
 
-		xCoord = ((float)width / 2) - (11 * (50 * scaleSmall) / 2);
+		xCoord = ((float)width / 2) - (13 * (50 * scaleSmall) / 2);
 		yCoord = (float)height * (0.f / rows);
 		font.Render("Press enter", -1, FTPoint(xCoord, yCoord, 0));
 		break;

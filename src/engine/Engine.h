@@ -82,6 +82,10 @@ private:
 	float lastFrame;
 	float roundTimer;	// seconds.
 
+	bool reachedTarget1 = false;
+	bool reachedTarget2 = false;
+	bool reachedTarget3 = false;
+
 	void runMainMenu();
 	void endGame();
 	void runGame();
@@ -93,6 +97,7 @@ private:
 
 	void getDevUISettings();
 	void getDevUIHandlingSettings(physics::Simulate simulator);
+	void mainMenuAnimation(physics::Simulate& simulator, float animationClock);
 	void introScene(float introState, float deltaSec);
 };
 }	// namespace engine
