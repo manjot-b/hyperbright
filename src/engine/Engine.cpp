@@ -347,6 +347,7 @@ void Engine::run()
 			break;
 
 		render::Renderer::getInstance().render(loadingScreen);
+
 		renderables.clear();	// remove main menu entities
 		vehicles.clear();
 		physicsModels.clear();
@@ -414,7 +415,9 @@ void Engine::runMainMenu() {
 }
 //////////////////////////////////////////////////////////
 
+float fakeLoadingTimer;
 void Engine::runGame() {
+	fakeLoadingTimer = glfwGetTime();
 	for (unsigned int i = 0; i < teamStats::teamCount; i++)
 		teamStats::scores[static_cast<teamStats::Teams>(i)] = 0;
 
@@ -424,12 +427,11 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *currentArena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
-	// give enough time to read game rules.
-	float loadingMinWait = 5.f;
-	while (glfwGetTime() - lastFrame < loadingMinWait);
-
 	// Loading 2/3 complete
+	while (glfwGetTime() - fakeLoadingTimer < 1.f);
+	fakeLoadingTimer = glfwGetTime();
 	loadingScreen.setState(ui::LoadingScreen::State::LOADING2);
+
 	render::Renderer::getInstance().render(loadingScreen);
 
 	camera.initCameraBoom(glm::vec3(10.f, 5.f, 10.f), vehicles[0]->getDirection());
@@ -443,10 +445,12 @@ void Engine::runGame() {
 	ui::HUD playerHUD(vehicles[0], *currentArena, roundTimer);
 
 	// Loading complete. Wait for user input.
-	loadingScreen.setState(ui::LoadingScreen::State::WAITING);
-	render::Renderer::getInstance().render(loadingScreen);
+	while (glfwGetTime() - fakeLoadingTimer < 1.f);
+	loadingScreen.setState(ui::LoadingScreen::State::WAITING1);
 	while (loadingScreen.getState() != ui::LoadingScreen::State::DONE)
 	{
+		render::Renderer::getInstance().render(loadingScreen);
+
 		controller->processInput(0);	// needed for gamepad button presses.
 		glfwPollEvents();
 	}

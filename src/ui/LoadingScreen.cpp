@@ -7,8 +7,9 @@ namespace ui {
 LoadingScreen::LoadingScreen() :
 	state(State::LOADING1),
 	loadingStart(std::make_shared<openGLHelper::Texture>("rsc/images/firstLoading1.png")),
-	loadingMid(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading2.png")),
-	loadingDone(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading3.png")),
+	loadingMid(std::make_shared<openGLHelper::Texture>("rsc/images/firstLoading2.png")),
+	loadingDone1(std::make_shared<openGLHelper::Texture>("rsc/images/firstLoading3.png")),
+	loadingDone2(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading3.png")),
 	quadShader(std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl")),
 	quad(std::make_unique<openGLHelper::Quad>(quadShader, loadingStart))
 {
@@ -37,8 +38,11 @@ void LoadingScreen::setState(State state)
 	case hyperbright::ui::LoadingScreen::State::LOADING2:
 		quad->setTexture(loadingMid);
 		break;
-	case hyperbright::ui::LoadingScreen::State::WAITING:
-		quad->setTexture(loadingDone);
+	case hyperbright::ui::LoadingScreen::State::WAITING1:
+		quad->setTexture(loadingDone1);
+		break;
+	case hyperbright::ui::LoadingScreen::State::WAITING2:
+		quad->setTexture(loadingDone2);
 		break;
 	case hyperbright::ui::LoadingScreen::State::DONE:
 	default:

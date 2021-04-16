@@ -46,13 +46,13 @@ bool trap;
 void Controller::processInput(float deltaSec)
 {
 	if (mainMenu.getState() != ui::MainMenu::State::OFF ||
-		loadingScreen.getState() == ui::LoadingScreen::State::WAITING ||
+		loadingScreen.getState() != ui::LoadingScreen::State::DONE ||
 		pauseMenu.getState() == ui::PauseMenu::State::ON ||
 		endMenu.getState() == ui::EndMenu::State::ON) {
 		if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
 			glfwGetGamepadState(GLFW_JOYSTICK_1, &joystick);
 
-			// check state of the game and use appropraite joystick controls
+			// check state of the game and use appropriate joystick controls
 			joystickCallback(window, joystick);
 		}
 		return;
@@ -427,7 +427,8 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 	if (controller->mainMenu.getState() != ui::MainMenu::State::OFF) {
 		controller->mainMenuKeyCallback(key, scancode, action, mods);
 	}
-	else if (controller->loadingScreen.getState() == ui::LoadingScreen::State::WAITING) {
+	else if (controller->loadingScreen.getState() == ui::LoadingScreen::State::WAITING1 ||
+			 controller->loadingScreen.getState() == ui::LoadingScreen::State::WAITING2) {
 		controller->loadingKeyCallback(key, scancode, action, mods);
 	}
 	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
@@ -464,7 +465,8 @@ void Controller::joystickCallback(GLFWwindow* window, GLFWgamepadstate& joystick
 	if (controller->mainMenu.getState() != ui::MainMenu::State::OFF) {
 		controller->mainMenuJoystickCallback(joystick);
 	}
-	else if (controller->loadingScreen.getState() == ui::LoadingScreen::State::WAITING) {
+	else if (controller->loadingScreen.getState() == ui::LoadingScreen::State::WAITING1 ||
+			 controller->loadingScreen.getState() == ui::LoadingScreen::State::WAITING2) {
 		controller->loadingJoystickCallback(joystick);
 	}
 	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
@@ -532,7 +534,6 @@ void Controller::mainMenuJoystickCallback(GLFWgamepadstate& joystick)
 	if (joystick.buttons[GLFW_GAMEPAD_BUTTON_A]) {
 		if (!mainMenuEnter) {
 			mainMenuEnter = true;
-			std::cout << "Button A" << std::endl;
 			mainMenuSelectButton();
 		}
 	}
@@ -693,8 +694,15 @@ void Controller::loadingKeyCallback(int key, int scancode, int action, int mods)
 {
 	// if any key or button is pressed then transition the state.
 	if (action == GLFW_PRESS)
-		loadingScreen.setState(ui::LoadingScreen::State::DONE);
+		if (loadingScreen.getState() == ui::LoadingScreen::State::WAITING1) {
+			loadingScreen.setState(ui::LoadingScreen::State::WAITING2);
+		}
+		else {
+			loadingScreen.setState(ui::LoadingScreen::State::DONE);
+		}
 }
+
+float anyKeyTimer = 0.f;
 
 void Controller::loadingJoystickCallback(GLFWgamepadstate& joystick)
 {
@@ -704,7 +712,15 @@ void Controller::loadingJoystickCallback(GLFWgamepadstate& joystick)
 	{
 		if (joystick.buttons[i])
 		{
-			loadingScreen.setState(ui::LoadingScreen::State::DONE);
+			if (loadingScreen.getState() == ui::LoadingScreen::State::WAITING1) {
+
+				loadingScreen.setState(ui::LoadingScreen::State::WAITING2);
+				anyKeyTimer = glfwGetTime();
+			}
+			else if (glfwGetTime() - anyKeyTimer > 0.2f) {
+
+				loadingScreen.setState(ui::LoadingScreen::State::DONE);
+			}
 			break;
 		}
 	}
