@@ -34,10 +34,10 @@ MainMenu::MainMenu(const std::vector<std::shared_ptr<entity::Arena>>& _arenas,
 		State state, Selection selection,
 		ArenaSelection arenaSelection) : Menu(),
 	arenas(_arenas), _state(state), _selection(selection), _arenaSelection(arenaSelection),
-	arena1(std::make_shared<openGLHelper::Texture>("rsc/images/tree.jpeg")),
-	arena2(std::make_shared<openGLHelper::Texture>("rsc/images/zap.png")),
-	arena3(std::make_shared<openGLHelper::Texture>("rsc/images/speed.png")),
-	arena4(std::make_shared<openGLHelper::Texture>("rsc/images/slowtrap.png")),
+	arena1(std::make_shared<openGLHelper::Texture>("rsc/images/arena1_map.png")),
+	arena2(std::make_shared<openGLHelper::Texture>("rsc/images/arena2_map.png")),
+	arena3(std::make_shared<openGLHelper::Texture>("rsc/images/arena3_map.png")),
+	arena4(std::make_shared<openGLHelper::Texture>("rsc/images/arena4_map.png")),
 	difficultyColor(0.8f, 0.5f, 0.3f)
 	
 {
