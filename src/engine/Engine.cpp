@@ -9,7 +9,8 @@
 namespace hyperbright {
 namespace engine {
 Engine::Engine() :
-	camera(), mainMenu(), pauseMenu(), endMenu(), devUI(render::Renderer::getInstance().getWindow()),
+	// need to make sure Renderer is instantiated first to setup up OpenGL context
+	devUI(render::Renderer::getInstance().getWindow()), camera(), mainMenu(), pauseMenu(), endMenu(),
 	loadingScreen(), fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(100)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");

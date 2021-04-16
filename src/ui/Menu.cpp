@@ -14,12 +14,14 @@ namespace ui {
 /*
 The base Menu class. All other Menu must derive from this class.
 */
-Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(100.f), width(0), height(0), color(0.72f, 0.11f, 0.87f)
+Menu::Menu() :
+	font("rsc/fonts/neon_pixel-7.ttf"),
+	defaultFontSize(100.f), width(0), height(0),
+	color(0.72f, 0.11f, 0.87f),
+	quadShader(std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl"))
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
-	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
 	quadShader->link();
-	tips = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/tips.png"));
 }
 
 void Menu::updateWindowAndFontSize()
@@ -29,8 +31,16 @@ void Menu::updateWindowAndFontSize()
 }
 
 MainMenu::MainMenu(State state, Selection selection, ArenaSelection arenaSelection) : Menu(),
-	_state(state), _selection(selection), _arenaSelection(arenaSelection)
-{}
+	_state(state), _selection(selection), _arenaSelection(arenaSelection),
+	arena1(std::make_shared<openGLHelper::Texture>("rsc/images/firstLoading1.png")),
+	arena2(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading2.png")),
+	arena3(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading3.png")),
+	arena4(std::make_shared<openGLHelper::Texture>("rsc/images/secondLoading3.png"))
+	
+{
+	// Don't why this can't be constrcuted in the initialzer list.
+	quad = std::make_unique<openGLHelper::Quad>(quadShader, arena1);
+}
 
 void MainMenu::render() {
 	updateWindowAndFontSize();
@@ -121,7 +131,10 @@ MainMenu::ArenaSelection MainMenu::getArenaSelection() const { return _arenaSele
 void MainMenu::setArenaSelection(ArenaSelection selection) { _arenaSelection = selection; }
 
 
-PauseMenu::PauseMenu(State state, Selection selection) : _selection(selection), _state(state) {}
+PauseMenu::PauseMenu(State state, Selection selection) :
+	_selection(selection), _state(state),
+	tips(std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/tips.png")))
+{}
 
 void PauseMenu::render() {
 	if (_state == State::ON) {

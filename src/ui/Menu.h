@@ -21,7 +21,6 @@ protected:
 	unsigned int width, height;
 	glm::vec3 color;
 	std::shared_ptr<openGLHelper::Shader> quadShader;
-	std::unique_ptr<openGLHelper::Quad> tips;
 
 	void updateWindowAndFontSize();
 };
@@ -66,6 +65,11 @@ private:
 	State _state;
 	Selection _selection;
 	ArenaSelection _arenaSelection;
+	std::unique_ptr<openGLHelper::Quad> quad;
+	std::shared_ptr<openGLHelper::Texture> arena1;
+	std::shared_ptr<openGLHelper::Texture> arena2;
+	std::shared_ptr<openGLHelper::Texture> arena3;
+	std::shared_ptr<openGLHelper::Texture> arena4;
 };
 
 
@@ -97,6 +101,7 @@ public:
 private:
 	Selection _selection;
 	State _state;
+	std::unique_ptr<openGLHelper::Quad> tips;
 };
 
 
