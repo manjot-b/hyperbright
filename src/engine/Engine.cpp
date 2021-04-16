@@ -553,15 +553,7 @@ void Engine::resetTeams(){
 
 
 bool Engine::winCheck() {
-	int playerScore = teamStats::scores.at(vehicles.at(0)->getTeam());
-	if (playerScore > teamStats::scores.at(vehicles.at(1)->getTeam())) {
-		if (playerScore > teamStats::scores.at(vehicles.at(2)->getTeam())) {
-			if (playerScore > teamStats::scores.at(vehicles.at(3)->getTeam())) {
-				return true;
-			}
-		}
-	}
-	return false;
+	return std::get<0>(teamStats::sortedScores().front()) == teamStats::Teams::TEAM0;
 }
 //A loop for endgame
 void Engine::endGame(physics::Simulate& simulator, ui::HUD& playerHUD)

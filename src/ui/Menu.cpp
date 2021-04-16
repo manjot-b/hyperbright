@@ -1,8 +1,5 @@
 ﻿#include "Menu.h"
 
-#include <algorithm>
-#include <array>
-#include <tuple>
 #include <iostream>
 
 #include "engine/TeamStats.h"
@@ -274,18 +271,7 @@ void EndMenu::render() {
 	float xCord, yCord;
 	const unsigned int rows = 10;
 
-	using TeamScore = std::tuple<engine::teamStats::Teams, unsigned int>;
-	constexpr size_t count = static_cast<size_t>(engine::teamStats::Teams::LAST);
-	std::array<TeamScore, count> sortedScores;
-
-	for (unsigned int i = 0; i < count; i++)
-	{
-		engine::teamStats::Teams team = static_cast<engine::teamStats::Teams>(i);
-		sortedScores[i] = std::make_tuple(team, engine::teamStats::scores[team]);
-	}
-	std::sort(sortedScores.begin(), sortedScores.end(), [](TeamScore a, TeamScore b) {
-		return std::get<1>(a) > std::get<1>(b);
-		});
+	std::array<engine::teamStats::TeamScore, engine::teamStats::teamCount> sortedScores = engine::teamStats::sortedScores();
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -294,7 +280,7 @@ void EndMenu::render() {
 	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
 
 	font.FaceSize(scale * defaultFontSize);
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < sortedScores.size(); i++)
 	{
 		engine::teamStats::Teams team = std::get<0>(sortedScores[i]);
 		std::string nameScore = engine::teamStats::names[team] + ": " + std::to_string(std::get<1>(sortedScores[i]));
