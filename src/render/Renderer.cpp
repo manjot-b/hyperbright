@@ -242,7 +242,10 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 		
 		hud->drawHUD();
 	}
-	devUI.render();
+
+	#if _DEBUG
+		devUI.render();
+	#endif
 
 	glfwSwapBuffers(window);
 }
