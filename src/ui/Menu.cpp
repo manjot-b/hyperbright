@@ -17,7 +17,7 @@ The base Menu class. All other Menu must derive from this class.
 Menu::Menu() :
 	font("rsc/fonts/neon_pixel-7.ttf"),
 	defaultFontSize(100.f), width(0), height(0),
-	color(1.72f, 0.11f, 0.87f),
+	color(0.72f, 0.11f, 0.87f),
 	quadShader(std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl"))
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
