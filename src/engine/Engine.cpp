@@ -441,8 +441,8 @@ void Engine::runGame() {
 	render::Renderer::getInstance().render(loadingScreen);
 	while (loadingScreen.getState() != ui::LoadingScreen::State::DONE)
 	{
-		glfwPollEvents();
 		controller->processInput(0);	// needed for gamepad button presses.
+		glfwPollEvents();
 	}
 
 	audioPlayer->playGameMusic();
