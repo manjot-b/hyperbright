@@ -10,7 +10,7 @@ namespace hyperbright {
 namespace engine {
 Engine::Engine() :
 	camera(), mainMenu(), pauseMenu(), endMenu(), devUI(render::Renderer::getInstance().getWindow()),
-	fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(100)
+	loadingScreen(), fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(100)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
 	shader->link();
@@ -27,6 +27,7 @@ Engine::Engine() :
 		mainMenu,
 		pauseMenu,
 		endMenu,
+		loadingScreen,
 		*audioPlayer);
 
 	initMainMenuEntities();
@@ -56,6 +57,8 @@ void Engine::resetAll()
 	for (unsigned int i = 0; i < teamStats::teamCount; i++)
 		teamStats::scores[static_cast<teamStats::Teams>(i)] = 0;
 
+	loadingScreen.setState(ui::LoadingScreen::State::LOADING1);
+
 	initMainMenuEntities();
 	initArenas();
 	initDevUI();
@@ -64,6 +67,7 @@ void Engine::resetAll()
 		mainMenu,
 		pauseMenu,
 		endMenu,
+		loadingScreen,
 		*audioPlayer);
 }
 
@@ -336,6 +340,7 @@ void Engine::run()
 		if (mainMenu.getSelection() == ui::MainMenu::Selection::EXIT)
 			break;
 
+		render::Renderer::getInstance().render(loadingScreen);
 		renderables.clear();	// remove main menu entities
 		vehicles.clear();
 		physicsModels.clear();
@@ -414,6 +419,14 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *currentArena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
+	// give enough time to read game rules.
+	float loadingMinWait = 5.f;
+	while (glfwGetTime() - lastFrame < loadingMinWait);
+
+	// Loading 2/3 complete
+	loadingScreen.setState(ui::LoadingScreen::State::LOADING2);
+	render::Renderer::getInstance().render(loadingScreen);
+
 	camera.initCameraBoom(glm::vec3(10.f, 5.f, 10.f), vehicles[0]->getDirection());
 
 	ai::AiManager aiManager;
@@ -423,6 +436,15 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(3));
 
 	ui::HUD playerHUD(vehicles[0], *currentArena, roundTimer);
+
+	// Loading complete. Wait for user input.
+	loadingScreen.setState(ui::LoadingScreen::State::WAITING);
+	render::Renderer::getInstance().render(loadingScreen);
+	while (loadingScreen.getState() != ui::LoadingScreen::State::DONE)
+	{
+		glfwPollEvents();
+		controller->processInput(0);	// needed for gamepad button presses.
+	}
 
 	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();

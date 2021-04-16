@@ -155,6 +155,16 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 	glUseProgram(0);	// unbind shader
 }
 
+void Renderer::render(const ui::LoadingScreen& loadingScreen)
+{
+	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	loadingScreen.render();
+	
+	glfwSwapBuffers(window);
+}
+
 /*
 * Renderer a frame.
 *

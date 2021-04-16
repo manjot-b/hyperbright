@@ -27,6 +27,7 @@ public:
 
 	float getWidth() const;
 	float getHeight() const;
+	void setTexture(std::shared_ptr<Texture> tex);
 
 private:
 	unsigned int indicesCount;

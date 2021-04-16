@@ -10,6 +10,7 @@
 #include "audio/AudioPlayer.h"
 #include "render/Camera.h"
 #include "ui/Menu.h"
+#include "ui/LoadingScreen.h"
 #include "entity/Vehicle.h"
 
 namespace hyperbright {
@@ -36,6 +37,7 @@ public:
 		ui::MainMenu& mainmenu,
 		ui::PauseMenu& pausemenu,
 		ui::EndMenu& endmenu,
+		ui::LoadingScreen& loadingScreen,
 		audio::AudioPlayer& audioPlayer);
 	~Controller();
 
@@ -59,6 +61,7 @@ private:
 	ui::MainMenu& mainMenu;
 	ui::PauseMenu& pauseMenu;
 	ui::EndMenu& endMenu;
+	ui::LoadingScreen& loadingScreen;
 	audio::AudioPlayer& audioPlayer;
 
 	std::shared_ptr<entity::Vehicle> playerVehicle;
@@ -84,6 +87,9 @@ private:
 	void pauseSelectButton();
 	void pauseUpButton();
 	void pauseDownButton();
+
+	void loadingKeyCallback(int key, int scancode, int action, int mods);
+	void loadingJoystickCallback(GLFWgamepadstate& joystick);
 
 	void gameKeyCallback(int key, int scancode, int action, int mods);
 	void gameJoystickCallback(GLFWgamepadstate& joystick);
