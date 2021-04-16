@@ -1,8 +1,5 @@
 ﻿#include "Menu.h"
 
-#include <algorithm>
-#include <array>
-#include <tuple>
 #include <iostream>
 
 #include "engine/TeamStats.h"
@@ -14,12 +11,14 @@ namespace ui {
 /*
 The base Menu class. All other Menu must derive from this class.
 */
-Menu::Menu() : font("rsc/fonts/neon_pixel-7.ttf"), defaultFontSize(100.f), width(0), height(0), color(0.72f, 0.11f, 0.87f)
+Menu::Menu() :
+	font("rsc/fonts/neon_pixel-7.ttf"),
+	defaultFontSize(100.f), width(0), height(0),
+	color(0.72f, 0.11f, 0.87f),
+	quadShader(std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl"))
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
-	quadShader = std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl");
 	quadShader->link();
-	tips = std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/tips.png"));
 }
 
 void Menu::updateWindowAndFontSize()
@@ -28,9 +27,25 @@ void Menu::updateWindowAndFontSize()
 	//defaultFontSize = width * 0.05;
 }
 
-MainMenu::MainMenu(State state, Selection selection, ArenaSelection arenaSelection) : Menu(),
-	_state(state), _selection(selection), _arenaSelection(arenaSelection)
-{}
+MainMenu::MainMenu(const std::vector<std::shared_ptr<entity::Arena>>& _arenas,
+		State state, Selection selection,
+		ArenaSelection arenaSelection) : Menu(),
+	arenas(_arenas), _state(state), _selection(selection), _arenaSelection(arenaSelection),
+	arena1(std::make_shared<openGLHelper::Texture>("rsc/images/arena1_map.png")),
+	arena2(std::make_shared<openGLHelper::Texture>("rsc/images/arena2_map.png")),
+	arena3(std::make_shared<openGLHelper::Texture>("rsc/images/arena3_map.png")),
+	arena4(std::make_shared<openGLHelper::Texture>("rsc/images/arena4_map.png")),
+	difficultyColor(0.8f, 0.5f, 0.3f)
+	
+{
+	// Don't why this can't be constrcuted in the initialzer list.
+	quad = std::make_unique<openGLHelper::Quad>(quadShader, arena1);
+	glm::vec2 scale = glm::vec2(1.f, (float)width / height);
+	scale *= .5f;
+	quad->scale(scale);
+	quad->translate(glm::vec2(.9f - quad->getWidth() * .5f, -.25f) / scale);
+	difficulties = { "BEGINNER", "NORMAL", "HARDCORE" };
+}
 
 void MainMenu::render() {
 	updateWindowAndFontSize();
@@ -84,28 +99,49 @@ void MainMenu::render() {
 			font.Render("QUIT", -1, FTPoint(xCoord, yCoord, 0));
 			break;
 		}
-		
 	}
+	glPopAttrib();
 	break;
 	case State::SETUP:
+	{
 		xCoord = ((float)width / 2) - (5 * (50 * scale) / 2);
-		yCoord = (float)height *  (3.f / rows);
+		yCoord = (float)height * (3.f / rows);
 		font.FaceSize(scaleBig * defaultFontSize);
 		font.Render("ARENA", -1, FTPoint(xCoord, yCoord, 0));
 
-		xCoord = ((float)width / 2) - (13 * (50 * scaleSmall) / 2);
+		xCoord = ((float)width / 2) - (14 * (50 * scaleSmall) / 2);
 		yCoord = (float)height * (1.5f / rows);
 		font.FaceSize(scale * defaultFontSize);
 		const std::string arena = "< Arena " + std::to_string(static_cast<int>(_arenaSelection) + 1) + " >";
 		font.Render(arena.c_str(), -1, FTPoint(xCoord, yCoord, 0));
 
-		xCoord = ((float)width / 2) - (13 * (50 * scaleSmall) / 2);
+		xCoord = ((float)width / 2) - (10 * (50 * scaleSmall) / 2);
 		yCoord = (float)height * (0.f / rows);
+		font.FaceSize(scaleSmall * defaultFontSize);
 		font.Render("Press enter", -1, FTPoint(xCoord, yCoord, 0));
+
+		glPixelTransferf(GL_RED_BIAS, difficultyColor.r - 1);
+		glPixelTransferf(GL_GREEN_BIAS, difficultyColor.g - 1);
+		glPixelTransferf(GL_BLUE_BIAS, difficultyColor.b - 1);
+		entity::Arena::Difficulty arenaDifficulty = arenas[static_cast<int>(_arenaSelection)]->getDifficulty();
+		const std::string& diff = difficulties[static_cast<int>(arenaDifficulty)];
+		xCoord = width - (diff.length() + 10) * (50 * scaleSmall) / 2;
+		yCoord = (float)height * (1.f / rows);
+		font.FaceSize(scaleSmall * defaultFontSize);
+		font.Render(diff.c_str(), -1, FTPoint(xCoord, yCoord, 0));
+
+		glPopAttrib();
+
+		quad->getShader()->use();
+		quad->render();
+		glUseProgram(0);
+	}
+	break;
+
+	default:
+		glPopAttrib();
 		break;
 	}
-	
-	glPopAttrib();
 }
 
 MainMenu::State MainMenu::getState() const { return _state; }
@@ -118,10 +154,31 @@ void MainMenu::setSelection(Selection selection) { _selection = selection; }
 
 MainMenu::ArenaSelection MainMenu::getArenaSelection() const { return _arenaSelection; }
 
-void MainMenu::setArenaSelection(ArenaSelection selection) { _arenaSelection = selection; }
+void MainMenu::setArenaSelection(ArenaSelection selection)
+{
+	_arenaSelection = selection;
+	switch (_arenaSelection)
+	{
+	case ArenaSelection::ARENA1:
+		quad->setTexture(arena1);
+		break;
+	case ArenaSelection::ARENA2:
+		quad->setTexture(arena2);
+		break;
+	case ArenaSelection::ARENA3:
+		quad->setTexture(arena3);
+		break;
+	case ArenaSelection::ARENA4:
+		quad->setTexture(arena4);
+		break;
+	}
+}
 
 
-PauseMenu::PauseMenu(State state, Selection selection) : _selection(selection), _state(state) {}
+PauseMenu::PauseMenu(State state, Selection selection) :
+	_selection(selection), _state(state),
+	tips(std::make_unique<openGLHelper::Quad>(quadShader, std::make_shared<openGLHelper::Texture>("rsc/images/tips.png")))
+{}
 
 void PauseMenu::render() {
 	if (_state == State::ON) {
@@ -214,18 +271,7 @@ void EndMenu::render() {
 	float xCord, yCord;
 	const unsigned int rows = 10;
 
-	using TeamScore = std::tuple<engine::teamStats::Teams, unsigned int>;
-	constexpr size_t count = static_cast<size_t>(engine::teamStats::Teams::LAST);
-	std::array<TeamScore, count> sortedScores;
-
-	for (unsigned int i = 0; i < count; i++)
-	{
-		engine::teamStats::Teams team = static_cast<engine::teamStats::Teams>(i);
-		sortedScores[i] = std::make_tuple(team, engine::teamStats::scores[team]);
-	}
-	std::sort(sortedScores.begin(), sortedScores.end(), [](TeamScore a, TeamScore b) {
-		return std::get<1>(a) > std::get<1>(b);
-		});
+	std::array<engine::teamStats::TeamScore, engine::teamStats::teamCount> sortedScores = engine::teamStats::sortedScores();
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -234,7 +280,7 @@ void EndMenu::render() {
 	glPixelTransferf(GL_BLUE_BIAS, color.b - 1);
 
 	font.FaceSize(scale * defaultFontSize);
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < sortedScores.size(); i++)
 	{
 		engine::teamStats::Teams team = std::get<0>(sortedScores[i]);
 		std::string nameScore = engine::teamStats::names[team] + ": " + std::to_string(std::get<1>(sortedScores[i]));

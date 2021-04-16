@@ -19,6 +19,7 @@
 #include "opengl-helper/Quad.h"
 #include "opengl-helper/Shader.h"
 #include "opengl-helper/Texture.h"
+#include "opengl-helper/CubeMap.h"
 
 namespace hyperbright {
 namespace render {
@@ -37,6 +38,7 @@ class Renderer
 		void getWindowSize(unsigned int& width, unsigned int& height);
 		void setWindowSize(unsigned int width, unsigned int height);
 		void initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> shader);
+		void setSkyboxCubeMap(const std::shared_ptr<openGLHelper::CubeMap> skyBox);
 
 		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD* hud);
 		void render(const ui::LoadingScreen& loadingScreen);
@@ -57,6 +59,8 @@ class Renderer
 		std::shared_ptr<openGLHelper::Texture> shadowMap;
 		std::unique_ptr<openGLHelper::FrameBuffer> shadowBuffer;
 		Light directionalLight;
+
+		std::shared_ptr<openGLHelper::CubeMap> skyBoxCubeMap;
 
 		std::shared_ptr<openGLHelper::Shader> quadShader;
 		std::unique_ptr<openGLHelper::Quad> texturedQuad;

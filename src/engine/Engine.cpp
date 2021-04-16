@@ -9,7 +9,8 @@
 namespace hyperbright {
 namespace engine {
 Engine::Engine() :
-	camera(), mainMenu(), pauseMenu(), endMenu(), devUI(render::Renderer::getInstance().getWindow()),
+	// need to make sure Renderer is instantiated first to setup up OpenGL context
+	devUI(render::Renderer::getInstance().getWindow()), camera(), mainMenu(arenas), pauseMenu(), endMenu(),
 	loadingScreen(), fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(100)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -264,10 +265,14 @@ void Engine::initMainMenuEntities()
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	skyBox->rotate(glm::vec3(glm::radians(30.f), 0.f, 0.f));
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
+	render::Renderer::getInstance().setSkyboxCubeMap(skyBox->getCubeMap());
 
 	int arenaSize = 25;
 	currentArena = std::make_shared<entity::Arena>(arenaSize, arenaSize, shader, entity::Arena::Difficulty::BEGINNER);
-	currentArena->addChargingStation(arenaSize / 2, arenaSize / 2 + 2, entity::Arena::Orientation::POS_Z);
+
+	currentArena->addChargingStation(arenaSize / 2 - 1, arenaSize / 2 + 5, entity::Arena::Orientation::POS_Z);
+	currentArena->addWall(arenaSize / 2 + 3, arenaSize / 2 + 1, 2, 7);
+
 	renderables.push_back(currentArena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)
@@ -283,6 +288,7 @@ void Engine::initEntities()
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	skyBox->rotate(glm::vec3(glm::radians(30.f), 0.f, 0.f));
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
+	render::Renderer::getInstance().setSkyboxCubeMap(skyBox->getCubeMap());
 
 	switch (mainMenu.getArenaSelection())
 	{
@@ -441,8 +447,8 @@ void Engine::runGame() {
 	render::Renderer::getInstance().render(loadingScreen);
 	while (loadingScreen.getState() != ui::LoadingScreen::State::DONE)
 	{
-		glfwPollEvents();
 		controller->processInput(0);	// needed for gamepad button presses.
+		glfwPollEvents();
 	}
 
 	audioPlayer->playGameMusic();
@@ -548,15 +554,7 @@ void Engine::resetTeams(){
 
 
 bool Engine::winCheck() {
-	int playerScore = teamStats::scores.at(vehicles.at(0)->getTeam());
-	if (playerScore > teamStats::scores.at(vehicles.at(1)->getTeam())) {
-		if (playerScore > teamStats::scores.at(vehicles.at(2)->getTeam())) {
-			if (playerScore > teamStats::scores.at(vehicles.at(3)->getTeam())) {
-				return true;
-			}
-		}
-	}
-	return false;
+	return std::get<0>(teamStats::sortedScores().front()) == teamStats::Teams::TEAM0;
 }
 //A loop for endgame
 void Engine::endGame(physics::Simulate& simulator, ui::HUD& playerHUD)

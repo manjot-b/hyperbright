@@ -101,6 +101,7 @@ void Model::render() const
 		_shader->setUniform1f("specularCoeff", mesh->material.specular);
 		_shader->setUniform1f("shininess", mesh->material.shininess);
 		_shader->setUniform1i("isEmission", mesh->material.isEmission);
+		_shader->setUniform1f("reflectiveStrength", mesh->material.reflectiveStrength);
 		_shader->setUniform1f("roughness", mesh->material.roughness);
 		_shader->setUniform3fv("fresnel", mesh->material.fresnel);
 		_shader->setUniform1i("useBeckmann", mesh->material.useBeckmann);

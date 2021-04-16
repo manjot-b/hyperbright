@@ -440,19 +440,21 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 		controller->gameKeyCallback(key, scancode, action, mods);
 	}
 
-	// Be able to access the DevUI window from any menu
-	if (action == GLFW_PRESS)
-	{
-		switch (key)
+	#if _DEBUG
+		// Be able to access the DevUI window from any menu
+		if (action == GLFW_PRESS)
 		{
-		case GLFW_KEY_SPACE:
-			if (mods & GLFW_MOD_CONTROL)
+			switch (key)
 			{
-				controller->toggleCursor();
+			case GLFW_KEY_SPACE:
+				if (mods & GLFW_MOD_CONTROL)
+				{
+					controller->toggleCursor();
+				}
+				break;
 			}
-			break;
 		}
-	}
+	#endif
 }
 
 void Controller::joystickCallback(GLFWwindow* window, GLFWgamepadstate& joystick)

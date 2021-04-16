@@ -151,8 +151,14 @@ void Renderer::initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> sh
 
 	shader->setUniform1i("tex", 0);	// sets location of texture to 0.
 	shader->setUniform1i("shadowMap", 1);
+	shader->setUniform1i("skybox", 2);
 
 	glUseProgram(0);	// unbind shader
+}
+
+void Renderer::setSkyboxCubeMap(const std::shared_ptr<openGLHelper::CubeMap> _skyBoxCubeMap)
+{
+	skyBoxCubeMap = _skyBoxCubeMap;
 }
 
 void Renderer::render(const ui::LoadingScreen& loadingScreen)
@@ -201,6 +207,7 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 	glViewport(0, 0, width, height);
 
 	shadowMap->bind(GL_TEXTURE1);
+	skyBoxCubeMap->bind(GL_TEXTURE2);
 
 	// Render regular scene
 	glClearColor(0.05f, 0.05f, 0.23f, 1.0f);
@@ -242,7 +249,10 @@ void Renderer::render(const std::vector<std::shared_ptr<IRenderable>>& renderabl
 		
 		hud->drawHUD();
 	}
-	devUI.render();
+
+	#if _DEBUG
+		devUI.render();
+	#endif
 
 	glfwSwapBuffers(window);
 }

@@ -85,6 +85,7 @@ void Mesh::extractDataFromMesh(const aiScene* scene, const aiMesh* mesh)
 		material.diffuse = 1.f;
 		material.specular = 1.f;
 		material.isEmission = false;
+		material.reflectiveStrength = 0.f;
 		material.roughness = 1.f;
 		material.fresnel = glm::vec3(1.f);
 		material.useBeckmann = false;

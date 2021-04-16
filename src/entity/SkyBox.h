@@ -15,13 +15,14 @@ public:
 	void render() const;
 	void renderShadow(const std::shared_ptr<openGLHelper::Shader>&) const {}	// not included in shadow
 	void rotate(const glm::vec3& rot);
+	const std::shared_ptr<openGLHelper::CubeMap> getCubeMap() const;
 
 private:
 	unsigned int indicesCount;
 	std::unique_ptr<openGLHelper::VertexArray> vertexArray;
 	glm::mat4 modelMat;
 
-	openGLHelper::CubeMap cubeMap;
+	std::shared_ptr<openGLHelper::CubeMap> cubeMap;
 	void sendSharedShaderUniforms(const glm::mat4& projection, const glm::mat4& view, const glm::vec3&, const glm::mat4&) const;
 };
 }   // namespace render

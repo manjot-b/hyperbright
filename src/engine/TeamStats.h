@@ -2,7 +2,10 @@
 
 #include <glm/glm.hpp>
 
+#include <array>
+#include <algorithm>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 
 namespace hyperbright {
@@ -24,6 +27,9 @@ extern const std::unordered_map<Teams, glm::vec4> colors;
 extern std::unordered_map<Teams, unsigned int> scores;
 
 extern std::unordered_map<Teams, std::string> names;
+
+using TeamScore = std::tuple<engine::teamStats::Teams, unsigned int>;
+std::array<TeamScore, teamCount> sortedScores();
 }	// namespace teamStats
 }	// namespace engine
 }	// namespace hyperbright
