@@ -27,6 +27,7 @@ Engine::Engine() :
 		mainMenu,
 		pauseMenu,
 		endMenu,
+		loadingScreen,
 		*audioPlayer);
 
 	initMainMenuEntities();
@@ -56,6 +57,8 @@ void Engine::resetAll()
 	for (unsigned int i = 0; i < teamStats::teamCount; i++)
 		teamStats::scores[static_cast<teamStats::Teams>(i)] = 0;
 
+	loadingScreen.setState(ui::LoadingScreen::State::LOADING1);
+
 	initMainMenuEntities();
 	initArenas();
 	initDevUI();
@@ -64,6 +67,7 @@ void Engine::resetAll()
 		mainMenu,
 		pauseMenu,
 		endMenu,
+		loadingScreen,
 		*audioPlayer);
 }
 
@@ -415,6 +419,10 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *currentArena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
+	// Loading 2/3 complete
+	loadingScreen.setState(ui::LoadingScreen::State::LOADING2);
+	render::Renderer::getInstance().render(loadingScreen);
+
 	camera.initCameraBoom(glm::vec3(10.f, 5.f, 10.f), vehicles[0]->getDirection());
 
 	ai::AiManager aiManager;
@@ -424,6 +432,15 @@ void Engine::runGame() {
 	aiManager.loadAiVehicle(vehicles.at(3));
 
 	ui::HUD playerHUD(vehicles[0], *currentArena, roundTimer);
+
+	// Loading complete. Wait for user input.
+	loadingScreen.setState(ui::LoadingScreen::State::WAITING);
+	render::Renderer::getInstance().render(loadingScreen);
+	while (loadingScreen.getState() != ui::LoadingScreen::State::DONE)
+	{
+		glfwPollEvents();
+		controller->processInput(0);	// needed for gamepad button presses.
+	}
 
 	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();

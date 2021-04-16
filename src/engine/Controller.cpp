@@ -10,9 +10,10 @@ Controller::Controller(GLFWwindow* _window,
 	ui::MainMenu& _mainmenu,
 	ui::PauseMenu& _pausemenu,
 	ui::EndMenu& _endmenu,
+	ui::LoadingScreen& _loadingScreen,
 	audio::AudioPlayer& _audioPlayer) :
 	window(_window), camera(_camera),
-	mainMenu(_mainmenu), pauseMenu(_pausemenu), endMenu(_endmenu),
+	mainMenu(_mainmenu), pauseMenu(_pausemenu), endMenu(_endmenu), loadingScreen(_loadingScreen),
 	audioPlayer(_audioPlayer), isCursorShowing(false), manualCamera(false)
 {
 	// The following calls require the Renderer to setup GLFW/glad first.
@@ -44,7 +45,10 @@ bool trap;
 
 void Controller::processInput(float deltaSec)
 {
-	if (mainMenu.getState() != ui::MainMenu::State::OFF || pauseMenu.getState() == ui::PauseMenu::State::ON || endMenu.getState() == ui::EndMenu::State::ON) {
+	if (mainMenu.getState() != ui::MainMenu::State::OFF ||
+		loadingScreen.getState() == ui::LoadingScreen::State::WAITING ||
+		pauseMenu.getState() == ui::PauseMenu::State::ON ||
+		endMenu.getState() == ui::EndMenu::State::ON) {
 		if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
 			glfwGetGamepadState(GLFW_JOYSTICK_1, &joystick);
 
@@ -421,6 +425,9 @@ void Controller::keyCallback(GLFWwindow* window, int key, int scancode, int acti
 	if (controller->mainMenu.getState() != ui::MainMenu::State::OFF) {
 		controller->mainMenuKeyCallback(key, scancode, action, mods);
 	}
+	else if (controller->loadingScreen.getState() == ui::LoadingScreen::State::WAITING) {
+		controller->loadingKeyCallback(key, scancode, action, mods);
+	}
 	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
 		controller->pauseMenuKeyCallback(key, scancode, action, mods);
 	}
@@ -452,6 +459,9 @@ void Controller::joystickCallback(GLFWwindow* window, GLFWgamepadstate& joystick
 
 	if (controller->mainMenu.getState() != ui::MainMenu::State::OFF) {
 		controller->mainMenuJoystickCallback(joystick);
+	}
+	else if (controller->loadingScreen.getState() == ui::LoadingScreen::State::WAITING) {
+		controller->loadingJoystickCallback(joystick);
 	}
 	else if (controller->pauseMenu.getState() == ui::PauseMenu::State::ON) {
 		controller->pauseMenuJoystickCallback(joystick);
@@ -601,7 +611,6 @@ void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mod
 			break;
 		case GLFW_KEY_ENTER:
 			pauseSelectButton();
-			audioPlayer.playCarIdle();
 			break;
 		}
 	}
@@ -645,6 +654,7 @@ void Controller::pauseSelectButton()
 	}
 	else {
 		pauseMenu.setState(ui::PauseMenu::State::OFF);
+		audioPlayer.playCarIdle();
 	}
 	audioPlayer.playMenuEnterSound();
 }
@@ -674,6 +684,27 @@ void Controller::pauseDownButton()
 	audioPlayer.playMenuSwitchSound();
 }
 
+void Controller::loadingKeyCallback(int key, int scancode, int action, int mods)
+{
+	// if any key or button is pressed then transition the state.
+	if (action == GLFW_PRESS)
+		loadingScreen.setState(ui::LoadingScreen::State::DONE);
+}
+
+void Controller::loadingJoystickCallback(GLFWgamepadstate& joystick)
+{
+	// if any key or button is pressed then transition the state.
+
+	for (unsigned int i = 0; i < GLFW_GAMEPAD_BUTTON_LAST; i++)
+	{
+		if (joystick.buttons[i])
+		{
+			loadingScreen.setState(ui::LoadingScreen::State::DONE);
+			break;
+		}
+	}
+		
+}
 
 void Controller::gameKeyCallback(int key, int scancode, int action, int mods)
 {

@@ -15,10 +15,15 @@ public:
 	{
 		LOADING1,
 		LOADING2,
+		WAITING,
 		DONE
 	};
+
 	LoadingScreen();
+
 	void render() const;
+	State getState() const;
+	void setState(State state);
 
 private:
 	State state;
@@ -28,10 +33,6 @@ private:
 	
 	std::shared_ptr<openGLHelper::Shader> quadShader;
 	std::unique_ptr<openGLHelper::Quad> quad;
-	
-	State getState();
-	void setState(State state);
-
 };
 
 }	// namespace ui

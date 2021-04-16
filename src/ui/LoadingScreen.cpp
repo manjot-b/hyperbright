@@ -24,7 +24,7 @@ void LoadingScreen::render() const
 	glUseProgram(0);
 }
 
-LoadingScreen::State LoadingScreen::getState() { return state; }
+LoadingScreen::State LoadingScreen::getState() const { return state; }
 
 void LoadingScreen::setState(State state)
 {
@@ -37,8 +37,11 @@ void LoadingScreen::setState(State state)
 	case hyperbright::ui::LoadingScreen::State::LOADING2:
 		quad->setTexture(loadingMid);
 		break;
-	case hyperbright::ui::LoadingScreen::State::DONE:
+	case hyperbright::ui::LoadingScreen::State::WAITING:
 		quad->setTexture(loadingDone);
+		break;
+	case hyperbright::ui::LoadingScreen::State::DONE:
+	default:
 		break;
 	}
 }
