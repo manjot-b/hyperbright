@@ -447,6 +447,7 @@ void Engine::runGame() {
 
 	audioPlayer->playGameMusic();
 	audioPlayer->playCarIdle();
+	audioPlayer->unmuteCarIdle();
 
 	lastFrame = glfwGetTime();	// Accounts for setup time
 	float introState = 5.f;

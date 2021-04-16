@@ -245,6 +245,7 @@ void AudioPlayer::init() {
     alSourcefv(source[CARIDLE], AL_VELOCITY, source0Vel);
     alSourcei(source[CARIDLE], AL_BUFFER, buffer[CARIDLE]);
     alSourcei(source[CARIDLE], AL_LOOPING, AL_TRUE);
+    carIdleGain = 0.32f;
 
     loadSound("rsc/sounds/start_menu_music.wav");
     alSourcef(source[STARTMENUMUSIC], AL_PITCH, 1.0f);
@@ -366,6 +367,7 @@ AudioPlayer::AudioPlayer()
     ctx = alcCreateContext(device, NULL);
     alcMakeContextCurrent(ctx);
     curLoaded = 0;
+    carIdleGain = 0.f;
 
     if (!device)
     {
@@ -484,6 +486,16 @@ void AudioPlayer::stopLossMusic() {
     alSourceStop(source[LOSSMUSIC]);
 }
 
+void AudioPlayer::muteCarIdle()
+{
+    { alSourcef(source[CARIDLE], AL_GAIN, 0.f); }
+}
+
+void AudioPlayer::unmuteCarIdle()
+{
+    { alSourcef(source[CARIDLE], AL_GAIN, carIdleGain); }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -517,16 +529,13 @@ void AudioPlayer::playSpeedSound() {
 
 void AudioPlayer::adjustCarIdlePitch(float speed) {
 
-    if (speed < 0) {
-        speed = 0.f;
-    }
-    alSourcef(source[CARIDLE], AL_PITCH, 1.0f + (speed/30.f));
+    alSourcef(source[CARIDLE], AL_PITCH, 1.0f + (abs(speed)/30.f));
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 void AudioPlayer::playCarIdle() {
-
+    alSourcef(source[CARIDLE], AL_PITCH, 1.0f);
     alSourcePlay(source[CARIDLE]);
 }
 

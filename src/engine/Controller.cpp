@@ -167,9 +167,11 @@ void Controller::processInput(float deltaSec)
 		if (joystick.buttons[GLFW_GAMEPAD_BUTTON_START]) { // PAUSE
 			if (pauseMenu.getState() == ui::PauseMenu::State::OFF) {
 				pauseMenu.setState(ui::PauseMenu::State::ON);
+				audioPlayer.muteCarIdle();
 			}
 			else {
 				pauseMenu.setState(ui::PauseMenu::State::OFF);
+				audioPlayer.unmuteCarIdle();
 			}
 		}
 
@@ -599,7 +601,7 @@ void Controller::mainMenuUpOrDownButton()
 
 void Controller::pauseMenuKeyCallback(int key, int scancode, int action, int mods)
 {
-	audioPlayer.stopCarIdle();
+	audioPlayer.muteCarIdle();
 	if (action == GLFW_PRESS)
 	{
 		switch (key) {
@@ -648,13 +650,14 @@ void Controller::pauseSelectButton()
 		setWindowShouldClose(true);
 	}
 	else if (pauseMenu.getSelection() == ui::PauseMenu::Selection::MAIN_MENU) {
+		audioPlayer.stopCarIdle();
 		pauseMenu.setSelection(ui::PauseMenu::Selection::RESUME);
 		pauseMenu.setState(ui::PauseMenu::State::OFF);
 		mainMenu.setState(ui::MainMenu::State::WELCOME);
 	}
 	else {
 		pauseMenu.setState(ui::PauseMenu::State::OFF);
-		audioPlayer.playCarIdle();
+		audioPlayer.unmuteCarIdle();
 	}
 	audioPlayer.playMenuEnterSound();
 }
@@ -712,10 +715,10 @@ void Controller::gameKeyCallback(int key, int scancode, int action, int mods)
 	{
 		switch (key)
 		{
-		case GLFW_KEY_C:
+		/*case GLFW_KEY_C:
 			manualCamera = !manualCamera;
 			std::cout << "Switch to manual camera." << std::endl;
-			break;
+			break;*/
 		case GLFW_KEY_ESCAPE:
 			pauseMenu.setState(ui::PauseMenu::State::ON);
 			break;
