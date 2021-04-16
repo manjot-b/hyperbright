@@ -84,6 +84,7 @@ void Quad::translate(glm::vec2 trans)
 
 float Quad::getWidth() const { return width; }
 float Quad::getHeight() const { return height; }
+void Quad::setTexture(std::shared_ptr<Texture> tex) { texture = tex; }
 
 }	// namespace openGLHelper
 }	// namespace hyperbright

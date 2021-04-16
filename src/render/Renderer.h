@@ -14,6 +14,7 @@
 #include "ui/Menu.h"
 
 #include "ui/HUD.h"
+#include "ui/LoadingScreen.h"
 #include "opengl-helper/FrameBuffer.h"
 #include "opengl-helper/Quad.h"
 #include "opengl-helper/Shader.h"
@@ -38,6 +39,7 @@ class Renderer
 		void initShaderUniforms(const std::shared_ptr<openGLHelper::Shader> shader);
 
 		void render(const std::vector<std::shared_ptr<IRenderable>>& renderables, ui::DevUI& devUI, ui::Menu& menu, const Camera& camera, ui::HUD* hud);
+		void render(const ui::LoadingScreen& loadingScreen);
 
 	private:
 		GLFWwindow* window;

@@ -10,19 +10,21 @@
 
 #include "audio/AudioPlayer.h"
 #include "entity/Arena.h"
+#include "entity/Vehicle.h"
+#include "entity/Pickup.h"
+#include "entity/PickupManager.h"
 #include "Controller.h"
 #include "model/Model.h"
 #include "ui/Menu.h"
 #include "ui/DevUI.h"
 #include "ui/HUD.h"
+#include "ui/LoadingScreen.h"
 #include "render/IRenderable.h"
 #include "render/Renderer.h"
 #include "physics/Simulate.h"
 #include "opengl-helper/Texture.h"
 #include "opengl-helper/Shader.h"
-#include "entity/Vehicle.h"
-#include "entity/Pickup.h"
-#include "entity/PickupManager.h"
+
 
 namespace hyperbright {
 namespace engine {
@@ -57,6 +59,8 @@ private:
 	ui::PauseMenu pauseMenu;
 	ui::EndMenu endMenu;
 	ui::DevUI devUI;
+	ui::LoadingScreen loadingScreen;
+
 	std::vector<std::shared_ptr<entity::Arena>> arenas;
 	std::shared_ptr<entity::Arena> currentArena;
 	std::unique_ptr<Controller> controller;
