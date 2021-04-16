@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <FTGL/ftgl.h>
+
+#include "entity/Arena.h"
 #include "opengl-helper/FrameBuffer.h"
 #include "opengl-helper/Quad.h"
 #include "opengl-helper/Texture.h"
@@ -21,7 +23,6 @@ protected:
 	unsigned int width, height;
 	glm::vec3 color;
 	std::shared_ptr<openGLHelper::Shader> quadShader;
-	std::unique_ptr<openGLHelper::Quad> tips;
 
 	void updateWindowAndFontSize();
 };
@@ -51,7 +52,9 @@ public:
 		LAST	// Not an actual selction. Used to get the selection count
 	};
 
-	MainMenu(State state = State::WELCOME, Selection selection = Selection::START, ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
+	MainMenu(const std::vector<std::shared_ptr<entity::Arena>>& arenas,
+		State state = State::WELCOME, Selection selection = Selection::START,
+		ArenaSelection _arenaSelection = ArenaSelection::ARENA1);
 	
 	void render();
 	
@@ -66,6 +69,14 @@ private:
 	State _state;
 	Selection _selection;
 	ArenaSelection _arenaSelection;
+	std::unique_ptr<openGLHelper::Quad> quad;
+	std::shared_ptr<openGLHelper::Texture> arena1;
+	std::shared_ptr<openGLHelper::Texture> arena2;
+	std::shared_ptr<openGLHelper::Texture> arena3;
+	std::shared_ptr<openGLHelper::Texture> arena4;
+	const std::vector<std::shared_ptr<entity::Arena>>& arenas;
+	std::array<std::string, 3> difficulties;
+	glm::vec3 difficultyColor;
 };
 
 
@@ -97,6 +108,7 @@ public:
 private:
 	Selection _selection;
 	State _state;
+	std::unique_ptr<openGLHelper::Quad> tips;
 };
 
 

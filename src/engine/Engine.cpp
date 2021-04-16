@@ -9,7 +9,8 @@
 namespace hyperbright {
 namespace engine {
 Engine::Engine() :
-	camera(), mainMenu(), pauseMenu(), endMenu(), devUI(render::Renderer::getInstance().getWindow()),
+	// need to make sure Renderer is instantiated first to setup up OpenGL context
+	devUI(render::Renderer::getInstance().getWindow()), camera(), mainMenu(arenas), pauseMenu(), endMenu(),
 	loadingScreen(), fps(60.f), deltaSec(0.0f), lastFrame(0.0f), roundTimer(100)
 {
 	shader = std::make_shared<openGLHelper::Shader>("rsc/shaders/vertex.glsl", "rsc/shaders/fragment.glsl");
@@ -267,7 +268,10 @@ void Engine::initMainMenuEntities()
 
 	int arenaSize = 25;
 	currentArena = std::make_shared<entity::Arena>(arenaSize, arenaSize, shader, entity::Arena::Difficulty::BEGINNER);
-	currentArena->addChargingStation(arenaSize / 2, arenaSize / 2 + 2, entity::Arena::Orientation::POS_Z);
+
+	currentArena->addChargingStation(arenaSize / 2 - 1, arenaSize / 2 + 5, entity::Arena::Orientation::POS_Z);
+	currentArena->addWall(arenaSize / 2 + 3, arenaSize / 2 + 1, 2, 7);
+
 	renderables.push_back(currentArena);
 
 	// Create the player vehicle, setting its starting position, direction, and team (which includes the color of the vehicle/tiles)

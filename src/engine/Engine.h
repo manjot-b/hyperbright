@@ -54,11 +54,11 @@ private:
 	glm::vec2 ai2StartingPosition;
 	glm::vec2 ai3StartingPosition;
 
+	ui::DevUI devUI;
 	render::Camera camera;
 	ui::MainMenu mainMenu;
 	ui::PauseMenu pauseMenu;
 	ui::EndMenu endMenu;
-	ui::DevUI devUI;
 	ui::LoadingScreen loadingScreen;
 
 	std::vector<std::shared_ptr<entity::Arena>> arenas;
