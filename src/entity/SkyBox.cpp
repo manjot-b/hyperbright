@@ -7,7 +7,7 @@ namespace hyperbright {
 namespace entity {
 SkyBox::SkyBox() :
 	IRenderable(std::make_shared<openGLHelper::Shader>("rsc/shaders/skybox_vertex.glsl", "rsc/shaders/skybox_fragment.glsl")),
-	cubeMap("rsc/images/night_skybox.png"), modelMat(1.f)
+	cubeMap(std::make_shared<openGLHelper::CubeMap>("rsc/images/night_skybox.png")), modelMat(1.f)
 {
 	_shader->link();
 	const float scale = 1000.f;	// make sure this is within the perspective far plane.
@@ -48,7 +48,7 @@ SkyBox::SkyBox() :
 void SkyBox::render() const
 {
 	_shader->setUniformMatrix4fv("model", modelMat);
-	cubeMap.bind(GL_TEXTURE0);
+	cubeMap->bind(GL_TEXTURE0);
 	vertexArray->bind();
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -69,5 +69,7 @@ void SkyBox::rotate(const glm::vec3& rot)
 {
 	modelMat = modelMat * glm::eulerAngleXYZ(rot.x, rot.y, rot.z);
 }
+
+const std::shared_ptr<openGLHelper::CubeMap> SkyBox::getCubeMap() const { return cubeMap; }
 }   // namespace render
 }   // namespace hyperbright

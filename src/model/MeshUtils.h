@@ -28,6 +28,7 @@ struct Material
 	float specular;
 	float shininess;
 	bool isEmission;
+	float reflectiveStrength;
 
 	// These values are used for cook-torrance shading.
 	float roughness;

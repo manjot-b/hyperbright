@@ -83,6 +83,7 @@ void DevUI::render()
     ImGui::SliderFloat("Diffuse Strength", &settings.vehicleBodyMaterial.diffuse, 0.0f, 1.0f);
     ImGui::SliderFloat("Specular Strength", &settings.vehicleBodyMaterial.specular, 0.0f, 1.0f);
     ImGui::SliderFloat("Shininess", &settings.vehicleBodyMaterial.shininess, 0.01f, 1000.0f);
+    ImGui::SliderFloat("Reflectance", &settings.vehicleBodyMaterial.reflectiveStrength, .0f, 1.f);
     ImGui::SliderFloat("Roughness", &settings.vehicleBodyMaterial.roughness, 0.01f, 1.0f);
     ImGui::ColorEdit3("Fresnel", (float*)&settings.vehicleBodyMaterial.fresnel);
     ImGui::Checkbox("Beckmann NDF", &settings.vehicleBodyMaterial.useBeckmann);

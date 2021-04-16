@@ -265,6 +265,7 @@ void Engine::initMainMenuEntities()
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	skyBox->rotate(glm::vec3(glm::radians(30.f), 0.f, 0.f));
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
+	render::Renderer::getInstance().setSkyboxCubeMap(skyBox->getCubeMap());
 
 	int arenaSize = 25;
 	currentArena = std::make_shared<entity::Arena>(arenaSize, arenaSize, shader, entity::Arena::Difficulty::BEGINNER);
@@ -287,6 +288,7 @@ void Engine::initEntities()
 	std::shared_ptr<entity::SkyBox> skyBox = std::make_shared<entity::SkyBox>();
 	skyBox->rotate(glm::vec3(glm::radians(30.f), 0.f, 0.f));
 	renderables.push_back(std::static_pointer_cast<render::IRenderable>(skyBox));
+	render::Renderer::getInstance().setSkyboxCubeMap(skyBox->getCubeMap());
 
 	switch (mainMenu.getArenaSelection())
 	{
