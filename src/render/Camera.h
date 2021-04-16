@@ -40,6 +40,8 @@ public:
     void updateCameraVectors(glm::vec3 position, glm::vec3 poi, float deltaTime); // dynamic camera on boom following a point
     void updateCameraVectors(std::shared_ptr<entity::Vehicle>& player, float deltaTime); // dynamic camera on boom following vehicle
     void initCameraBoom(glm::vec3 position, glm::vec3 direction);
+    void setBoomRestLength(float restL) { camRestLength = restL; }
+    void setCamHeight(float height) { camHeight = height; }
 
     void setConfigs(float camHeight, float camVelCoef, float camRestLen, float camSwStr, float poiHeight, float poiDepth);
     void setCameraPostion(glm::vec3 position); 

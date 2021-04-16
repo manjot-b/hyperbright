@@ -91,7 +91,7 @@ private:
 	bool reachedTarget3 = false;
 
 	void runMainMenu();
-	void endGame();
+	void endGame(physics::Simulate& simulator, ui::HUD& playerHUD);
 	void runGame();
 	void loadTextures();
 	void initEntities();
@@ -100,7 +100,7 @@ private:
 	void resetTeams();
 
 	void getDevUISettings();
-	void getDevUIHandlingSettings(physics::Simulate simulator);
+	void getDevUIHandlingSettings(physics::Simulate& simulator);
 	void mainMenuAnimation(physics::Simulate& simulator, float animationClock);
 	void introScene(float introState, float deltaSec);
 };

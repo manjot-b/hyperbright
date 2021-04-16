@@ -351,7 +351,6 @@ void Engine::run()
 		runGame();
 
 		if (mainMenu.getState() != ui::MainMenu::State::WELCOME) {
-			endGame();
 
 			if (!controller->isWindowClosed()) {	// user selected to go to main menu from end menu.
 				resetAll();
@@ -530,6 +529,9 @@ void Engine::runGame() {
 		getDevUIHandlingSettings(simulator);
 		glfwPollEvents();
 	}
+	if (endMenu.getState() == ui::EndMenu::State::ON) {
+		endGame(simulator, playerHUD);
+	}
 	resetTeams();
 	audioPlayer->stopGameMusic();
 	audioPlayer->stopCarIdle();
@@ -556,15 +558,27 @@ bool Engine::winCheck() {
 	return false;
 }
 //A loop for endgame
-void Engine::endGame()
+void Engine::endGame(physics::Simulate& simulator, ui::HUD& playerHUD)
 {
+	audioPlayer->stopGameMusic();
+	audioPlayer->stopCarIdle();
+	playerHUD.setState(ui::HUD::State::OUTRO);
+
 	if (winCheck()){
 		audioPlayer->startWinMusic();
+		playerHUD.victory = true;
 	}
 	else {
 		audioPlayer->startLossMusic();
+		playerHUD.victory = false;
 	}
 
+	for (auto vehicle : vehicles) {
+		vehicle->resetControls();
+	}
+	
+	glm::vec3 circle;
+	float theta = 0.f;
 	while (!controller->isWindowClosed() && mainMenu.getState() != ui::MainMenu::State::WELCOME) {
 		// update global time
 		float currentFrame = glfwGetTime();
@@ -579,11 +593,23 @@ void Engine::endGame()
 		}
 		lastFrame = currentFrame;
 
+		theta += deltaSec;
+		camera.setBoomRestLength(3.f * abs(sin(theta/4.f)) + 8.f);
+		camera.setCamHeight(3.5f);
+		circle = { vehicles[0]->getPosition().x - cos(theta/2.f), 0.f, vehicles[0]->getPosition().z - sin(theta/2.f) };
+		camera.updateCameraVectors(vehicles[0]->getPosition(), circle, deltaSec);
+
 		devUI.update(deltaSec, roundTimer);
 		controller->processInput(deltaSec);	// will update the menu state once ENTER is pressed.
 
+		for (int i = 0; i < vehicles.size(); i++) {
+
+			simulator.applyStoppingForce(i);
+		}
+		simulator.stepPhysics(fpsLimit);
+
 		// render only the menu for now.
-		render::Renderer::getInstance().render(renderables, devUI, endMenu, camera, nullptr);
+		render::Renderer::getInstance().render(renderables, devUI, endMenu, camera, &playerHUD);
 		
 		getDevUISettings();
 		glfwPollEvents();
@@ -616,21 +642,15 @@ void Engine::getDevUISettings() {
 		devUI.settings.poiDepth);
 }
 
-void Engine::getDevUIHandlingSettings(physics::Simulate simulator)
+void Engine::getDevUIHandlingSettings(physics::Simulate& simulator)
 {
 	simulator.setConfigs(devUI.settings.handling);
 }
 
-float start = 2.f;
-float left = start + 1.35f;
-float turnRelease = 0.8f;
-float leftHandbrake = left + 1.9f;
-float handbrakeTurnRelease = 0.57f;
-
 void Engine::mainMenuAnimation(physics::Simulate& simulator, float animationClock)
 {
 	if (reachedTarget3) {
-		simulator.applyStoppingForce();
+		simulator.applyStoppingForce(0);
 		return;
 	}
 
@@ -640,8 +660,6 @@ void Engine::mainMenuAnimation(physics::Simulate& simulator, float animationCloc
 
 	if (animationClock > 1.5f) {
 		if (!reachedTarget1) {
-			//std::cout << "target: " << target1.x << " " << target1.y << " " << target1.z << std::endl;
-			//std::cout << "player: " << player->getPosition().x << " " << player->getPosition().y << " " << player->getPosition().z << std::endl;
 			reachedTarget3 = false;
 			glm::vec3 targetDir = glm::normalize(target1 - player->getPosition());
 			float projP_T = glm::dot(targetDir, player->getDirection());
@@ -663,7 +681,6 @@ void Engine::mainMenuAnimation(physics::Simulate& simulator, float animationCloc
 				player->stopLeft();
 				simulator.applyIntroForce(35);
 			}
-			std::cout << "target1: " << glm::length(target1 - player->getPosition()) << std::endl;
 
 			if (glm::length(target1 - player->getPosition()) < 3.f) reachedTarget1 = true;
 		}
@@ -688,7 +705,7 @@ void Engine::mainMenuAnimation(physics::Simulate& simulator, float animationCloc
 				player->stopLeft();
 				simulator.applyIntroForce(30);
 			}
-			std::cout << "target2: " << glm::length(target2 - player->getPosition()) << std::endl;
+
 			if (glm::length(target2 - player->getPosition()) < 3.f) reachedTarget2 = true;
 		}
 		else if (!reachedTarget3) {
@@ -713,32 +730,9 @@ void Engine::mainMenuAnimation(physics::Simulate& simulator, float animationCloc
 				simulator.applyIntroForce(30);
 			}
 
-			std::cout << "target3: " << glm::length(target3 - player->getPosition()) << std::endl;
 			if (glm::length(target3 - player->getPosition()) < 5.f) reachedTarget3 = true;
 		}
 	}
-	/*if (animationClock > leftHandbrake + 3.5f) {
-		simulator.applyStoppingForce();
-	}
-	else if (animationClock > leftHandbrake + handbrakeTurnRelease) {
-		player->stopHardTurn();
-		player->stopLeft();
-		simulator.applyIntroForce(25);
-	}
-	else if (animationClock > leftHandbrake) {
-		player->hardTurn();
-		player->turnLeft();
-	}
-	else if (animationClock > left + turnRelease) {
-		player->stopLeft();
-		simulator.applyIntroForce(30);
-	}
-	else if (animationClock > left) {
-		player->turnLeft();
-	}
-	else if (animationClock > start) {
-		simulator.applyIntroForce(35);
-	}*/
 }
 
 void Engine::introScene(float introState, float deltaSec)
