@@ -419,6 +419,10 @@ void Engine::runGame() {
 	physics::Simulate simulator(physicsModels, vehicles, *currentArena, pickupManager);
 	simulator.setAudioPlayer(audioPlayer);
 
+	// give enough time to read game rules.
+	float loadingMinWait = 5.f;
+	while (glfwGetTime() - lastFrame < loadingMinWait);
+
 	// Loading 2/3 complete
 	loadingScreen.setState(ui::LoadingScreen::State::LOADING2);
 	render::Renderer::getInstance().render(loadingScreen);
