@@ -17,7 +17,7 @@ The base Menu class. All other Menu must derive from this class.
 Menu::Menu() :
 	font("rsc/fonts/neon_pixel-7.ttf"),
 	defaultFontSize(100.f), width(0), height(0),
-	color(0.72f, 0.11f, 0.87f),
+	color(1.72f, 0.11f, 0.87f),
 	quadShader(std::make_shared<openGLHelper::Shader>("rsc/shaders/quad_vertex.glsl", "rsc/shaders/quad_fragment.glsl"))
 {
 	render::Renderer::getInstance().getWindowSize(width, height);
@@ -102,12 +102,13 @@ void MainMenu::render() {
 			font.Render("QUIT", -1, FTPoint(xCoord, yCoord, 0));
 			break;
 		}
-		glPopAttrib();
 	}
+	glPopAttrib();
 	break;
 	case State::SETUP:
+	{
 		xCoord = ((float)width / 2) - (5 * (50 * scale) / 2);
-		yCoord = (float)height *  (3.f / rows);
+		yCoord = (float)height * (3.f / rows);
 		font.FaceSize(scaleBig * defaultFontSize);
 		font.Render("ARENA", -1, FTPoint(xCoord, yCoord, 0));
 
@@ -137,6 +138,11 @@ void MainMenu::render() {
 		quad->getShader()->use();
 		quad->render();
 		glUseProgram(0);
+	}
+	break;
+
+	default:
+		glPopAttrib();
 		break;
 	}
 }
