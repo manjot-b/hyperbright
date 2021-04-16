@@ -54,7 +54,7 @@ void Renderer::initWindow()
 
 	int n;
 	GLFWimage icon[1];
-	unsigned char* data = stbi_load("rsc/images/test.png", &icon[0].width, &icon[0].height, &n, 0);
+	unsigned char* data = stbi_load("rsc/images/icon.png", &icon[0].width, &icon[0].height, &n, 0);
 	icon[0].pixels = data;
 
 	window = glfwCreateWindow(width, height, "HyperBright", primaryMonitor, nullptr);
