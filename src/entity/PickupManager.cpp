@@ -251,7 +251,7 @@ namespace hyperbright {
 			}	
 			// ! ! ! Do not comment out this error msg ! ! !
 			std::cout << "! ! ! ERROR: Pickup not found ! ! !" << std::endl;
-			std::shared_ptr<Pickup>& pu = std::make_shared<Pickup>();	// if pickup not found, return unused pickup
+			std::shared_ptr<Pickup> pu = std::make_shared<Pickup>();	// if pickup not found, return unused pickup
 			return pu;
 		}
 
@@ -261,10 +261,7 @@ namespace hyperbright {
 			onArenaPickups.clear();
 			inactivePickups.clear();
 			activePickups.clear();
-			for (int i = 0; i < allPickups.size(); i++) {
-				delete& allPickups.end();
-				allPickups.pop_back();
-			}
+			allPickups.clear();
 		}
 
 		PickupManager::PickupRenderables::PickupRenderables(std::shared_ptr<Pickup> pickup) : puRenderable(pickup), pickupId(pickup->pickupNumber) {}
