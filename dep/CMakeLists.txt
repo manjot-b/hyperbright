@@ -72,8 +72,13 @@ add_subdirectory(openal)
 target_link_libraries(${CMAKE_PROJECT_NAME} OpenAL)
 
 # FTGL requires the Freetype library.
-set(FREETYPE_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/freetype-windows-binaries/release dll/win64/freetype.lib" CACHE STRING "")
-set(FREETYPE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/dep/freetype-windows-binaries/include" CACHE STRING "")
+if (MSVC)
+  set(FREETYPE_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/freetype-windows-binaries/release dll/win64/freetype.lib" CACHE STRING "")
+  set(FREETYPE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/dep/freetype-windows-binaries/include" CACHE STRING "")
+else ()
+  find_package(Freetype REQUIRED)
+endif ()
+
 add_subdirectory(ftgl)
 target_link_libraries(${CMAKE_PROJECT_NAME} ftgl)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ftgl/src")
