@@ -24,6 +24,7 @@ Texture::Texture(const char* filename)
     if (!data)
     {
 		std::cout << "Failed to load texture: " << filename << std::endl;
+		std::cout << stbi_failure_reason() << std::endl;
     }
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);	// tells opengl not to assume any alignment of rows.
