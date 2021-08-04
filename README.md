@@ -1,9 +1,15 @@
 # Compiling
-1. First you will need to add all external dependancies as git submodules. To do this enter `git submodule update --init --recursive`.
-2. On debian/linux install the following dependencies for GLFW and FTGL:
- - `xorg-dev libgl1-mesa-dev libglu1-mesa-dev`
+1. First you will need to add all external dependancies as git submodules. To do this enter `git submodule update --init --recursive --depth 1`.
+2. On debian/linux install the following dependencies.
+	- For [GLFW](https://www.glfw.org/docs/3.3/compile.html#compile_deps_x11) and FTGL
+
+			xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+  	- [OpenAL](https://github.com/kcat/openal-soft) will also require the audio backends of your system to be setup. You probably only need one of the following. Check the output of OpenAL when compiling the CMake file.
+
+			libpulse-dev libasound2-dev
+
 3. It is recommended to create a **build/** directory in the root directory of this project to store the build artifacts. Enter into the **build/** directory and enter `cmake ..` to generate the build system files.
-4. Build the project with the generated build system files. For example, on Linux ~~a Makefile will be created which can be invoked with `make -jN`~~ this does not compile due to PhysX. On Windows, a Visual Studio Solution file will be created, which can be opened and built with Visual Studio.
+4. Build the project with the generated build system files. For example, on Linux a Makefile will be created which can be invoked with `make -jN`. On Windows, a Visual Studio Solution file will be created, which can be opened and built with Visual Studio.
 
 # Objective
  - Using the energy reserves your vehicle carries, trigger the most tiles in the arena to your color before the round timer ends.
