@@ -2,8 +2,11 @@ cmake_minimum_required(VERSION 3.18)
 project(HyperBright)
 
 set(CMAKE_CXX_STANDARD 17)
-# Turn off restrict error so physx can compile.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=restrict -Wno-error=class-memaccess")
+
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	# Turn off restrict and class-memaccess error so physx can compile on linux.
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=restrict -Wno-error=class-memaccess")
+endif()
 
 add_executable(${CMAKE_PROJECT_NAME})
 

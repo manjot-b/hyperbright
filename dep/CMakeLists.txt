@@ -36,7 +36,7 @@ set( PHYSX_LIBRARIES
 # Has to match the TARGET_BUILD_PLATFORM in ${PHYSX_ROOT_DIR}/physix/buildtools/cmake_generate_projects.py
 if (MSVC)
 	set(TARGET_BUILD_PLATFORM "windows")
-else ()
+elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	set(TARGET_BUILD_PLATFORM "linux")
 endif ()
 
