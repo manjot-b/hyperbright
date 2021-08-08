@@ -752,7 +752,8 @@ void Simulate::setModelPose(std::shared_ptr<IPhysical>& model)
 					model->setModelMatrix(modelMatrix);
 
 					vec3 modelPos;
-					memcpy(&modelPos, &(boxPose.getPosition()), sizeof(PxVec3));
+					PxVec3 pxModelPos = boxPose.getPosition();
+					memcpy(&modelPos, &pxModelPos, sizeof(PxVec3));
 					model->setPosition(modelPos);
 
 					// Check if this actor is a vehicle and if so, set its wheels pose.
