@@ -4,6 +4,11 @@ project(HyperBright)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(${CMAKE_PROJECT_NAME})
+
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	# Turn off restrict and class-memaccess error so physx can compile on linux.
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=restrict -Wno-error=class-memaccess")
