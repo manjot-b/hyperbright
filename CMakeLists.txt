@@ -10,8 +10,14 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	# Turn off restrict and class-memaccess error so physx can compile on linux.
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=restrict -Wno-error=class-memaccess")
+	# Turn off restrict and class-memaccess error so physx can compile on linux/ubuntu distros.
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=restrict")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=class-memaccess")
+	# Turn off some errors so physx can compile on arch linux.
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=array-bounds")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=nonnull")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=stringop-overread")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=mismatched-new-delete")
 
 	# Physx requires exactly one of NDEBUG or _DEBUG to be defined, but _DEBUG is only
 	# used by Visual Studio.
