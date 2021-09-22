@@ -108,6 +108,10 @@ set(IMGUI_SOURCES
 target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${IMGUI_SOURCES})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${IMGUI_ROOT_DIR}" "${IMGUI_BACKEND_DIR}")
 
+# Force the use of GLAD for ImGUI. If not definied then ImGUI will default to GLEW if
+# the header files are include. See dep/imgui/backends/imgui_impl_opengl3.h.
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE IMGUI_IMPL_OPENGL_LOADER_GLAD)
+
 # The source_group command does not work if placed in dep/CMakeLists.txt but does if it is placed here.
 source_group("ImGui" FILES ${IMGUI_SOURCES})
 
